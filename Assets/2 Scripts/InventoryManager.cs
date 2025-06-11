@@ -54,9 +54,21 @@ public class InventoryManager : MonoBehaviour
         {
             items.Remove(item);
             Debug.Log($"已將 {item.itemName} 從背包移除！");
-            
+
             // 同樣觸發更新事件
             OnInventoryChanged?.Invoke();
         }
+    }
+
+    /// <summary>
+    /// 檢查背包中是否含有指定名稱的物品
+    /// </summary>
+    /// <param name="itemNameToCheck">要檢查的物品名稱</param>
+    /// <returns>如果找到返回 true，否則返回 false</returns>
+    public bool HasItem(string itemNameToCheck)
+    {
+        // 使用 System.Linq 的 Any 方法，可以很有效率地檢查 List 中是否有符合條件的項目
+        // 這行程式碼的意思是：「在 items 這個 List 中，是否有任何一個 item 的 itemName 等於我們要檢查的名稱？」
+        return items.Exists(item => item.itemName == itemNameToCheck);
     }
 }

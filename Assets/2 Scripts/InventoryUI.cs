@@ -42,10 +42,17 @@ public class InventoryUI : MonoBehaviour
         bool isActive = !inventoryPanel.activeSelf;
         inventoryPanel.SetActive(isActive);
 
-        // 如果是打開背包，就更新一次 UI
+        // --- 這裡就是關鍵 ---
         if (isActive)
         {
-            UpdateUI();
+            // 如果是打開背包，就進入 UI 模式
+            CursorManager.EnterUIMode();
+            UpdateUI(); // 更新 UI 顯示
+        }
+        else
+        {
+            // 如果是關閉背包，就回到遊戲模式
+            CursorManager.EnterGameplayMode();
         }
     }
 

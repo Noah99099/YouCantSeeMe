@@ -26,7 +26,12 @@ public class PlayerInteraction : MonoBehaviour
     private PlayerControls controls;
     private Camera playerCamera;
     
-    private GameObject currentInteractableObject = null; 
+    private GameObject currentInteractableObject = null;
+
+    void Start()
+    {
+        CursorManager.EnterGameplayMode();
+    }
 
     private void Awake()
     {
