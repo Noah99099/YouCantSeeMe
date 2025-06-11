@@ -13,9 +13,6 @@ public class PlayerView : MonoBehaviour
     [Tooltip("相機位置")]
     [SerializeField] private Transform cameraTransform;
 
-    [Header("輸入設定")]
-    [Tooltip("滑鼠靈敏度")]
-    [SerializeField] private float mouseSensitivity = 100f;
     [Tooltip("手柄靈敏度")]
     [SerializeField] private float gamepadSensitivity = 30f;
 
@@ -86,7 +83,8 @@ public class PlayerView : MonoBehaviour
         // --- 以下是原本的程式碼，現在只有在滑鼠鎖定時才會執行 ---
         lookInput = playerControls.Player.Look.ReadValue<Vector2>();
 
-        float currentSensitivity = isUsingGamepad ? gamepadSensitivity : mouseSensitivity;
+        //滑鼠靈敏度相關設定
+        float currentSensitivity = isUsingGamepad ? gamepadSensitivity : SensitivityManager.Instance.mouseSensitivity;
 
         if (isUsingGamepad)
         {
