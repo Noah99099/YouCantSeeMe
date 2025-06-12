@@ -32,4 +32,10 @@ public class ItemDetailUI : MonoBehaviour
         if (currentModelInstance != null)
             Destroy(currentModelInstance);
     }
+
+    void Awake()
+    {
+        DontDestroyOnLoad(gameObject);
+    }
+
 }

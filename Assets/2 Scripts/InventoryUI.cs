@@ -15,6 +15,15 @@ public class InventoryUI : MonoBehaviour
         InventoryManager.Instance.OnInventoryChanged += UpdateUI;
 
         inventoryPanel.SetActive(false); // 遊戲開始時預設關閉背包
+
+        if (itemDetailUI == null)
+        {
+            itemDetailUI = FindObjectOfType<ItemDetailUI>();
+            Debug.LogWarning("用程式動態綁定 ItemDetailUI");
+        }
+
+        InventoryManager.Instance.OnInventoryChanged += UpdateUI;
+        inventoryPanel.SetActive(false);
     }
 
     void OnDestroy()
@@ -95,6 +104,13 @@ public class InventoryUI : MonoBehaviour
     //顯示物件細節
         private void ShowItemDetail(ItemData item)
     {
-        itemDetailUI.ShowItemDetail(item);
-    }
+        if (itemDetailUI != null)
+        {
+            itemDetailUI.ShowItemDetail(item);
+        }
+        else
+        {
+            Debug.LogWarning("ItemDetailUI 尚未指定！");
+        }
+        }
 }
