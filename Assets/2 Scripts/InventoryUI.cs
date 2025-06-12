@@ -7,6 +7,7 @@ public class InventoryUI : MonoBehaviour
     public GameObject inventoryPanel; // 整個背包 UI 的面板
     public Transform itemsContainer;  // 用來放置所有物品格子的容器
     public GameObject itemSlotPrefab; // 單一物品格子的 Prefab
+    [SerializeField] private ItemDetailUI itemDetailUI; // 在 Inspector 指定
 
     void Start()
     {
@@ -72,7 +73,7 @@ public class InventoryUI : MonoBehaviour
         {
             // 實例化一個物品格子 Prefab
             GameObject slotInstance = Instantiate(itemSlotPrefab, itemsContainer);
-            
+
             // 找到格子中的 Image 元件來設定圖示
             // 假設 Prefab 中代表圖示的 Image 元件被命名為 "ItemIcon"
             Image itemIcon = slotInstance.transform.Find("ItemIcon")?.GetComponent<Image>();
@@ -82,6 +83,18 @@ public class InventoryUI : MonoBehaviour
                 itemIcon.sprite = item.icon;
                 itemIcon.enabled = true;
             }
+            //讓格子支援滑鼠點擊
+            Button button = slotInstance.GetComponent<Button>();
+            if (button != null)
+            {
+                ItemData capturedItem = item; // 避免閉包錯誤
+                button.onClick.AddListener(() => ShowItemDetail(capturedItem));
+            }
         }
+    }
+    //顯示物件細節
+        private void ShowItemDetail(ItemData item)
+    {
+        itemDetailUI.ShowItemDetail(item);
     }
 }

@@ -13,5 +13,5 @@ public class ItemData : ScriptableObject
 
     // 你未來可以擴充更多屬性，例如：
     // public int maxStack; // 最大堆疊數量
-    // public GameObject modelPrefab; // 物品的模型
+    public GameObject modelPrefab; // 物品的模型
 }
