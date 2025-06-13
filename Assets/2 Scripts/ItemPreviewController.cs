@@ -54,50 +54,46 @@ public class ItemPreviewController : MonoBehaviour
         }
     }
 
-    public void ResetPreview(GameObject newModel)
+public void ResetPreview(GameObject newModel)
+{
+    foreach (Transform child in modelRoot)
     {
-        // 清除舊模型
-        foreach (Transform child in modelRoot)
-        {
-            Destroy(child.gameObject);
-        }
-
-        if (newModel == null)
-        {
-            Debug.LogWarning("未指定模型 prefab！");
-            return;
-        }
-
-        // 載入新模型
-        GameObject instance = Instantiate(newModel, modelRoot);
-        instance.transform.localPosition = Vector3.zero;
-        instance.transform.localRotation = Quaternion.identity;
-
-        // ✅ 設定 Layer 為 "ItemPreview"
-        SetLayerRecursively(instance, LayerMask.NameToLayer("ItemPreview"));
-
-        // ✅ 自動擺在相機正前方
-        Bounds bounds = CalculateBounds(instance);
-        Vector3 centerOffset = bounds.center;
-
-        // 將模型居中
-        instance.transform.localPosition = -centerOffset;
-
-        // ✅ 根據模型大小調整位置
-        float radius = bounds.extents.magnitude;
-        float distance = radius / Mathf.Tan(Mathf.Deg2Rad * previewCamera.fieldOfView * 0.5f);
-
-        Vector3 camForward = previewCamera.transform.forward;
-        modelRoot.transform.position = previewCamera.transform.position + camForward * distance;
-
-        // ✅ 讓模型永遠面對相機
-        modelRoot.transform.LookAt(previewCamera.transform);
-        modelRoot.transform.rotation = Quaternion.Euler(0, modelRoot.transform.eulerAngles.y, 0);
-
-        Debug.Log($"已載入模型 {instance.name}，模型距離相機約 {distance:F2}");
+        Destroy(child.gameObject);
     }
 
-        private void SetLayerRecursively(GameObject obj, int newLayer)
+    if (newModel == null)
+    {
+        Debug.LogWarning("未指定模型 prefab！");
+        return;
+    }
+
+    GameObject instance = Instantiate(newModel, modelRoot);
+    instance.transform.localPosition = Vector3.zero;
+    instance.transform.localRotation = Quaternion.identity;
+
+    //自動設 Layer
+    SetLayerRecursively(instance, LayerMask.NameToLayer("ItemPreview"));
+
+    // 將模型擺在相機正前方、居中
+    Bounds bounds = CalculateBounds(instance);
+    Vector3 centerOffset = bounds.center;
+    instance.transform.localPosition = -centerOffset;
+
+    float radius = bounds.extents.magnitude;
+    float fov = previewCamera.fieldOfView;
+    float distance = radius / Mathf.Tan(Mathf.Deg2Rad * fov * 0.5f) * 0.8f; // 加倍率
+
+    Vector3 forward = previewCamera.transform.forward;
+    modelRoot.position = previewCamera.transform.position + forward * distance;
+    modelRoot.LookAt(previewCamera.transform);
+    modelRoot.rotation = Quaternion.Euler(0, modelRoot.eulerAngles.y, 0);
+    modelRoot.localScale = initialScale;
+
+    Debug.Log($"模型已自動調整距離：{distance:F2}");
+}
+
+
+    private void SetLayerRecursively(GameObject obj, int newLayer)
     {
         if (obj == null) return;
 
