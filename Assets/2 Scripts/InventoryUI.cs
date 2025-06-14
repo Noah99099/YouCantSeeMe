@@ -98,6 +98,7 @@ public class InventoryUI : MonoBehaviour
             {
                 ItemData capturedItem = item; // 避免閉包錯誤
                 button.onClick.AddListener(() => ShowItemDetail(capturedItem));
+                Debug.Log($"[綁定點擊] {capturedItem.itemName}");
             }
         }
     }
@@ -112,5 +113,5 @@ public class InventoryUI : MonoBehaviour
         {
             Debug.LogWarning("ItemDetailUI 尚未指定！");
         }
-        }
+    }
 }

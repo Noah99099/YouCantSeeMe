@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 public class ItemPreviewController : MonoBehaviour
@@ -8,7 +9,6 @@ public class ItemPreviewController : MonoBehaviour
     public float zoomSpeed = 5f;
     public float minZoom = 0.5f;
     public float maxZoom = 3f;
-
     private Vector3 initialScale;
     private bool isDragging = false;
 
@@ -23,74 +23,74 @@ public class ItemPreviewController : MonoBehaviour
     void Update()
     {
         if (modelRoot == null) return;
-
-        // 滑鼠拖曳旋轉
-        if (Input.GetMouseButtonDown(0))
-        {
-            isDragging = true;
-        }
-        else if (Input.GetMouseButtonUp(0))
-        {
-            isDragging = false;
-        }
+        if (Input.GetMouseButtonDown(0)) isDragging = true;
+        if (Input.GetMouseButtonUp(0)) isDragging = false;
 
         if (isDragging)
         {
             float rotX = Input.GetAxis("Mouse X") * rotationSpeed;
-            modelRoot.Rotate(Vector3.up, -rotX, Space.World);
+            float rotY = Input.GetAxis("Mouse Y") * rotationSpeed;
+
+            // 自由旋轉（使用 localRotation 控制）
+            modelRoot.Rotate(Vector3.up, -rotX, Space.World);   // 水平滑動旋轉 Y 軸
+            modelRoot.Rotate(Vector3.right, rotY, Space.Self);  // 垂直滑動旋轉 X 軸
         }
 
-        // 滾輪縮放
+        // ➤ 滾輪縮放（限制範圍）
         float scroll = Input.GetAxis("Mouse ScrollWheel");
         if (scroll != 0f)
         {
-            Vector3 newScale = modelRoot.localScale + Vector3.one * scroll * zoomSpeed;
-            float scaleFactor = newScale.magnitude / initialScale.magnitude;
+            float scaleMultiplier = 1 + scroll * zoomSpeed;
+            Vector3 newScale = modelRoot.localScale * scaleMultiplier;
 
-            if (scaleFactor >= minZoom && scaleFactor <= maxZoom)
+            float factor = newScale.magnitude / initialScale.magnitude;
+
+            if (factor >= minZoom && factor <= maxZoom)
             {
                 modelRoot.localScale = newScale;
             }
         }
     }
 
-public void ResetPreview(GameObject newModel)
-{
-    foreach (Transform child in modelRoot)
+    public void ResetPreview(GameObject newModel)
     {
-        Destroy(child.gameObject);
+        // 清除舊的模型（只刪除有 PreviewModelTag 的）
+        foreach (Transform child in modelRoot)
+        {
+            if (child.GetComponent<PreviewModelTag>() != null)
+            {
+                Destroy(child.gameObject);
+            }
+        }
+
+        StartCoroutine(DelayedInstantiate(newModel));
     }
 
-    if (newModel == null)
+    private IEnumerator DelayedInstantiate(GameObject newModel)
     {
-        Debug.LogWarning("未指定模型 prefab！");
-        return;
+        yield return null; // 等待一幀，確保 Destroy() 完成
+
+        if (newModel == null) yield break;
+
+        GameObject instance = Instantiate(newModel, modelRoot);
+        instance.AddComponent<PreviewModelTag>();
+
+        // 自動對齊模型至攝影機前方
+        Bounds bounds = CalculateBounds(instance);
+        float modelSize = Mathf.Max(bounds.size.x, bounds.size.y, bounds.size.z);
+
+        float distance = modelSize * 2f; // 控制與相機距離，調整比例可放大縮小
+
+        Vector3 camForward = previewCamera.transform.forward;
+        Vector3 spawnPos = previewCamera.transform.position + camForward * distance;
+
+        modelRoot.position = spawnPos;
+
+        // 將模型重置到 modelRoot 中心
+        instance.transform.localPosition = -bounds.center;
+        instance.transform.localRotation = Quaternion.identity;
+        instance.transform.localScale = Vector3.one;
     }
-
-    GameObject instance = Instantiate(newModel, modelRoot);
-    instance.transform.localPosition = Vector3.zero;
-    instance.transform.localRotation = Quaternion.identity;
-
-    //自動設 Layer
-    SetLayerRecursively(instance, LayerMask.NameToLayer("ItemPreview"));
-
-    // 將模型擺在相機正前方、居中
-    Bounds bounds = CalculateBounds(instance);
-    Vector3 centerOffset = bounds.center;
-    instance.transform.localPosition = -centerOffset;
-
-    float radius = bounds.extents.magnitude;
-    float fov = previewCamera.fieldOfView;
-    float distance = radius / Mathf.Tan(Mathf.Deg2Rad * fov * 0.5f) * 0.8f; // 加倍率
-
-    Vector3 forward = previewCamera.transform.forward;
-    modelRoot.position = previewCamera.transform.position + forward * distance;
-    modelRoot.LookAt(previewCamera.transform);
-    modelRoot.rotation = Quaternion.Euler(0, modelRoot.eulerAngles.y, 0);
-    modelRoot.localScale = initialScale;
-
-    Debug.Log($"模型已自動調整距離：{distance:F2}");
-}
 
 
     private void SetLayerRecursively(GameObject obj, int newLayer)
@@ -108,7 +108,6 @@ public void ResetPreview(GameObject newModel)
     private Bounds CalculateBounds(GameObject go)
     {
         Renderer[] renderers = go.GetComponentsInChildren<Renderer>();
-
         if (renderers.Length == 0)
             return new Bounds(go.transform.position, Vector3.zero);
 
@@ -117,8 +116,11 @@ public void ResetPreview(GameObject newModel)
         {
             bounds.Encapsulate(renderers[i].bounds);
         }
+        // 本地空間的中心
+        Vector3 localCenter = go.transform.InverseTransformPoint(bounds.center);
+        bounds.center = localCenter;
+
         return bounds;
     }
-
 
 }

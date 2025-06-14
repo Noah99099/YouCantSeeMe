@@ -8,7 +8,6 @@ public class ItemDetailUI : MonoBehaviour
     public Text descriptionText;
     public RawImage modelPreview;
     public RenderTexture renderTexture;
-    private GameObject currentModelInstance;
 
     public Transform modelSpawnPoint; // 放置模型的位置
     public Camera previewCamera; // 專門拍攝模型的相機
@@ -22,15 +21,19 @@ public class ItemDetailUI : MonoBehaviour
         nameText.text = item.itemName;
         descriptionText.text = item.description;
 
-        previewController.ResetPreview(item.modelPrefab);
+        if (previewController != null && item.modelPrefab != null)
+        {
+            previewController.ResetPreview(item.modelPrefab);
+        }
+        else
+        {
+            Debug.LogWarning("模型無法預覽，請確認 item 與 Controller 是否指定");
+        }
     }
 
     public void HideItemDetail()
     {
         detailPanel.SetActive(false);
-
-        if (currentModelInstance != null)
-            Destroy(currentModelInstance);
     }
 
     void Awake()
