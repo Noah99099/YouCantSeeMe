@@ -1,0 +1,54 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 17b44dcdee444b34599b7bf9fa2612c1, type: 3}
+  m_Name: 123
+  m_EditorClassIdentifier: 
+  DialogueName: "\u65B0\u7684\u5C0D\u8A71"
+  NodeLinks:
+  - BaseNodeGuid: 1bafc599-2e61-4632-ae6a-62d3419bc321
+    TargetNodeGuid: a1af4b24-ddd7-4a8c-b5f8-e73e62d36343
+    PortName: "\u7E7C\u7E8C"
+  - BaseNodeGuid: a1af4b24-ddd7-4a8c-b5f8-e73e62d36343
+    TargetNodeGuid: 6dfd417b-2bbb-4c49-b8c6-b067f3de2298
+    PortName: "\u7E7C\u7E8C"
+  - BaseNodeGuid: 6dfd417b-2bbb-4c49-b8c6-b067f3de2298
+    TargetNodeGuid: ae7edb11-e86a-4b26-9fe8-9a8ff129632e
+    PortName: "\u958B\u5FC3"
+  - BaseNodeGuid: 6dfd417b-2bbb-4c49-b8c6-b067f3de2298
+    TargetNodeGuid: 300e8c70-3b09-49a1-ad67-9bd452a6ab3f
+    PortName: "\u4E0D\u958B\u5FC3"
+  DialogueNodes:
+  - Guid: 1bafc599-2e61-4632-ae6a-62d3419bc321
+    SpeakerName: 1
+    DialogueText: "\u4F60\u597D"
+    EntryPoint: 1
+    Position: {x: -22, y: 210}
+  - Guid: a1af4b24-ddd7-4a8c-b5f8-e73e62d36343
+    SpeakerName: 1
+    DialogueText: "\u6B61\u8FCE\u9032\u5165\u5C0D\u8A71\u7CFB\u7D71"
+    EntryPoint: 0
+    Position: {x: 330, y: 210}
+  - Guid: 6dfd417b-2bbb-4c49-b8c6-b067f3de2298
+    SpeakerName: 1
+    DialogueText: "\u9019\u662F\u5C6C\u65BC\u6211\u5011\u81EA\u5DF1\u7684\u7CFB\u7D71\uFF0C\u958B\u5FC3\u55CE\uFF1F"
+    EntryPoint: 0
+    Position: {x: 710, y: 210}
+  - Guid: ae7edb11-e86a-4b26-9fe8-9a8ff129632e
+    SpeakerName: 1
+    DialogueText: "\u5F88\u9AD8\u8208\u4F60\u4E5F\u611F\u5230\u958B\u5FC3"
+    EntryPoint: 0
+    Position: {x: 1187, y: 190}
+  - Guid: 300e8c70-3b09-49a1-ad67-9bd452a6ab3f
+    SpeakerName: "\u89D2\u8272"
+    DialogueText: "\u5F88\u62B1\u6B49\u8B93\u4F60\u611F\u5230\u4E0D\u5FEB"
+    EntryPoint: 0
+    Position: {x: 1187, y: 364}

@@ -54,7 +54,7 @@ public class ItemPreviewController : MonoBehaviour
 
     public void ResetPreview(GameObject newModel)
     {
-        // 清除舊的模型（只刪除有 PreviewModelTag 的）
+        // 清除 modelRoot 裡的舊模型（只刪有 PreviewModelTag 的）
         foreach (Transform child in modelRoot)
         {
             if (child.GetComponent<PreviewModelTag>() != null)
@@ -68,30 +68,37 @@ public class ItemPreviewController : MonoBehaviour
 
     private IEnumerator DelayedInstantiate(GameObject newModel)
     {
-        yield return null; // 等待一幀，確保 Destroy() 完成
+        yield return null; // 等待一幀，確保 Destroy 執行完
 
         if (newModel == null) yield break;
 
+        // ✅ Instantiate 模型
         GameObject instance = Instantiate(newModel, modelRoot);
         instance.AddComponent<PreviewModelTag>();
 
-        // 自動對齊模型至攝影機前方
-        Bounds bounds = CalculateBounds(instance);
-        float modelSize = Mathf.Max(bounds.size.x, bounds.size.y, bounds.size.z);
-
-        float distance = modelSize * 2f; // 控制與相機距離，調整比例可放大縮小
-
-        Vector3 camForward = previewCamera.transform.forward;
-        Vector3 spawnPos = previewCamera.transform.position + camForward * distance;
-
-        modelRoot.position = spawnPos;
-
-        // 將模型重置到 modelRoot 中心
-        instance.transform.localPosition = -bounds.center;
+        // ✅ 強制重設模型狀態
+        instance.transform.localPosition = Vector3.zero;
         instance.transform.localRotation = Quaternion.identity;
         instance.transform.localScale = Vector3.one;
-    }
 
+        // ✅ 計算模型包圍盒（用來對準中心點）
+        Bounds bounds = CalculateBounds(instance);
+        Vector3 centerOffset = bounds.center;
+        instance.transform.localPosition = -centerOffset;
+
+        // ✅ 將模型定位到相機前方
+        float modelRadius = bounds.extents.magnitude;
+        float distance = Mathf.Clamp(modelRadius / Mathf.Tan(Mathf.Deg2Rad * previewCamera.fieldOfView * 0.5f), 1f, 10f);
+
+        Vector3 camForward = previewCamera.transform.forward;
+        modelRoot.position = previewCamera.transform.position + camForward * distance;
+        modelRoot.rotation = Quaternion.identity;
+
+        // ✅ 設定 Layer
+        SetLayerRecursively(instance, LayerMask.NameToLayer("ItemPreview"));
+
+        Debug.Log($"✅ 模型已生成：{instance.name}，距離相機 {distance:F2}，位置 {modelRoot.position}");
+    }
 
     private void SetLayerRecursively(GameObject obj, int newLayer)
     {
@@ -104,7 +111,7 @@ public class ItemPreviewController : MonoBehaviour
             SetLayerRecursively(child.gameObject, newLayer);
         }
     }
-
+    //計算模型範圍
     private Bounds CalculateBounds(GameObject go)
     {
         Renderer[] renderers = go.GetComponentsInChildren<Renderer>();
