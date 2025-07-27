@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using static UnityEditor.ShaderGraph.Internal.KeywordDependentCollection;
 public enum ViewType { Yang, Yin }
 
@@ -34,15 +35,17 @@ public class ViewManager : MonoBehaviour
     void OnEnable()
     {
         controls.Player.Enable();
-        controls.Player.View.performed += _ => ToggleView();
-    }
-
+        controls.Player.View.performed += OnViewPerformed;
+    } 
     void OnDisable()
     {
-        controls.Player.View.performed -= _ => ToggleView();
+        controls.Player.View.performed -= OnViewPerformed;
         controls.Player.Disable();
     }
-
+    private void OnViewPerformed(InputAction.CallbackContext context)
+    {
+        ToggleView();
+    }
     /// <summary>
     /// ¤Á´«µø³¥
     /// </summary>

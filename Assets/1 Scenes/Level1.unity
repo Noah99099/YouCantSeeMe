@@ -134,6 +134,7 @@ GameObject:
   - component: {fileID: 9230346}
   - component: {fileID: 9230345}
   - component: {fileID: 9230344}
+  - component: {fileID: 9230349}
   - component: {fileID: 9230347}
   - component: {fileID: 9230348}
   m_Layer: 3
@@ -254,14 +255,36 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 778196790939939438401f4c7638ef89, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  objectID: door_A1
   visibleInYang: 1
   visibleInYin: 1
   interactiveInYang: 1
   interactiveInYin: 0
-  yangMesh: {fileID: 0}
-  yinMesh: {fileID: 0}
-  yangCollider: {fileID: 0}
-  yinCollider: {fileID: 0}
+  yangMesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+  yinMesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+  yangCollider: {fileID: 9230344}
+  yinCollider: {fileID: 9230349}
+--- !u!65 &9230349
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9230342}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &44230903
 GameObject:
   m_ObjectHideFlags: 0
@@ -278,6 +301,7 @@ GameObject:
   - component: {fileID: 44230909}
   - component: {fileID: 44230910}
   - component: {fileID: 44230911}
+  - component: {fileID: 44230912}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -451,6 +475,20 @@ MonoBehaviour:
     m_Bits: 8
   pickupPromptText: {fileID: 639838745}
   showDebugRay: 1
+--- !u!114 &44230912
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 44230903}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 52a7a8092b37e954d9d57c0cc2d5c45b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  yangUI: {fileID: 292124997}
+  yinUI: {fileID: 1358306966}
 --- !u!1 &53566299
 GameObject:
   m_ObjectHideFlags: 0
@@ -591,6 +629,7 @@ GameObject:
   - component: {fileID: 66107453}
   - component: {fileID: 66107452}
   - component: {fileID: 66107451}
+  - component: {fileID: 66107456}
   - component: {fileID: 66107454}
   - component: {fileID: 66107455}
   m_Layer: 3
@@ -711,14 +750,36 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 778196790939939438401f4c7638ef89, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  objectID: door_A1
   visibleInYang: 1
   visibleInYin: 1
   interactiveInYang: 1
   interactiveInYin: 0
-  yangMesh: {fileID: 0}
-  yinMesh: {fileID: 0}
-  yangCollider: {fileID: 0}
-  yinCollider: {fileID: 0}
+  yangMesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+  yinMesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+  yangCollider: {fileID: 66107451}
+  yinCollider: {fileID: 66107456}
+--- !u!65 &66107456
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 66107449}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &74697274
 GameObject:
   m_ObjectHideFlags: 0
@@ -1456,6 +1517,16 @@ PrefabInstance:
     - target: {fileID: 5029573921104244001, guid: 1935b2c1ce42e6b4ea7607db7d13e542,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7917585617151377620, guid: 1935b2c1ce42e6b4ea7607db7d13e542,
+        type: 3}
+      propertyPath: objectID
+      value: level1_sphere
+      objectReference: {fileID: 0}
+    - target: {fileID: 7917585617151377620, guid: 1935b2c1ce42e6b4ea7607db7d13e542,
+        type: 3}
+      propertyPath: visibleInYang
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8319705870368094231, guid: 1935b2c1ce42e6b4ea7607db7d13e542,
@@ -2378,6 +2449,7 @@ GameObject:
   - component: {fileID: 558164574}
   - component: {fileID: 558164573}
   - component: {fileID: 558164572}
+  - component: {fileID: 558164577}
   - component: {fileID: 558164575}
   - component: {fileID: 558164576}
   m_Layer: 3
@@ -2498,14 +2570,36 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 778196790939939438401f4c7638ef89, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  objectID: door_A1
   visibleInYang: 1
   visibleInYin: 1
   interactiveInYang: 1
   interactiveInYin: 0
-  yangMesh: {fileID: 0}
-  yinMesh: {fileID: 0}
-  yangCollider: {fileID: 0}
-  yinCollider: {fileID: 0}
+  yangMesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+  yinMesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+  yangCollider: {fileID: 558164572}
+  yinCollider: {fileID: 558164577}
+--- !u!65 &558164577
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 558164570}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &597085487
 GameObject:
   m_ObjectHideFlags: 0
@@ -3422,6 +3516,7 @@ GameObject:
   - component: {fileID: 677302772}
   - component: {fileID: 677302771}
   - component: {fileID: 677302770}
+  - component: {fileID: 677302775}
   - component: {fileID: 677302773}
   - component: {fileID: 677302774}
   m_Layer: 3
@@ -3542,14 +3637,36 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 778196790939939438401f4c7638ef89, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  objectID: door_A1
   visibleInYang: 1
   visibleInYin: 1
   interactiveInYang: 1
   interactiveInYin: 0
-  yangMesh: {fileID: 0}
-  yinMesh: {fileID: 0}
-  yangCollider: {fileID: 0}
-  yinCollider: {fileID: 0}
+  yangMesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+  yinMesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+  yangCollider: {fileID: 677302770}
+  yinCollider: {fileID: 677302775}
+--- !u!65 &677302775
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 677302768}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &699073781
 GameObject:
   m_ObjectHideFlags: 0
@@ -3942,6 +4059,7 @@ GameObject:
   - component: {fileID: 796633200}
   - component: {fileID: 796633199}
   - component: {fileID: 796633198}
+  - component: {fileID: 796633203}
   - component: {fileID: 796633201}
   - component: {fileID: 796633202}
   m_Layer: 3
@@ -4062,14 +4180,36 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 778196790939939438401f4c7638ef89, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  objectID: door_A1
   visibleInYang: 1
   visibleInYin: 1
   interactiveInYang: 1
   interactiveInYin: 0
-  yangMesh: {fileID: 0}
-  yinMesh: {fileID: 0}
-  yangCollider: {fileID: 0}
-  yinCollider: {fileID: 0}
+  yangMesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+  yinMesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+  yangCollider: {fileID: 796633198}
+  yinCollider: {fileID: 796633203}
+--- !u!65 &796633203
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 796633196}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &799287423
 GameObject:
   m_ObjectHideFlags: 0
@@ -4955,6 +5095,7 @@ GameObject:
   - component: {fileID: 1082367500}
   - component: {fileID: 1082367499}
   - component: {fileID: 1082367498}
+  - component: {fileID: 1082367503}
   - component: {fileID: 1082367501}
   - component: {fileID: 1082367502}
   m_Layer: 3
@@ -5075,14 +5216,36 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 778196790939939438401f4c7638ef89, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  objectID: door_A1
   visibleInYang: 1
   visibleInYin: 1
   interactiveInYang: 1
   interactiveInYin: 0
-  yangMesh: {fileID: 0}
-  yinMesh: {fileID: 0}
-  yangCollider: {fileID: 0}
-  yinCollider: {fileID: 0}
+  yangMesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+  yinMesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+  yangCollider: {fileID: 1082367498}
+  yinCollider: {fileID: 1082367503}
+--- !u!65 &1082367503
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1082367496}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &1103758213
 GameObject:
   m_ObjectHideFlags: 0
@@ -5305,6 +5468,7 @@ GameObject:
   - component: {fileID: 1177187222}
   - component: {fileID: 1177187221}
   - component: {fileID: 1177187220}
+  - component: {fileID: 1177187226}
   - component: {fileID: 1177187224}
   - component: {fileID: 1177187225}
   m_Layer: 3
@@ -5425,14 +5589,36 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 778196790939939438401f4c7638ef89, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  objectID: door_A1
   visibleInYang: 1
   visibleInYin: 1
   interactiveInYang: 1
   interactiveInYin: 0
-  yangMesh: {fileID: 0}
-  yinMesh: {fileID: 0}
-  yangCollider: {fileID: 0}
-  yinCollider: {fileID: 0}
+  yangMesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+  yinMesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+  yangCollider: {fileID: 1177187220}
+  yinCollider: {fileID: 1177187226}
+--- !u!65 &1177187226
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1177187219}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: 0.0000009536743, z: 0}
 --- !u!1 &1184545045
 GameObject:
   m_ObjectHideFlags: 0
@@ -5692,6 +5878,11 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: -8506524830033822527, guid: d20220cb2e9929d428e8bc5d8452b941,
+        type: 3}
+      propertyPath: objectID
+      value: level1_cube
+      objectReference: {fileID: 0}
     - target: {fileID: 4041554916608328734, guid: d20220cb2e9929d428e8bc5d8452b941,
         type: 3}
       propertyPath: m_Name
@@ -6235,52 +6426,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 273982283}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &1519876164
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1519876166}
-  - component: {fileID: 1519876167}
-  m_Layer: 0
-  m_Name: ViewManager
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1519876166
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1519876164}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1519876167
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1519876164}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 52a7a8092b37e954d9d57c0cc2d5c45b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  yangUI: {fileID: 292124997}
-  yinUI: {fileID: 1358306966}
 --- !u!1 &1530991764
 GameObject:
   m_ObjectHideFlags: 0
@@ -6359,6 +6504,7 @@ GameObject:
   - component: {fileID: 1577277626}
   - component: {fileID: 1577277625}
   - component: {fileID: 1577277624}
+  - component: {fileID: 1577277629}
   - component: {fileID: 1577277627}
   - component: {fileID: 1577277628}
   m_Layer: 3
@@ -6479,14 +6625,36 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 778196790939939438401f4c7638ef89, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  objectID: door_A1
   visibleInYang: 1
   visibleInYin: 1
   interactiveInYang: 1
   interactiveInYin: 0
-  yangMesh: {fileID: 0}
-  yinMesh: {fileID: 0}
-  yangCollider: {fileID: 0}
-  yinCollider: {fileID: 0}
+  yangMesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+  yinMesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+  yangCollider: {fileID: 1577277624}
+  yinCollider: {fileID: 1577277629}
+--- !u!65 &1577277629
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1577277622}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &1594306396
 GameObject:
   m_ObjectHideFlags: 0
@@ -6934,6 +7102,7 @@ GameObject:
   - component: {fileID: 1925588734}
   - component: {fileID: 1925588733}
   - component: {fileID: 1925588732}
+  - component: {fileID: 1925588737}
   - component: {fileID: 1925588735}
   - component: {fileID: 1925588736}
   m_Layer: 3
@@ -7054,14 +7223,36 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 778196790939939438401f4c7638ef89, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  objectID: door_A1
   visibleInYang: 1
   visibleInYin: 1
   interactiveInYang: 1
   interactiveInYin: 0
-  yangMesh: {fileID: 0}
-  yinMesh: {fileID: 0}
-  yangCollider: {fileID: 0}
-  yinCollider: {fileID: 0}
+  yangMesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+  yinMesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+  yangCollider: {fileID: 1925588732}
+  yinCollider: {fileID: 1925588737}
+--- !u!65 &1925588737
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1925588730}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &1930703578
 GameObject:
   m_ObjectHideFlags: 0
@@ -7192,6 +7383,7 @@ GameObject:
   - component: {fileID: 1961978161}
   - component: {fileID: 1961978160}
   - component: {fileID: 1961978159}
+  - component: {fileID: 1961978164}
   - component: {fileID: 1961978162}
   - component: {fileID: 1961978163}
   m_Layer: 3
@@ -7312,14 +7504,36 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 778196790939939438401f4c7638ef89, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  objectID: door_A1
   visibleInYang: 1
   visibleInYin: 1
   interactiveInYang: 1
   interactiveInYin: 0
-  yangMesh: {fileID: 0}
-  yinMesh: {fileID: 0}
-  yangCollider: {fileID: 0}
-  yinCollider: {fileID: 0}
+  yangMesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+  yinMesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+  yangCollider: {fileID: 1961978159}
+  yinCollider: {fileID: 1961978164}
+--- !u!65 &1961978164
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1961978157}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &1980544629
 GameObject:
   m_ObjectHideFlags: 0
@@ -8054,7 +8268,6 @@ SceneRoots:
   - {fileID: 273982283}
   - {fileID: 346453665}
   - {fileID: 893405063}
-  - {fileID: 1519876166}
   - {fileID: 44230907}
   - {fileID: 1594306397}
   - {fileID: 1980544630}

@@ -6,6 +6,8 @@ using UnityEngine;
 
 public class ViewInteractableObject : MonoBehaviour, IViewInteractable
 {
+    [Header("未來保存/加載場景時可用")]
+    [SerializeField] private string objectID = "type me"; // 每個物件要設唯一ID
     [Header("可以在什麼視野出現?")]
     [SerializeField] private bool visibleInYang = true;
     [SerializeField] private bool visibleInYin = false;
@@ -35,6 +37,7 @@ public class ViewInteractableObject : MonoBehaviour, IViewInteractable
     {
         if (ViewManager.Instance != null) //初始化接收當前視野
         {
+            ViewManager.OnViewChanged += OnViewChanged;
             OnViewChanged(ViewManager.Instance.CurrentView);
         }
     }
@@ -140,18 +143,11 @@ public class ViewInteractableObject : MonoBehaviour, IViewInteractable
         //    col.enabled = IsInteractiveIn(view);
     }
 
-    void OnEnable()
-    {
-        if (ViewManager.Instance != null) 
-        {
-            ViewManager.OnViewChanged += OnViewChanged;
-            OnViewChanged(ViewManager.Instance.CurrentView);
-        }
-    }
-
-    void OnDisable()
+    private void OnDestroy()
     {
         if (ViewManager.Instance != null)
+        {
             ViewManager.OnViewChanged -= OnViewChanged;
+        }
     }
 }
