@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 17b44dcdee444b34599b7bf9fa2612c1, type: 3}
+  m_Name: 1111
+  m_EditorClassIdentifier: 
+  DialogueName: "\u65B0\u7684\u5C0D\u8A71"
+  NodeLinks: []
+  DialogueNodes:
+  - Guid: d8d27bb0-4b21-4d58-944b-a0e538594848
+    SpeakerName: "\u5C0F\u767D"
+    DialogueText: "\u600E\u9EBC\u4E86"
+    EntryPoint: 0
+    NameStyle: 0
+    NameColor: {r: 1, g: 1, b: 1, a: 1}
+    Position: {x: 609.6, y: 202.4}
+  - Guid: 9482172a-370a-4ba1-985a-903c09d8eefe
+    SpeakerName: "\u5C0F\u9ED1"
+    DialogueText: "GG\u79C1\u5BC6\u9054"
+    EntryPoint: 1
+    NameStyle: 1
+    NameColor: {r: 0.4264151, g: 0.3660733, b: 0.3660733, a: 1}
+    Position: {x: 211.2, y: 176.8}
