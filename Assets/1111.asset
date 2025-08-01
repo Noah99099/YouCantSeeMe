@@ -15,17 +15,24 @@ MonoBehaviour:
   DialogueName: "\u65B0\u7684\u5C0D\u8A71"
   NodeLinks: []
   DialogueNodes:
-  - Guid: d8d27bb0-4b21-4d58-944b-a0e538594848
-    SpeakerName: "\u5C0F\u767D"
-    DialogueText: "\u600E\u9EBC\u4E86"
+  - Guid: e07ecccc-7835-44b7-9464-62deaf0ded86
+    SpeakerName: "\u7CFB\u7D71"
+    DialogueText: "\u9019\u662F\u6211\u5011\u7684\u5C0D\u8A71\u7CFB\u7D712.0"
+    EntryPoint: 1
+    NameStyle: 0
+    NameColor: {r: 1, g: 1, b: 1, a: 1}
+    Position: {x: 217.6, y: 168}
+  - Guid: 9ffc108b-db28-4faa-be74-9f2de5a45322
+    SpeakerName: "\u7CFB\u7D71"
+    DialogueText: "\u559C\u6B61\u55CE\uFF1F"
+    EntryPoint: 0
+    NameStyle: 1
+    NameColor: {r: 0.3283019, g: 0.2967106, b: 0.2967106, a: 1}
+    Position: {x: 648, y: 168}
+  - Guid: 9a8a39da-1012-4876-8cf9-7f55fe04ebcc
+    SpeakerName: "\u89D2\u8272"
+    DialogueText: "\u559C\u6B61"
     EntryPoint: 0
     NameStyle: 0
     NameColor: {r: 1, g: 1, b: 1, a: 1}
-    Position: {x: 609.6, y: 202.4}
-  - Guid: 9482172a-370a-4ba1-985a-903c09d8eefe
-    SpeakerName: "\u5C0F\u9ED1"
-    DialogueText: "GG\u79C1\u5BC6\u9054"
-    EntryPoint: 1
-    NameStyle: 1
-    NameColor: {r: 0.4264151, g: 0.3660733, b: 0.3660733, a: 1}
-    Position: {x: 211.2, y: 176.8}
+    Position: {x: 1064, y: 168}

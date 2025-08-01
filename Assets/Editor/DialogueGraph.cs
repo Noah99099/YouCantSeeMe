@@ -2,11 +2,12 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
 using UnityEditor.Callbacks;
+using UnityEditor.UIElements;
 
 public class DialogueGraph : EditorWindow
 {
     private DialogueGraphView _graphView;
-    private DialogueContainerSO _currentDialogueContainer; // 將原本的 _fileName 替換成直接儲存容器物件
+    private DialogueContainerSO _currentDialogueContainer;
 
     [MenuItem("Graph/Dialogue Graph")]
     public static void Open()
@@ -20,12 +21,12 @@ public class DialogueGraph : EditorWindow
         var dialogue = EditorUtility.InstanceIDToObject(instanceID) as DialogueContainerSO;
         if (dialogue != null)
         {
+            // --- 核心修改 ---
+            // 1. 取得視窗。這會自動觸發一次 OnEnable，建立一個空白的 UI 介面。
             var window = GetWindow<DialogueGraph>("Dialogue Graph");
             
-            // --- 修改點 1: 我們不再直接呼叫 LoadGraph ---
-            // 而是將要載入的容器物件暫存起來
-            window._currentDialogueContainer = dialogue;
-            // 接著讓 OnEnable 自己去處理後續的載入
+            // 2. 在視窗準備好之後，我們再手動命令它載入我們的資料。
+            window.LoadGraph(dialogue);
             
             return true;
         }
@@ -34,14 +35,9 @@ public class DialogueGraph : EditorWindow
 
     private void OnEnable()
     {
+        // OnEnable 的唯一職責：建立 UI 的「殼」。
         ConstructGraph();
         GenerateToolbar();
-
-        // --- 修改點 2: 在 UI 建構完畢後，檢查是否有待載入的檔案 ---
-        if (_currentDialogueContainer != null)
-        {
-            LoadGraph(_currentDialogueContainer);
-        }
     }
 
     private void ConstructGraph()
@@ -58,45 +54,34 @@ public class DialogueGraph : EditorWindow
     private void GenerateToolbar()
     {
         var toolbar = new Toolbar();
-        
-        // --- 修改點 3: 工具列按鈕邏輯更新 ---
-        // 儲存按鈕現在會儲存到當前開啟的檔案
         toolbar.Add(new Button(() => SaveData()) { text = "儲存資料" });
-
         rootVisualElement.Add(toolbar);
     }
     
     private void SaveData()
     {
-        // 如果沒有載入任何對話檔，就提示使用者先建立或選取一個
         if (_currentDialogueContainer == null)
         {
-            EditorUtility.DisplayDialog("錯誤", "沒有選取任何對話檔案！", "確定");
+            EditorUtility.DisplayDialog("錯誤", "沒有選取任何對話檔案！請先在專案中建立或雙擊一個對話檔。", "確定");
             return;
         }
-
-        // 將 GraphView 中的資料儲存到當前開啟的 ScriptableObject 中
         _graphView.Save(_currentDialogueContainer);
-        
         EditorUtility.SetDirty(_currentDialogueContainer);
         AssetDatabase.SaveAssets();
     }
     
-    private void LoadGraph(DialogueContainerSO dialogueContainer)
+    // 這個方法現在變成了公開的，以便 OnOpenAsset 可以呼叫它
+    public void LoadGraph(DialogueContainerSO dialogueContainer)
     {
+        // 儲存對當前對話檔的引用
         _currentDialogueContainer = dialogueContainer;
 
-        // 如果 _graphView 因為某些原因還是 null，確保它被建立
-        if (_graphView == null)
-        {
-            ConstructGraph();
-            GenerateToolbar();
-        }
-
+        // 清空舊的圖表內容
         _graphView.ClearGraph();
+        // 從新檔案載入資料並重建圖表
         _graphView.Load(_currentDialogueContainer);
 
-        // 更新視窗標題以顯示正在編輯的檔案名稱
+        // 更新視窗標題，顯示正在編輯的檔案名稱
         titleContent.text = _currentDialogueContainer.name;
     }
 }
