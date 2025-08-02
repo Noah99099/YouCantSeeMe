@@ -75,13 +75,8 @@ public class DialogueGraph : EditorWindow
     {
         // 儲存對當前對話檔的引用
         _currentDialogueContainer = dialogueContainer;
-
-        // 清空舊的圖表內容
-        _graphView.ClearGraph();
-        // 從新檔案載入資料並重建圖表
-        _graphView.Load(_currentDialogueContainer);
-
-        // 更新視窗標題，顯示正在編輯的檔案名稱
-        titleContent.text = _currentDialogueContainer.name;
+        
+        // 呼叫 DialogueGraphView 的 LoadGraph 方法來載入資料
+        _graphView.LoadGraph(dialogueContainer);
     }
 }

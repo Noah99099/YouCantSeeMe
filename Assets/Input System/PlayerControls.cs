@@ -403,13 +403,40 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""initialStateCheck"": false
                 },
                 {
-                    ""name"": ""Click"",
+                    ""name"": ""AdvanceDialogue"",
                     ""type"": ""PassThrough"",
                     ""id"": ""3e1f7712-e139-4f70-827e-946c1bf2d912"",
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""Click"",
+                    ""type"": ""Button"",
+                    ""id"": ""8ec2176d-267e-4cf1-8718-7135ce750a48"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""ToggleAutoPlay"",
+                    ""type"": ""Button"",
+                    ""id"": ""444ee402-779e-426f-8633-cec4ba630015"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""ToggleSkipMode"",
+                    ""type"": ""Button"",
+                    ""id"": ""7b6c3f28-0db7-4944-bd04-0b46f015486c"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -563,7 +590,62 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": "";鍵鼠"",
+                    ""action"": ""AdvanceDialogue"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""317a17e5-f846-4066-994b-082b6366f1a9"",
+                    ""path"": ""<Keyboard>/space"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";鍵鼠"",
+                    ""action"": ""AdvanceDialogue"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""8c16aad0-a5f8-4a77-9795-6c102e0d2cce"",
+                    ""path"": ""<Gamepad>/buttonSouth"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";PS4"",
+                    ""action"": ""AdvanceDialogue"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""7496e75a-d74f-4d71-bd8c-e1f105a70236"",
+                    ""path"": ""<Mouse>/leftButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
                     ""action"": ""Click"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""4bcf7b28-25dd-4b74-bda3-5cbb96e034e7"",
+                    ""path"": ""<Keyboard>/a"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";鍵鼠"",
+                    ""action"": ""ToggleAutoPlay"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""a486976d-687f-43c7-bc07-112dc2cc1c34"",
+                    ""path"": ""<Keyboard>/s"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";鍵鼠"",
+                    ""action"": ""ToggleSkipMode"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -595,7 +677,10 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         m_UI_Submit = m_UI.FindAction("Submit", throwIfNotFound: true);
         m_UI_Cancel = m_UI.FindAction("Cancel", throwIfNotFound: true);
         m_UI_Point = m_UI.FindAction("Point", throwIfNotFound: true);
+        m_UI_AdvanceDialogue = m_UI.FindAction("AdvanceDialogue", throwIfNotFound: true);
         m_UI_Click = m_UI.FindAction("Click", throwIfNotFound: true);
+        m_UI_ToggleAutoPlay = m_UI.FindAction("ToggleAutoPlay", throwIfNotFound: true);
+        m_UI_ToggleSkipMode = m_UI.FindAction("ToggleSkipMode", throwIfNotFound: true);
     }
 
     ~@PlayerControls()
@@ -810,7 +895,10 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
     private readonly InputAction m_UI_Submit;
     private readonly InputAction m_UI_Cancel;
     private readonly InputAction m_UI_Point;
+    private readonly InputAction m_UI_AdvanceDialogue;
     private readonly InputAction m_UI_Click;
+    private readonly InputAction m_UI_ToggleAutoPlay;
+    private readonly InputAction m_UI_ToggleSkipMode;
     /// <summary>
     /// Provides access to input actions defined in input action map "UI".
     /// </summary>
@@ -839,9 +927,21 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         /// </summary>
         public InputAction @Point => m_Wrapper.m_UI_Point;
         /// <summary>
+        /// Provides access to the underlying input action "UI/AdvanceDialogue".
+        /// </summary>
+        public InputAction @AdvanceDialogue => m_Wrapper.m_UI_AdvanceDialogue;
+        /// <summary>
         /// Provides access to the underlying input action "UI/Click".
         /// </summary>
         public InputAction @Click => m_Wrapper.m_UI_Click;
+        /// <summary>
+        /// Provides access to the underlying input action "UI/ToggleAutoPlay".
+        /// </summary>
+        public InputAction @ToggleAutoPlay => m_Wrapper.m_UI_ToggleAutoPlay;
+        /// <summary>
+        /// Provides access to the underlying input action "UI/ToggleSkipMode".
+        /// </summary>
+        public InputAction @ToggleSkipMode => m_Wrapper.m_UI_ToggleSkipMode;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -880,9 +980,18 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @Point.started += instance.OnPoint;
             @Point.performed += instance.OnPoint;
             @Point.canceled += instance.OnPoint;
+            @AdvanceDialogue.started += instance.OnAdvanceDialogue;
+            @AdvanceDialogue.performed += instance.OnAdvanceDialogue;
+            @AdvanceDialogue.canceled += instance.OnAdvanceDialogue;
             @Click.started += instance.OnClick;
             @Click.performed += instance.OnClick;
             @Click.canceled += instance.OnClick;
+            @ToggleAutoPlay.started += instance.OnToggleAutoPlay;
+            @ToggleAutoPlay.performed += instance.OnToggleAutoPlay;
+            @ToggleAutoPlay.canceled += instance.OnToggleAutoPlay;
+            @ToggleSkipMode.started += instance.OnToggleSkipMode;
+            @ToggleSkipMode.performed += instance.OnToggleSkipMode;
+            @ToggleSkipMode.canceled += instance.OnToggleSkipMode;
         }
 
         /// <summary>
@@ -906,9 +1015,18 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @Point.started -= instance.OnPoint;
             @Point.performed -= instance.OnPoint;
             @Point.canceled -= instance.OnPoint;
+            @AdvanceDialogue.started -= instance.OnAdvanceDialogue;
+            @AdvanceDialogue.performed -= instance.OnAdvanceDialogue;
+            @AdvanceDialogue.canceled -= instance.OnAdvanceDialogue;
             @Click.started -= instance.OnClick;
             @Click.performed -= instance.OnClick;
             @Click.canceled -= instance.OnClick;
+            @ToggleAutoPlay.started -= instance.OnToggleAutoPlay;
+            @ToggleAutoPlay.performed -= instance.OnToggleAutoPlay;
+            @ToggleAutoPlay.canceled -= instance.OnToggleAutoPlay;
+            @ToggleSkipMode.started -= instance.OnToggleSkipMode;
+            @ToggleSkipMode.performed -= instance.OnToggleSkipMode;
+            @ToggleSkipMode.canceled -= instance.OnToggleSkipMode;
         }
 
         /// <summary>
@@ -1040,11 +1158,32 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnPoint(InputAction.CallbackContext context);
         /// <summary>
+        /// Method invoked when associated input action "AdvanceDialogue" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnAdvanceDialogue(InputAction.CallbackContext context);
+        /// <summary>
         /// Method invoked when associated input action "Click" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
         /// </summary>
         /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnClick(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "ToggleAutoPlay" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnToggleAutoPlay(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "ToggleSkipMode" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnToggleSkipMode(InputAction.CallbackContext context);
     }
 }

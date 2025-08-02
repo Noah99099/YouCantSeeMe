@@ -317,13 +317,40 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "Click",
+                    "name": "AdvanceDialogue",
                     "type": "PassThrough",
                     "id": "3e1f7712-e139-4f70-827e-946c1bf2d912",
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": true
+                },
+                {
+                    "name": "Click",
+                    "type": "Button",
+                    "id": "8ec2176d-267e-4cf1-8718-7135ce750a48",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "ToggleAutoPlay",
+                    "type": "Button",
+                    "id": "444ee402-779e-426f-8633-cec4ba630015",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "ToggleSkipMode",
+                    "type": "Button",
+                    "id": "7b6c3f28-0db7-4944-bd04-0b46f015486c",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -477,7 +504,62 @@
                     "interactions": "",
                     "processors": "",
                     "groups": ";鍵鼠",
+                    "action": "AdvanceDialogue",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "317a17e5-f846-4066-994b-082b6366f1a9",
+                    "path": "<Keyboard>/space",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";鍵鼠",
+                    "action": "AdvanceDialogue",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "8c16aad0-a5f8-4a77-9795-6c102e0d2cce",
+                    "path": "<Gamepad>/buttonSouth",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";PS4",
+                    "action": "AdvanceDialogue",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "7496e75a-d74f-4d71-bd8c-e1f105a70236",
+                    "path": "<Mouse>/leftButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
                     "action": "Click",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "4bcf7b28-25dd-4b74-bda3-5cbb96e034e7",
+                    "path": "<Keyboard>/a",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";鍵鼠",
+                    "action": "ToggleAutoPlay",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "a486976d-687f-43c7-bc07-112dc2cc1c34",
+                    "path": "<Keyboard>/s",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";鍵鼠",
+                    "action": "ToggleSkipMode",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

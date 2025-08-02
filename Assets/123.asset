@@ -13,26 +13,92 @@ MonoBehaviour:
   m_Name: 123
   m_EditorClassIdentifier: 
   DialogueName: "\u65B0\u7684\u5C0D\u8A71"
-  NodeLinks: []
+  NodeLinks:
+  - BaseNodeGuid: f0810a54-bbfd-4c43-93fc-72dc376edad5
+    TargetNodeGuid: 1e93dab6-45c7-43d6-b411-f01668eef7c2
+    PortName: "\u7E7C\u7E8C"
+  - BaseNodeGuid: 1e93dab6-45c7-43d6-b411-f01668eef7c2
+    TargetNodeGuid: a1c00133-e3ce-4fa0-bbbf-509c6832b2f4
+    PortName: "\u7E7C\u7E8C"
+  - BaseNodeGuid: a1c00133-e3ce-4fa0-bbbf-509c6832b2f4
+    TargetNodeGuid: d0b73c2a-facd-4ef6-a512-889ac8a7e3ad
+    PortName: "\u958B\u5FC3"
+  - BaseNodeGuid: a1c00133-e3ce-4fa0-bbbf-509c6832b2f4
+    TargetNodeGuid: 26e7fe93-1d4d-4b12-8556-8e984232d903
+    PortName: "\u4E0D\u958B\u5FC3"
   DialogueNodes:
   - Guid: 1e93dab6-45c7-43d6-b411-f01668eef7c2
+    NodeType: 0
     SpeakerName: "\u7CFB\u7D71"
     DialogueText: "\u559C\u6B61\u55CE\uFF1F"
     EntryPoint: 0
     NameStyle: 0
     NameColor: {r: 0.7056604, g: 0.53124243, b: 0.53124243, a: 1}
-    Position: {x: 627.2, y: 245.59999}
+    Position: {x: 627, y: 246}
+    Conditions: []
+    Actions: []
+    AudioClipName: 
+    CharacterPortrait: 
+    TextSpeed: 20
+    WaitForAudio: 0
+    NodeLabel: 
   - Guid: f0810a54-bbfd-4c43-93fc-72dc376edad5
+    NodeType: 0
     SpeakerName: "\u7CFB\u7D71"
     DialogueText: "\u9019\u662F\u6211\u5011\u7684\u5C0D\u8A71\u7CFB\u7D71"
     EntryPoint: 1
     NameStyle: 0
     NameColor: {r: 0.7207546, g: 0.50996786, b: 0.50996786, a: 1}
-    Position: {x: 218.4, y: 197.59999}
+    Position: {x: 218, y: 198}
+    Conditions: []
+    Actions: []
+    AudioClipName: 
+    CharacterPortrait: 
+    TextSpeed: 20
+    WaitForAudio: 0
+    NodeLabel: 
+  - Guid: d0b73c2a-facd-4ef6-a512-889ac8a7e3ad
+    NodeType: 0
+    SpeakerName: "\u7CFB\u7D71"
+    DialogueText: "\u771F\u662F\u592A\u597D\u4E86"
+    EntryPoint: 0
+    NameStyle: 0
+    NameColor: {r: 1, g: 1, b: 1, a: 1}
+    Position: {x: 2018, y: 224}
+    Conditions: []
+    Actions: []
+    AudioClipName: 
+    CharacterPortrait: 
+    TextSpeed: 20
+    WaitForAudio: 0
+    NodeLabel: 
+  - Guid: 26e7fe93-1d4d-4b12-8556-8e984232d903
+    NodeType: 0
+    SpeakerName: "\u7CFB\u7D71"
+    DialogueText: "\u771F\u662F\u53EF\u60DC"
+    EntryPoint: 0
+    NameStyle: 0
+    NameColor: {r: 1, g: 1, b: 1, a: 1}
+    Position: {x: 2018, y: 665}
+    Conditions: []
+    Actions: []
+    AudioClipName: 
+    CharacterPortrait: 
+    TextSpeed: 20
+    WaitForAudio: 0
+    NodeLabel: 
   - Guid: a1c00133-e3ce-4fa0-bbbf-509c6832b2f4
+    NodeType: 0
     SpeakerName: "\u4F60"
-    DialogueText: "\u61C9\u8A72\u662F......\u02CB"
+    DialogueText: "\u61C9\u8A72\u662F......"
     EntryPoint: 0
     NameStyle: 0
     NameColor: {r: 0.9547169, g: 0.19274472, b: 0.19274472, a: 1}
-    Position: {x: 1048, y: 260.80002}
+    Position: {x: 1151, y: 281}
+    Conditions: []
+    Actions: []
+    AudioClipName: 
+    CharacterPortrait: 
+    TextSpeed: 20
+    WaitForAudio: 0
+    NodeLabel: 
