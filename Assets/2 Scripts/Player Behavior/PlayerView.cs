@@ -10,8 +10,10 @@ public class PlayerView : MonoBehaviour
     [Header("基本設定")]
     [Tooltip("玩家建模位置")]
     [SerializeField] private Transform playerBody;
-    [Tooltip("相機位置")]
-    [SerializeField] private Transform cameraTransform;
+    [Tooltip("玩家的剛體")]
+    [SerializeField] private Rigidbody playerRigidbody;
+    [Tooltip("相機樞紐")]
+    [SerializeField] private Transform cameraPivot; //不是main camera
 
     [Tooltip("手柄靈敏度")]
     [SerializeField] private float gamepadSensitivity = 30f;
@@ -21,7 +23,7 @@ public class PlayerView : MonoBehaviour
     public float highAngle;
     [Tooltip("俯角：負，向上看")]
     public float lowAngle;
-    [Tooltip("相機y軸偏移量")]
+    [Tooltip("相機y軸偏移量（眼睛高度）")]
     public float upper;
 
     private Vector2 lookInput;
@@ -43,7 +45,7 @@ public class PlayerView : MonoBehaviour
         //float posX = playerBody.position.x;
         //float posY = playerBody.position.y + upper;
         //cameraTransform.position = new Vector3(posX, posY, 0f);
-        cameraTransform.localPosition = new Vector3(0f, upper, 0f);  // 眼睛高度
+        cameraPivot.localPosition = new Vector3(0f, upper, 0f);  // 眼睛高度
     }
     
     // --- 新增點: 在 Start() 中設定初始狀態 ---
@@ -87,19 +89,18 @@ public class PlayerView : MonoBehaviour
         //滑鼠靈敏度相關設定
         float currentSensitivity = isUsingGamepad ? gamepadSensitivity : SensitivityManager.Instance.mouseSensitivity;
 
-        if (isUsingGamepad)
-        {
-            lookInput = ApplyJoystickDeadZone(lookInput);
-        }
+        if (isUsingGamepad) lookInput = ApplyJoystickDeadZone(lookInput);
 
         float deltaX = lookInput.x * currentSensitivity * Time.deltaTime;
         float deltaY = lookInput.y * currentSensitivity * Time.deltaTime;
 
+        // 上下看（控制 cameraPivot 的 X 角）
         xRotation -= deltaY;
         xRotation = Mathf.Clamp(xRotation, lowAngle, highAngle);
-
-        cameraTransform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
-        playerBody.Rotate(Vector3.up * deltaX);
+        cameraPivot.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
+        // 左右轉（控制 playerBody 的 Y 角）
+        Quaternion newRotation = playerRigidbody.rotation * Quaternion.Euler(0f, deltaX, 0f);
+        playerRigidbody.MoveRotation(newRotation);
     }
 
     private Vector2 ApplyJoystickDeadZone(Vector2 input)
@@ -107,10 +108,7 @@ public class PlayerView : MonoBehaviour
         float deadZone = 0.1f;
         float magnitude = input.magnitude;
 
-        if (magnitude < deadZone)
-        {
-            return Vector2.zero;
-        }
+        if (magnitude < deadZone) return Vector2.zero;
 
         float normalizedMagnitude = (magnitude - deadZone) / (1 - deadZone);
         return input.normalized * normalizedMagnitude;

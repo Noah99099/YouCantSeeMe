@@ -143,7 +143,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                 {
                     ""name"": """",
                     ""id"": ""ecdc18d8-fda7-4153-9865-ab9eb7001fdf"",
-                    ""path"": ""<DualShockGamepad>/rightStick"",
+                    ""path"": ""<Gamepad>/rightStick"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": "";PS4"",
@@ -207,7 +207,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""isPartOfComposite"": true
                 },
                 {
-                    ""name"": ""ps4_ArrowKeys"",
+                    ""name"": ""ArrowKeys"",
                     ""id"": ""fa85783d-5a09-4e41-a1eb-5c35c2a3052c"",
                     ""path"": ""2DVector"",
                     ""interactions"": """",
@@ -220,7 +220,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                 {
                     ""name"": ""up"",
                     ""id"": ""886b88aa-8ea8-47db-89ae-e0d59eb57920"",
-                    ""path"": ""<DualShockGamepad>/dpad/up"",
+                    ""path"": ""<Gamepad>/dpad/up"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": "";PS4"",
@@ -231,7 +231,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                 {
                     ""name"": ""down"",
                     ""id"": ""8f5a4ccf-9689-44cb-b51f-fa033a5e4643"",
-                    ""path"": ""<DualShockGamepad>/dpad/down"",
+                    ""path"": ""<Gamepad>/dpad/down"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": "";PS4"",
@@ -242,7 +242,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                 {
                     ""name"": ""left"",
                     ""id"": ""34f7bdf5-92cc-44fe-9ee5-a57d58d5f2a9"",
-                    ""path"": ""<DualShockGamepad>/dpad/left"",
+                    ""path"": ""<Gamepad>/dpad/left"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": "";PS4"",
@@ -253,7 +253,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                 {
                     ""name"": ""right"",
                     ""id"": ""9368849e-24de-4f88-b5c0-0e277cbfaf24"",
-                    ""path"": ""<DualShockGamepad>/dpad/x"",
+                    ""path"": ""<Gamepad>/dpad/right"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": "";PS4"",
@@ -262,7 +262,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""isPartOfComposite"": true
                 },
                 {
-                    ""name"": ""ps4_Stick_L"",
+                    ""name"": ""Stick_L"",
                     ""id"": ""fb82ff15-e1fe-4a8d-bd57-631ac1e6a820"",
                     ""path"": ""2DVector"",
                     ""interactions"": """",
@@ -275,7 +275,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                 {
                     ""name"": ""up"",
                     ""id"": ""1fa61a4a-d1a4-4989-b917-a9cff376b127"",
-                    ""path"": ""<DualShockGamepad>/leftStick/up"",
+                    ""path"": ""<Gamepad>/leftStick/up"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": "";PS4"",
@@ -286,7 +286,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                 {
                     ""name"": ""down"",
                     ""id"": ""61f636ff-f17c-43fe-bc55-72e171a0e19a"",
-                    ""path"": ""<DualShockGamepad>/leftStick/down"",
+                    ""path"": ""<Gamepad>/leftStick/down"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": "";PS4"",
@@ -297,7 +297,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                 {
                     ""name"": ""left"",
                     ""id"": ""ab561cd2-5c5e-4b2b-a54c-1ebb190b02e7"",
-                    ""path"": ""<DualShockGamepad>/leftStick/left"",
+                    ""path"": ""<Gamepad>/leftStick/left"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": "";PS4"",
@@ -308,7 +308,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                 {
                     ""name"": ""right"",
                     ""id"": ""5d136056-c6d6-428d-ad91-549c857bb22d"",
-                    ""path"": ""<DualShockGamepad>/leftStick/right"",
+                    ""path"": ""<Gamepad>/leftStick/right"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": "";PS4"",
