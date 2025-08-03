@@ -38,11 +38,12 @@ public class PlayerView : MonoBehaviour
         // --- 修改點 1: 移除這裡的滑鼠鎖定 ---
         // Cursor.lockState = CursorLockMode.Locked; 
         // 理由：我們把滑鼠狀態的管理權完全交給 CursorManager，避免多頭馬車。
-        
+
         //初始化相機的位置
-        float posX = playerBody.position.x;
-        float posY = playerBody.position.y + upper;
-        cameraTransform.position = new Vector3(posX, posY, 0f);
+        //float posX = playerBody.position.x;
+        //float posY = playerBody.position.y + upper;
+        //cameraTransform.position = new Vector3(posX, posY, 0f);
+        cameraTransform.localPosition = new Vector3(0f, upper, 0f);  // 眼睛高度
     }
     
     // --- 新增點: 在 Start() 中設定初始狀態 ---
