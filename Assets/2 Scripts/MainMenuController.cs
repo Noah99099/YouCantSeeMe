@@ -6,6 +6,7 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using System;
 using UnityEngine.SceneManagement;
+using Unity.VisualScripting;
 
 public class MainMenuController : MonoBehaviour
 {
@@ -15,6 +16,11 @@ public class MainMenuController : MonoBehaviour
     public Button memberListButton;
     public Button quitButton;
 
+    [Header("遊戲設定滑軌")]
+    public Slider masterMusicSlider;
+    public Slider seSlider;
+    public Slider sensitivitySlider;
+
     [Header("Panels")]
     [Tooltip("Setting 面板")] public GameObject settingPanel;
     [Tooltip("Member List 面板")] public GameObject memberPanel;
@@ -23,21 +29,18 @@ public class MainMenuController : MonoBehaviour
     [Tooltip("退出遊戲設定")] public Button settingPanelExitButton;
     [Tooltip("退出人員表")] public Button memberPanelExitButton;
 
-    [Header("場景設定")]
-    [Tooltip("要加載的場景名稱（必須已加入 Build Settings）")]
-    public string sceneToLoad;
 
     // 輸入系統
     private PlayerControls controls;
     private InputAction navigateAction; //方向?導航?指示?
-    private InputAction submitAction; //選擇
+    //private InputAction submitAction; //選擇
     private InputAction cancelAction; //退出
 
     private void Awake() //獲取輸入動作
     {
         controls = new PlayerControls();
         navigateAction = controls.UI.Navigate;
-        submitAction = controls.UI.Submit;
+        // = controls.UI.Submit;
         cancelAction = controls.UI.Cancel;
     }
     private void Start() //初始設置
@@ -54,23 +57,31 @@ public class MainMenuController : MonoBehaviour
 
         settingPanelExitButton.onClick.AddListener(CloseSettings);
         memberPanelExitButton.onClick.AddListener(CloseMemberPanel);
+
+        //加上退出settingPanel和memberPanel的事件綁定   
+    }
+
+    private void OnEnable()
+    {
+        controls.Enable();
+        cancelAction.performed += OnCancelAction;
+        cancelAction.Enable();
+        Debug.Log($"Cancel enabled: {cancelAction.enabled}, bindings: {cancelAction.bindings.Count}");
+    }
+    private void OnDisable()
+    {
+        controls.Disable();
+        cancelAction.performed -= OnCancelAction;
+        cancelAction.Disable();
     }
 
     private void Update()
     {
-        //無法做到初始沒標誌按下鍵盤或滑鼠後才有標誌的功能，但是沒辦法刪代碼所以保留
-        //好像又可以?反正是可以留的代碼
-        if (EventSystem.current.currentSelectedGameObject == null && AnyInputPressed()) //
-        {
-            EventSystem.current.SetSelectedGameObject(startButton.gameObject);
-        } //
+        if (settingPanel.activeSelf || memberPanel.activeSelf) return;
 
-        if (memberPanel.activeSelf || settingPanel.activeSelf) return;
-
-        Vector2 navigation = navigateAction.ReadValue<Vector2>();
-        if(navigation.y != 0) 
+        if (EventSystem.current.currentSelectedGameObject == null)
         {
-            if (EventSystem.current.currentSelectedGameObject == null) 
+            if (AnyInputPressed() || navigateAction.ReadValue<Vector2>().y != 0)
             {
                 EventSystem.current.SetSelectedGameObject(startButton.gameObject);
             }
@@ -82,56 +93,72 @@ public class MainMenuController : MonoBehaviour
         return Keyboard.current.anyKey.wasPressedThisFrame || Gamepad.current != null;
     }
 
-    #region 主菜單按鈕功能
+    private void SetMainMenuButtonsInteractable(bool isActive)
+    {
+        startButton.gameObject.SetActive(isActive);
+        optionButton.gameObject.SetActive(isActive);
+        memberListButton.gameObject.SetActive(isActive);
+        quitButton.gameObject.SetActive(isActive);
+    }
+
     private void StartGame()
     {
-        if (!string.IsNullOrEmpty(sceneToLoad))
+        SceneLoader loader = FindObjectOfType<SceneLoader>();
+        if (loader != null)
         {
-            SceneManager.LoadScene(sceneToLoad);
+            loader.LoadScene();
         }
         else
         {
-            Debug.LogWarning("請在 Inspector 中指定 sceneToLoad 的場景名稱！");
+            Debug.LogError("SceneLoader not found in scene!");
         }
     }
+    #region 遊戲設定按鈕
     private void OpenSettings() //打開遊戲設定panel，選中退出遊戲設定panel按鈕
     {
         settingPanel.SetActive(true);
-        EventSystem.current.SetSelectedGameObject(settingPanelExitButton.gameObject);
+        SetMainMenuButtonsInteractable(false); //禁用主菜單按鈕
+        StartCoroutine(SetSelectedNextFrame(masterMusicSlider.gameObject)); // 延遲 1 幀再選中 masterMusicSlider
+    }
+    #endregion
+    private IEnumerator SetSelectedNextFrame(GameObject go) 
+    {
+        yield return null; // 等待一幀
+        EventSystem.current.SetSelectedGameObject(go);
     }
     private void OpenMemberPanel() //打開人員表panel，選中退出人員表panel按鈕
     {
         memberPanel.SetActive(true);
-        EventSystem.current.SetSelectedGameObject(memberPanelExitButton.gameObject);
+        SetMainMenuButtonsInteractable(false); //禁用主菜單按鈕
+        //EventSystem.current.SetSelectedGameObject(memberPanelExitButton.gameObject);
     }
     private void QuitGame()
     {
         Application.Quit();
     }
-    #endregion
     #region 關掉Panels功能
     private void CloseSettings() //關掉遊戲設定面板，選中遊戲設定按鈕
     {
         settingPanel.SetActive(false);
+        SetMainMenuButtonsInteractable(true); //開啟主菜單按鈕
         EventSystem.current.SetSelectedGameObject(optionButton.gameObject);
     }
     private void CloseMemberPanel() //關掉人員表面板，選中人員表按鈕
     {
         memberPanel.SetActive(false);
+        SetMainMenuButtonsInteractable(true); //開啟主菜單按鈕
         EventSystem.current.SetSelectedGameObject(memberListButton.gameObject);
     }
     #endregion
 
-    //輸入系統事件處理(不知道是不是真的有用)
-    private void OnSubmit(InputAction.CallbackContext context) { } //目前選取的按鈕會自動處理點擊事件
-    //private void OnCancel(InputAction.CallbackContext context) 
-    //{
-    //    //關閉打開的panel，這個是真的沒用到，
-    //    if (settingPanel.activeSelf)
-    //        CloseSettings();
-    //    else if (memberPanel.activeSelf)
-    //        CloseMemberPanel();
-    //    else
-    //        EventSystem.current.SetSelectedGameObject(null);
-    //}
+    private void OnCancelAction(InputAction.CallbackContext context) //用退出鍵退出 settingPanel 和 memberPanel
+    {
+        Debug.Log("Cancel pressed!");
+
+        if (settingPanel.activeSelf)
+            CloseSettings();
+        else if (memberPanel.activeSelf)
+            CloseMemberPanel();
+        // 否則讓按鈕照自己正常邏輯處理（交給 Unity 自己執行 Button.onClick）
+    }
 }

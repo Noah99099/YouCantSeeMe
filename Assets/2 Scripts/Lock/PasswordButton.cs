@@ -12,6 +12,11 @@ public class PasswordButton : MonoBehaviour
     [SerializeField] private float pressDepth = 0.02f;
     [SerializeField] private float pressDuration = 0.1f;
 
+    [Header("音效設定")] 
+    [SerializeField] private AudioClip pressSE;
+    [SerializeField, Range(0f, 1f)] private float pressSEVolume = 1f;
+    private AudioSource audioSource;
+
     private Vector3 originalPosition;
     private bool isAnimating = false;
     private bool hasBeenPressedRecently = false;
@@ -32,6 +37,12 @@ public class PasswordButton : MonoBehaviour
         {
             StartCoroutine(PressAnimation());
             PasswordLockManager.Instance.HandleButtonPress(this);
+
+            // 播放音效
+            if (pressSE != null && audioSource != null)
+            {
+                audioSource.PlayOneShot(pressSE, pressSEVolume);
+            }
         }
         Debug.Log($"OnPress triggered on: {this.name}, time: {Time.time}");
     }

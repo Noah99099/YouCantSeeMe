@@ -15,6 +15,10 @@ public class MusicManager : MonoBehaviour
     [Header("場景音樂列表")]
     public List<SceneMusic> sceneMusics = new List<SceneMusic>();
 
+    [Header("BGM最大音量 (0~1)")]
+    [Range(0f, 1f)]
+    public float maxVolume = 1f; // 這是BGM最大音量，方便在Inspector調整
+
     private Dictionary<string, AudioSource> musicMap = new Dictionary<string, AudioSource>();
     private static MusicManager instance;
     private string currentSceneName = "";
@@ -51,11 +55,11 @@ public class MusicManager : MonoBehaviour
         {
             if (pair.Key == newScene)
             {
-                StartCoroutine(FadeMusic(pair.Value, 1f, 1f)); // 淡入目前場景音樂
+                StartCoroutine(FadeMusic(pair.Value, 1f, maxVolume)); // 淡入目前場景音樂
             }
             else
             {
-                StartCoroutine(FadeMusic(pair.Value, 1f, 0f)); // 淡出其他場景音樂
+                StartCoroutine(FadeMusic(pair.Value, maxVolume, 0f)); // 淡出其他場景音樂
             }
         }
 
@@ -67,8 +71,11 @@ public class MusicManager : MonoBehaviour
         float currentTime = 0f;
         float startVolume = source.volume;
 
-        if (!source.isPlaying && targetVolume > 0f)
+        if (!source.isPlaying && targetVolume > 0f) 
+        {
             source.Play();
+            print("播放BGM成功");
+        }
 
         while (currentTime < duration)
         {

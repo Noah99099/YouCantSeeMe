@@ -23,26 +23,23 @@ public class PlayerView : MonoBehaviour
     [Tooltip("相機y軸偏移量（眼睛高度）")]
     public float upper;
 
+    [Tooltip("Look Action 的 InputActionReference")]
+    [SerializeField] private InputActionReference lookAction;
+
     private Vector2 lookInput;
     private float xRotation = 0f;
 
-    private PlayerControls playerControls;
-    private InputDevice lastUsedDevice;
+    //private PlayerControls playerControls;
+    //private InputDevice lastUsedDevice;
     private bool isUsingGamepad;
 
     private void Awake()
     {
-        playerControls = new PlayerControls();
-
-        // --- 修改點 1: 移除這裡的滑鼠鎖定 ---
-        // Cursor.lockState = CursorLockMode.Locked; 
-        // 理由：我們把滑鼠狀態的管理權完全交給 CursorManager，避免多頭馬車。
-
-        //初始化相機的位置
-        //float posX = playerBody.position.x;
-        //float posY = playerBody.position.y + upper;
-        //cameraTransform.position = new Vector3(posX, posY, 0f);
-        cameraPivot.localPosition = new Vector3(0f, upper, 0f);  // 眼睛高度
+        // 設定 cameraPivot 的初始位置（眼睛高度）
+        if (cameraPivot != null)
+        {
+            cameraPivot.localPosition = new Vector3(0f, upper, 0f);
+        }
     }
     
     // --- 新增點: 在 Start() 中設定初始狀態 ---
@@ -58,20 +55,20 @@ public class PlayerView : MonoBehaviour
 
     private void OnEnable()
     {
-        playerControls.Player.Enable();
-        playerControls.Player.Look.performed += OnLookPerformed;
+        lookAction.action.Enable();
+        lookAction.action.performed += OnLookPerformed;
     }
 
     private void OnDisable()
     {
-        playerControls.Player.Disable();
-        playerControls.Player.Look.performed -= OnLookPerformed;
+        lookAction.action.Disable();
+        lookAction.action.performed -= OnLookPerformed;
     }
 
     private void OnLookPerformed(InputAction.CallbackContext context)
     {
-        lastUsedDevice = context.control.device;
-        isUsingGamepad = lastUsedDevice is Gamepad;
+        var device = context.control.device;
+        isUsingGamepad = device is Gamepad;
     }
 
     private void Update()
@@ -84,7 +81,7 @@ public class PlayerView : MonoBehaviour
         }
 
         // --- 以下是原本的程式碼，現在只有在滑鼠鎖定時才會執行 ---
-        lookInput = playerControls.Player.Look.ReadValue<Vector2>();
+        lookInput = lookAction.action.ReadValue<Vector2>();
 
         //滑鼠靈敏度相關設定
         float currentSensitivity = isUsingGamepad ? SensitivityManager.Instance.gamepadSensitivity : SensitivityManager.Instance.mouseSensitivity;

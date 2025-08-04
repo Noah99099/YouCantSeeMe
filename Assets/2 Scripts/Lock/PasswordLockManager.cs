@@ -14,6 +14,11 @@ public class PasswordLockManager : MonoBehaviour
     [Header("Door")]
     [SerializeField] private DoorController doorToOpen;
 
+    [Header("音效設定")]
+    [SerializeField] private AudioClip correctSE;
+    [SerializeField] private AudioClip failSE;
+    [SerializeField, Range(0f, 1f)] private float pressSEVolume = 1f;
+    private AudioSource audioSource;
 
     [Header("Debug")]
     [SerializeField] private bool logButtonPresses = true;
@@ -23,7 +28,6 @@ public class PasswordLockManager : MonoBehaviour
 
     private void Awake()
     {
-        // ��ҼҦ��]�m
         if (Instance != null && Instance != this)
         {
             Destroy(this.gameObject);
@@ -76,7 +80,13 @@ public class PasswordLockManager : MonoBehaviour
         if (currentInput == correctPassword)
         {
             Debug.Log("密碼正確！");
-            // �o�̲K�[���ꦨ�\�᪺�޿�
+
+            // 播放正確音效
+            if (correctSE != null && audioSource != null)
+            {
+                audioSource.PlayOneShot(correctSE, pressSEVolume);
+            }
+
             if (doorToOpen != null)
             {
                 doorToOpen.OpenDoor();
@@ -85,6 +95,13 @@ public class PasswordLockManager : MonoBehaviour
         else
         {
             Debug.Log("密碼錯誤，重置鎖...");
+
+            // 播放錯誤音效
+            if (failSE != null && audioSource != null)
+            {
+                audioSource.PlayOneShot(failSE, pressSEVolume);
+            }
+
             ResetLock();
         }
     }

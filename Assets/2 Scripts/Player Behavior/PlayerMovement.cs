@@ -9,33 +9,41 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private Transform playerBody;
     [SerializeField] private Rigidbody rb;
     [Tooltip("玩家基礎移動速度")]
-    [SerializeField] private float moveSpeed = 5f;
+    [SerializeField] private float moveSpeed = 50f;
+
+    [Header("輸入設定")]
+    [Tooltip("Move Action 的 InputActionReference")]
+    [SerializeField] private InputActionReference moveAction;
 
     private Vector2 moveInput; //儲存WASD、手柄移動的數值
-    private PlayerControls playerControls;
 
-    private void Awake() 
+    private void Awake()
     {
-        playerControls = new PlayerControls(); //將 PlayerControls類 實例化
-        if (rb == null) print(gameObject.name + "的" + this.name + "缺東西");
+        if (rb == null) rb = GetComponent<Rigidbody>();
+        if (playerBody == null) playerBody = transform;
     }
- 
+
     private void OnEnable()
     {
-        playerControls.Player.Enable();
+        if (moveAction != null)
+            moveAction.action.Enable();
     }
 
     private void OnDisable()
     {
-        playerControls.Player.Disable();
+        if (moveAction != null)
+            moveAction.action.Disable();
     }
+
     private void FixedUpdate()
     {
-        //讀取儲存WASD、手柄移動的輸入值
-        moveInput = playerControls.Player.Move.ReadValue<Vector2>();
-        //計算移動方向
+        if (moveAction == null || rb == null) return;
+
+        moveInput = moveAction.action.ReadValue<Vector2>();
+        if (moveInput.sqrMagnitude < 0.01f) return;
+
         Vector3 moveDirection = (playerBody.forward * moveInput.y + playerBody.right * moveInput.x).normalized;
-        Vector3 targetPos = rb.position + moveDirection * moveSpeed * Time.fixedDeltaTime;
-        rb.MovePosition(targetPos); //用rigidbody的方式控制移動，而非position
+        Vector3 movement = moveDirection * moveSpeed * Time.fixedDeltaTime;
+        rb.MovePosition(rb.position + movement);
     }
 }
