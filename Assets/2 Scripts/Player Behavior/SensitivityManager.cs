@@ -4,34 +4,44 @@ public class SensitivityManager : MonoBehaviour
 {
     public static SensitivityManager Instance { get; private set; }
 
-    [Header("滑鼠靈敏度範圍")]
-    public float minSensitivity = 50f;
-    public float maxSensitivity = 300f;
+    public float minSensitivity = 10f;
+    public float maxSensitivity = 100f;
 
-    [Header("目前靈敏度")]
-    public float mouseSensitivity = 50f; //預設值
+    [Header("靈敏度設定")]
+    public float mouseSensitivity = 50f; //滑鼠
+    public float gamepadSensitivity = 30f;   // 手柄
 
     private void Awake()
     {
-        if (Instance == null)
+        if (Instance != null && Instance != this)
         {
-            Instance = this;
-            DontDestroyOnLoad(gameObject); // 場景切換不銷毀
+            Destroy(gameObject);
+            return;
         }
-        else
-        {
-            Destroy(gameObject); // 保證只存在一個
-        }
+
+        Instance = this;
+        DontDestroyOnLoad(gameObject);
     }
 
-    public void SetSensitivity(float value)
+    public void SetMouseSensitivity(float value)
     {
         mouseSensitivity = value;
         Debug.Log($"滑鼠靈敏度設為：{mouseSensitivity}");
     }
 
-    public float GetSensitivity()
+    public void SetGamepadSensitivity(float value)
+    {
+        gamepadSensitivity = value;
+        Debug.Log($"手柄靈敏度設為：{gamepadSensitivity}");
+    }
+
+    public float GetMouseSensitivity()
     {
         return mouseSensitivity;
+    }
+
+    public float GetGamepadSensitivity()
+    {
+        return gamepadSensitivity;
     }
 }

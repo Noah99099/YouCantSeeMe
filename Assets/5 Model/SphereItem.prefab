@@ -11,7 +11,6 @@ GameObject:
   - component: {fileID: 5029573921104244001}
   - component: {fileID: 366296656937913707}
   - component: {fileID: 5172473588839770415}
-  - component: {fileID: -8006669776837923723}
   - component: {fileID: 6277469521220770584}
   - component: {fileID: 2446329936872710685}
   - component: {fileID: 7917585617151377620}
@@ -87,29 +86,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!136 &-8006669776837923723
-CapsuleCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8319705870368094231}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Radius: 0.5
-  m_Height: 1
-  m_Direction: 1
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!135 &6277469521220770584
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -156,11 +132,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 778196790939939438401f4c7638ef89, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  objectID: type me
   visibleInYang: 0
   visibleInYin: 1
   interactiveInYang: 0
   interactiveInYin: 1
   yangMesh: {fileID: 10208, guid: 0000000000000000e000000000000000, type: 0}
   yinMesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
-  yangCollider: {fileID: -8006669776837923723}
+  yangCollider: {fileID: 0}
   yinCollider: {fileID: 6277469521220770584}
+  yangMaterial: {fileID: 0}
+  yinMaterial: {fileID: 0}

@@ -15,10 +15,7 @@ public class PlayerView : MonoBehaviour
     [Tooltip("相機樞紐")]
     [SerializeField] private Transform cameraPivot; //不是main camera
 
-    [Tooltip("手柄靈敏度")]
-    [SerializeField] private float gamepadSensitivity = 30f;
-
-    [Header("視角限制")]
+    [Header("視角限制設定")]
     [Tooltip("仰角：正，向下看")]
     public float highAngle;
     [Tooltip("俯角：負，向上看")]
@@ -53,6 +50,9 @@ public class PlayerView : MonoBehaviour
     {
         // 確保遊戲一開始就進入遊戲模式
         CursorManager.EnterGameplayMode();
+
+        Debug.Log("滑鼠靈敏度：" + SensitivityManager.Instance.mouseSensitivity);
+        Debug.Log("手柄靈敏度：" + SensitivityManager.Instance.gamepadSensitivity);
     }
 
 
@@ -87,7 +87,7 @@ public class PlayerView : MonoBehaviour
         lookInput = playerControls.Player.Look.ReadValue<Vector2>();
 
         //滑鼠靈敏度相關設定
-        float currentSensitivity = isUsingGamepad ? gamepadSensitivity : SensitivityManager.Instance.mouseSensitivity;
+        float currentSensitivity = isUsingGamepad ? SensitivityManager.Instance.gamepadSensitivity : SensitivityManager.Instance.mouseSensitivity;
 
         if (isUsingGamepad) lookInput = ApplyJoystickDeadZone(lookInput);
 

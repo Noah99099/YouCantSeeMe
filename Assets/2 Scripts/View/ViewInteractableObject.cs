@@ -17,10 +17,12 @@ public class ViewInteractableObject : MonoBehaviour, IViewInteractable
     [Header("模型切換")] //改成用mesh 和 collider去進行模型切換
     //public GameObject yangModel;
     //public GameObject yinModel;
-    [Tooltip("陽視野下的模型")] public Mesh yangMesh;
-    [Tooltip("陰視野下的模型")] public Mesh yinMesh;
-    [Tooltip("陽視野下的碰撞體")] public Collider yangCollider;
-    [Tooltip("陰視野下的碰撞體")] public Collider yinCollider;
+    [Tooltip("陽視野模型")] public Mesh yangMesh;
+    [Tooltip("陰視野模型")] public Mesh yinMesh;
+    [Tooltip("陽視野碰撞體")] public Collider yangCollider;
+    [Tooltip("陰視野碰撞體")] public Collider yinCollider;
+    [Tooltip("陽視野材質")] public Material yangMaterial;
+    [Tooltip("陰視野材質")] public Material yinMaterial;
 
     private MeshFilter meshFilter;
     private MeshRenderer meshRenderer;
@@ -31,6 +33,10 @@ public class ViewInteractableObject : MonoBehaviour, IViewInteractable
         meshFilter = GetComponent<MeshFilter>();
         meshRenderer = GetComponent<MeshRenderer>();
         mainCollider = GetComponent<Collider>();
+
+        if (yangCollider != null) yangCollider.enabled = false;
+        if (yinCollider != null) yinCollider.enabled = false;
+
         DontDestroyOnLoad(gameObject); //該遊戲物件不銷毀
     }
     private void Start()
@@ -52,95 +58,22 @@ public class ViewInteractableObject : MonoBehaviour, IViewInteractable
         bool isVisible = IsVisibleIn(view);
         bool isInteractive = IsInteractiveIn(view);
 
+        // 設定 Mesh 顯示與替換
         meshRenderer.enabled = isVisible; //mesh開不開取決於是否可在該視野下可見
-        mainCollider.enabled = isVisible || isInteractive; //不懂
         meshFilter.mesh = isYang ? yangMesh : yinMesh;
 
+        //材質切換
+         if (meshRenderer != null)
+            meshRenderer.material = isYang ? yangMaterial : yinMaterial;
+
+        // 主 Collider：在可見或可互動時啟用
+        mainCollider.enabled = isVisible || isInteractive;
+        // 子 Collider：只有當視野正確且可見時啟用
         if (yangCollider != null) yangCollider.enabled = isYang && isVisible;
         if (yinCollider != null) yinCollider.enabled = !isYang && isVisible;
 
         string state = isVisible ? "在" : "不在";
         Debug.Log($"{gameObject.name} {state} {(isYang ? "陽" : "陰")}視野顯示");
-
-        //未給gpt精簡
-        //if (yangMesh != null && yangCollider != null) //針對陽模型的判斷
-        //{
-        //    if(view == ViewType.Yang) //當前陽視野
-        //    {
-        //        switch (visibleInYang) 
-        //        {
-        //            case true: //可以在陽顯示
-        //                GetComponent<MeshRenderer>().enabled = true; // 開啟 mesh 顯示
-        //                GetComponent<Collider>().enabled = true; // 開啟碰撞
-        //                meshFilter.mesh = yangMesh;
-        //                yangCollider.enabled = true;
-        //                yinCollider.enabled = false;
-        //                print(gameObject.name + "在陽視野顯示");
-        //                break;
-        //            case false: //不可以在陽顯示
-        //                GetComponent<MeshRenderer>().enabled = false; // 關閉 mesh 顯示
-        //                GetComponent<Collider>().enabled = false; // 關閉碰撞
-        //                print(gameObject.name + "不在陽視野顯示");
-        //                break;
-        //        }
-        //    }
-        //    else //當前陰視野
-        //    {
-        //        switch (visibleInYin) 
-        //        {
-        //            case true: //可以在陰顯示
-        //                print("沒有" + gameObject.name + "在陰視野顯示的可能性！");
-        //                break;
-        //            case false: //不可以在陰顯示
-        //                GetComponent<MeshRenderer>().enabled = false; // 關閉 mesh 顯示
-        //                GetComponent<Collider>().enabled = false; // 關閉碰撞
-        //                print(gameObject.name + "不在陰視野顯示");
-        //                break;
-        //        }
-        //    }
-        //}
-
-        //if (yinMesh != null && yinCollider != null) //針對陰模型的判斷
-        //{
-        //    if (view == ViewType.Yang) //當前陽視野
-        //    {
-        //        switch (visibleInYang)
-        //        {
-        //            case true: //不可以在陽顯示
-        //                GetComponent<MeshRenderer>().enabled = false; // 關閉 mesh 顯示
-        //                GetComponent<Collider>().enabled = false; // 關閉碰撞
-        //                print(gameObject.name + "不在陽視野顯示");
-        //                break;
-        //            case false: //可以在陽顯示
-        //                print("沒有" + gameObject.name + "在陽視野顯示的可能性！");
-        //                break;
-        //        }
-        //    }
-        //    else //當前陰視野
-        //    {
-        //        switch (visibleInYin)
-        //        {
-        //            case true: //可以在陰顯示
-        //                GetComponent<MeshRenderer>().enabled = true; // 開啟 mesh 顯示
-        //                GetComponent<Collider>().enabled = true; // 開啟碰撞
-        //                meshFilter.mesh = yinMesh;
-        //                yangCollider.enabled = false;
-        //                yinCollider.enabled = true;
-        //                print(gameObject.name + "在陰視野顯示");
-        //                break;
-        //            case false: //不可以在陰顯示
-        //                GetComponent<MeshRenderer>().enabled = false; // 關閉 mesh 顯示
-        //                GetComponent<Collider>().enabled = false; // 關閉碰撞
-        //                print(gameObject.name + "不在陰視野顯示");
-        //                break;
-        //        }
-        //    }
-        //}
-
-        //    // 交互功能切換（例如拖動或點擊）
-        //    Collider col = GetComponent<Collider>();
-        //if (col != null)
-        //    col.enabled = IsInteractiveIn(view);
     }
 
     private void OnDestroy()
