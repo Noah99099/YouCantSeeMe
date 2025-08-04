@@ -11,6 +11,10 @@ public class PasswordLockManager : MonoBehaviour
     [SerializeField] private TMP_Text[] digitDisplays;
     [SerializeField] private string correctPassword = "1234";
 
+    [Header("Door")]
+    [SerializeField] private DoorController doorToOpen;
+
+
     [Header("Debug")]
     [SerializeField] private bool logButtonPresses = true;
 
@@ -19,7 +23,7 @@ public class PasswordLockManager : MonoBehaviour
 
     private void Awake()
     {
-        // ³æ¨Ò¼Ò¦¡³]¸m
+        // ï¿½ï¿½Ò¼Ò¦ï¿½ï¿½]ï¿½m
         if (Instance != null && Instance != this)
         {
             Destroy(this.gameObject);
@@ -35,8 +39,9 @@ public class PasswordLockManager : MonoBehaviour
     public void HandleButtonPress(PasswordButton button)
     {
         if (currentInput.Length >= MaxDigits) return;
-
+        Debug.Log($"== Before Append: currentInput = {currentInput}");
         currentInput += button.Value.ToString();
+        Debug.Log($"== After Append: currentInput = {currentInput}");
         if (logButtonPresses)
         {
             Debug.Log($"Button pressed: {button.Value}, Current input: {currentInput}");
@@ -70,19 +75,23 @@ public class PasswordLockManager : MonoBehaviour
         Debug.Log($"Checking password: {currentInput} vs {correctPassword}");
         if (currentInput == correctPassword)
         {
-            Debug.Log("±K½X¥¿½T¡I¦¨¥\¤F¡I");
-            // ³o¸Ì²K¥[¸ÑÂê¦¨¥\«áªºÅŞ¿è
+            Debug.Log("å¯†ç¢¼æ­£ç¢ºï¼");
+            // ï¿½oï¿½Ì²Kï¿½[ï¿½ï¿½ï¿½ê¦¨ï¿½\ï¿½áªºï¿½Ş¿ï¿½
+            if (doorToOpen != null)
+            {
+                doorToOpen.OpenDoor();
+            }
         }
         else
         {
-            Debug.Log("±K½X¿ù»~¡A­«¸mÂê...");
+            Debug.Log("å¯†ç¢¼éŒ¯èª¤ï¼Œé‡ç½®é–...");
             ResetLock();
         }
     }
 
     private void ResetLock()
     {
-        Debug.Log("­«¸m±K½XÂê...");
+        Debug.Log("ResetLock() åŸ·è¡Œ");
         currentInput = "";
         UpdateDisplay();
     }

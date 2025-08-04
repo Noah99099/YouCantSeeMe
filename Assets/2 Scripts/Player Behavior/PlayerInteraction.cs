@@ -114,8 +114,8 @@ public class PlayerInteraction : MonoBehaviour
         HidePrompt();
     }
 
-     private void HandleInteraction(InputAction.CallbackContext context)
-     {
+    private void HandleInteraction(InputAction.CallbackContext context)
+    {
         Ray ray = new Ray(playerCamera.transform.position, playerCamera.transform.forward);
 
         if (Physics.Raycast(ray, out RaycastHit hit, interactionRange, interactionLayer))
@@ -141,7 +141,7 @@ public class PlayerInteraction : MonoBehaviour
             else if (hitObject.TryGetComponent<PasswordButton>(out var button))
             {
                 Debug.Log($"Pressed button: {button.Value}");
-                PasswordLockManager.Instance?.HandleButtonPress(button);
+                button.OnPress();
                 HidePrompt();
             }
         }
