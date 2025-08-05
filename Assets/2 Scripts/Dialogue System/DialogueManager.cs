@@ -1,23 +1,31 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class DialogueManager : MonoBehaviour
 {
-    [Header("對話管理")]
-    [SerializeField] private List<DialogueRunner> availableDialogues = new List<DialogueRunner>();
+    [Header("全域資源參考")]
+    [Tooltip("請將專案中的 Player Controls Input Action Asset 拖曳到此處")]
+    [SerializeField] private InputActionAsset playerControls;
+    [Tooltip("請將場景中掛載了 DialogueUI 腳本的物件拖曳到此處")]
+    [SerializeField] private DialogueUI dialogueUI; 
+
+    [Header("統一對話管理")]
+    [Tooltip("在此處設定 сцен中的所有對話及其觸發方式")]
+    [SerializeField] private List<ManagedDialogue> managedDialogues = new List<ManagedDialogue>();
     
     [Header("全域設定")]
     [SerializeField] private bool pauseGameDuringDialogue = true;
-    [SerializeField] private GameObject gameplayUI; // 遊戲時要隱藏的 UI
+    [SerializeField] private GameObject gameplayUI;
     
     public static DialogueManager Instance { get; private set; }
     
-    private DialogueRunner _currentActiveDialogue;
     private float _originalTimeScale;
+    private Dictionary<DialogueRunner, ManagedDialogue> _runnerToDialogueMap = new Dictionary<DialogueRunner, ManagedDialogue>();
 
     private void Awake()
     {
-        // 單例模式
         if (Instance == null)
         {
             Instance = this;
@@ -30,83 +38,102 @@ public class DialogueManager : MonoBehaviour
         }
         
         _originalTimeScale = Time.timeScale;
-        SetupDialogueListeners();
+        InitializeRunners();
     }
 
-    private void SetupDialogueListeners()
+    private void Start()
     {
-        foreach (var dialogue in availableDialogues)
+        var sceneStartDialogues = managedDialogues.Where(d => d != null && d.TriggerType == DialogueTriggerType.OnSceneStart);
+        foreach (var dialogue in sceneStartDialogues)
         {
-            if (dialogue != null)
-            {
-                dialogue.OnDialogueStart.AddListener(() => OnAnyDialogueStart(dialogue));
-                dialogue.OnDialogueEnd.AddListener(() => OnAnyDialogueEnd(dialogue));
-            }
+            StartManagedDialogue(dialogue);
         }
     }
 
+    private void InitializeRunners()
+    {
+        foreach (var dialogue in managedDialogues)
+        {
+            if (dialogue == null) continue;
+            if (dialogue.DialogueContainer == null) continue;
+
+            var runnerGO = new GameObject($"Runner_{dialogue.DialogueContainer.name}");
+            runnerGO.transform.SetParent(this.transform);
+            
+            var runner = runnerGO.AddComponent<DialogueRunner>();
+            runner.SetDialogue(dialogue.DialogueContainer);
+            runner.SetPlayerControls(playerControls);
+            runner.SetDialogueUI(dialogueUI);
+            
+            dialogue.Runner = runner;
+            _runnerToDialogueMap[runner] = dialogue;
+
+            runner.OnDialogueStart.AddListener(() => OnAnyDialogueStart(runner));
+            runner.OnDialogueEnd.AddListener(() => OnAnyDialogueEnd(runner));
+        }
+    }
+
+    public void HandleInteraction(GameObject interactedObject)
+    {
+        var dialogue = managedDialogues.FirstOrDefault(d => d != null && d.TriggerType == DialogueTriggerType.OnInteraction && d.InteractionTarget == interactedObject);
+        if (dialogue != null)
+        {
+            StartManagedDialogue(dialogue);
+        }
+    }
+
+    public void HandleZoneEnter(Collider zoneCollider)
+    {
+        var dialogue = managedDialogues.FirstOrDefault(d => d != null && d.TriggerType == DialogueTriggerType.OnZoneEnter && d.ZoneTarget == zoneCollider);
+        if (dialogue != null)
+        {
+            StartManagedDialogue(dialogue);
+        }
+    }
+
+    public void HandleEvent(GameEvent gameEvent)
+    {
+        var dialogue = managedDialogues.FirstOrDefault(d => d != null && d.TriggerType == DialogueTriggerType.OnEvent && d.EventToListenFor == gameEvent);
+        if (dialogue != null)
+        {
+            StartManagedDialogue(dialogue);
+        }
+    }
+
+    private void StartManagedDialogue(ManagedDialogue dialogue)
+    {
+        if (dialogue == null) return;
+        if (dialogue.TriggerOnlyOnce && dialogue.HasBeenTriggered) return;
+        
+        if (dialogue.Runner != null)
+        {
+            dialogue.Runner.StartDialogue();
+        }
+        else
+        {
+            Debug.LogError($"對話 '{dialogue.Name}' 缺少對應的 DialogueRunner！", this);
+        }
+    }
+    
     private void OnAnyDialogueStart(DialogueRunner dialogueRunner)
     {
-        _currentActiveDialogue = dialogueRunner;
-        
-        if (pauseGameDuringDialogue)
-        {
-            Time.timeScale = 0f;
-        }
-        
-        if (gameplayUI != null)
-        {
-            gameplayUI.SetActive(false);
-        }
-        
-        Debug.Log($"對話開始：{dialogueRunner.gameObject.name}");
+        if (pauseGameDuringDialogue) Time.timeScale = 0f;
+        if (gameplayUI != null) gameplayUI.SetActive(false);
     }
 
     private void OnAnyDialogueEnd(DialogueRunner dialogueRunner)
     {
-        if (_currentActiveDialogue == dialogueRunner)
+        if (_runnerToDialogueMap.TryGetValue(dialogueRunner, out ManagedDialogue dialogue))
         {
-            _currentActiveDialogue = null;
-        }
-        
-        if (pauseGameDuringDialogue)
-        {
-            Time.timeScale = _originalTimeScale;
-        }
-        
-        if (gameplayUI != null)
-        {
-            gameplayUI.SetActive(true);
-        }
-        
-        Debug.Log($"對話結束：{dialogueRunner.gameObject.name}");
-    }
-
-    // 公開方法
-    public bool IsAnyDialogueActive()
-    {
-        return _currentActiveDialogue != null;
-    }
-
-    public void StopCurrentDialogue()
-    {
-        if (_currentActiveDialogue != null)
-        {
-            _currentActiveDialogue.GetComponent<DialogueUI>()?.Hide();
-            OnAnyDialogueEnd(_currentActiveDialogue);
-        }
-    }
-
-    public void StartDialogueByName(string dialogueName)
-    {
-        var dialogue = availableDialogues.Find(d => d.gameObject.name == dialogueName);
-        if (dialogue != null)
-        {
-            dialogue.StartDialogue();
-        }
-        else
-        {
-            Debug.LogWarning($"找不到名稱為 '{dialogueName}' 的對話！");
+            if (pauseGameDuringDialogue) Time.timeScale = _originalTimeScale;
+            if (gameplayUI != null) gameplayUI.SetActive(true);
+            
+            if (dialogue.TriggerOnlyOnce)
+            {
+                dialogue.HasBeenTriggered = true;
+            }
+            
+            Debug.Log($"對話結束：{dialogue.Name}");
         }
     }
 }

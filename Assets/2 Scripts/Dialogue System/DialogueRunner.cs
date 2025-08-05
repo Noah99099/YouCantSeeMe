@@ -15,113 +15,99 @@ public class DialogueRunner : MonoBehaviour
     [SerializeField] private DialogueContainerSO dialogueContainer;
 
     [Header("執行元件")]
-    [SerializeField] private DialogueUI dialogueUI;
+    private DialogueUI dialogueUI;
     [SerializeField] private AudioSource audioSource;
     [SerializeField] private bool autoPlayEnabled = false;
-    [SerializeField] private bool skipModeEnabled = false;
     [SerializeField] private float autoPlayDelay = 1.5f;
 
     [Header("事件")]
-    public UnityEvent OnDialogueStart;
-    public UnityEvent OnDialogueEnd;
-    public DialogueEvent OnVariableChanged;
+    public UnityEvent OnDialogueStart = new UnityEvent();
+    public UnityEvent OnDialogueEnd = new UnityEvent();
+    public DialogueEvent OnVariableChanged = new DialogueEvent();
 
-    [SerializeField] private InputActionAsset playerControls;
+    private InputActionAsset playerControls;
+    
     private InputAction dialogueAdvanceAction;
     private InputAction autoPlayAction;
-    private InputAction skipModeAction;
+    private InputAction skipAction;
 
     private const string UI_ACTION_MAP_NAME = "UI";
     private const string ADVANCE_DIALOGUE_ACTION_NAME = "AdvanceDialogue";
-
     private DialogueNodeData _currentNode;
     private bool _isWaitingForContinue = false;
     private NodeLinkData _pendingContinueLink;
     private bool _isPlayingAudio = false;
     private Coroutine _typewriterCoroutine;
     private bool _isTyping = false;
-
     private Dictionary<string, object> _dialogueVariables = new();
 
+    private float _lastNodeShowTime;
+    private const float INPUT_COOLDOWN = 0.1f;
+
     public bool IsAutoPlayEnabled => autoPlayEnabled;
-    public bool IsSkipModeEnabled => skipModeEnabled;
+    
+    private void Start() => SetupInputSystem();
+    
+    public void SetDialogueUI(DialogueUI ui) { dialogueUI = ui; }
+    public void SetDialogue(DialogueContainerSO container) { dialogueContainer = container; }
+    public void SetPlayerControls(InputActionAsset controls) { playerControls = controls; }
+
     private void OnAutoPlayPerformed(InputAction.CallbackContext context) => ToggleAutoPlay();
-    private void OnSkipModePerformed(InputAction.CallbackContext context) => ToggleSkipMode();
+    private void OnSkipPerformed(InputAction.CallbackContext context) => SkipToNextImportantNode();
 
     public void ToggleAutoPlay()
     {
         autoPlayEnabled = !autoPlayEnabled;
-        if (autoPlayEnabled) skipModeEnabled = false;
-        dialogueUI?.UpdateModeButtons(autoPlayEnabled, skipModeEnabled);
-    }
+        dialogueUI?.UpdateModeButtons(autoPlayEnabled, false);
 
-    public void ToggleSkipMode()
-    {
-        skipModeEnabled = !skipModeEnabled;
-        if (skipModeEnabled) autoPlayEnabled = false;
-        dialogueUI?.UpdateModeButtons(autoPlayEnabled, skipModeEnabled);
+        if (autoPlayEnabled && _isWaitingForContinue)
+        {
+            StartCoroutine(AutoAdvanceAfterDelay(_pendingContinueLink));
+        }
     }
-
-    private void Awake() => SetupInputSystem();
 
     private void SetupInputSystem()
     {
-        if (playerControls == null)
-        {
-            Debug.LogError("Player Controls 未設定", this);
-            return;
-        }
-
+        if (dialogueUI == null) { Debug.LogError("DialogueUI 沒有被 DialogueManager 正確指派！", this); return; }
+        if (playerControls == null) { Debug.LogError("Player Controls 未設定", this); return; }
         var uiActionMap = playerControls.FindActionMap(UI_ACTION_MAP_NAME);
-        if (uiActionMap == null) return;
-
+        if (uiActionMap == null) { Debug.LogError($"在 PlayerControls 中找不到名為 '{UI_ACTION_MAP_NAME}' 的 Action Map！"); return; }
+        
         dialogueAdvanceAction = uiActionMap.FindAction(ADVANCE_DIALOGUE_ACTION_NAME);
         autoPlayAction = uiActionMap.FindAction("ToggleAutoPlay");
-        skipModeAction = uiActionMap.FindAction("ToggleSkipMode");
-
-        dialogueAdvanceAction.canceled += OnNextDialogue;
+        skipAction = uiActionMap.FindAction("ToggleSkipMode");
+        
+        dialogueAdvanceAction.performed += OnNextDialogue;
         autoPlayAction.performed += OnAutoPlayPerformed;
-        skipModeAction.performed += OnSkipModePerformed;
+        skipAction.performed += OnSkipPerformed;
     }
 
     private void OnEnable()
     {
         dialogueAdvanceAction?.Enable();
         autoPlayAction?.Enable();
-        skipModeAction?.Enable();
+        skipAction?.Enable();
     }
 
     private void OnDisable()
     {
         dialogueAdvanceAction?.Disable();
         autoPlayAction?.Disable();
-        skipModeAction?.Disable();
+        skipAction?.Disable();
     }
 
     private void OnDestroy()
     {
-        dialogueAdvanceAction.canceled -= OnNextDialogue;
-        autoPlayAction.performed -= ctx => ToggleAutoPlay();
-        skipModeAction.performed -= ctx => ToggleSkipMode();
+        if (dialogueAdvanceAction != null) dialogueAdvanceAction.performed -= OnNextDialogue;
+        if (autoPlayAction != null) autoPlayAction.performed -= OnAutoPlayPerformed;
+        if (skipAction != null) skipAction.performed -= OnSkipPerformed;
     }
-
+    
     private void OnNextDialogue(InputAction.CallbackContext context)
     {
-        if (_isTyping)
-        {
-            CompleteTypewriter();
-            return;
-        }
-
-        if (_isPlayingAudio && _currentNode != null && _currentNode.WaitForAudio)
-        {
-            if (audioSource?.isPlaying == true)
-                audioSource.Stop();
-            _isPlayingAudio = false;
-        }
-
-        if (_isWaitingForContinue || skipModeEnabled)
-            AdvanceDialogue();
+        if (Time.realtimeSinceStartup < _lastNodeShowTime + INPUT_COOLDOWN) return;
+        if (_isTyping) { CompleteTypewriter(); }
+        else if (_isWaitingForContinue) { AdvanceDialogue(); }
     }
 
     private void AdvanceDialogue()
@@ -138,16 +124,14 @@ public class DialogueRunner : MonoBehaviour
         if (node == null) return;
         _currentNode = node;
         _isWaitingForContinue = false;
+        _lastNodeShowTime = Time.realtimeSinceStartup;
 
         if (!CheckNodeConditions(node))
         {
             var allLinks = dialogueContainer.NodeLinks.Where(l => l.BaseNodeGuid == node.Guid).ToList();
             var continueLink = allLinks.FirstOrDefault(l => l.PortName == "繼續");
-            if (continueLink != null)
-            {
-                GoToNextNode(continueLink);
-                return;
-            }
+            if (continueLink != null) { GoToNextNode(continueLink); return; }
+            
             dialogueUI.Hide();
             OnDialogueEnd?.Invoke();
             return;
@@ -158,13 +142,11 @@ public class DialogueRunner : MonoBehaviour
         StartTypewriter(node);
         HandleNodeBranching(node);
     }
-
+    
     private bool CheckNodeConditions(DialogueNodeData node) => node.Conditions.All(EvaluateCondition);
-
     private bool EvaluateCondition(DialogueCondition condition)
     {
         if (!_dialogueVariables.TryGetValue(condition.variableName, out var value)) return false;
-
         string compareValue = condition.compareValue;
         if (float.TryParse(value.ToString(), out float varF) && float.TryParse(compareValue, out float compF))
         {
@@ -176,7 +158,7 @@ public class DialogueRunner : MonoBehaviour
                 ComparisonOperator.LessThan => varF < compF,
                 ComparisonOperator.GreaterOrEqual => varF >= compF,
                 ComparisonOperator.LessOrEqual => varF <= compF,
-                _ => false
+                _ => false,
             };
         }
         else
@@ -185,11 +167,10 @@ public class DialogueRunner : MonoBehaviour
             {
                 ComparisonOperator.Equal => value.ToString() == compareValue,
                 ComparisonOperator.NotEqual => value.ToString() != compareValue,
-                _ => false
+                _ => false,
             };
         }
     }
-
     private void ExecuteNodeActions(DialogueNodeData node)
     {
         foreach (var action in node.Actions)
@@ -200,62 +181,57 @@ public class DialogueRunner : MonoBehaviour
                 OnVariableChanged?.Invoke($"Event:{action.parameter1}");
         }
     }
-
-    private void PlayNodeAudio(DialogueNodeData node)
-    {
-        // 你可在這裡實作音效載入邏輯
-    }
-
+    private void PlayNodeAudio(DialogueNodeData node) { }
     private void StartTypewriter(DialogueNodeData node)
     {
-        if (_typewriterCoroutine != null)
-            StopCoroutine(_typewriterCoroutine);
-
-        if (node.TextSpeed > 0)
+        if (_typewriterCoroutine != null) StopCoroutine(_typewriterCoroutine);
+        if (node.TextSpeed > 0 && dialogueUI != null)
+        {
             _typewriterCoroutine = StartCoroutine(TypewriterEffect(node));
+        }
         else
         {
-            dialogueUI.ShowNodeText(node);
+            dialogueUI?.ShowNodeText(node);
             _isTyping = false;
         }
     }
-
     private IEnumerator TypewriterEffect(DialogueNodeData node)
     {
         _isTyping = true;
         dialogueUI.ShowNodeText(node, "");
-
         string text = node.DialogueText;
-        float delay = 1f / node.TextSpeed;
-
+        float delay = node.TextSpeed > 0 ? 1f / node.TextSpeed : 0;
+        if (string.IsNullOrEmpty(text))
+        {
+            _isTyping = false;
+            yield break;
+        }
         for (int i = 0; i <= text.Length; i++)
         {
-            dialogueUI.UpdateDialogueText(text[..i]);
-            yield return new WaitForSeconds(delay);
+            dialogueUI.UpdateDialogueText(text.Substring(0, i));
+            if (delay > 0)
+            {
+                float startTime = Time.realtimeSinceStartup;
+                while (Time.realtimeSinceStartup < startTime + delay)
+                {
+                    yield return null;
+                }
+            }
         }
-
         _isTyping = false;
     }
-
     private void CompleteTypewriter()
     {
-        if (_typewriterCoroutine != null)
-            StopCoroutine(_typewriterCoroutine);
-
-        if (_currentNode != null)
-            dialogueUI.UpdateDialogueText(_currentNode.DialogueText);
-
+        if (_typewriterCoroutine != null) StopCoroutine(_typewriterCoroutine);
+        if (_currentNode != null) dialogueUI.UpdateDialogueText(_currentNode.DialogueText);
         _isTyping = false;
     }
-
     private void HandleNodeBranching(DialogueNodeData node)
     {
         dialogueUI.HideChoices();
-
         var allLinks = dialogueContainer.NodeLinks.Where(l => l.BaseNodeGuid == node.Guid).ToList();
         var choiceLinks = allLinks.Where(l => l.PortName != "繼續").ToList();
         var continueLink = allLinks.FirstOrDefault(l => l.PortName == "繼續");
-
         if (choiceLinks.Count > 0)
         {
             _isWaitingForContinue = false;
@@ -267,8 +243,6 @@ public class DialogueRunner : MonoBehaviour
         {
             if (_isPlayingAudio && node.WaitForAudio)
                 StartCoroutine(WaitForAudioThenContinue(continueLink));
-            else if (skipModeEnabled)
-                GoToNextNode(continueLink);
             else if (autoPlayEnabled)
                 StartCoroutine(AutoAdvanceAfterDelay(continueLink));
             else
@@ -284,26 +258,20 @@ public class DialogueRunner : MonoBehaviour
             OnDialogueEnd?.Invoke();
         }
     }
-
     private IEnumerator WaitForAudioThenContinue(NodeLinkData continueLink)
     {
-        while (_isPlayingAudio && audioSource?.isPlaying == true)
-            yield return null;
-
-        _isPlayingAudio = false;
+        while (_isPlayingAudio && audioSource?.isPlaying == true) yield return null;
+        _isTyping = false;
         _isWaitingForContinue = true;
         _pendingContinueLink = continueLink;
         dialogueUI.ShowContinueIndicator();
     }
-
     private IEnumerator AutoAdvanceAfterDelay(NodeLinkData link)
     {
-        yield return new WaitForSeconds(autoPlayDelay);
+        yield return new WaitForSecondsRealtime(autoPlayDelay);
         GoToNextNode(link);
     }
-
     private void OnChoiceSelected(NodeLinkData link) => GoToNextNode(link);
-
     private void GoToNextNode(NodeLinkData link)
     {
         if (link == null)
@@ -312,39 +280,91 @@ public class DialogueRunner : MonoBehaviour
             OnDialogueEnd?.Invoke();
             return;
         }
-
         var next = dialogueContainer.DialogueNodes.Find(n => n.Guid == link.TargetNodeGuid);
         ShowNode(next);
     }
-
     public void StartDialogue()
     {
+        if (dialogueContainer == null) { Debug.LogError("此 DialogueRunner 沒有被指派 DialogueContainerSO！", this); return; }
+        if (dialogueUI != null) { dialogueUI.SetActiveRunner(this); }
         OnDialogueStart?.Invoke();
         var entry = dialogueContainer.DialogueNodes.Find(n => n.EntryPoint);
         if (entry != null) ShowNode(entry);
         else
         {
-            Debug.LogError("找不到對話進入點 (Entry Point)！");
+            Debug.LogError("找不到對話進入點 (Entry Point)！", this);
             dialogueUI.Hide();
             OnDialogueEnd?.Invoke();
         }
     }
-
     public void SetVariable(string key, object value)
     {
         _dialogueVariables[key] = value;
         OnVariableChanged?.Invoke($"{key}:{value}");
     }
-
     public T GetVariable<T>(string key, T defaultValue = default) =>
         _dialogueVariables.TryGetValue(key, out var v) ? (T)Convert.ChangeType(v, typeof(T)) : defaultValue;
-
     public bool HasVariable(string key) => _dialogueVariables.ContainsKey(key);
-
     public void JumpToNode(string label)
     {
         var node = dialogueContainer.DialogueNodes.Find(n => n.NodeLabel == label);
         if (node != null) ShowNode(node);
         else Debug.LogWarning($"找不到標籤為 '{label}' 的節點！");
+    }
+
+    // 【*** 全新的、基於圖形遍歷的跳轉邏輯 ***】
+    public void SkipToNextImportantNode()
+    {
+        if (_currentNode == null || dialogueContainer == null) return;
+
+        // 使用佇列 (Queue) 進行廣度優先搜尋 (BFS)，並用 HashSet 追蹤已訪問的節點以避免無限循環
+        Queue<string> nodesToVisit = new Queue<string>();
+        HashSet<string> visitedNodes = new HashSet<string>();
+
+        // 搜尋的起點是當前節點的所有「出口」
+        var initialLinks = dialogueContainer.NodeLinks.Where(link => link.BaseNodeGuid == _currentNode.Guid);
+        foreach (var link in initialLinks)
+        {
+            if (!visitedNodes.Contains(link.TargetNodeGuid))
+            {
+                nodesToVisit.Enqueue(link.TargetNodeGuid);
+                visitedNodes.Add(link.TargetNodeGuid);
+            }
+        }
+
+        // 開始遍歷搜尋
+        while (nodesToVisit.Count > 0)
+        {
+            string currentGuid = nodesToVisit.Dequeue();
+            var targetNodeData = dialogueContainer.DialogueNodes.FirstOrDefault(n => n.Guid == currentGuid);
+
+            if (targetNodeData == null) continue;
+
+            // 檢查這個節點是否為一個「停止點」(重要節點 或 選項節點)
+            bool hasChoices = dialogueContainer.NodeLinks.Any(link => link.BaseNodeGuid == targetNodeData.Guid && link.PortName != "繼續");
+
+            if (targetNodeData.IsImportant || hasChoices)
+            {
+                // 找到了目標！跳轉到該節點並結束搜尋
+                GoToNextNode(new NodeLinkData { TargetNodeGuid = targetNodeData.Guid });
+                return;
+            }
+
+            // 如果不是停止點，則將它的所有「出口」加入待訪問佇列
+            var nextLinks = dialogueContainer.NodeLinks.Where(link => link.BaseNodeGuid == currentGuid);
+            foreach (var link in nextLinks)
+            {
+                if (!visitedNodes.Contains(link.TargetNodeGuid))
+                {
+                    nodesToVisit.Enqueue(link.TargetNodeGuid);
+                    visitedNodes.Add(link.TargetNodeGuid);
+                }
+            }
+        }
+
+        // 如果佇列被清空了，代表前方已無任何重要節點或選項，直接結束對話
+        Debug.Log("找不到下一個重要節點或選項，對話結束。");
+        dialogueUI.Hide();
+        OnDialogueEnd?.Invoke();
     }
 }

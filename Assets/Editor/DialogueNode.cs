@@ -14,6 +14,10 @@ public class DialogueNode : Node
     public Color NameColor;
     public Vector2 Position;
     
+    // 【*** 新增欄位 ***】
+    // 用來在 UI 上直接存取節點是否為重要
+    public bool IsImportant; 
+
     private DialogueGraphView _graphView;
     private Button _addChoiceButton;
     private VisualElement _choiceContainer;
@@ -94,10 +98,24 @@ public class DialogueNode : Node
             value = NameColor
         };
         nameColorField.style.marginBottom = 10;
-        nameColorField.RegisterValueChangedCallback(evt => NameColor = evt.newValue);
         extensionContainer.Add(nameColorField);
+
+        // 【*** 新增 UI 元件 ***】
+        // 創建一個 Toggle (勾選框) 來設定 IsImportant 屬性
+        var importantToggle = new Toggle("重要節點 (跳過時停留)")
+        {
+            value = IsImportant // 初始值
+        };
+        importantToggle.style.marginTop = 5;
+        // 當勾選框的狀態改變時，更新節點的 IsImportant 變數
+        importantToggle.RegisterValueChangedCallback(evt =>
+        {
+            IsImportant = evt.newValue;
+        });
+        extensionContainer.Add(importantToggle);
     }
 
+    // ... (SetupChoiceManagement 及之後的所有方法保持不變) ...
     private void SetupChoiceManagement()
     {
         _choiceContainer = new VisualElement();
@@ -165,10 +183,8 @@ public class DialogueNode : Node
             choicePort.portName = evt.newValue;
         });
         
-        // === 修復刪除功能 ===
         var deleteButton = new Button(() =>
         {
-            // 使用 schedule 來延遲執行，避免在事件處理中直接修改 UI
             schedule.Execute(() => RemovePort(graphView, choicePort));
         })
         {
@@ -209,10 +225,9 @@ public class DialogueNode : Node
             return;
         }
 
-        // === 修復刪除連線的邏輯 ===
         if (port.connected)
         {
-            var edgesToRemove = port.connections.ToList(); // 創建副本避免修改迭代中的集合
+            var edgesToRemove = port.connections.ToList();
             foreach (var edge in edgesToRemove)
             {
                 graphView.RemoveElement(edge);

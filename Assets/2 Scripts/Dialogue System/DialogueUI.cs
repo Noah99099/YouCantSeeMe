@@ -16,7 +16,7 @@ public class DialogueUI : MonoBehaviour
 
     [Header("模式控制")]
     [SerializeField] private Button autoPlayButton;
-    [SerializeField] private Button skipModeButton;
+    [SerializeField] private Button skipModeButton; // 現在是「跳到下個重點」按鈕
     [SerializeField] private TextMeshProUGUI autoPlayLabel;
     [SerializeField] private TextMeshProUGUI skipModeLabel;
 
@@ -24,16 +24,35 @@ public class DialogueUI : MonoBehaviour
     [SerializeField] private Image characterPortrait;
     [SerializeField] private CanvasGroup dialogueCanvasGroup;
     [SerializeField] private float fadeSpeed = 2f;
-    private DialogueRunner runner;
+    private DialogueRunner activeRunner;
+
+    // Awake 方法保持空白即可
     private void Awake()
     {
-        runner = FindObjectOfType<DialogueRunner>();
+    }
 
+    // SetActiveRunner 是唯一的入口點，用來設定UI與當前Runner的關聯
+    public void SetActiveRunner(DialogueRunner runner)
+    {
+        activeRunner = runner;
+
+        // 動態設定「自動播放」按鈕的監聽事件
         if (autoPlayButton != null)
-            autoPlayButton.onClick.AddListener(() => runner.ToggleAutoPlay());
+        {
+            autoPlayButton.onClick.RemoveAllListeners(); 
+            autoPlayButton.onClick.AddListener(() => activeRunner.ToggleAutoPlay());
+        }
 
+        // 【*** 關鍵修改 ***】
+        // 動態設定「跳到下個重點」按鈕的監聽事件，呼叫新的方法
         if (skipModeButton != null)
-            skipModeButton.onClick.AddListener(() => runner.ToggleSkipMode());
+        {
+            skipModeButton.onClick.RemoveAllListeners(); 
+            skipModeButton.onClick.AddListener(() => activeRunner.SkipToNextImportantNode());
+        }
+        
+        // 初始更新一次按鈕文字
+        UpdateModeButtons(activeRunner.IsAutoPlayEnabled, false);
     }
 
     public void ShowNodeText(DialogueNodeData node, string textOverride = null)
@@ -43,21 +62,17 @@ public class DialogueUI : MonoBehaviour
         HideChoices();
         HideContinueIndicator();
 
-        // 設置角色名稱
         SetSpeakerName(node);
 
-        // 設置對話文本
         string textToShow = textOverride ?? node.DialogueText;
         dialogueText.text = textToShow;
 
-        // 設置角色立繪
         SetCharacterPortrait(node.CharacterPortrait);
     }
 
     private void SetSpeakerName(DialogueNodeData node)
     {
         string nameText = node.SpeakerName;
-
         switch (node.NameStyle)
         {
             case SpeakerNameStyle.Bold:
@@ -67,7 +82,6 @@ public class DialogueUI : MonoBehaviour
                 nameText = $"<i>{nameText}</i>";
                 break;
         }
-
         string colorHex = ColorUtility.ToHtmlStringRGB(node.NameColor);
         speakerNameText.text = $"<color=#{colorHex}>{nameText}</color>";
     }
@@ -83,12 +97,6 @@ public class DialogueUI : MonoBehaviour
         else
         {
             // 載入立繪圖片的邏輯
-            // Sprite portraitSprite = Resources.Load<Sprite>($"Portraits/{portraitName}");
-            // if (portraitSprite != null)
-            // {
-            //     characterPortrait.sprite = portraitSprite;
-            //     characterPortrait.gameObject.SetActive(true);
-            // }
         }
     }
 
@@ -99,6 +107,17 @@ public class DialogueUI : MonoBehaviour
 
     public void ShowChoices(List<NodeLinkData> choices, Action<NodeLinkData> onChoiceSelected)
     {
+        if (choiceButtonPrefab == null)
+        {
+            Debug.LogError("錯誤：'Choice Button Prefab' 沒有在 DialogueUI 的 Inspector 中設定！", this.gameObject);
+            return;
+        }
+        if (choiceButtonContainer == null)
+        {
+            Debug.LogError("錯誤：'Choice Button Container' 沒有在 DialogueUI 的 Inspector 中設定！", this.gameObject);
+            return;
+        }
+        
         HideChoices();
 
         foreach (var choice in choices)
@@ -123,6 +142,7 @@ public class DialogueUI : MonoBehaviour
 
     public void HideChoices()
     {
+        if (choiceButtonContainer == null) return;
         foreach (Transform child in choiceButtonContainer)
         {
             Destroy(child.gameObject);
@@ -147,12 +167,13 @@ public class DialogueUI : MonoBehaviour
 
     public void Hide()
     {
-        dialoguePanel.SetActive(false);
+        if (dialoguePanel != null)
+            dialoguePanel.SetActive(false);
+        
         HideContinueIndicator();
         HideChoices();
     }
 
-    // === 新增：淡入淡出效果 ===
     public void FadeIn()
     {
         if (dialogueCanvasGroup != null)
@@ -173,7 +194,6 @@ public class DialogueUI : MonoBehaviour
     {
         float elapsedTime = 0f;
         float duration = 1f / fadeSpeed;
-
         while (elapsedTime < duration)
         {
             elapsedTime += Time.deltaTime;
@@ -181,16 +201,15 @@ public class DialogueUI : MonoBehaviour
             canvasGroup.alpha = alpha;
             yield return null;
         }
-
         canvasGroup.alpha = targetAlpha;
     }
+
     public void UpdateModeButtons(bool isAuto, bool isSkip)
     {
         if (autoPlayLabel != null)
-            autoPlayLabel.text = isAuto ? "🔁 自動播放 (開)" : "🔁 自動播放";
-
+            autoPlayLabel.text = isAuto ? "自動播放中..." : "自動播放";
+        
         if (skipModeLabel != null)
-            skipModeLabel.text = isSkip ? "⏩ 跳過模式 (開)" : "⏩ 跳過模式";
+            skipModeLabel.text = "跳到下個重點";
     }
-
 }

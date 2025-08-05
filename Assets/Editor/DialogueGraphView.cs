@@ -10,7 +10,7 @@ using UnityEngine.UIElements;
 public class DialogueGraphView : GraphView
 {
     private DialogueContainerSO _currentDialogueContainer;
-    private readonly float _nodeWidth = 280f; // 增加寬度以容納新的UI元素
+    private readonly float _nodeWidth = 280f;
 
     public DialogueGraphView()
     {
@@ -23,7 +23,6 @@ public class DialogueGraphView : GraphView
         Insert(0, grid);
         grid.StretchToParentSize();
         
-        // 添加樣式表
         AddDialogueNodeStyles();
     }
 
@@ -56,7 +55,6 @@ public class DialogueGraphView : GraphView
         
         evt.menu.AppendAction("新增對話節點", action => CreateNode("新的對話", isEntryPoint, graphViewMousePosition));
         
-        // 如果右鍵點擊的是節點，添加節點特定的選項
         if (evt.target is DialogueNode clickedNode)
         {
             evt.menu.AppendSeparator();
@@ -76,7 +74,8 @@ public class DialogueGraphView : GraphView
             GUID = Guid.NewGuid().ToString(),
             EntryPoint = isEntryPoint,
             Position = position,
-            NameColor = Color.white
+            NameColor = Color.white,
+            IsImportant = false // 新建的節點預設不是重要節點
         };
         
         dialogueNode.Setup(this, isEntryPoint);
@@ -85,7 +84,6 @@ public class DialogueGraphView : GraphView
         AddElement(dialogueNode);
     }
     
-    // 為節點添加選項的方法
     public void AddChoicePort(DialogueNode node, string portName)
     {
         node.AddChoicePort(this, portName);
@@ -93,7 +91,6 @@ public class DialogueGraphView : GraphView
 
     private void SetAsEntryPoint(DialogueNode targetNode)
     {
-        // 移除其他節點的入口點狀態
         foreach (var node in nodes.ToList().Cast<DialogueNode>())
         {
             if (node != targetNode && node.EntryPoint)
@@ -104,7 +101,6 @@ public class DialogueGraphView : GraphView
             }
         }
         
-        // 設置新的入口點
         targetNode.EntryPoint = true;
         targetNode.style.backgroundColor = new Color(0.2f, 0.8f, 0.2f, 0.3f);
         targetNode.title = "📍 " + targetNode.SpeakerName;
@@ -118,15 +114,15 @@ public class DialogueGraphView : GraphView
             DialogueText = originalNode.DialogueText,
             SpeakerName = originalNode.SpeakerName + " (複製)",
             GUID = Guid.NewGuid().ToString(),
-            EntryPoint = false, // 複製的節點不應該是入口點
-            Position = position + new Vector2(50, 50), // 稍微偏移位置
-            NameColor = originalNode.NameColor
+            EntryPoint = false,
+            Position = position + new Vector2(50, 50),
+            NameColor = originalNode.NameColor,
+            IsImportant = originalNode.IsImportant // 複製時也複製重要狀態
         };
         
         newNode.Setup(this, false);
         newNode.SetPosition(new Rect(position + new Vector2(50, 50), new Vector2(_nodeWidth, 200)));
         
-        // 複製原節點的所有選項
         var choiceNames = originalNode.GetChoicePortNames();
         foreach (var choiceName in choiceNames)
         {
@@ -138,11 +134,9 @@ public class DialogueGraphView : GraphView
 
     public void Save(DialogueContainerSO dialogueContainer)
     {
-        // 清除舊資料
         dialogueContainer.NodeLinks.Clear();
         dialogueContainer.DialogueNodes.Clear();
 
-        // 儲存連線資訊
         var edges = new List<Edge>(this.edges.ToList());
         foreach (var edge in edges)
         {
@@ -160,7 +154,6 @@ public class DialogueGraphView : GraphView
             }
         }
         
-        // 儲存節點資訊
         foreach (var node in nodes.ToList().Cast<DialogueNode>())
         {
             dialogueContainer.DialogueNodes.Add(new DialogueNodeData
@@ -170,7 +163,9 @@ public class DialogueGraphView : GraphView
                 SpeakerName = node.SpeakerName,
                 EntryPoint = node.EntryPoint,
                 Position = node.GetPosition().position,
-                NameColor = node.NameColor
+                NameColor = node.NameColor,
+                // 【*** 儲存 IsImportant 狀態 ***】
+                IsImportant = node.IsImportant 
             });
         }
         
@@ -179,7 +174,6 @@ public class DialogueGraphView : GraphView
 
     public void LoadGraph(DialogueContainerSO dialogueContainer)
     {
-        // 清空目前的圖表
         DeleteElements(nodes.ToList());
         DeleteElements(edges.ToList());
         _currentDialogueContainer = dialogueContainer;
@@ -190,7 +184,6 @@ public class DialogueGraphView : GraphView
             return;
         }
 
-        // 重新創建所有節點
         foreach (var nodeData in dialogueContainer.DialogueNodes)
         {
             var dialogueNode = new DialogueNode
@@ -201,6 +194,8 @@ public class DialogueGraphView : GraphView
                 EntryPoint = nodeData.EntryPoint,
                 NameColor = nodeData.NameColor,
                 Position = nodeData.Position,
+                // 【*** 載入 IsImportant 狀態 ***】
+                IsImportant = nodeData.IsImportant 
             };
             
             dialogueNode.Setup(this, dialogueNode.EntryPoint);
@@ -208,7 +203,6 @@ public class DialogueGraphView : GraphView
             AddElement(dialogueNode);
         }
 
-        // 收集每個節點的選項端口名稱
         var nodeChoices = new Dictionary<string, List<string>>();
         foreach (var linkData in dialogueContainer.NodeLinks)
         {
@@ -225,7 +219,6 @@ public class DialogueGraphView : GraphView
             }
         }
 
-        // 為每個節點添加其選項端口
         foreach (var kvp in nodeChoices)
         {
             var node = nodes.ToList().Cast<DialogueNode>().FirstOrDefault(x => x.GUID == kvp.Key);
@@ -235,7 +228,6 @@ public class DialogueGraphView : GraphView
             }
         }
 
-        // 重新建立所有連線
         foreach (var linkData in dialogueContainer.NodeLinks)
         {
             var baseNode = nodes.ToList().Cast<DialogueNode>().FirstOrDefault(x => x.GUID == linkData.BaseNodeGuid);
@@ -246,13 +238,11 @@ public class DialogueGraphView : GraphView
                 Debug.LogWarning($"無法建立連線: 找不到節點 {linkData.BaseNodeGuid} 或 {linkData.TargetNodeGuid}");
                 continue;
             }
-
-            // 尋找對應的輸出端口
+            
             var outputPort = baseNode.outputContainer.Query<Port>().ToList()
                 .FirstOrDefault(p => p.portName == linkData.PortName);
             var inputPort = targetNode.inputContainer.Q<Port>();
-
-            // 建立連線
+            
             if (outputPort != null && inputPort != null)
             {
                 var newEdge = outputPort.ConnectTo(inputPort);
