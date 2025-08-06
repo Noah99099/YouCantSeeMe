@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.UIElements;
 
 public class ItemDetailUI : MonoBehaviour
 {
@@ -34,5 +35,19 @@ public class ItemDetailUI : MonoBehaviour
     public void HideItemDetail()
     {
         detailPanel.SetActive(false);
+    }
+
+    public void ClearPreview()
+    {
+        if (previewController == null || previewController.modelRoot == null)
+            return;
+
+        foreach (Transform child in previewController.modelRoot)
+        {
+            if (child.GetComponent<PreviewModelTag>() != null)
+            {
+                Destroy(child.gameObject);
+            }
+        }
     }
 }

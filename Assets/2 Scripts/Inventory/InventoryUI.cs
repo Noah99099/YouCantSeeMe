@@ -11,26 +11,44 @@ public class InventoryUI : MonoBehaviour
     public GameObject itemSlotPrefab; // 單一物品格子的 Prefab
 
     // +++ 新增：物件池系統 +++
-    private Queue<GameObject> itemSlotPool = new Queue<GameObject>();
-    private List<GameObject> activeSlots = new List<GameObject>();
-    private const int INITIAL_POOL_SIZE = 20;
+    private Queue<GameObject> itemSlotPool = new Queue<GameObject>(); //閒置的 itemSlot 預設池，用來回收、重複使用格子
+    private List<GameObject> activeSlots = new List<GameObject>(); //當前背包中顯示的 slot，會根據 item 數量更新
+    private const int INITIAL_POOL_SIZE = 5;
 
     private bool isInventoryVisible; //面板是否顯示
 
     void Start()
     {
-        isInventoryVisible = inventoryPanel.activeSelf; // inventoryPanel 在 Inspector 的顯示確認
-        InventoryManager.Instance.OnInventoryChanged += UpdateUI;
+        // +++ 確保狀態同步 +++
+        isInventoryVisible = inventoryPanel.activeSelf;
+        Debug.Log("當前背包面板顯示狀態："+ isInventoryVisible);
 
-        // +++ 初始化物件池 +++
+        // 強制關閉面板（無論初始狀態）
+        CloseInventory();
+
+        // 初始化物件池（預先創建少量格子）
         InitializeSlotPool();
 
-        // 如果Inspector是打開的，需要更新一次UI然後再關掉面板
-        if (isInventoryVisible) 
+        // +++ 初始更新UI +++
+        UpdateUI();
+    }
+
+    private void OnEnable()
+    {
+        // +++ 安全訂閱事件 +++
+        if (InventoryManager.Instance != null)
         {
-            UpdateUI();
-            ToggleInventory();
-        } 
+            InventoryManager.Instance.OnInventoryChanged -= UpdateUI; // 先取消避免重複
+            InventoryManager.Instance.OnInventoryChanged += UpdateUI;
+        }
+    }
+    private void OnDisable()
+    {
+        // +++ 安全取消訂閱 +++
+        if (InventoryManager.Instance != null)
+        {
+            InventoryManager.Instance.OnInventoryChanged -= UpdateUI;
+        }
     }
 
     /// <summary>
@@ -38,7 +56,8 @@ public class InventoryUI : MonoBehaviour
     /// </summary>
     private void InitializeSlotPool()
     {
-        for (int i = 0; i < INITIAL_POOL_SIZE; i++)
+        int inventorySize = InventoryManager.Instance.items.Count;
+        for (int i = 0; i < Mathf.Max(INITIAL_POOL_SIZE, inventorySize); i++)
         {
             GameObject slot = CreateNewSlot();
             itemSlotPool.Enqueue(slot);
@@ -72,7 +91,16 @@ public class InventoryUI : MonoBehaviour
     /// </summary>
     private void ReturnSlotToPool(GameObject slot)
     {
+        // +++重置格子狀態++ +
         slot.SetActive(false);
+
+        // 清除按鈕監聽器
+        Button button = slot.GetComponent<Button>();
+        if (button != null)
+        {
+            button.onClick.RemoveAllListeners();
+        }
+
         itemSlotPool.Enqueue(slot);
     }
 
@@ -91,6 +119,7 @@ public class InventoryUI : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.B))
         {
             ToggleInventory();
+            Debug.Log("當前背包面板顯示狀態：" + isInventoryVisible);
         }
     }
 
@@ -99,21 +128,32 @@ public class InventoryUI : MonoBehaviour
     /// </summary>
     public void ToggleInventory()
     {
-        isInventoryVisible = !isInventoryVisible;
-        inventoryPanel.SetActive(isInventoryVisible);
-
-        // --- 這裡就是關鍵 ---
-        if (isInventoryVisible)
+        // +++ 基於實際狀態切換 +++
+        if (inventoryPanel.activeSelf)
         {
-            // 如果是打開背包，就進入 UI 模式
-            CursorManager.EnterUIMode();
-            UpdateUI(); // 更新 UI 顯示
+            CloseInventory();
         }
         else
         {
-            // 如果是關閉背包，就回到遊戲模式
-            CursorManager.EnterGameplayMode();
+            OpenInventory();
         }
+    }
+
+    // +++ 分離開關邏輯 +++
+    private void OpenInventory()
+    {
+        isInventoryVisible = true;
+        inventoryPanel.SetActive(true);
+        CursorManager.EnterUIMode();
+        UpdateUI(); // 打開時確保刷新
+    }
+
+    private void CloseInventory()
+    {
+        isInventoryVisible = false;
+        inventoryPanel.SetActive(false);
+        CursorManager.EnterGameplayMode();
+        InventoryManager.Instance.ItemDetailUI?.ClearPreview();
     }
 
     /// <summary>
@@ -121,6 +161,11 @@ public class InventoryUI : MonoBehaviour
     /// </summary>
     private void UpdateUI()
     {
+        Debug.Log("更新 UI，物品數：" + InventoryManager.Instance.items.Count);
+
+        // +++ 面板關閉時不更新可見元素 +++
+        if (!isInventoryVisible) return;
+
         // 1. 歸還不再需要的格子
         for (int i = activeSlots.Count - 1; i >= 0; i--)
         {
@@ -128,29 +173,37 @@ public class InventoryUI : MonoBehaviour
         }
         activeSlots.Clear();
 
-        // 2. 從池中獲取並設置需要的格子
+        // 2. 重新生成對應物品的格子
         foreach (ItemData item in InventoryManager.Instance.items)
         {
-            GameObject slotInstance = GetSlotFromPool();
-            slotInstance.SetActive(true);
+            GameObject slot = GetSlotFromPool();
+            slot.SetActive(true);
+            SetupSlot(slot, item);
+            activeSlots.Add(slot);
+        }
+    }
 
-            // 設置物品圖標
-            Image itemIcon = slotInstance.transform.Find("ItemIcon")?.GetComponent<Image>();
-            if (itemIcon != null)
-            {
-                itemIcon.sprite = item.icon;
-                itemIcon.enabled = true;
-            }
+    /// <summary>
+    /// 提取共用設定方
+    /// </summary>
+    /// <param name="slot">背包格子</param>
+    /// <param name="item">物件</param>
+    private void SetupSlot(GameObject slot, ItemData item)
+    {
+        // 設置圖標
+        Image itemIcon = slot.transform.Find("ItemIcon")?.GetComponent<Image>();
+        if (itemIcon != null)
+        {
+            itemIcon.sprite = item.icon;
+            itemIcon.enabled = true;
+        }
 
-            // 綁定點擊事件
-            Button button = slotInstance.GetComponent<Button>();
-            if (button != null)
-            {
-                button.onClick.RemoveAllListeners(); // 清除舊監聽器
-                button.onClick.AddListener(() => ShowItemDetail(item));
-            }
-
-            activeSlots.Add(slotInstance);
+        // 設置按鈕事件
+        Button button = slot.GetComponent<Button>();
+        if (button != null)
+        {
+            button.onClick.RemoveAllListeners();
+            button.onClick.AddListener(() => ShowItemDetail(item));
         }
     }
 

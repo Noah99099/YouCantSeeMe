@@ -12,8 +12,6 @@ public class ItemPreviewController : MonoBehaviour
     private Vector3 initialScale;
     private bool isDragging = false;
 
-
-
     void Start()
     {
         if (modelRoot != null)
@@ -54,7 +52,7 @@ public class ItemPreviewController : MonoBehaviour
 
     public void ResetPreview(GameObject newModel)
     {
-        // 清除 modelRoot 裡的舊模型（只刪有 PreviewModelTag 的）
+        // 清除 modelRoot 裡所有加了 PreviewModelTag 的模型
         foreach (Transform child in modelRoot)
         {
             if (child.GetComponent<PreviewModelTag>() != null)
@@ -72,7 +70,7 @@ public class ItemPreviewController : MonoBehaviour
 
         if (newModel == null) yield break;
 
-        // ✅ Instantiate 模型
+        // ✅ Instantiate 模型 + PreviewModelTag標記
         GameObject instance = Instantiate(newModel, modelRoot);
         instance.AddComponent<PreviewModelTag>();
 
@@ -81,23 +79,31 @@ public class ItemPreviewController : MonoBehaviour
         instance.transform.localRotation = Quaternion.identity;
         instance.transform.localScale = Vector3.one;
 
-        // ✅ 計算模型包圍盒（用來對準中心點）
-        Bounds bounds = CalculateBounds(instance);
-        Vector3 centerOffset = bounds.center;
-        instance.transform.localPosition = -centerOffset;
-
-        // ✅ 將模型定位到相機前方
-        float modelRadius = bounds.extents.magnitude;
-        float distance = Mathf.Clamp(modelRadius / Mathf.Tan(Mathf.Deg2Rad * previewCamera.fieldOfView * 0.5f), 1f, 10f);
-
+        // ✅ 將 modelRoot 放到相機前方固定距離（例如 2 單位）
         Vector3 camForward = previewCamera.transform.forward;
-        modelRoot.position = previewCamera.transform.position + camForward * distance;
+        modelRoot.position = previewCamera.transform.position + camForward * 2f;
         modelRoot.rotation = Quaternion.identity;
+
+        //下面註解的是舊版方法
+        //// ✅ 計算模型包圍盒（用來對準中心點）
+        //Bounds bounds = CalculateBounds(instance);
+        //Vector3 centerOffset = bounds.center;
+        //instance.transform.localPosition = -centerOffset;
+
+        //// ✅ 將模型定位到相機前方
+        //float modelRadius = bounds.extents.magnitude;
+        //float distance = Mathf.Clamp(modelRadius / Mathf.Tan(Mathf.Deg2Rad * previewCamera.fieldOfView * 0.5f), 1f, 10f);
+
+        //Vector3 camForward = previewCamera.transform.forward;
+        //modelRoot.position = previewCamera.transform.position + camForward * distance;
+        //modelRoot.rotation = Quaternion.identity;
 
         // ✅ 設定 Layer
         SetLayerRecursively(instance, LayerMask.NameToLayer("ItemPreview"));
 
-        Debug.Log($"✅ 模型已生成：{instance.name}，距離相機 {distance:F2}，位置 {modelRoot.position}");
+        //Debug.Log($"✅ 模型已生成：{instance.name}，距離相機 {distance:F2}，位置 {modelRoot.position}");
+        float actualDistance = Vector3.Distance(modelRoot.position, previewCamera.transform.position);
+        Debug.Log($"✅ 模型已生成：{instance.name}，距離相機 {actualDistance:F2}，位置 {modelRoot.position}");
     }
 
     private void SetLayerRecursively(GameObject obj, int newLayer)

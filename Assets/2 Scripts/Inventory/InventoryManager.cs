@@ -14,8 +14,10 @@ public class InventoryManager : MonoBehaviour
     public List<ItemData> items = new List<ItemData>();
 
     [Header("UI管理")]
-    [SerializeField][Tooltip("統一管理 ItemDetailUI")] private ItemDetailUI itemDetailUIPrefab;
-    private ItemDetailUI _itemDetailUI;
+    [SerializeField]
+    [Tooltip("ItemDetailUI 組件")]
+    private ItemDetailUI _itemDetailUI; // 現在直接引用組件
+
     public ItemDetailUI ItemDetailUI => _itemDetailUI;
 
 
@@ -32,21 +34,28 @@ public class InventoryManager : MonoBehaviour
             // 標記這個物件在載入場景時不要被銷毀
             DontDestroyOnLoad(gameObject);
 
-            // +++ 新增：創建 ItemDetailUI 實例 +++
-            CreateItemDetailUI();
+            // +++ 修改：直接獲取組件 +++
+            InitializeItemDetailUI();
         }
     }
 
     /// <summary>
-    /// 創建並管理 ItemDetailUI
+    /// 初始化 ItemDetailUI 組件
     /// </summary>
-    private void CreateItemDetailUI()
+    private void InitializeItemDetailUI()
     {
-        if (_itemDetailUI == null && itemDetailUIPrefab != null)
+        // 尝试从当前游戏对象获取组件
+        _itemDetailUI = GetComponent<ItemDetailUI>();
+
+        if (_itemDetailUI == null)
         {
-            _itemDetailUI = Instantiate(itemDetailUIPrefab, transform);
-            _itemDetailUI.gameObject.SetActive(false); //默認背包UI顯示關閉
+            // 如果找不到，直接在当前游戏对象上添加组件
+            _itemDetailUI = gameObject.AddComponent<ItemDetailUI>();
+            Debug.LogWarning("自动添加 ItemDetailUI 组件到 InventoryManager，请配置 UI 元素");
         }
+
+        // 确保 UI 默认关闭
+        _itemDetailUI.enabled = false;
     }
 
 
