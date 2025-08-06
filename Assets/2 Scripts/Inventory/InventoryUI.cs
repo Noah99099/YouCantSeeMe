@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -7,23 +9,71 @@ public class InventoryUI : MonoBehaviour
     public GameObject inventoryPanel; // 整個背包 UI 的面板
     public Transform itemsContainer;  // 用來放置所有物品格子的容器
     public GameObject itemSlotPrefab; // 單一物品格子的 Prefab
-    [SerializeField] private ItemDetailUI itemDetailUI; // 在 Inspector 指定
+
+    // +++ 新增：物件池系統 +++
+    private Queue<GameObject> itemSlotPool = new Queue<GameObject>();
+    private List<GameObject> activeSlots = new List<GameObject>();
+    private const int INITIAL_POOL_SIZE = 20;
+
+    private bool isInventoryVisible; //面板是否顯示
 
     void Start()
     {
-        // 訂閱 InventoryManager 的事件。當事件觸發時，呼叫 UpdateUI 方法
+        isInventoryVisible = inventoryPanel.activeSelf; // inventoryPanel 在 Inspector 的顯示確認
         InventoryManager.Instance.OnInventoryChanged += UpdateUI;
 
-        inventoryPanel.SetActive(false); // 遊戲開始時預設關閉背包
+        // +++ 初始化物件池 +++
+        InitializeSlotPool();
 
-        if (itemDetailUI == null)
+        // 如果Inspector是打開的，需要更新一次UI然後再關掉面板
+        if (isInventoryVisible) 
         {
-            itemDetailUI = FindObjectOfType<ItemDetailUI>();
-            Debug.LogWarning("用程式動態綁定 ItemDetailUI");
-        }
+            UpdateUI();
+            ToggleInventory();
+        } 
+    }
 
-        InventoryManager.Instance.OnInventoryChanged += UpdateUI;
-        inventoryPanel.SetActive(false);
+    /// <summary>
+    /// 初始化物品格子物件池
+    /// </summary>
+    private void InitializeSlotPool()
+    {
+        for (int i = 0; i < INITIAL_POOL_SIZE; i++)
+        {
+            GameObject slot = CreateNewSlot();
+            itemSlotPool.Enqueue(slot);
+        }
+    }
+
+    // <summary>
+    /// 創建新格子（加入物件池）
+    /// </summary>
+    private GameObject CreateNewSlot()
+    {
+        GameObject slot = Instantiate(itemSlotPrefab, itemsContainer);
+        slot.SetActive(false);
+        return slot;
+    }
+
+    /// <summary>
+    /// 從物件池獲取格子
+    /// </summary>
+    private GameObject GetSlotFromPool()
+    {
+        if (itemSlotPool.Count > 0)
+        {
+            return itemSlotPool.Dequeue();
+        }
+        return CreateNewSlot();
+    }
+
+    /// <summary>
+    /// 歸還格子到物件池
+    /// </summary>
+    private void ReturnSlotToPool(GameObject slot)
+    {
+        slot.SetActive(false);
+        itemSlotPool.Enqueue(slot);
     }
 
     void OnDestroy()
@@ -49,11 +99,11 @@ public class InventoryUI : MonoBehaviour
     /// </summary>
     public void ToggleInventory()
     {
-        bool isActive = !inventoryPanel.activeSelf;
-        inventoryPanel.SetActive(isActive);
+        isInventoryVisible = !isInventoryVisible;
+        inventoryPanel.SetActive(isInventoryVisible);
 
         // --- 這裡就是關鍵 ---
-        if (isActive)
+        if (isInventoryVisible)
         {
             // 如果是打開背包，就進入 UI 模式
             CursorManager.EnterUIMode();
@@ -67,51 +117,56 @@ public class InventoryUI : MonoBehaviour
     }
 
     /// <summary>
-    /// 更新背包 UI 顯示
+    /// 使用物件池更新UI
     /// </summary>
     private void UpdateUI()
     {
-        // 1. 清空所有舊的格子
-        foreach (Transform child in itemsContainer)
+        // 1. 歸還不再需要的格子
+        for (int i = activeSlots.Count - 1; i >= 0; i--)
         {
-            Destroy(child.gameObject);
+            ReturnSlotToPool(activeSlots[i]);
         }
+        activeSlots.Clear();
 
-        // 2. 根據 InventoryManager 中的物品列表，重新生成所有格子
+        // 2. 從池中獲取並設置需要的格子
         foreach (ItemData item in InventoryManager.Instance.items)
         {
-            // 實例化一個物品格子 Prefab
-            GameObject slotInstance = Instantiate(itemSlotPrefab, itemsContainer);
+            GameObject slotInstance = GetSlotFromPool();
+            slotInstance.SetActive(true);
 
-            // 找到格子中的 Image 元件來設定圖示
-            // 假設 Prefab 中代表圖示的 Image 元件被命名為 "ItemIcon"
+            // 設置物品圖標
             Image itemIcon = slotInstance.transform.Find("ItemIcon")?.GetComponent<Image>();
-
             if (itemIcon != null)
             {
                 itemIcon.sprite = item.icon;
                 itemIcon.enabled = true;
             }
-            //讓格子支援滑鼠點擊
+
+            // 綁定點擊事件
             Button button = slotInstance.GetComponent<Button>();
             if (button != null)
             {
-                ItemData capturedItem = item; // 避免閉包錯誤
-                button.onClick.AddListener(() => ShowItemDetail(capturedItem));
-                Debug.Log($"[綁定點擊] {capturedItem.itemName}");
+                button.onClick.RemoveAllListeners(); // 清除舊監聽器
+                button.onClick.AddListener(() => ShowItemDetail(item));
             }
+
+            activeSlots.Add(slotInstance);
         }
     }
-    //顯示物件細節
-        private void ShowItemDetail(ItemData item)
+
+    /// <summary>
+    /// 顯示物品詳情（從InventoryManager獲取）
+    /// </summary>
+    private void ShowItemDetail(ItemData item)
     {
-        if (itemDetailUI != null)
+        // +++ 修改：從InventoryManager獲取ItemDetailUI +++
+        if (InventoryManager.Instance.ItemDetailUI != null)
         {
-            itemDetailUI.ShowItemDetail(item);
+            InventoryManager.Instance.ItemDetailUI.ShowItemDetail(item);
         }
         else
         {
-            Debug.LogWarning("ItemDetailUI 尚未指定！");
+            Debug.LogWarning("ItemDetailUI 不可用！");
         }
     }
 }

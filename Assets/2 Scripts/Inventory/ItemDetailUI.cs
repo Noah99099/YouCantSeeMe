@@ -35,10 +35,4 @@ public class ItemDetailUI : MonoBehaviour
     {
         detailPanel.SetActive(false);
     }
-
-    void Awake()
-    {
-        DontDestroyOnLoad(gameObject);
-    }
-
 }

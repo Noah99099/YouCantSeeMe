@@ -13,6 +13,12 @@ public class InventoryManager : MonoBehaviour
     // 儲存所有物品資料的 List
     public List<ItemData> items = new List<ItemData>();
 
+    [Header("UI管理")]
+    [SerializeField][Tooltip("統一管理 ItemDetailUI")] private ItemDetailUI itemDetailUIPrefab;
+    private ItemDetailUI _itemDetailUI;
+    public ItemDetailUI ItemDetailUI => _itemDetailUI;
+
+
     private void Awake()
     {
         // 如果場景中已經有一個 InventoryManager，就摧毀自己，確保永遠只有一個存在
@@ -25,8 +31,24 @@ public class InventoryManager : MonoBehaviour
             Instance = this;
             // 標記這個物件在載入場景時不要被銷毀
             DontDestroyOnLoad(gameObject);
+
+            // +++ 新增：創建 ItemDetailUI 實例 +++
+            CreateItemDetailUI();
         }
     }
+
+    /// <summary>
+    /// 創建並管理 ItemDetailUI
+    /// </summary>
+    private void CreateItemDetailUI()
+    {
+        if (_itemDetailUI == null && itemDetailUIPrefab != null)
+        {
+            _itemDetailUI = Instantiate(itemDetailUIPrefab, transform);
+            _itemDetailUI.gameObject.SetActive(false); //默認背包UI顯示關閉
+        }
+    }
+
 
     /// <summary>
     /// 新增物品到背包

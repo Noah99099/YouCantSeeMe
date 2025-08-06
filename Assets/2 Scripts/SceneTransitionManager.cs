@@ -18,7 +18,7 @@ public class SceneTransitionManager : MonoBehaviour
     public TextMeshProUGUI feedbackText;
 
     /// <summary>
-    /// 嘗試載入下一個場景（需具備所有條件物品）
+    /// 嘗試載入下一個場景（需具備所有條件物品）汶:應該是調查環節全部找完然後才能傳到審判場景的腳本
     /// </summary>
     public void AttemptToLoadNextScene()
     {
