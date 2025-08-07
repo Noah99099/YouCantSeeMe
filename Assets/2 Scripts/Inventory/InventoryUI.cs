@@ -115,9 +115,18 @@ public class InventoryUI : MonoBehaviour
 
     void Update()
     {
-        // 按下 B 鍵來開關背包
         if (Input.GetKeyDown(KeyCode.B))
         {
+            // 如果打開了 Inventory 且 ItemDetailPanel 也開著，就不執行 Toggle
+            if (isInventoryVisible && InventoryManager.Instance.ItemDetailUI != null)
+            {
+                if (InventoryManager.Instance.ItemDetailUI.detailPanel.activeSelf)
+                {
+                    Debug.Log("B 鍵按下，但 ItemDetailPanel 開啟中，忽略 ToggleInventory。");
+                    return;
+                }
+            }
+
             ToggleInventory();
             Debug.Log("當前背包面板顯示狀態：" + isInventoryVisible);
         }
@@ -128,14 +137,21 @@ public class InventoryUI : MonoBehaviour
     /// </summary>
     public void ToggleInventory()
     {
-        // +++ 基於實際狀態切換 +++
         if (inventoryPanel.activeSelf)
         {
-            CloseInventory();
+            // 檢查是否開啟了 ItemDetailPanel，若是就不關閉背包
+            if (InventoryManager.Instance.ItemDetailUI != null &&
+                InventoryManager.Instance.ItemDetailUI.detailPanel.activeSelf)
+            {
+                Debug.Log("無法關閉背包：ItemDetailPanel 仍然開啟中");
+                return;
+            }
+
+            CloseInventory(); // 正常關閉
         }
         else
         {
-            OpenInventory();
+            OpenInventory(); // 正常開啟
         }
     }
 
