@@ -11,11 +11,10 @@ public class DialogueNode : Node
     public string SpeakerName;
     public string DialogueText;
     public bool EntryPoint = false;
+    public bool EndPoint = false; 
     public Color NameColor;
     public Vector2 Position;
     
-    // 【*** 新增欄位 ***】
-    // 用來在 UI 上直接存取節點是否為重要
     public bool IsImportant; 
 
     private DialogueGraphView _graphView;
@@ -27,7 +26,7 @@ public class DialogueNode : Node
         _graphView = graphView;
         EntryPoint = isEntryPoint;
 
-        SetupNodeStyle();
+        SetupNodeContent();
 
         if (!isEntryPoint)
         {
@@ -36,20 +35,55 @@ public class DialogueNode : Node
             inputContainer.Add(inputPort);
         }
         
-        CreateContinuePort();
-        SetupNodeContent();
-        SetupChoiceManagement();
+        if (!EndPoint)
+        {
+            CreateContinuePort();
+            SetupChoiceManagementUI();
+        }
 
+        SetupNodeStyle();
         RefreshExpandedState();
         RefreshPorts();
     }
+    
+    public void SetAsEndPoint(bool isEndPoint)
+    {
+        EndPoint = isEndPoint;
+        if (EndPoint) EntryPoint = false; 
+        
+        outputContainer.Clear();
 
-    private void SetupNodeStyle()
+        if (!isEndPoint)
+        {
+            CreateContinuePort();
+            if (_choiceContainer != null && !extensionContainer.Contains(_choiceContainer))
+            {
+                extensionContainer.Add(_choiceContainer);
+            }
+        }
+        else
+        {
+            if (_choiceContainer != null && extensionContainer.Contains(_choiceContainer))
+            {
+                extensionContainer.Remove(_choiceContainer);
+            }
+        }
+        
+        SetupNodeStyle();
+        RefreshPorts();
+    }
+
+    public void SetupNodeStyle()
     {
         if (EntryPoint)
         {
             style.backgroundColor = new Color(0.2f, 0.8f, 0.2f, 0.3f);
             title = "📍 " + (string.IsNullOrEmpty(SpeakerName) ? "對話開始" : SpeakerName);
+        }
+        else if (EndPoint)
+        {
+            style.backgroundColor = new Color(0.8f, 0.2f, 0.2f, 0.3f);
+            title = "🛑 " + (string.IsNullOrEmpty(SpeakerName) ? "對話結束" : SpeakerName);
         }
         else
         {
@@ -59,9 +93,11 @@ public class DialogueNode : Node
 
         style.minWidth = 250;
     }
-
+    
     private void CreateContinuePort()
     {
+        if (outputContainer.Query<Port>().ToList().Any(p => p.portName == "繼續")) return;
+
         var continuePort = InstantiatePort(Orientation.Horizontal, Direction.Output, Port.Capacity.Multi, typeof(string));
         continuePort.portName = "繼續";
         continuePort.portColor = Color.green;
@@ -70,53 +106,26 @@ public class DialogueNode : Node
 
     private void SetupNodeContent()
     {
-        var speakerNameTextField = new TextField("角色名稱:")
-        {
-            value = SpeakerName
-        };
-        speakerNameTextField.style.marginBottom = 5;
-        speakerNameTextField.RegisterValueChangedCallback(evt =>
-        {
-            SpeakerName = evt.newValue;
-            title = EntryPoint ? "📍 " + SpeakerName : SpeakerName;
-        });
+        var speakerNameTextField = new TextField("角色名稱:") { value = SpeakerName };
+        speakerNameTextField.RegisterValueChangedCallback(evt => { SpeakerName = evt.newValue; SetupNodeStyle(); });
         titleContainer.Add(speakerNameTextField);
         
-        var dialogueTextArea = new TextField("對話內容:")
-        {
-            value = DialogueText,
-            multiline = true
-        };
+        var dialogueTextArea = new TextField("對話內容:") { value = DialogueText, multiline = true };
         dialogueTextArea.style.whiteSpace = WhiteSpace.Normal;
         dialogueTextArea.style.height = 80;
-        dialogueTextArea.style.marginBottom = 10;
         dialogueTextArea.RegisterValueChangedCallback(evt => DialogueText = evt.newValue);
         mainContainer.Add(dialogueTextArea);
         
-        var nameColorField = new ColorField("名稱顏色:")
-        {
-            value = NameColor
-        };
-        nameColorField.style.marginBottom = 10;
+        var nameColorField = new ColorField("名稱顏色:") { value = NameColor };
+        nameColorField.RegisterValueChangedCallback(evt => NameColor = evt.newValue);
         extensionContainer.Add(nameColorField);
 
-        // 【*** 新增 UI 元件 ***】
-        // 創建一個 Toggle (勾選框) 來設定 IsImportant 屬性
-        var importantToggle = new Toggle("重要節點 (跳過時停留)")
-        {
-            value = IsImportant // 初始值
-        };
-        importantToggle.style.marginTop = 5;
-        // 當勾選框的狀態改變時，更新節點的 IsImportant 變數
-        importantToggle.RegisterValueChangedCallback(evt =>
-        {
-            IsImportant = evt.newValue;
-        });
+        var importantToggle = new Toggle("重要節點 (跳過時停留)") { value = IsImportant };
+        importantToggle.RegisterValueChangedCallback(evt => IsImportant = evt.newValue);
         extensionContainer.Add(importantToggle);
     }
 
-    // ... (SetupChoiceManagement 及之後的所有方法保持不變) ...
-    private void SetupChoiceManagement()
+    private void SetupChoiceManagementUI()
     {
         _choiceContainer = new VisualElement();
         _choiceContainer.style.marginTop = 10;
@@ -124,32 +133,15 @@ public class DialogueNode : Node
         _choiceContainer.style.borderTopWidth = 1;
         _choiceContainer.style.borderTopColor = Color.gray;
         
-        var choiceLabel = new Label("對話選項:");
-        choiceLabel.style.unityFontStyleAndWeight = FontStyle.Bold;
-        choiceLabel.style.marginBottom = 5;
+        var choiceLabel = new Label("對話選項:") { style = { unityFontStyleAndWeight = FontStyle.Bold } };
         _choiceContainer.Add(choiceLabel);
 
-        _addChoiceButton = new Button(AddNewChoice)
-        {
-            text = "➕ 添加選項"
-        };
-        _addChoiceButton.style.backgroundColor = new Color(0.2f, 0.6f, 1f, 0.8f);
-        _addChoiceButton.style.color = Color.white;
-        _addChoiceButton.style.unityFontStyleAndWeight = FontStyle.Bold;
-        _addChoiceButton.style.height = 30;
-        _addChoiceButton.style.marginBottom = 5;
+        _addChoiceButton = new Button(AddNewChoice) { text = "➕ 添加選項" };
         _choiceContainer.Add(_addChoiceButton);
-
-        var helpText = new Label("💡 提示：添加選項後，玩家將看到多個選擇按鈕而不是「繼續」提示。");
-        helpText.style.fontSize = 11;
-        helpText.style.color = new Color(0.7f, 0.7f, 0.7f);
-        helpText.style.whiteSpace = WhiteSpace.Normal;
-        helpText.style.marginBottom = 5;
-        _choiceContainer.Add(helpText);
-
+        
         extensionContainer.Add(_choiceContainer);
     }
-
+    
     private void AddNewChoice()
     {
         string defaultChoiceName = $"選項 {GetChoicePortCount() + 1}";
@@ -169,62 +161,24 @@ public class DialogueNode : Node
         
         var portContainer = new VisualElement();
         portContainer.style.flexDirection = FlexDirection.Row;
-        portContainer.style.alignItems = Align.Center;
-        portContainer.style.marginBottom = 3;
         
-        var textField = new TextField()
-        {
-            value = portName
-        };
-        textField.style.flexGrow = 1;
-        textField.style.marginRight = 5;
-        textField.RegisterValueChangedCallback(evt =>
-        {
-            choicePort.portName = evt.newValue;
-        });
+        var textField = new TextField() { value = portName };
+        textField.RegisterValueChangedCallback(evt => choicePort.portName = evt.newValue);
         
-        var deleteButton = new Button(() =>
-        {
-            schedule.Execute(() => RemovePort(graphView, choicePort));
-        })
-        {
-            text = "🗑️"
-        };
-        deleteButton.style.width = 25;
-        deleteButton.style.height = 20;
-        deleteButton.style.backgroundColor = new Color(0.8f, 0.2f, 0.2f, 0.8f);
-        deleteButton.style.color = Color.white;
+        var deleteButton = new Button(() => schedule.Execute(() => RemovePort(graphView, choicePort))) { text = "🗑️" };
         
         portContainer.Add(textField);
         portContainer.Add(deleteButton);
         choicePort.contentContainer.Add(portContainer);
 
-        var continuePort = outputContainer.Query<Port>().ToList().FirstOrDefault(p => p.portName == "繼續");
-        if (continuePort != null)
-        {
-            var continueIndex = outputContainer.IndexOf(continuePort);
-            outputContainer.Insert(continueIndex, choicePort);
-        }
-        else
-        {
-            outputContainer.Add(choicePort);
-        }
-
-        RefreshExpandedState();
+        outputContainer.Add(choicePort);
         RefreshPorts();
-        UpdateAddChoiceButtonText();
+        UpdateContinuePortVisibility();
     }
     
     public void RemovePort(DialogueGraphView graphView, Port port)
     {
-        if (port == null) return;
-
-        if (port.portName == "繼續")
-        {
-            Debug.LogWarning("無法刪除「繼續」端口！");
-            return;
-        }
-
+        if (port == null || port.portName == "繼續") return;
         if (port.connected)
         {
             var edgesToRemove = port.connections.ToList();
@@ -233,25 +187,17 @@ public class DialogueNode : Node
                 graphView.RemoveElement(edge);
             }
         }
-        
         outputContainer.Remove(port);
-        RefreshExpandedState();
         RefreshPorts();
-        UpdateAddChoiceButtonText();
+        UpdateContinuePortVisibility();
     }
 
-    private void UpdateAddChoiceButtonText()
+    private void UpdateContinuePortVisibility()
     {
-        int choiceCount = GetChoicePortCount();
-        if (_addChoiceButton != null)
-        {
-            _addChoiceButton.text = choiceCount == 0 ? "➕ 添加選項" : $"➕ 添加選項 ({choiceCount})";
-        }
-        
         var continuePort = outputContainer.Query<Port>().ToList().FirstOrDefault(p => p.portName == "繼續");
         if (continuePort != null)
         {
-            continuePort.style.display = choiceCount > 0 ? DisplayStyle.None : DisplayStyle.Flex;
+            continuePort.style.display = GetChoicePortCount() > 0 ? DisplayStyle.None : DisplayStyle.Flex;
         }
     }
 
@@ -263,16 +209,13 @@ public class DialogueNode : Node
         }
     }
 
+    // 【*** 重新加入遺失的方法 ***】
+    // 這個方法會獲取節點上所有「選項」端口的名稱
     public List<string> GetChoicePortNames()
     {
         return outputContainer.Query<Port>().ToList()
             .Where(p => p.portName != "繼續")
             .Select(p => p.portName)
             .ToList();
-    }
-
-    public bool HasChoices()
-    {
-        return GetChoicePortCount() > 0;
     }
 }

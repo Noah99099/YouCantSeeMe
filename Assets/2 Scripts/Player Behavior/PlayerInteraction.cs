@@ -22,7 +22,9 @@ public class PlayerInteraction : MonoBehaviour
     [SerializeField]
     private bool showDebugRay = true;
 
-    private PlayerControls controls;
+    //private PlayerControls controls;
+    private UIInputManager inputManager;
+    private InputAction interactionAction;
     private Camera playerCamera;
     
     private GameObject currentInteractableObject = null;
@@ -34,24 +36,53 @@ public class PlayerInteraction : MonoBehaviour
 
     private void Awake()
     {
-        controls = new PlayerControls();
+        inputManager = FindObjectOfType<UIInputManager>();
+        if (inputManager == null)
+        {
+            Debug.LogError("找不到 UIInputManager 實例！請確認場景中存在一個。", this);
+            return;
+        }
+
         playerCamera = Camera.main;
+
+        // --- 修正點 3: 從 UIInputManager 取得共用的 InputActionAsset ---
+        var playerMap = inputManager.playerControls.FindActionMap("Player");
+        interactionAction = playerMap.FindAction("Interaction");
+        
+        // --- 修正點 4: 將事件訂閱從 OnEnable/OnDisable 移動到 Awake 或 Start ---
+        // 這是因為 Action Map 的啟用和禁用將由 UIInputManager 負責
+        interactionAction.performed += HandleInteraction;
     }
 
-    private void OnEnable()
+    private void OnDestroy()
     {
-        controls.Player.Enable();
-        controls.Player.Interaction.performed += HandleInteraction;
+        // 在腳本銷毀時取消訂閱，防止內存洩漏
+        if (interactionAction != null)
+        {
+            interactionAction.performed -= HandleInteraction;
+        }
     }
 
-    private void OnDisable()
-    {
-        controls.Player.Disable();
-        controls.Player.Interaction.performed -= HandleInteraction;
-    }
+    //private void OnEnable()
+    //{
+    //controls.Player.Enable();
+    //controls.Player.Interaction.performed += HandleInteraction;
+    //}
+
+    //private void OnDisable()
+    //{
+    //controls.Player.Disable();
+    //controls.Player.Interaction.performed -= HandleInteraction;
+    //}
 
     private void Update()
     {
+        // 只有在非 UI 模式下才進行連續的射線檢測
+        if (inputManager.IsInUIMode)
+        {
+            HidePrompt(); // 在 UI 模式下隱藏提示
+            return;
+        }
         ContinuousCheck();
     }
     
@@ -116,6 +147,12 @@ public class PlayerInteraction : MonoBehaviour
 
     private void HandleInteraction(InputAction.CallbackContext context)
     {
+        // 確保在 UI 模式下不執行任何互動邏輯
+        if (inputManager.IsInUIMode)
+        {
+            return;
+        }
+        
         Ray ray = new Ray(playerCamera.transform.position, playerCamera.transform.forward);
 
         if (Physics.Raycast(ray, out RaycastHit hit, interactionRange, interactionLayer))

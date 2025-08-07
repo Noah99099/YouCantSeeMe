@@ -21,6 +21,9 @@ public class DialogueNodeData
     [Tooltip("這個節點是否為對話的進入點")]
     public bool EntryPoint;
 
+    [Tooltip("這個節點是否為對話的結束點")]
+    public bool EndPoint;
+
     [Tooltip("角色名稱的字體樣式")]
     public SpeakerNameStyle NameStyle;
 

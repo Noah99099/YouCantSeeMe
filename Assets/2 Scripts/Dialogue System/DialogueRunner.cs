@@ -54,6 +54,17 @@ public class DialogueRunner : MonoBehaviour
 
     private void OnAutoPlayPerformed(InputAction.CallbackContext context) => ToggleAutoPlay();
     private void OnSkipPerformed(InputAction.CallbackContext context) => SkipToNextImportantNode();
+    private UIInputManager inputManager;
+
+    void Awake()
+    {
+        // 在 Awake() 中找到 UIInputManager 實例
+        inputManager = FindObjectOfType<UIInputManager>();
+        if (inputManager == null)
+        {
+            Debug.LogError("找不到 UIInputManager 實例！請確認場景中存在一個。", this);
+        }
+    }
 
     public void ToggleAutoPlay()
     {
@@ -277,16 +288,30 @@ public class DialogueRunner : MonoBehaviour
         if (link == null)
         {
             dialogueUI.Hide();
+            // 【✅ 修正：在對話結束時，強制回到準心模式】
+            FindObjectOfType<UIInputManager>()?.EnterGameplayMode();
             OnDialogueEnd?.Invoke();
             return;
         }
         var next = dialogueContainer.DialogueNodes.Find(n => n.Guid == link.TargetNodeGuid);
+        // 如果根據連線資料找不到目標節點 (可能該節點已被刪除)
+        if (next == null)
+        {
+            // 就將其視為對話的終點，並正常結束對話
+            EndDialogue($"找不到目標節點 (GUID: {link.TargetNodeGuid})，可能是一個懸空的連線。");
+            return;
+        }
         ShowNode(next);
     }
     public void StartDialogue()
     {
         if (dialogueContainer == null) { Debug.LogError("此 DialogueRunner 沒有被指派 DialogueContainerSO！", this); return; }
         if (dialogueUI != null) { dialogueUI.SetActiveRunner(this); }
+        
+        // 【✅ 修正：只呼叫一次】
+        // 這裡我們使用 FindObjectOfType，因為 DialogueRunner 可能不知道 UIInputManager
+        FindObjectOfType<UIInputManager>()?.EnterUIMode();
+
         OnDialogueStart?.Invoke();
         var entry = dialogueContainer.DialogueNodes.Find(n => n.EntryPoint);
         if (entry != null) ShowNode(entry);
@@ -294,8 +319,20 @@ public class DialogueRunner : MonoBehaviour
         {
             Debug.LogError("找不到對話進入點 (Entry Point)！", this);
             dialogueUI.Hide();
+            // 如果找不到進入點，也應該回到遊戲模式
             OnDialogueEnd?.Invoke();
+            FindObjectOfType<UIInputManager>()?.EnterGameplayMode();
         }
+    }
+    private void EndDialogue(string reason)
+    {
+        Debug.Log($"對話結束，原因: {reason}");
+        dialogueUI?.Hide();
+        
+        // 保留您對 UIInputManager 的呼叫
+        inputManager?.EnterGameplayMode();
+        
+        OnDialogueEnd?.Invoke();
     }
     public void SetVariable(string key, object value)
     {
@@ -362,9 +399,10 @@ public class DialogueRunner : MonoBehaviour
             }
         }
 
-        // 如果佇列被清空了，代表前方已無任何重要節點或選項，直接結束對話
         Debug.Log("找不到下一個重要節點或選項，對話結束。");
         dialogueUI.Hide();
+        // 【✅ 修正：在對話結束時，強制回到準心模式】
+        FindObjectOfType<UIInputManager>()?.EnterGameplayMode();
         OnDialogueEnd?.Invoke();
     }
 }

@@ -1,3 +1,5 @@
+// 檔案：DialogueGraphView.cs (最終修正版)
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -48,18 +50,36 @@ public class DialogueGraphView : GraphView
         return compatiblePorts;
     }
 
+    // 【*** 關鍵修改點 ***】
+    // 這個方法負責建立右鍵選單
     public override void BuildContextualMenu(ContextualMenuPopulateEvent evt)
     {
         var graphViewMousePosition = contentViewContainer.WorldToLocal(evt.mousePosition);
-        bool isEntryPoint = nodes.ToList().Count == 0;
         
-        evt.menu.AppendAction("新增對話節點", action => CreateNode("新的對話", isEntryPoint, graphViewMousePosition));
+        // 在空白處右鍵，只提供「新增節點」功能
+        evt.menu.AppendAction("新增對話節點", action => CreateNode("新的對話", nodes.ToList().Count == 0, graphViewMousePosition));
         
+        // 如果右鍵點擊的目標是一個 DialogueNode...
         if (evt.target is DialogueNode clickedNode)
         {
             evt.menu.AppendSeparator();
-            evt.menu.AppendAction("添加選項", action => AddChoicePort(clickedNode, $"選項 {clickedNode.GetChoicePortCount() + 1}"));
-            evt.menu.AppendAction("設為入口點", action => SetAsEntryPoint(clickedNode));
+            
+            // 只有在非結束點時，才顯示「添加選項」
+            if (!clickedNode.EndPoint)
+            {
+                evt.menu.AppendAction("添加選項", action => AddChoicePort(clickedNode, $"選項 {clickedNode.GetChoicePortCount() + 1}"));
+            }
+
+            // 只有在非結束點時，才顯示「設為入口點」
+            if (!clickedNode.EndPoint)
+            {
+                evt.menu.AppendAction("設為入口點", action => SetAsEntryPoint(clickedNode));
+            }
+            
+            // 新增「設為結束點」的選項，點擊後會呼叫 SetAsEndPoint 方法
+            evt.menu.AppendAction("設為結束點", action => SetAsEndPoint(clickedNode));
+            
+            evt.menu.AppendSeparator();
             evt.menu.AppendAction("複製節點", action => DuplicateNode(clickedNode, graphViewMousePosition));
         }
     }
@@ -75,7 +95,7 @@ public class DialogueGraphView : GraphView
             EntryPoint = isEntryPoint,
             Position = position,
             NameColor = Color.white,
-            IsImportant = false // 新建的節點預設不是重要節點
+            IsImportant = false
         };
         
         dialogueNode.Setup(this, isEntryPoint);
@@ -91,19 +111,31 @@ public class DialogueGraphView : GraphView
 
     private void SetAsEntryPoint(DialogueNode targetNode)
     {
-        foreach (var node in nodes.ToList().Cast<DialogueNode>())
+        // 確保目標節點不是結束點
+        if(targetNode.EndPoint)
         {
-            if (node != targetNode && node.EntryPoint)
-            {
-                node.EntryPoint = false;
-                node.style.backgroundColor = new Color(0.3f, 0.3f, 0.3f, 0.8f);
-                node.title = node.SpeakerName;
-            }
+            targetNode.SetAsEndPoint(false);
         }
         
-        targetNode.EntryPoint = true;
-        targetNode.style.backgroundColor = new Color(0.2f, 0.8f, 0.2f, 0.3f);
-        targetNode.title = "📍 " + targetNode.SpeakerName;
+        // 移除其他節點的入口點狀態
+        foreach (var node in nodes.ToList().Cast<DialogueNode>())
+        {
+            if (node == targetNode)
+            {
+                node.EntryPoint = true;
+            }
+            else
+            {
+                node.EntryPoint = false;
+            }
+            node.SetupNodeStyle(); // 統一呼叫樣式更新
+        }
+    }
+
+    private void SetAsEndPoint(DialogueNode targetNode)
+    {
+        // 切換目標節點的結束點狀態
+        targetNode.SetAsEndPoint(!targetNode.EndPoint);
     }
 
     private void DuplicateNode(DialogueNode originalNode, Vector2 position)
@@ -115,18 +147,22 @@ public class DialogueGraphView : GraphView
             SpeakerName = originalNode.SpeakerName + " (複製)",
             GUID = Guid.NewGuid().ToString(),
             EntryPoint = false,
+            EndPoint = originalNode.EndPoint,
             Position = position + new Vector2(50, 50),
             NameColor = originalNode.NameColor,
-            IsImportant = originalNode.IsImportant // 複製時也複製重要狀態
+            IsImportant = originalNode.IsImportant
         };
         
         newNode.Setup(this, false);
         newNode.SetPosition(new Rect(position + new Vector2(50, 50), new Vector2(_nodeWidth, 200)));
         
-        var choiceNames = originalNode.GetChoicePortNames();
-        foreach (var choiceName in choiceNames)
+        if (!newNode.EndPoint)
         {
-            AddChoicePort(newNode, choiceName);
+            var choiceNames = originalNode.GetChoicePortNames();
+            foreach (var choiceName in choiceNames)
+            {
+                AddChoicePort(newNode, choiceName);
+            }
         }
         
         AddElement(newNode);
@@ -162,9 +198,9 @@ public class DialogueGraphView : GraphView
                 DialogueText = node.DialogueText,
                 SpeakerName = node.SpeakerName,
                 EntryPoint = node.EntryPoint,
+                EndPoint = node.EndPoint,
                 Position = node.GetPosition().position,
                 NameColor = node.NameColor,
-                // 【*** 儲存 IsImportant 狀態 ***】
                 IsImportant = node.IsImportant 
             });
         }
@@ -192,9 +228,9 @@ public class DialogueGraphView : GraphView
                 DialogueText = nodeData.DialogueText,
                 SpeakerName = nodeData.SpeakerName,
                 EntryPoint = nodeData.EntryPoint,
+                EndPoint = nodeData.EndPoint,
                 NameColor = nodeData.NameColor,
                 Position = nodeData.Position,
-                // 【*** 載入 IsImportant 狀態 ***】
                 IsImportant = nodeData.IsImportant 
             };
             
@@ -222,7 +258,7 @@ public class DialogueGraphView : GraphView
         foreach (var kvp in nodeChoices)
         {
             var node = nodes.ToList().Cast<DialogueNode>().FirstOrDefault(x => x.GUID == kvp.Key);
-            if (node != null)
+            if (node != null && !node.EndPoint)
             {
                 node.LoadChoicePorts(kvp.Value, this);
             }
