@@ -1,18 +1,19 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using UnityEngine.InputSystem;
+// using UnityEngine.InputSystem; // <-- 這行現在非必要，可以刪除
 
 public class DialogueManager : MonoBehaviour
 {
     [Header("全域資源參考")]
-    [Tooltip("請將專案中的 Player Controls Input Action Asset 拖曳到此處")]
-    [SerializeField] private InputActionAsset playerControls;
+    // 【修改】移除了對 playerControls 的引用，因為 UIInputManager 會處理
+    // [SerializeField] private InputActionAsset playerControls; 
+    
     [Tooltip("請將場景中掛載了 DialogueUI 腳本的物件拖曳到此處")]
     [SerializeField] private DialogueUI dialogueUI; 
 
     [Header("統一對話管理")]
-    [Tooltip("在此處設定 сцен中的所有對話及其觸發方式")]
+    [Tooltip("在此處設定場景中的所有對話及其觸發方式")]
     [SerializeField] private List<ManagedDialogue> managedDialogues = new List<ManagedDialogue>();
     
     [Header("全域設定")]
@@ -52,17 +53,26 @@ public class DialogueManager : MonoBehaviour
 
     private void InitializeRunners()
     {
+        // 找到場景中的 UIInputManager，以便將 playerControls 傳遞給 Runner
+        // 這是為了確保 Runner 和其他系統使用同一個 Input Asset
+        var inputManager = FindObjectOfType<UIInputManager>();
+        if (inputManager == null || inputManager.playerControls == null)
+        {
+            Debug.LogError("DialogueManager 找不到 UIInputManager 或其 playerControls 資源！ Runner 將無法接收輸入。", this);
+            return;
+        }
+
         foreach (var dialogue in managedDialogues)
         {
-            if (dialogue == null) continue;
-            if (dialogue.DialogueContainer == null) continue;
+            if (dialogue == null || dialogue.DialogueContainer == null) continue;
 
             var runnerGO = new GameObject($"Runner_{dialogue.DialogueContainer.name}");
             runnerGO.transform.SetParent(this.transform);
             
             var runner = runnerGO.AddComponent<DialogueRunner>();
             runner.SetDialogue(dialogue.DialogueContainer);
-            runner.SetPlayerControls(playerControls);
+            // 將從 UIInputManager 來的共享 PlayerControls 傳給 Runner
+            runner.SetPlayerControls(inputManager.playerControls);
             runner.SetDialogueUI(dialogueUI);
             
             dialogue.Runner = runner;
@@ -119,6 +129,9 @@ public class DialogueManager : MonoBehaviour
     {
         if (pauseGameDuringDialogue) Time.timeScale = 0f;
         if (gameplayUI != null) gameplayUI.SetActive(false);
+
+        // 【最終修改】指揮 UIInputManager 進入 UI 模式
+        UIInputManager.Instance?.EnterUIMode();
     }
 
     private void OnAnyDialogueEnd(DialogueRunner dialogueRunner)
@@ -134,6 +147,9 @@ public class DialogueManager : MonoBehaviour
             }
             
             Debug.Log($"對話結束：{dialogue.Name}");
+
+            // 【最終修改】指揮 UIInputManager 回到遊戲模式
+            UIInputManager.Instance?.EnterGameplayMode();
         }
     }
 }

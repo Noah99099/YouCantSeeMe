@@ -265,6 +265,7 @@ public class DialogueRunner : MonoBehaviour
         }
         else
         {
+            Debug.Log("[DialogueRunner] 到達分支的終點，準備隱藏 UI 並結束對話。", this.gameObject);
             dialogueUI.Hide();
             OnDialogueEnd?.Invoke();
         }

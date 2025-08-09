@@ -9,51 +9,70 @@ public enum ViewType { Yang, Yin }
 
 public class ViewManager : MonoBehaviour
 {
-    [Header("µø³¥UI´£¥Ü")]
+    [Header("è¦–é‡UIæç¤º")]
     public GameObject yangUI;
     public GameObject yinUI;
-    public static ViewManager Instance { get; private set; } //¸}¥»³æ¨Ò¹ê¨Ò
+    public static ViewManager Instance { get; private set; } //ï¿½}ï¿½ï¿½ï¿½ï¿½Ò¹ï¿½ï¿½
     public static event Action<ViewType> OnViewChanged;
     public ViewType CurrentView { get; private set; } = ViewType.Yang;
-    private PlayerControls controls;
+    //private PlayerControls controls;
+    private InputAction viewAction;
 
     void Awake()
     {
-        if (Instance != null && Instance != this) //­Y Instasce¤£¬°ªÅ ¥B Instasce¤£¬°¸Ó¸}¥»
+        if (Instance != null && Instance != this) //ï¿½Y Instasceï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½B Instasceï¿½ï¿½ï¿½ï¿½ï¿½Ó¸}ï¿½ï¿½
         {
-            Destroy(gameObject); //§R°£¸Ó¹CÀ¸ª«¥ó
-            return; //µ²§ô³o­Óifªº§PÂ_
+            Destroy(gameObject); //ï¿½Rï¿½ï¿½ï¿½Ó¹Cï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+            return; //ï¿½ï¿½ï¿½ï¿½ï¿½oï¿½ï¿½ifï¿½ï¿½ï¿½Pï¿½_
         }
-        Instance = this; //¸Ó¸}¥»½á­Èµ¹Instasce
-        DontDestroyOnLoad(gameObject); //¸Ó¹CÀ¸ª«¥ó¤£¾P·´
-        controls = new PlayerControls();
+        Instance = this; //ï¿½Ó¸}ï¿½ï¿½ï¿½ï¿½Èµï¿½Instasce
+        DontDestroyOnLoad(gameObject); //ï¿½Ó¹Cï¿½ï¿½ï¿½ï¿½ï¿½ó¤£¾Pï¿½ï¿½
+        //controls = new PlayerControls();
 
-        yangUI.SetActive(true); //Àq»{¶§µø³¥
+        yangUI.SetActive(true); //ï¿½qï¿½{ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         yinUI.SetActive(false);
     }
 
-    void OnEnable()
+    void Start()
     {
-        controls.Player.Enable();
-        controls.Player.View.performed += OnViewPerformed;
-    } 
-    void OnDisable()
-    {
-        controls.Player.View.performed -= OnViewPerformed;
-        controls.Player.Disable();
+        // å¾å ´æ™¯ä¸­å”¯ä¸€çš„ UIInputManager ç²å–å…±äº«çš„ controls
+        UIInputManager inputManager = FindObjectOfType<UIInputManager>();
+        if (inputManager != null && inputManager.playerControls != null)
+        {
+            viewAction = inputManager.playerControls.FindActionMap("Player").FindAction("View");
+            if (viewAction != null)
+            {
+                viewAction.performed += OnViewPerformed;
+            }
+        }
+        else
+        {
+            Debug.LogError("åœ¨ ViewManager ä¸­æ‰¾ä¸åˆ° UIInputManager æˆ–å…¶ playerControlsï¼", this);
+        }
     }
+
+    //void OnEnable()
+    //{
+        //controls.Player.Enable();
+        //controls.Player.View.performed += OnViewPerformed;
+    //} 
+    //void OnDisable()
+    //{
+        //controls.Player.View.performed -= OnViewPerformed;
+        //controls.Player.Disable();
+    //}
     private void OnViewPerformed(InputAction.CallbackContext context)
     {
         ToggleView();
     }
     /// <summary>
-    /// ¤Á´«µø³¥
+    /// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     /// </summary>
     void ToggleView()
     {
         CurrentView = (CurrentView == ViewType.Yang) ? ViewType.Yin : ViewType.Yang;
         
-        //¼s¼½¨Æ¥ó
+        //ï¿½sï¿½ï¿½ï¿½Æ¥ï¿½
         OnViewChanged?.Invoke(CurrentView);
 
         yangUI.SetActive(CurrentView == ViewType.Yang);

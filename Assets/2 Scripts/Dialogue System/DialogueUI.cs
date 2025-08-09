@@ -167,13 +167,23 @@ public class DialogueUI : MonoBehaviour
 
     public void Hide()
     {
+        // --- 新增的除錯日誌 ---
+        Debug.Log($"[DialogueUI] Hide() 方法被呼叫。 dialoguePanel 物件是 {(dialoguePanel == null ? "NULL" : "已指派")}", this.gameObject);
+        // --- 結束新增 ---
+
         if (dialoguePanel != null)
+        {
             dialoguePanel.SetActive(false);
+            
+            // --- 新增的除錯日誌 ---
+            // 確認 panel 在被關閉後，在層級中的狀態是什麼
+            Debug.Log($"[DialogueUI] dialoguePanel.SetActive(false) 已執行。 Panel 的 activeInHierarchy 狀態為: {dialoguePanel.activeInHierarchy}");
+            // --- 結束新增 ---
+        }
         
         HideContinueIndicator();
         HideChoices();
     }
-
     public void FadeIn()
     {
         if (dialogueCanvasGroup != null)
