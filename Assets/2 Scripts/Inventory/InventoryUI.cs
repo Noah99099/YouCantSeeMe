@@ -1,14 +1,25 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 
 public class InventoryUI : MonoBehaviour
 {
+    [Header("功能：控制背包的物件格子UI，包含開關背包面板")]
     [Header("UI 元件")]
     public GameObject inventoryPanel; // 整個背包 UI 的面板
     public Transform itemsContainer;  // 用來放置所有物品格子的容器
     public GameObject itemSlotPrefab; // 單一物品格子的 Prefab
+    [Header("開啟背包的綁定")]
+    [SerializeField] private InputActionReference openInventoryAction;
+    [Header("關閉背包的綁定")]
+    [SerializeField] private InputActionReference closeInventoryAction;
+    [Header("導航背包物件的綁定")]
+    [SerializeField] private InputActionReference navigateAction;
+
+    private UIInputManager uiInputManager; // 取得管理 action map 的單例（若不存在會為 null）
 
     // +++ 新增：物件池系統 +++
     private Queue<GameObject> itemSlotPool = new Queue<GameObject>(); //閒置的 itemSlot 預設池，用來回收、重複使用格子
@@ -16,15 +27,26 @@ public class InventoryUI : MonoBehaviour
     private const int INITIAL_POOL_SIZE = 5;
 
     private bool isInventoryVisible; //面板是否顯示
+    int index = 0; //用在控制物件排順的變數
+
+    private void Awake()
+    {
+        // 嘗試取得 UIInputManager 的 Instance（若 UIInputManager 有設定為 singleton 且存在於場景中）
+        uiInputManager = UIInputManager.Instance;
+        if (uiInputManager == null)
+        {
+            Debug.LogWarning("[InventoryUI] 無法取得 UIInputManager.Instance — 請確認場景中有掛 UIInputManager，或其 Script Execution Order 比此腳本早。");
+        }
+    }
 
     void Start()
     {
-        // +++ 確保狀態同步 +++
-        isInventoryVisible = inventoryPanel.activeSelf;
+        inventoryPanel.SetActive(false); //初始化強制關閉面板
+
         Debug.Log("當前背包面板顯示狀態："+ isInventoryVisible);
 
         // 強制關閉面板（無論初始狀態）
-        CloseInventory();
+        //CloseInventory();
 
         // 初始化物件池（預先創建少量格子）
         InitializeSlotPool();
@@ -35,20 +57,93 @@ public class InventoryUI : MonoBehaviour
 
     private void OnEnable()
     {
-        // +++ 安全訂閱事件 +++
+        // 訂閱 InventoryManager 事件（如果存在）
         if (InventoryManager.Instance != null)
         {
-            InventoryManager.Instance.OnInventoryChanged -= UpdateUI; // 先取消避免重複
+            InventoryManager.Instance.OnInventoryChanged -= UpdateUI; // 先移除避免重複
             InventoryManager.Instance.OnInventoryChanged += UpdateUI;
+        }
+        else
+        {
+            Debug.LogWarning("[InventoryUI] InventoryManager.Instance 為 null，無法訂閱 OnInventoryChanged。");
+        }
+
+        // 訂閱 open action（加上 null 檢查，避免在 Inspector 沒設定時崩潰）
+        if (openInventoryAction != null && openInventoryAction.action != null)
+        {
+            openInventoryAction.action.performed += OnOpenInventory;
+            openInventoryAction.action.Enable();
+        }
+        else
+        {
+            Debug.LogWarning("[InventoryUI] openInventoryAction 未指派或 action 為 null。請在 Inspector 指派對應的 InputActionReference。");
+        }
+
+        // 訂閱 close action（同上）
+        if (closeInventoryAction != null && closeInventoryAction.action != null)
+        {
+            closeInventoryAction.action.performed += OnCloseInventory;
+            closeInventoryAction.action.Enable();
+        }
+        else
+        {
+            Debug.LogWarning("[InventoryUI] closeInventoryAction 未指派或 action 為 null。請在 Inspector 指派對應的 InputActionReference。");
+        }
+
+        if (navigateAction != null && navigateAction.action != null) //新增
+        {
+            navigateAction.action.Enable();
+            navigateAction.action.performed += OnNavigate;
         }
     }
     private void OnDisable()
     {
-        // +++ 安全取消訂閱 +++
+        // 取消訂閱 InventoryManager 事件
         if (InventoryManager.Instance != null)
         {
             InventoryManager.Instance.OnInventoryChanged -= UpdateUI;
         }
+
+        // 取消訂閱 open/close action（有 null 檢查）
+        if (openInventoryAction != null && openInventoryAction.action != null)
+        {
+            openInventoryAction.action.performed -= OnOpenInventory;
+            openInventoryAction.action.Disable();
+        }
+
+        if (closeInventoryAction != null && closeInventoryAction.action != null)
+        {
+            closeInventoryAction.action.performed -= OnCloseInventory;
+            closeInventoryAction.action.Disable();
+        }
+
+        if (navigateAction != null && navigateAction.action != null) //新增
+        {
+            navigateAction.action.performed -= OnNavigate;
+            navigateAction.action.Disable();
+        }
+    }
+    /// <summary>
+    /// 偵測按下開啟或關閉背包的按鍵（Player Action Map 裡的按鍵）
+    /// </summary>
+    private void OnOpenInventory(InputAction.CallbackContext context)
+    {
+        // 如果 ItemDetailPanel 開著，則忽略 toggle（邏輯保留）
+        if (isInventoryVisible && InventoryManager.Instance != null && InventoryManager.Instance.ItemDetailUI != null)
+        {
+            if (InventoryManager.Instance.ItemDetailUI.detailPanel.activeSelf)
+            {
+                Debug.Log("[InventoryUI] B 鍵按下，但 ItemDetailPanel 開啟中，忽略 ToggleInventory。");
+                return;
+            }
+        }
+
+        ToggleInventory();
+        Debug.Log("當前背包面板顯示狀態：" + isInventoryVisible);
+    }
+    private void OnCloseInventory(InputAction.CallbackContext context)
+    {
+        CloseInventory();
     }
 
     /// <summary>
@@ -56,7 +151,11 @@ public class InventoryUI : MonoBehaviour
     /// </summary>
     private void InitializeSlotPool()
     {
-        int inventorySize = InventoryManager.Instance.items.Count;
+        // 防守式：InventoryManager 可能還沒準備好
+        int inventorySize = 0;
+        if (InventoryManager.Instance != null && InventoryManager.Instance.items != null)
+            inventorySize = InventoryManager.Instance.items.Count;
+
         for (int i = 0; i < Mathf.Max(INITIAL_POOL_SIZE, inventorySize); i++)
         {
             GameObject slot = CreateNewSlot();
@@ -69,6 +168,7 @@ public class InventoryUI : MonoBehaviour
     /// </summary>
     private GameObject CreateNewSlot()
     {
+        // 如果 itemsContainer 為 null，Instantiate 會把物件放到根階層（仍可運作，但建議在 Inspector 指派）
         GameObject slot = Instantiate(itemSlotPrefab, itemsContainer);
         slot.SetActive(false);
         return slot;
@@ -79,10 +179,7 @@ public class InventoryUI : MonoBehaviour
     /// </summary>
     private GameObject GetSlotFromPool()
     {
-        if (itemSlotPool.Count > 0)
-        {
-            return itemSlotPool.Dequeue();
-        }
+        if (itemSlotPool.Count > 0) return itemSlotPool.Dequeue();
         return CreateNewSlot();
     }
 
@@ -113,37 +210,25 @@ public class InventoryUI : MonoBehaviour
         }
     }
 
-    void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.B))
-        {
-            // 如果打開了 Inventory 且 ItemDetailPanel 也開著，就不執行 Toggle
-            if (isInventoryVisible && InventoryManager.Instance.ItemDetailUI != null)
-            {
-                if (InventoryManager.Instance.ItemDetailUI.detailPanel.activeSelf)
-                {
-                    Debug.Log("B 鍵按下，但 ItemDetailPanel 開啟中，忽略 ToggleInventory。");
-                    return;
-                }
-            }
-
-            ToggleInventory();
-            Debug.Log("當前背包面板顯示狀態：" + isInventoryVisible);
-        }
-    }
-
+    #region → 開啟與關閉 InventoryPanel
     /// <summary>
-    /// 開關背包 UI
+    /// 處理開關背包 UI
     /// </summary>
     public void ToggleInventory()
     {
+        if (inventoryPanel == null)
+        {
+            Debug.LogError("[InventoryUI] 無法切換背包：inventoryPanel 未設定。");
+            return;
+        }
+
         if (inventoryPanel.activeSelf)
         {
-            // 檢查是否開啟了 ItemDetailPanel，若是就不關閉背包
-            if (InventoryManager.Instance.ItemDetailUI != null &&
-                InventoryManager.Instance.ItemDetailUI.detailPanel.activeSelf)
+            // 若 ItemDetailPanel 開著就不關 InventoryPanel
+            if (InventoryManager.Instance != null && InventoryManager.Instance.ItemDetailUI != null
+                && InventoryManager.Instance.ItemDetailUI.detailPanel.activeSelf)
             {
-                Debug.Log("無法關閉背包：ItemDetailPanel 仍然開啟中");
+                Debug.Log("[InventoryUI] 無法關閉背包：ItemDetailPanel 仍然開啟中");
                 return;
             }
 
@@ -154,48 +239,97 @@ public class InventoryUI : MonoBehaviour
             OpenInventory(); // 正常開啟
         }
     }
-
+    
     // +++ 分離開關邏輯 +++
-    private void OpenInventory()
+    private void OpenInventory() //打開背包面板
     {
         isInventoryVisible = true;
-        inventoryPanel.SetActive(true);
-        CursorManager.EnterUIMode();
+        if (inventoryPanel != null) inventoryPanel.SetActive(true);
+
+        // 優先使用 UIInputManager，如果沒有則降級使用 CursorManager（僅控制游標）
+        if (uiInputManager != null)
+        {
+            uiInputManager.EnterInventoryModeNoCursor();
+        }
+        else
+        {
+            Debug.LogWarning("[InventoryUI] 無法取得 UIInputManager，改用 CursorManager.EnterUIMode() 作為後備（僅控制游標）。");
+            CursorManager.EnterUIMode();
+        }
+
         UpdateUI(); // 打開時確保刷新
+
+        // 保險：如果有格子，開啟背包時一定選第一格
+        if (activeSlots.Count > 0)
+            EventSystem.current.SetSelectedGameObject(activeSlots[0]);
     }
 
-    private void CloseInventory()
+    private void CloseInventory() //關閉背包面板
     {
         isInventoryVisible = false;
-        inventoryPanel.SetActive(false);
-        CursorManager.EnterGameplayMode();
-        InventoryManager.Instance.ItemDetailUI?.ClearPreview();
-    }
+        if (inventoryPanel != null) inventoryPanel.SetActive(false);
 
+        if (uiInputManager != null)
+        {
+            uiInputManager.EnterGameplayMode();
+        }
+        else
+        {
+            Debug.LogWarning("[InventoryUI] 無法取得 UIInputManager，改用 CursorManager.EnterGameplayMode() 作為後備（僅控制游標）。");
+            CursorManager.EnterGameplayMode();
+        }
+
+        // 清除 ItemDetail 的預覽（如果存在）
+        if (InventoryManager.Instance != null)
+        {
+            InventoryManager.Instance.ItemDetailUI?.ClearPreview();
+        }
+    }
+    #endregion
+    
     /// <summary>
     /// 使用物件池更新UI
     /// </summary>
     private void UpdateUI()
     {
-        Debug.Log("更新 UI，物品數：" + InventoryManager.Instance.items.Count);
+        // 防守式：確保 InventoryManager 與 items 可用
+        if (InventoryManager.Instance == null || InventoryManager.Instance.items == null)
+        {
+            Debug.LogWarning("[InventoryUI] 無法更新 UI：InventoryManager 或 items 為 null。");
+            return;
+        }
 
-        // +++ 面板關閉時不更新可見元素 +++
+        Debug.Log("[InventoryUI] 更新 UI，物品數：" + InventoryManager.Instance.items.Count);
+
+        // 若面板關閉，跳過重建可見元素（優化）
         if (!isInventoryVisible) return;
 
-        // 1. 歸還不再需要的格子
+        // 歸還所有現有的 active slots 到 pool
         for (int i = activeSlots.Count - 1; i >= 0; i--)
         {
             ReturnSlotToPool(activeSlots[i]);
         }
         activeSlots.Clear();
 
-        // 2. 重新生成對應物品的格子
+
+        
+        // 生成對應物品數的格子
         foreach (ItemData item in InventoryManager.Instance.items)
         {
             GameObject slot = GetSlotFromPool();
             slot.SetActive(true);
             SetupSlot(slot, item);
+
+            slot.transform.SetSiblingIndex(index);  // 強制排序
             activeSlots.Add(slot);
+
+            index++;
+        }
+
+        // 新增：如果有格子，就自動選中第一個
+        if (activeSlots.Count > 0)
+        {
+            EventSystem.current.SetSelectedGameObject(activeSlots[0]);
         }
     }
 
@@ -221,6 +355,8 @@ public class InventoryUI : MonoBehaviour
             button.onClick.RemoveAllListeners();
             button.onClick.AddListener(() => ShowItemDetail(item));
         }
+
+        slot.transform.SetSiblingIndex(index);
     }
 
     /// <summary>
@@ -237,5 +373,12 @@ public class InventoryUI : MonoBehaviour
         {
             Debug.LogWarning("ItemDetailUI 不可用！");
         }
+    }
+
+    private void OnNavigate(InputAction.CallbackContext context) //新增
+    {
+        Vector2 move = context.ReadValue<Vector2>();
+        // 可以用這個值移動選取，或呼叫 EventSystem.current.SetSelectedGameObject() 
+        Debug.Log("Navigate move: " + move);
     }
 }

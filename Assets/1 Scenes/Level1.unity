@@ -506,7 +506,7 @@ GameObject:
   - component: {fileID: 74697276}
   m_Layer: 5
   m_Name: Setting
-  m_TagString: Untagged
+  m_TagString: NoSelect
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -544,7 +544,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Navigation:
-    m_Mode: 3
+    m_Mode: 0
     m_WrapAround: 0
     m_SelectOnUp: {fileID: 0}
     m_SelectOnDown: {fileID: 0}
@@ -1942,7 +1942,7 @@ GameObject:
   - component: {fileID: 368210404}
   m_Layer: 5
   m_Name: NextButton
-  m_TagString: Untagged
+  m_TagString: NoSelect
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1980,7 +1980,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Navigation:
-    m_Mode: 3
+    m_Mode: 0
     m_WrapAround: 0
     m_SelectOnUp: {fileID: 0}
     m_SelectOnDown: {fileID: 0}
@@ -2699,7 +2699,7 @@ GameObject:
   - component: {fileID: 597085489}
   m_Layer: 5
   m_Name: BagButton
-  m_TagString: Untagged
+  m_TagString: NoSelect
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -2737,7 +2737,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Navigation:
-    m_Mode: 3
+    m_Mode: 0
     m_WrapAround: 0
     m_SelectOnUp: {fileID: 0}
     m_SelectOnDown: {fileID: 0}
@@ -3378,6 +3378,12 @@ MonoBehaviour:
   inventoryPanel: {fileID: 656544612}
   itemsContainer: {fileID: 288002261}
   itemSlotPrefab: {fileID: 2823471164400299455, guid: eee0a1a4a9885d54b93f6085e7584613,
+    type: 3}
+  openInventoryAction: {fileID: 3983031988066161156, guid: 0c67ffdfc88b05643a7007cd03d06742,
+    type: 3}
+  closeInventoryAction: {fileID: 1337837542212814459, guid: 0c67ffdfc88b05643a7007cd03d06742,
+    type: 3}
+  navigateAction: {fileID: -7988375607852340018, guid: 0c67ffdfc88b05643a7007cd03d06742,
     type: 3}
 --- !u!1 &667035554
 GameObject:
@@ -21049,6 +21055,7 @@ GameObject:
   - component: {fileID: 1640733868}
   - component: {fileID: 1640733870}
   - component: {fileID: 1640733871}
+  - component: {fileID: 1640733872}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -21109,6 +21116,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 26f09dc652b63c6439deeedec5d20928, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &1640733872
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1640733867}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 78c59f7e68bd2dd4d953431a85e4b21d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  navigateAction: {fileID: -7988375607852340018, guid: 0c67ffdfc88b05643a7007cd03d06742,
+    type: 3}
+  selectSlotAction: {fileID: -3032102290367486902, guid: 0c67ffdfc88b05643a7007cd03d06742,
+    type: 3}
+  inventoryPanel: {fileID: 656544612}
 --- !u!1 &1685303895
 GameObject:
   m_ObjectHideFlags: 0
@@ -21545,6 +21569,11 @@ MonoBehaviour:
   itemsContainer: {fileID: 288002261}
   itemSlotPrefab: {fileID: 2823471164400299455, guid: eee0a1a4a9885d54b93f6085e7584613,
     type: 3}
+  openInventoryAction: {fileID: 3983031988066161156, guid: 0c67ffdfc88b05643a7007cd03d06742,
+    type: 3}
+  closeInventoryAction: {fileID: 1337837542212814459, guid: 0c67ffdfc88b05643a7007cd03d06742,
+    type: 3}
+  navigateAction: {fileID: 0}
 --- !u!114 &1728009660
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -22269,7 +22298,7 @@ MonoBehaviour:
   m_TrackedDeviceOrientationAction: {fileID: 0}
   m_DeselectOnBackgroundClick: 1
   m_PointerBehavior: 0
-  m_CursorLockBehavior: 0
+  m_CursorLockBehavior: 1
   m_ScrollDeltaPerTick: 6
 --- !u!1001 &1892862315
 PrefabInstance:

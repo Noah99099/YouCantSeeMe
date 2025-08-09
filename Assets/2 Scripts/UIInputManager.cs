@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
+[DefaultExecutionOrder(-10)] //更早初始化此腳本
 public class UIInputManager : MonoBehaviour
 {
     [Header("輸入資源")]
@@ -8,8 +9,12 @@ public class UIInputManager : MonoBehaviour
 
     private const string PLAYER_ACTION_MAP_NAME = "Player";
     private const string UI_ACTION_MAP_NAME = "UI";
-    
+    private const string INVENTORY_ACTION_MAP_NAME = "Inventory";
+
+
+    public bool IsInPlayerMode { get; private set; } = false;
     public bool IsInUIMode { get; private set; } = false;
+    public bool IsInInventoryMode { get; private set; } = false;
 
     // +++ 新增的程式碼 +++
     // 建立一個公開的靜態 Instance 變數，讓其他腳本可以存取
@@ -41,18 +46,24 @@ public class UIInputManager : MonoBehaviour
 
         // 遊戲一開始，預設進入遊戲模式
         playerControls.FindActionMap(UI_ACTION_MAP_NAME).Disable();
+        playerControls.FindActionMap(INVENTORY_ACTION_MAP_NAME).Disable();
         playerControls.FindActionMap(PLAYER_ACTION_MAP_NAME).Enable();
         CursorManager.EnterGameplayMode();
-        IsInUIMode = false; // 確保初始狀態正確
+        IsInPlayerMode = true;
+        IsInUIMode = false;
+        IsInInventoryMode = false;
     }
 
     public void EnterUIMode()
     {
         // if (IsInUIMode) return; // 這個判斷可以移除，讓呼叫更具確定性
         playerControls.FindActionMap(PLAYER_ACTION_MAP_NAME).Disable();
+        playerControls.FindActionMap(INVENTORY_ACTION_MAP_NAME).Disable();
         playerControls.FindActionMap(UI_ACTION_MAP_NAME).Enable();
         CursorManager.EnterUIMode();
         IsInUIMode = true;
+        IsInPlayerMode = false;
+        IsInInventoryMode = false;
         Debug.Log("遊戲模式切換為：UI 模式");
     }
 
@@ -60,9 +71,24 @@ public class UIInputManager : MonoBehaviour
     {
         // if (!IsInUIMode) return; // 這個判斷可以移除，讓呼叫更具確定性
         playerControls.FindActionMap(UI_ACTION_MAP_NAME).Disable();
+        playerControls.FindActionMap(INVENTORY_ACTION_MAP_NAME).Disable();
         playerControls.FindActionMap(PLAYER_ACTION_MAP_NAME).Enable();
         CursorManager.EnterGameplayMode();
+        IsInPlayerMode = true;
         IsInUIMode = false;
+        IsInInventoryMode = false;
         Debug.Log("遊戲模式切換為：Gameplay 模式");
+    }
+
+    public void EnterInventoryModeNoCursor() 
+    {
+        playerControls.FindActionMap(UI_ACTION_MAP_NAME).Disable();
+        playerControls.FindActionMap(PLAYER_ACTION_MAP_NAME).Disable();
+        playerControls.FindActionMap(INVENTORY_ACTION_MAP_NAME).Enable();
+        //CursorManager.EnterGameplayMode(); 
+        IsInInventoryMode = true;
+        IsInUIMode = false;
+        IsInPlayerMode = false;
+        Debug.Log("遊戲模式切換為：Inventory 模式");
     }
 }
