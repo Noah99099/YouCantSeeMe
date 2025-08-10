@@ -1,291 +1,181 @@
-// 檔案：DialogueGraphView.cs (最終修正版)
-
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
 using UnityEditor.Experimental.GraphView;
-using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
 
 public class DialogueGraphView : GraphView
 {
-    private DialogueContainerSO _currentDialogueContainer;
-    private readonly float _nodeWidth = 280f;
-
+    private Vector2 _newNodePosition;
+    
     public DialogueGraphView()
     {
-        this.AddManipulator(new ContentDragger());
-        this.AddManipulator(new ContentZoomer());
-        this.AddManipulator(new SelectionDragger());
-        this.AddManipulator(new RectangleSelector());
+        // 設定樣式，使其填滿整個編輯器視窗
+        style.flexGrow = 1;
 
+        // 設定縮放的最小和最大值
+        SetupZoom(ContentZoomer.DefaultMinScale, ContentZoomer.DefaultMaxScale);
+
+        // 【核心】加入操縱器
+        this.AddManipulator(new ContentDragger());    // 這個負責拖曳整個畫布 (平移)
+        this.AddManipulator(new SelectionDragger());  // 這個負責拖曳選中的元素 (節點)
+        this.AddManipulator(new RectangleSelector()); // 這個負責用滑鼠框選多個元素
+
+        // 加入網格背景
         var grid = new GridBackground();
         Insert(0, grid);
         grid.StretchToParentSize();
+
+        // 初始化節點創建的預設位置
+        _newNodePosition = new Vector2(100, 200);
+    }
+
+    public void PopulateView(DialogueContainerSO dialogueContainer)
+    {
+        graphViewChanged -= OnGraphViewChanged;
+        DeleteElements(graphElements);
+        graphViewChanged += OnGraphViewChanged;
+
+        if (dialogueContainer == null) return;
         
-        AddDialogueNodeStyles();
-    }
+        Debug.Log("--- 開始載入視圖 (PopulateView) ---");
+        Debug.Log($"準備載入 {dialogueContainer.Blocks.Count} 個區塊 (Blocks) 和 {dialogueContainer.NodeLinks.Count} 條連線 (Links)。");
 
-    private void AddDialogueNodeStyles()
-    {
-        var styleSheet = Resources.Load<StyleSheet>("DialogueNodeStyles");
-        if (styleSheet != null)
+        // 1. 創建節點
+        var createdNodes = new Dictionary<string, BlockNode>();
+        foreach (var blockData in dialogueContainer.Blocks)
         {
-            styleSheets.Add(styleSheet);
-        }
-    }
+            // 【監視點 1】印出剛從檔案讀取出來的原始資料
+            Debug.Log($"讀取 Block 資料: 名稱='{blockData.BlockName}', GUID='{blockData.GUID}', 指令數量={blockData.Commands.Count}");
 
-    public override List<Port> GetCompatiblePorts(Port startPort, NodeAdapter nodeAdapter)
-    {
-        var compatiblePorts = new List<Port>();
-        ports.ForEach(port =>
-        {
-            if (startPort.node != port.node && startPort.direction != port.direction)
+            var node = CreateBlockNode(blockData);
+
+            // 【監視點 2】印出創建完成後，節點實際持有的 GUID
+            Debug.Log($"創建 Node 物件: 名稱='{node.BlockData.BlockName}', 實際 GUID='{node.GUID}'");
+
+            // 【監視點 3】檢查是否有重複的 GUID 被創建，這是最可能出錯的地方
+            if (!string.IsNullOrEmpty(node.GUID) && createdNodes.ContainsKey(node.GUID))
             {
-                compatiblePorts.Add(port);
-            }
-        });
-        return compatiblePorts;
-    }
-
-    // 【*** 關鍵修改點 ***】
-    // 這個方法負責建立右鍵選單
-    public override void BuildContextualMenu(ContextualMenuPopulateEvent evt)
-    {
-        var graphViewMousePosition = contentViewContainer.WorldToLocal(evt.mousePosition);
-        
-        // 在空白處右鍵，只提供「新增節點」功能
-        evt.menu.AppendAction("新增對話節點", action => CreateNode("新的對話", nodes.ToList().Count == 0, graphViewMousePosition));
-        
-        // 如果右鍵點擊的目標是一個 DialogueNode...
-        if (evt.target is DialogueNode clickedNode)
-        {
-            evt.menu.AppendSeparator();
-            
-            // 只有在非結束點時，才顯示「添加選項」
-            if (!clickedNode.EndPoint)
-            {
-                evt.menu.AppendAction("添加選項", action => AddChoicePort(clickedNode, $"選項 {clickedNode.GetChoicePortCount() + 1}"));
-            }
-
-            // 只有在非結束點時，才顯示「設為入口點」
-            if (!clickedNode.EndPoint)
-            {
-                evt.menu.AppendAction("設為入口點", action => SetAsEntryPoint(clickedNode));
-            }
-            
-            // 新增「設為結束點」的選項，點擊後會呼叫 SetAsEndPoint 方法
-            evt.menu.AppendAction("設為結束點", action => SetAsEndPoint(clickedNode));
-            
-            evt.menu.AppendSeparator();
-            evt.menu.AppendAction("複製節點", action => DuplicateNode(clickedNode, graphViewMousePosition));
-        }
-    }
-
-    public void CreateNode(string nodeName, bool isEntryPoint, Vector2 position)
-    {
-        var dialogueNode = new DialogueNode
-        {
-            title = nodeName,
-            DialogueText = "新的對話內容",
-            SpeakerName = nodeName,
-            GUID = Guid.NewGuid().ToString(),
-            EntryPoint = isEntryPoint,
-            Position = position,
-            NameColor = Color.white,
-            IsImportant = false
-        };
-        
-        dialogueNode.Setup(this, isEntryPoint);
-        dialogueNode.SetPosition(new Rect(position, new Vector2(_nodeWidth, 200)));
-        
-        AddElement(dialogueNode);
-    }
-    
-    public void AddChoicePort(DialogueNode node, string portName)
-    {
-        node.AddChoicePort(this, portName);
-    }
-
-    private void SetAsEntryPoint(DialogueNode targetNode)
-    {
-        // 確保目標節點不是結束點
-        if(targetNode.EndPoint)
-        {
-            targetNode.SetAsEndPoint(false);
-        }
-        
-        // 移除其他節點的入口點狀態
-        foreach (var node in nodes.ToList().Cast<DialogueNode>())
-        {
-            if (node == targetNode)
-            {
-                node.EntryPoint = true;
+                Debug.LogError($"致命錯誤：偵測到重複的 GUID！GUID '{node.GUID}' 已經被節點 '{createdNodes[node.GUID].BlockData.BlockName}' 佔用。這是導致連線錯誤的直接原因。");
             }
             else
             {
-                node.EntryPoint = false;
+                createdNodes[node.GUID] = node;
             }
-            node.SetupNodeStyle(); // 統一呼叫樣式更新
         }
-    }
 
-    private void SetAsEndPoint(DialogueNode targetNode)
-    {
-        // 切換目標節點的結束點狀態
-        targetNode.SetAsEndPoint(!targetNode.EndPoint);
-    }
+        Debug.Log("--- 所有節點創建完畢，開始處理連線 ---");
 
-    private void DuplicateNode(DialogueNode originalNode, Vector2 position)
-    {
-        var newNode = new DialogueNode
+        // 2. 創建連線
+        foreach (var linkData in dialogueContainer.NodeLinks)
         {
-            title = originalNode.title + " (複製)",
-            DialogueText = originalNode.DialogueText,
-            SpeakerName = originalNode.SpeakerName + " (複製)",
-            GUID = Guid.NewGuid().ToString(),
-            EntryPoint = false,
-            EndPoint = originalNode.EndPoint,
-            Position = position + new Vector2(50, 50),
-            NameColor = originalNode.NameColor,
-            IsImportant = originalNode.IsImportant
-        };
-        
-        newNode.Setup(this, false);
-        newNode.SetPosition(new Rect(position + new Vector2(50, 50), new Vector2(_nodeWidth, 200)));
-        
-        if (!newNode.EndPoint)
-        {
-            var choiceNames = originalNode.GetChoicePortNames();
-            foreach (var choiceName in choiceNames)
+            Debug.Log($"嘗試連線: 來源GUID='{linkData.BaseNodeGuid}' -> 目標GUID='{linkData.TargetNodeGuid}'");
+            if (createdNodes.TryGetValue(linkData.BaseNodeGuid, out var sourceNode) && 
+                createdNodes.TryGetValue(linkData.TargetNodeGuid, out var targetNode))
             {
-                AddChoicePort(newNode, choiceName);
+                Debug.Log($"<color=green>連線成功</color>: 找到來源='{sourceNode.BlockData.BlockName}' 和 目標='{targetNode.BlockData.BlockName}'。");
+                var sourcePort = sourceNode.outputContainer.Q<Port>();
+                var targetPort = targetNode.inputContainer.Q<Port>();
+                var edge = sourcePort.ConnectTo(targetPort);
+                AddElement(edge);
+            }
+            else
+            {
+                Debug.LogError($"<color=red>連線失敗</color>: 找不到對應的 GUID。來源是否存在: {createdNodes.ContainsKey(linkData.BaseNodeGuid)}, 目標是否存在: {createdNodes.ContainsKey(linkData.TargetNodeGuid)}");
             }
         }
-        
-        AddElement(newNode);
+        Debug.Log("--- 載入視圖結束 ---");
     }
 
     public void Save(DialogueContainerSO dialogueContainer)
     {
+        if (dialogueContainer == null) return;
+
+        // 清除舊資料
+        dialogueContainer.Blocks.Clear();
         dialogueContainer.NodeLinks.Clear();
-        dialogueContainer.DialogueNodes.Clear();
 
-        var edges = new List<Edge>(this.edges.ToList());
-        foreach (var edge in edges)
+        var blockNodes = nodes.Cast<BlockNode>().ToList();
+        
+        // 1. 儲存節點
+        foreach (var node in blockNodes)
         {
-            var outputPort = edge.output;
-            var inputPort = edge.input;
-
-            if (outputPort?.node is DialogueNode baseNode && inputPort?.node is DialogueNode targetNode)
-            {
-                dialogueContainer.NodeLinks.Add(new NodeLinkData
-                {
-                    BaseNodeGuid = baseNode.GUID,
-                    TargetNodeGuid = targetNode.GUID,
-                    PortName = outputPort.portName
-                });
-            }
+            node.BlockData.GUID = node.GUID; 
+            node.BlockData.Position = node.GetPosition().position;
+            dialogueContainer.Blocks.Add(node.BlockData);
         }
         
-        foreach (var node in nodes.ToList().Cast<DialogueNode>())
+        // 2. 儲存連線
+        foreach (var edge in edges)
         {
-            dialogueContainer.DialogueNodes.Add(new DialogueNodeData
+            var sourceNode = edge.output.node as BlockNode;
+            var targetNode = edge.input.node as BlockNode;
+
+            if (sourceNode == null || targetNode == null) continue;
+
+            dialogueContainer.NodeLinks.Add(new NodeLinkData
             {
-                Guid = node.GUID,
-                DialogueText = node.DialogueText,
-                SpeakerName = node.SpeakerName,
-                EntryPoint = node.EntryPoint,
-                EndPoint = node.EndPoint,
-                Position = node.GetPosition().position,
-                NameColor = node.NameColor,
-                IsImportant = node.IsImportant 
+                BaseNodeGuid = sourceNode.GUID,
+                PortName = edge.output.portName,
+                TargetNodeGuid = targetNode.GUID
             });
         }
         
-        Debug.Log($"已儲存 {dialogueContainer.DialogueNodes.Count} 個節點和 {dialogueContainer.NodeLinks.Count} 個連線");
+        EditorUtility.SetDirty(dialogueContainer);
+        AssetDatabase.SaveAssets();
+    }
+    
+    private BlockNode CreateBlockNode(DialogueBlock block)
+    {
+        // 【關鍵修正】在載入時，檢查 GUID 是否因序列化問題而遺失。
+        // 如果遺失了 (變成空值或 null)，就立刻為它重新生成一個，確保它永遠有有效的ID。
+        if (string.IsNullOrEmpty(block.GUID))
+        {
+            Debug.LogWarning($"偵測到一個 Block (名稱: {block.BlockName}) 缺少 GUID，已為其自動生成一個新ID。");
+            block.GUID = Guid.NewGuid().ToString();
+        }
+
+        // 後續邏輯不變，現在傳入的 block 一定有 GUID
+        var node = new BlockNode(block);
+        node.SetPosition(new Rect(block.Position, new Vector2(250, 200)));
+        AddElement(node);
+
+        foreach (var command in block.Commands)
+        {
+            if (command is SayCommand sayCommand)
+            {
+                node.AddSayCommandUI(sayCommand);
+            }
+        }
+        return node;
+    }
+    // 【修改】右鍵創建新節點的邏輯
+    public override void BuildContextualMenu(ContextualMenuPopulateEvent evt)
+    {
+        var graphMousePosition = contentViewContainer.WorldToLocal(evt.mousePosition);
+        evt.menu.AppendAction("Create Block", (action) => 
+        {
+            // 【修正】創建新 Block 時，立即為其分配一個新的、隨機的 GUID
+            CreateBlockNode(new DialogueBlock 
+            { 
+                BlockName = "New Block",
+                GUID = Guid.NewGuid().ToString(), // 確保新節點有唯一的ID
+                Position = graphMousePosition
+            });
+        });
     }
 
-    public void LoadGraph(DialogueContainerSO dialogueContainer)
+    public override List<Port> GetCompatiblePorts(Port startPort, NodeAdapter nodeAdapter)
     {
-        DeleteElements(nodes.ToList());
-        DeleteElements(edges.ToList());
-        _currentDialogueContainer = dialogueContainer;
-
-        if (dialogueContainer.DialogueNodes == null || dialogueContainer.DialogueNodes.Count == 0) 
-        {
-            Debug.Log("對話容器為空，創建空白圖表");
-            return;
-        }
-
-        foreach (var nodeData in dialogueContainer.DialogueNodes)
-        {
-            var dialogueNode = new DialogueNode
-            {
-                GUID = nodeData.Guid,
-                DialogueText = nodeData.DialogueText,
-                SpeakerName = nodeData.SpeakerName,
-                EntryPoint = nodeData.EntryPoint,
-                EndPoint = nodeData.EndPoint,
-                NameColor = nodeData.NameColor,
-                Position = nodeData.Position,
-                IsImportant = nodeData.IsImportant 
-            };
-            
-            dialogueNode.Setup(this, dialogueNode.EntryPoint);
-            dialogueNode.SetPosition(new Rect(dialogueNode.Position, new Vector2(_nodeWidth, 200)));
-            AddElement(dialogueNode);
-        }
-
-        var nodeChoices = new Dictionary<string, List<string>>();
-        foreach (var linkData in dialogueContainer.NodeLinks)
-        {
-            if (linkData.PortName != "繼續")
-            {
-                if (!nodeChoices.ContainsKey(linkData.BaseNodeGuid))
-                {
-                    nodeChoices[linkData.BaseNodeGuid] = new List<string>();
-                }
-                if (!nodeChoices[linkData.BaseNodeGuid].Contains(linkData.PortName))
-                {
-                    nodeChoices[linkData.BaseNodeGuid].Add(linkData.PortName);
-                }
-            }
-        }
-
-        foreach (var kvp in nodeChoices)
-        {
-            var node = nodes.ToList().Cast<DialogueNode>().FirstOrDefault(x => x.GUID == kvp.Key);
-            if (node != null && !node.EndPoint)
-            {
-                node.LoadChoicePorts(kvp.Value, this);
-            }
-        }
-
-        foreach (var linkData in dialogueContainer.NodeLinks)
-        {
-            var baseNode = nodes.ToList().Cast<DialogueNode>().FirstOrDefault(x => x.GUID == linkData.BaseNodeGuid);
-            var targetNode = nodes.ToList().Cast<DialogueNode>().FirstOrDefault(x => x.GUID == linkData.TargetNodeGuid);
-
-            if (baseNode == null || targetNode == null)
-            {
-                Debug.LogWarning($"無法建立連線: 找不到節點 {linkData.BaseNodeGuid} 或 {linkData.TargetNodeGuid}");
-                continue;
-            }
-            
-            var outputPort = baseNode.outputContainer.Query<Port>().ToList()
-                .FirstOrDefault(p => p.portName == linkData.PortName);
-            var inputPort = targetNode.inputContainer.Q<Port>();
-            
-            if (outputPort != null && inputPort != null)
-            {
-                var newEdge = outputPort.ConnectTo(inputPort);
-                AddElement(newEdge);
-            }
-        }
-        
-        Debug.Log($"已載入 {dialogueContainer.DialogueNodes.Count} 個節點和 {dialogueContainer.NodeLinks.Count} 個連線");
+        return ports.ToList().Where(endPort =>
+            endPort.direction != startPort.direction &&
+            endPort.node != startPort.node).ToList();
+    }
+    
+    private GraphViewChange OnGraphViewChanged(GraphViewChange graphViewChange)
+    {
+        return graphViewChange;
     }
 }

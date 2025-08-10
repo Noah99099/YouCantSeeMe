@@ -71,8 +71,6 @@ public class DialogueManager : MonoBehaviour
             
             var runner = runnerGO.AddComponent<DialogueRunner>();
             runner.SetDialogue(dialogue.DialogueContainer);
-            // 將從 UIInputManager 來的共享 PlayerControls 傳給 Runner
-            runner.SetPlayerControls(inputManager.playerControls);
             runner.SetDialogueUI(dialogueUI);
             
             dialogue.Runner = runner;
@@ -130,8 +128,7 @@ public class DialogueManager : MonoBehaviour
         if (pauseGameDuringDialogue) Time.timeScale = 0f;
         if (gameplayUI != null) gameplayUI.SetActive(false);
 
-        // 【最終修改】指揮 UIInputManager 進入 UI 模式
-        UIInputManager.Instance?.EnterUIMode();
+        UIInputManager.Instance?.EnterDialogueMode();
     }
 
     private void OnAnyDialogueEnd(DialogueRunner dialogueRunner)

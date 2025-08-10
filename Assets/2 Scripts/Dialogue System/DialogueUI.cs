@@ -25,10 +25,76 @@ public class DialogueUI : MonoBehaviour
     [SerializeField] private CanvasGroup dialogueCanvasGroup;
     [SerializeField] private float fadeSpeed = 2f;
     private DialogueRunner activeRunner;
+    private Action _onDialogueComplete;
 
     // Awake 方法保持空白即可
     private void Awake()
     {
+    }
+    
+    public void ShowDialogue(SayCommand sayCommand, Action onComplete)
+    {
+        _onDialogueComplete = onComplete;
+
+        dialoguePanel.SetActive(true);
+        HideChoices();
+        ShowContinueIndicator(); 
+
+        // 【關鍵修正】取消註解並實作文字設定的邏輯
+        if (speakerNameText != null)
+        {
+            speakerNameText.text = sayCommand.SpeakerName; // 設定說話者名稱
+            speakerNameText.color = sayCommand.NameColor;  // 設定名稱顏色
+        }
+        
+        if (dialogueText != null)
+        {
+            dialogueText.text = sayCommand.DialogueText;   // 設定對話內容
+        }
+    }
+    
+    public void ShowChoices(List<ChoiceCommand.Choice> choices, Action<ChoiceCommand.Choice> onChoiceSelected)
+    {
+        // 確保先清空舊的選項按鈕
+        HideChoices();
+        HideContinueIndicator(); // 顯示選項時，不應顯示「繼續」提示
+
+        foreach (var choice in choices)
+        {
+            // 實例化按鈕 Prefab
+            GameObject buttonGO = Instantiate(choiceButtonPrefab, choiceButtonContainer);
+            
+            // 設定按鈕文字
+            var buttonText = buttonGO.GetComponentInChildren<TextMeshProUGUI>();
+            if (buttonText != null)
+            {
+                buttonText.text = choice.ChoiceText;
+            }
+
+            // 設定按鈕的點擊事件
+            var button = buttonGO.GetComponent<Button>();
+            if (button != null)
+            {
+                // 當按鈕被點擊時，呼叫傳入的 onChoiceSelected 回呼，並傳回被選擇的 choice
+                button.onClick.AddListener(() => {
+                    onChoiceSelected(choice);
+                    // 選擇後，再次清空所有選項按鈕
+                    HideChoices();
+                });
+            }
+        }
+    }
+
+    // 假設你有一個處理「繼續」按鈕的方法，或是由 DialogueRunner 呼叫
+    // 我們需要確保它能呼叫回呼
+    public void OnContinueClicked()
+    {
+        // 如果打字機還在跑，就先完成打字
+        // if (_isTyping) { CompleteTypewriter(); return; }
+
+        // 完成後，呼叫 onComplete 回呼，通知 DialogueRunner 繼續下一個指令
+        _onDialogueComplete?.Invoke();
+        _onDialogueComplete = null; // 清除回呼，避免重複呼叫
     }
 
     // SetActiveRunner 是唯一的入口點，用來設定UI與當前Runner的關聯
@@ -39,20 +105,19 @@ public class DialogueUI : MonoBehaviour
         // 動態設定「自動播放」按鈕的監聽事件
         if (autoPlayButton != null)
         {
-            autoPlayButton.onClick.RemoveAllListeners(); 
-            autoPlayButton.onClick.AddListener(() => activeRunner.ToggleAutoPlay());
+            autoPlayButton.onClick.RemoveAllListeners();
+            //autoPlayButton.onClick.AddListener(() => activeRunner.ToggleAutoPlay());
         }
 
-        // 【*** 關鍵修改 ***】
         // 動態設定「跳到下個重點」按鈕的監聽事件，呼叫新的方法
         if (skipModeButton != null)
         {
-            skipModeButton.onClick.RemoveAllListeners(); 
-            skipModeButton.onClick.AddListener(() => activeRunner.SkipToNextImportantNode());
+            skipModeButton.onClick.RemoveAllListeners();
+            //skipModeButton.onClick.AddListener(() => activeRunner.SkipToNextImportantNode());
         }
-        
+
         // 初始更新一次按鈕文字
-        UpdateModeButtons(activeRunner.IsAutoPlayEnabled, false);
+        //UpdateModeButtons(activeRunner.IsAutoPlayEnabled, false);
     }
 
     public void ShowNodeText(DialogueNodeData node, string textOverride = null)

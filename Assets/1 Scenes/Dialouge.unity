@@ -4854,6 +4854,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerControls: {fileID: -944628639613478452, guid: 0c67ffdfc88b05643a7007cd03d06742,
     type: 3}
+  dialogueUI: {fileID: 1518284043}
 --- !u!114 &850149771
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7645,11 +7646,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   dialogueUI: {fileID: 1518284043}
   managedDialogues:
-  - Name: "\u4E92\u52D5"
-    DialogueContainer: {fileID: 11400000, guid: 59e4051915aa6da4a9bf18523673af37,
+  - Name: "\u958B\u59CB"
+    DialogueContainer: {fileID: 11400000, guid: 693deaeb5d64fdf4d830addabe01509f,
       type: 2}
-    TriggerType: 1
-    InteractionTarget: {fileID: 1632578238}
+    TriggerType: 0
+    InteractionTarget: {fileID: 0}
     ZoneTarget: {fileID: 0}
     EventToListenFor: {fileID: 0}
     TriggerOnlyOnce: 1

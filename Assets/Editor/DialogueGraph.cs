@@ -24,10 +24,10 @@ public class DialogueGraph : EditorWindow
             // --- 核心修改 ---
             // 1. 取得視窗。這會自動觸發一次 OnEnable，建立一個空白的 UI 介面。
             var window = GetWindow<DialogueGraph>("Dialogue Graph");
-            
+
             // 2. 在視窗準備好之後，我們再手動命令它載入我們的資料。
-            window.LoadGraph(dialogue);
-            
+            window.PopulateView(dialogue);
+
             return true;
         }
         return false;
@@ -46,7 +46,7 @@ public class DialogueGraph : EditorWindow
         {
             name = "Dialogue Graph"
         };
-        
+
         _graphView.StretchToParentSize();
         rootVisualElement.Add(_graphView);
     }
@@ -55,9 +55,11 @@ public class DialogueGraph : EditorWindow
     {
         var toolbar = new Toolbar();
         toolbar.Add(new Button(() => SaveData()) { text = "儲存資料" });
+        toolbar.Add(new Button(() => _graphView.FrameAll()) { text = "置中全部節點" });
         rootVisualElement.Add(toolbar);
+
     }
-    
+
     private void SaveData()
     {
         if (_currentDialogueContainer == null)
@@ -69,14 +71,15 @@ public class DialogueGraph : EditorWindow
         EditorUtility.SetDirty(_currentDialogueContainer);
         AssetDatabase.SaveAssets();
     }
-    
+
     // 這個方法現在變成了公開的，以便 OnOpenAsset 可以呼叫它
-    public void LoadGraph(DialogueContainerSO dialogueContainer)
+    public void PopulateView(DialogueContainerSO dialogueContainer)
     {
         // 儲存對當前對話檔的引用
         _currentDialogueContainer = dialogueContainer;
-        
+
         // 呼叫 DialogueGraphView 的 LoadGraph 方法來載入資料
-        _graphView.LoadGraph(dialogueContainer);
+        _graphView.PopulateView(dialogueContainer);
     }
+
 }
