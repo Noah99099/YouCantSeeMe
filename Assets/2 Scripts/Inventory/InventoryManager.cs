@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System; // 需要引用 System 才能使用 Action
 
+[DefaultExecutionOrder(-15)] //更早初始化此腳本
 public class InventoryManager : MonoBehaviour
 {
     // --- 單例模式 (Singleton) ---
@@ -14,11 +15,11 @@ public class InventoryManager : MonoBehaviour
     public List<ItemData> items = new List<ItemData>();
 
     [Header("UI管理")]
-    [SerializeField]
-    [Tooltip("ItemDetailUI 組件")]
-    private ItemDetailUI _itemDetailUI; // 現在直接引用組件
+    [SerializeField][Tooltip("ItemDetailUI 腳本")] private ItemDetailUI _itemDetailUI; // 現在直接引用組件
+    [SerializeField][Tooltip("InventoryUI 腳本")] private InventoryUI _inventoryUI; // 現在直接引用組件
 
     public ItemDetailUI ItemDetailUI => _itemDetailUI;
+    public InventoryUI InventoryUI => _inventoryUI;
 
 
     private void Awake()
@@ -36,6 +37,33 @@ public class InventoryManager : MonoBehaviour
 
             // +++ 修改：直接獲取組件 +++
             InitializeItemDetailUI();
+            InitializeInventoryUI();
+        }
+    }
+    /// <summary>
+    /// 初始化 InventoryUI 組件
+    /// </summary>
+    private void InitializeInventoryUI()
+    {
+        if (_inventoryUI == null)
+        {
+            _inventoryUI = FindObjectOfType<InventoryUI>();
+            Debug.LogWarning("自动添加 InventoryUI 组件到 InventoryManager，请配置 UI 元素");
+            if (_inventoryUI == null) 
+            {
+                Debug.LogError("找不到 InventoryUI 組件！");
+                return;
+            }
+        }
+
+        // 關閉背包面板
+        if (_inventoryUI.inventoryPanel != null)
+        {
+            _inventoryUI.inventoryPanel.SetActive(false);
+        }
+        else
+        {
+            Debug.LogWarning("InventoryUI 的 inventoryPanel 未設定！");
         }
     }
 
@@ -65,13 +93,11 @@ public class InventoryManager : MonoBehaviour
     /// <param name="item">要新增的物品資料</param>
     public void AddItem(ItemData item)
     {
-        if (item != null)
+        if (item != null && !items.Contains(item)) //新增  && !items.Contains(item)
         {
             items.Add(item);
             Debug.Log($"已將 {item.itemName} 加入背包！");
-
-            // 觸發事件，通知所有訂閱者 (例如 UI) 背包已更新
-            OnInventoryChanged?.Invoke();
+            OnInventoryChanged?.Invoke(); // 觸發事件，通知所有訂閱者 (例如 UI) 背包已更新
         }
     }
 

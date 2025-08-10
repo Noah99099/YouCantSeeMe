@@ -1,4 +1,6 @@
 using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.InputSystem;
 using UnityEngine.UI;
 using UnityEngine.UIElements;
 
@@ -11,12 +13,13 @@ public class ItemDetailUI : MonoBehaviour
     public Text descriptionText;
     public RawImage modelPreview;
     public RenderTexture renderTexture;
+
     [Header("物件面板相機設置")]
     public Transform modelSpawnPoint; // 放置模型的位置
     public Camera previewCamera; // 專門拍攝模型的相機
+
     [Header("控制預覽物件腳本")]
     public ItemPreviewController previewController; // 記得在 Inspector 指定
-
 
     public void ShowItemDetail(ItemData item)
     {

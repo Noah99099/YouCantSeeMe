@@ -798,15 +798,6 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""initialStateCheck"": false
                 },
                 {
-                    ""name"": ""OpenItemDetail"",
-                    ""type"": ""Button"",
-                    ""id"": ""e3d87091-9fba-4467-8bd9-1198002c2d83"",
-                    ""expectedControlType"": """",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": false
-                },
-                {
                     ""name"": ""Zoom"",
                     ""type"": ""Value"",
                     ""id"": ""d19936d0-c167-46ac-9094-0500e4bfba06"",
@@ -960,28 +951,6 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
-                    ""id"": ""5e8d1048-ab0b-4c9d-90c5-11adef3f70d0"",
-                    ""path"": ""<Keyboard>/enter"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": "";鍵鼠"",
-                    ""action"": ""OpenItemDetail"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""b51e21d1-f13b-47d5-8d63-384bdbeabdbc"",
-                    ""path"": ""<Gamepad>/buttonSouth"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": "";Gamepad"",
-                    ""action"": ""OpenItemDetail"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
                     ""id"": ""ee7a6d7d-d319-4fa3-9db5-a8d9337498ce"",
                     ""path"": ""<Keyboard>/b"",
                     ""interactions"": """",
@@ -1108,7 +1077,6 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         m_Inventory_Navigate = m_Inventory.FindAction("Navigate", throwIfNotFound: true);
         m_Inventory_SelectSlot = m_Inventory.FindAction("SelectSlot", throwIfNotFound: true);
         m_Inventory_CloseInventory = m_Inventory.FindAction("CloseInventory", throwIfNotFound: true);
-        m_Inventory_OpenItemDetail = m_Inventory.FindAction("OpenItemDetail", throwIfNotFound: true);
         m_Inventory_Zoom = m_Inventory.FindAction("Zoom", throwIfNotFound: true);
         m_Inventory_CloseItemDetail = m_Inventory.FindAction("CloseItemDetail", throwIfNotFound: true);
     }
@@ -1531,7 +1499,6 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
     private readonly InputAction m_Inventory_Navigate;
     private readonly InputAction m_Inventory_SelectSlot;
     private readonly InputAction m_Inventory_CloseInventory;
-    private readonly InputAction m_Inventory_OpenItemDetail;
     private readonly InputAction m_Inventory_Zoom;
     private readonly InputAction m_Inventory_CloseItemDetail;
     /// <summary>
@@ -1557,10 +1524,6 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "Inventory/CloseInventory".
         /// </summary>
         public InputAction @CloseInventory => m_Wrapper.m_Inventory_CloseInventory;
-        /// <summary>
-        /// Provides access to the underlying input action "Inventory/OpenItemDetail".
-        /// </summary>
-        public InputAction @OpenItemDetail => m_Wrapper.m_Inventory_OpenItemDetail;
         /// <summary>
         /// Provides access to the underlying input action "Inventory/Zoom".
         /// </summary>
@@ -1604,9 +1567,6 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @CloseInventory.started += instance.OnCloseInventory;
             @CloseInventory.performed += instance.OnCloseInventory;
             @CloseInventory.canceled += instance.OnCloseInventory;
-            @OpenItemDetail.started += instance.OnOpenItemDetail;
-            @OpenItemDetail.performed += instance.OnOpenItemDetail;
-            @OpenItemDetail.canceled += instance.OnOpenItemDetail;
             @Zoom.started += instance.OnZoom;
             @Zoom.performed += instance.OnZoom;
             @Zoom.canceled += instance.OnZoom;
@@ -1633,9 +1593,6 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @CloseInventory.started -= instance.OnCloseInventory;
             @CloseInventory.performed -= instance.OnCloseInventory;
             @CloseInventory.canceled -= instance.OnCloseInventory;
-            @OpenItemDetail.started -= instance.OnOpenItemDetail;
-            @OpenItemDetail.performed -= instance.OnOpenItemDetail;
-            @OpenItemDetail.canceled -= instance.OnOpenItemDetail;
             @Zoom.started -= instance.OnZoom;
             @Zoom.performed -= instance.OnZoom;
             @Zoom.canceled -= instance.OnZoom;
@@ -1850,13 +1807,6 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnCloseInventory(InputAction.CallbackContext context);
-        /// <summary>
-        /// Method invoked when associated input action "OpenItemDetail" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
-        /// </summary>
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-        void OnOpenItemDetail(InputAction.CallbackContext context);
         /// <summary>
         /// Method invoked when associated input action "Zoom" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
         /// </summary>

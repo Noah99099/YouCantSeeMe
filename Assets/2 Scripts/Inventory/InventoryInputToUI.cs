@@ -7,37 +7,106 @@ using UnityEngine.UI;
 public class InventoryInputToUI : MonoBehaviour
 {
     [Header("Input Actions")]
-    //public InputActionReference navigateAction;    // 指向 Inventory Action Map 的 Navigate
-    public InputActionReference selectSlotAction;  // 指向 Inventory Action Map 的 SelectSlot
+    [Tooltip("Inventory Action Map 的 Navigate")] public InputActionReference navigateAction;
+    [Tooltip("Inventory Action Map 的 SelectSlot")] public InputActionReference selectSlotAction;
+    [Tooltip("Player Action Map 的 OpenInventory")] public InputActionReference openInventoryAction;
+    [Tooltip("Inventory Action Map 的 CloseInventory")] public InputActionReference closeInventoryAction;
+    [Tooltip("Inventory Action Map 的 CloseItemDetail")] public InputActionReference closeItemDetailAction;
 
-    [Header("Buttons Parent")]
-    public GameObject inventoryPanel;    // 包含所有 Inventory 按鈕的父物件
+    [Header("UI References")]
+    public GameObject inventoryPanel; // 包含所有 Inventory 按鈕的父物件
+    public ItemDetailUI itemDetailUI;
+    public InventoryUI inventoryUI;
 
     private List<Button> selectableButtons = new List<Button>();
     private int currentSelectedIndex = -1;
 
     private void OnEnable()
     {
-        //navigateAction.action.Enable();
-        selectSlotAction.action.Enable();
+        // 啟用所有動作
+        navigateAction?.action.Enable();
+        selectSlotAction?.action.Enable();
+        openInventoryAction?.action.Enable();
+        closeInventoryAction?.action.Enable();
+        closeItemDetailAction?.action.Enable();
 
-        //navigateAction.action.performed += OnNavigate;
+        // 訂閱事件
+        navigateAction.action.performed += OnNavigate;
         selectSlotAction.action.performed += OnSelectSlot;
+        openInventoryAction.action.performed += OnOpenInventory;
+        closeInventoryAction.action.performed += OnCloseInventory;
+        closeItemDetailAction.action.performed += OnCloseItemDetail;
 
         CacheSelectableButtons();
-
-        // 初始化選擇第一個可選按鈕
-        SelectFirstValidButton();
+        SelectFirstValidButton(); // 初始化選擇第一個可選按鈕
     }
 
     private void OnDisable()
     {
-        //navigateAction.action.performed -= OnNavigate;
+        navigateAction.action.performed -= OnNavigate;
         selectSlotAction.action.performed -= OnSelectSlot;
+        openInventoryAction.action.performed -= OnOpenInventory;
+        closeInventoryAction.action.performed -= OnCloseInventory;
+        closeItemDetailAction.action.performed -= OnCloseItemDetail;
 
-        //navigateAction.action.Disable();
-        selectSlotAction.action.Disable();
+        // 禁用所有動作
+        navigateAction?.action.Disable();
+        selectSlotAction?.action.Disable();
+        openInventoryAction?.action.Disable();
+        closeInventoryAction?.action.Disable();
+        closeItemDetailAction?.action.Disable();
     }
+    #region 輸入處理方法
+    private void OnNavigate(InputAction.CallbackContext context)
+    {
+        Vector2 navigationInput = context.ReadValue<Vector2>();
+        if (navigationInput == Vector2.zero) return;
+
+        if (selectableButtons.Count == 0) return;
+
+        // 向上 or 向左 移動選擇
+        if (navigationInput.y > 0 || navigationInput.x < 0)
+        {
+            MoveSelection(-1);
+        }
+        // 向下 or 向右 移動選擇
+        else if (navigationInput.y < 0 || navigationInput.x > 0)
+        {
+            MoveSelection(1);
+        }
+    }
+    private void OnSelectSlot(InputAction.CallbackContext context)
+    {
+        GameObject currentSelected = EventSystem.current.currentSelectedGameObject;
+        if (currentSelected == null) return;
+
+        Button btn = currentSelected.GetComponent<Button>();
+        if (btn == null || !btn.interactable) return;
+
+        // 正確呼叫 Button 的 OnSubmit，必須帶 BaseEventData 參數
+        BaseEventData eventData = new BaseEventData(EventSystem.current);
+        currentSelected.SendMessage("OnSubmit", eventData, SendMessageOptions.DontRequireReceiver);
+    }
+    private void OnOpenInventory(InputAction.CallbackContext context)
+    {
+        if (inventoryUI == null) return;
+        inventoryUI.ToggleInventory();
+    }
+
+    private void OnCloseInventory(InputAction.CallbackContext context)
+    {
+        if (itemDetailUI != null && itemDetailUI.detailPanel.activeSelf) return;
+        if (inventoryUI == null) return;
+        inventoryUI.CloseInventory();
+    }
+
+    private void OnCloseItemDetail(InputAction.CallbackContext context)
+    {
+        if (itemDetailUI == null) return;
+        itemDetailUI.HideItemDetail();
+        SelectFirstValidButton();
+    }
+    #endregion
 
     // 找出可選擇的按鈕，排除標籤 "NoSelect" 或導航模式為 None 的按鈕
     private void CacheSelectableButtons()
@@ -72,25 +141,6 @@ public class InventoryInputToUI : MonoBehaviour
         }
     }
 
-    private void OnNavigate(InputAction.CallbackContext context)
-    {
-        Vector2 navigationInput = context.ReadValue<Vector2>();
-        if (navigationInput == Vector2.zero) return;
-
-        if (selectableButtons.Count == 0) return;
-
-        // 向上 or 向左 移動選擇
-        if (navigationInput.y > 0 || navigationInput.x < 0)
-        {
-            MoveSelection(-1);
-        }
-        // 向下 or 向右 移動選擇
-        else if (navigationInput.y < 0 || navigationInput.x > 0)
-        {
-            MoveSelection(1);
-        }
-    }
-
     // 移動選擇焦點，跳過不可選按鈕
     private void MoveSelection(int direction)
     {
@@ -117,18 +167,5 @@ public class InventoryInputToUI : MonoBehaviour
                 return;
             }
         }
-    }
-
-    private void OnSelectSlot(InputAction.CallbackContext context)
-    {
-        GameObject currentSelected = EventSystem.current.currentSelectedGameObject;
-        if (currentSelected == null) return;
-
-        Button btn = currentSelected.GetComponent<Button>();
-        if (btn == null || !btn.interactable) return;
-
-        // 正確呼叫 Button 的 OnSubmit，必須帶 BaseEventData 參數
-        BaseEventData eventData = new BaseEventData(EventSystem.current);
-        currentSelected.SendMessage("OnSubmit", eventData, SendMessageOptions.DontRequireReceiver);
     }
 }
