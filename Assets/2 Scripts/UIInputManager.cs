@@ -186,6 +186,7 @@ public class UIInputManager : MonoBehaviour
     
     private void OnAdvanceDialogue(InputAction.CallbackContext context)
     {
+        Debug.Log("<color=magenta>--- OnAdvanceDialogue: 點擊訊號已收到！ ---</color>");
         // 只有在對話模式下才執行
         if (!IsInDialogueMode) return;
 

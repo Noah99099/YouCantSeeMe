@@ -1,7 +1,7 @@
 using UnityEditor.Experimental.GraphView;
 using UnityEngine.UIElements;
 using UnityEngine;
-using System.Collections.Generic; 
+using System.Collections.Generic;
 
 public class BlockNode : Node
 {
@@ -9,7 +9,7 @@ public class BlockNode : Node
     public string BlockName;
     public bool EntryPoint = false;
     public DialogueBlock BlockData;
-    
+
     // 用來存放所有指令UI的容器
     private VisualElement _commandsContainer;
 
@@ -27,17 +27,18 @@ public class BlockNode : Node
         var outputPort = InstantiatePort(Orientation.Horizontal, Direction.Output, Port.Capacity.Single, typeof(bool));
         outputPort.portName = "Next";
         outputContainer.Add(outputPort);
-        
+
         var titleLabel = this.Q<Label>("title-label");
         var titleContainer = this.Q("title");
         var titleField = new TextField { name = "title-field", value = this.title, isDelayed = true };
-        titleField.RegisterValueChangedCallback(evt => {
+        titleField.RegisterValueChangedCallback(evt =>
+        {
             this.title = evt.newValue;
             BlockData.BlockName = evt.newValue; // 改名只影響名稱，不影響 GUID
         });
         titleContainer.Insert(0, titleField);
         titleLabel.visible = false;
-        
+
         _commandsContainer = new VisualElement { name = "commands-container" };
         this.mainContainer.Add(_commandsContainer);
 
@@ -65,7 +66,8 @@ public class BlockNode : Node
 
         // 說話者名稱的輸入框
         var speakerField = new TextField("說話者 (Speaker)") { value = command.SpeakerName };
-        speakerField.RegisterValueChangedCallback(evt => {
+        speakerField.RegisterValueChangedCallback(evt =>
+        {
             command.SpeakerName = evt.newValue;
         });
         commandContainer.Add(speakerField);
@@ -73,22 +75,25 @@ public class BlockNode : Node
         // 對話內容的輸入框
         var dialogueField = new TextField("對話內容 (Text)") { value = command.DialogueText, multiline = true };
         dialogueField.style.minHeight = 40; // 讓多行輸入框有個初始高度
-        dialogueField.RegisterValueChangedCallback(evt => {
+        dialogueField.RegisterValueChangedCallback(evt =>
+        {
             command.DialogueText = evt.newValue;
         });
         commandContainer.Add(dialogueField);
-        
+
         // 刪除按鈕
-        var deleteButton = new Button(() => {
+        var deleteButton = new Button(() =>
+        {
             BlockData.Commands.Remove(command); // 從資料中移除
             _commandsContainer.Remove(commandContainer); // 從UI中移除
-        }) { text = "刪除此指令" };
+        })
+        { text = "刪除此指令" };
         commandContainer.Add(deleteButton);
-        
+
         // 將這個指令的UI容器，加入到節點的指令列表中
         _commandsContainer.Add(commandContainer);
     }
-    
+
     /// <summary>
     /// 處理按鈕點擊：創建新的 SayCommand 資料，並呼叫 UI 創建方法
     /// </summary>
@@ -107,4 +112,23 @@ public class BlockNode : Node
         // 3. 根據新的資料，創建對應的 UI
         AddSayCommandUI(newCommand);
     }
+    
+    public void SetEntryPointStyle(bool isEntryPoint)
+{
+    this.EntryPoint = isEntryPoint;
+    var titleStyle = this.Q("title").style;
+
+    if (isEntryPoint)
+    {
+        // 如果是入口點，設定為明亮的綠色，且不可刪除
+        titleStyle.backgroundColor = new StyleColor(new Color(0.2f, 0.8f, 0.2f, 0.8f));
+        this.capabilities &= ~Capabilities.Deletable;
+    }
+    else
+    {
+        // 如果不是入口點，還原為預設顏色，且可以被刪除
+        titleStyle.backgroundColor = new StyleColor(StyleKeyword.Null); 
+        this.capabilities |= Capabilities.Deletable;
+    }
+}
 }

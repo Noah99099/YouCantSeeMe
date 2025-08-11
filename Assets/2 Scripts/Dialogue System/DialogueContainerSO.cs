@@ -8,7 +8,6 @@ public class DialogueContainerSO : ScriptableObject
     public string DialogueName = "新的對話";
 
     [Header("對話區塊")]
+    // 【修改】現在只剩下 Blocks 列表
     public List<DialogueBlock> Blocks = new List<DialogueBlock>();
-    
-    public List<NodeLinkData> NodeLinks = new List<NodeLinkData>();
 }

@@ -54,10 +54,24 @@ public class DialogueGraph : EditorWindow
     private void GenerateToolbar()
     {
         var toolbar = new Toolbar();
+
+        var clearButton = new Button(() => {
+            if (_currentDialogueContainer != null)
+            {
+                _currentDialogueContainer.Blocks.Clear();
+                EditorUtility.SetDirty(_currentDialogueContainer);
+                AssetDatabase.SaveAssets();
+                Debug.Log($"已強制清除 '{_currentDialogueContainer.name}' 的所有資料！");
+                
+                // 【修正】在清除後，呼叫 PopulateView 來重新生成 Entry Block
+                PopulateView(_currentDialogueContainer); 
+            }
+        }) { text = "強制清除資料" };
+        toolbar.Add(clearButton);
+
         toolbar.Add(new Button(() => SaveData()) { text = "儲存資料" });
         toolbar.Add(new Button(() => _graphView.FrameAll()) { text = "置中全部節點" });
         rootVisualElement.Add(toolbar);
-
     }
 
     private void SaveData()
@@ -68,8 +82,10 @@ public class DialogueGraph : EditorWindow
             return;
         }
         _graphView.Save(_currentDialogueContainer);
-        EditorUtility.SetDirty(_currentDialogueContainer);
-        AssetDatabase.SaveAssets();
+
+        // 【關鍵修正】在儲存資產後，強制 Unity 刷新資產資料庫
+        // 這會確保 Play Mode 使用的是我們剛剛存檔的最新版本，而不是記憶體中的舊快取
+        AssetDatabase.Refresh(); 
     }
 
     // 這個方法現在變成了公開的，以便 OnOpenAsset 可以呼叫它

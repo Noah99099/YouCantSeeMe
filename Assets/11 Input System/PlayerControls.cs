@@ -911,24 +911,6 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             ""id"": ""5743ca70-f817-49f8-b2d1-9139833daa77"",
             ""actions"": [
                 {
-                    ""name"": ""AdvanceDialogue"",
-                    ""type"": ""PassThrough"",
-                    ""id"": ""bded18de-0291-4e80-af90-f28c262feca2"",
-                    ""expectedControlType"": ""Button"",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": true
-                },
-                {
-                    ""name"": ""Click"",
-                    ""type"": ""Button"",
-                    ""id"": ""316c6870-e9ad-40de-9039-ecd394e0f157"",
-                    ""expectedControlType"": """",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": false
-                },
-                {
                     ""name"": ""ToggleAutoPlay"",
                     ""type"": ""Button"",
                     ""id"": ""757f53a1-a68d-4028-af7b-334cf58cb4ad"",
@@ -954,64 +936,18 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""AdvanceDialogue"",
+                    ""type"": ""Button"",
+                    ""id"": ""48f5cd11-854e-4225-a99c-4213b00d6aad"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
-                {
-                    ""name"": """",
-                    ""id"": ""41b1095c-a063-40d4-8a6b-45cede6671cd"",
-                    ""path"": ""<Mouse>/leftButton"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": "";鍵鼠"",
-                    ""action"": ""AdvanceDialogue"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""bf1dbf5e-3761-48f3-aa44-bee7f051f521"",
-                    ""path"": ""<Keyboard>/space"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": "";鍵鼠"",
-                    ""action"": ""AdvanceDialogue"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""ba124b5e-c77f-4abe-9d5b-0fe9e3a9ee3b"",
-                    ""path"": ""<Gamepad>/buttonSouth"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": ""Gamepad"",
-                    ""action"": ""AdvanceDialogue"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""c4a029ab-d36f-47f7-af6e-377a45136266"",
-                    ""path"": ""<Mouse>/leftButton"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Click"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""82d822cf-4c79-4839-9d2a-b5900486f0d6"",
-                    ""path"": ""<Gamepad>/buttonSouth"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": "";Gamepad"",
-                    ""action"": ""Click"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
                 {
                     ""name"": """",
                     ""id"": ""71754ad8-98c0-413f-b431-51e6b3f7c43c"",
@@ -1077,6 +1013,39 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""action"": ""Pause"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""3bb35ef1-3a9c-48f8-9425-883146f20516"",
+                    ""path"": ""<Mouse>/leftButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";鍵鼠"",
+                    ""action"": ""AdvanceDialogue"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""d1f0e02a-525e-4243-a579-815dedab34dd"",
+                    ""path"": ""<Keyboard>/space"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";鍵鼠"",
+                    ""action"": ""AdvanceDialogue"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""ffc49452-1dc7-4b6e-948c-2f445f5d2ba0"",
+                    ""path"": ""<Gamepad>/buttonSouth"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Gamepad"",
+                    ""action"": ""AdvanceDialogue"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -1117,11 +1086,10 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         m_Inventory_CloseItemDetail = m_Inventory.FindAction("CloseItemDetail", throwIfNotFound: true);
         // Dialogue
         m_Dialogue = asset.FindActionMap("Dialogue", throwIfNotFound: true);
-        m_Dialogue_AdvanceDialogue = m_Dialogue.FindAction("AdvanceDialogue", throwIfNotFound: true);
-        m_Dialogue_Click = m_Dialogue.FindAction("Click", throwIfNotFound: true);
         m_Dialogue_ToggleAutoPlay = m_Dialogue.FindAction("ToggleAutoPlay", throwIfNotFound: true);
         m_Dialogue_ToggleSkipMode = m_Dialogue.FindAction("ToggleSkipMode", throwIfNotFound: true);
         m_Dialogue_Pause = m_Dialogue.FindAction("Pause", throwIfNotFound: true);
+        m_Dialogue_AdvanceDialogue = m_Dialogue.FindAction("AdvanceDialogue", throwIfNotFound: true);
     }
 
     ~@PlayerControls()
@@ -1625,11 +1593,10 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
     // Dialogue
     private readonly InputActionMap m_Dialogue;
     private List<IDialogueActions> m_DialogueActionsCallbackInterfaces = new List<IDialogueActions>();
-    private readonly InputAction m_Dialogue_AdvanceDialogue;
-    private readonly InputAction m_Dialogue_Click;
     private readonly InputAction m_Dialogue_ToggleAutoPlay;
     private readonly InputAction m_Dialogue_ToggleSkipMode;
     private readonly InputAction m_Dialogue_Pause;
+    private readonly InputAction m_Dialogue_AdvanceDialogue;
     /// <summary>
     /// Provides access to input actions defined in input action map "Dialogue".
     /// </summary>
@@ -1642,14 +1609,6 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         /// </summary>
         public DialogueActions(@PlayerControls wrapper) { m_Wrapper = wrapper; }
         /// <summary>
-        /// Provides access to the underlying input action "Dialogue/AdvanceDialogue".
-        /// </summary>
-        public InputAction @AdvanceDialogue => m_Wrapper.m_Dialogue_AdvanceDialogue;
-        /// <summary>
-        /// Provides access to the underlying input action "Dialogue/Click".
-        /// </summary>
-        public InputAction @Click => m_Wrapper.m_Dialogue_Click;
-        /// <summary>
         /// Provides access to the underlying input action "Dialogue/ToggleAutoPlay".
         /// </summary>
         public InputAction @ToggleAutoPlay => m_Wrapper.m_Dialogue_ToggleAutoPlay;
@@ -1661,6 +1620,10 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "Dialogue/Pause".
         /// </summary>
         public InputAction @Pause => m_Wrapper.m_Dialogue_Pause;
+        /// <summary>
+        /// Provides access to the underlying input action "Dialogue/AdvanceDialogue".
+        /// </summary>
+        public InputAction @AdvanceDialogue => m_Wrapper.m_Dialogue_AdvanceDialogue;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -1687,12 +1650,6 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         {
             if (instance == null || m_Wrapper.m_DialogueActionsCallbackInterfaces.Contains(instance)) return;
             m_Wrapper.m_DialogueActionsCallbackInterfaces.Add(instance);
-            @AdvanceDialogue.started += instance.OnAdvanceDialogue;
-            @AdvanceDialogue.performed += instance.OnAdvanceDialogue;
-            @AdvanceDialogue.canceled += instance.OnAdvanceDialogue;
-            @Click.started += instance.OnClick;
-            @Click.performed += instance.OnClick;
-            @Click.canceled += instance.OnClick;
             @ToggleAutoPlay.started += instance.OnToggleAutoPlay;
             @ToggleAutoPlay.performed += instance.OnToggleAutoPlay;
             @ToggleAutoPlay.canceled += instance.OnToggleAutoPlay;
@@ -1702,6 +1659,9 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @Pause.started += instance.OnPause;
             @Pause.performed += instance.OnPause;
             @Pause.canceled += instance.OnPause;
+            @AdvanceDialogue.started += instance.OnAdvanceDialogue;
+            @AdvanceDialogue.performed += instance.OnAdvanceDialogue;
+            @AdvanceDialogue.canceled += instance.OnAdvanceDialogue;
         }
 
         /// <summary>
@@ -1713,12 +1673,6 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         /// <seealso cref="DialogueActions" />
         private void UnregisterCallbacks(IDialogueActions instance)
         {
-            @AdvanceDialogue.started -= instance.OnAdvanceDialogue;
-            @AdvanceDialogue.performed -= instance.OnAdvanceDialogue;
-            @AdvanceDialogue.canceled -= instance.OnAdvanceDialogue;
-            @Click.started -= instance.OnClick;
-            @Click.performed -= instance.OnClick;
-            @Click.canceled -= instance.OnClick;
             @ToggleAutoPlay.started -= instance.OnToggleAutoPlay;
             @ToggleAutoPlay.performed -= instance.OnToggleAutoPlay;
             @ToggleAutoPlay.canceled -= instance.OnToggleAutoPlay;
@@ -1728,6 +1682,9 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @Pause.started -= instance.OnPause;
             @Pause.performed -= instance.OnPause;
             @Pause.canceled -= instance.OnPause;
+            @AdvanceDialogue.started -= instance.OnAdvanceDialogue;
+            @AdvanceDialogue.performed -= instance.OnAdvanceDialogue;
+            @AdvanceDialogue.canceled -= instance.OnAdvanceDialogue;
         }
 
         /// <summary>
@@ -1924,20 +1881,6 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
     public interface IDialogueActions
     {
         /// <summary>
-        /// Method invoked when associated input action "AdvanceDialogue" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
-        /// </summary>
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-        void OnAdvanceDialogue(InputAction.CallbackContext context);
-        /// <summary>
-        /// Method invoked when associated input action "Click" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
-        /// </summary>
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-        void OnClick(InputAction.CallbackContext context);
-        /// <summary>
         /// Method invoked when associated input action "ToggleAutoPlay" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
         /// </summary>
         /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
@@ -1958,5 +1901,12 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnPause(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "AdvanceDialogue" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnAdvanceDialogue(InputAction.CallbackContext context);
     }
 }

@@ -6,9 +6,6 @@ using UnityEngine;
 public class DialogueManager : MonoBehaviour
 {
     [Header("全域資源參考")]
-    // 【修改】移除了對 playerControls 的引用，因為 UIInputManager 會處理
-    // [SerializeField] private InputActionAsset playerControls; 
-    
     [Tooltip("請將場景中掛載了 DialogueUI 腳本的物件拖曳到此處")]
     [SerializeField] private DialogueUI dialogueUI; 
 
@@ -27,16 +24,8 @@ public class DialogueManager : MonoBehaviour
 
     private void Awake()
     {
-        if (Instance == null)
-        {
-            Instance = this;
-            DontDestroyOnLoad(gameObject);
-        }
-        else
-        {
-            Destroy(gameObject);
-            return;
-        }
+        //if (Instance == null) { Instance = this; DontDestroyOnLoad(gameObject); }
+        //else { Destroy(gameObject); return; }
         
         _originalTimeScale = Time.timeScale;
         InitializeRunners();
@@ -50,34 +39,26 @@ public class DialogueManager : MonoBehaviour
             StartManagedDialogue(dialogue);
         }
     }
-
     private void InitializeRunners()
     {
-        // 找到場景中的 UIInputManager，以便將 playerControls 傳遞給 Runner
-        // 這是為了確保 Runner 和其他系統使用同一個 Input Asset
-        var inputManager = FindObjectOfType<UIInputManager>();
-        if (inputManager == null || inputManager.playerControls == null)
-        {
-            Debug.LogError("DialogueManager 找不到 UIInputManager 或其 playerControls 資源！ Runner 將無法接收輸入。", this);
-            return;
-        }
-
         foreach (var dialogue in managedDialogues)
         {
             if (dialogue == null || dialogue.DialogueContainer == null) continue;
-
             var runnerGO = new GameObject($"Runner_{dialogue.DialogueContainer.name}");
             runnerGO.transform.SetParent(this.transform);
-            
             var runner = runnerGO.AddComponent<DialogueRunner>();
             runner.SetDialogue(dialogue.DialogueContainer);
             runner.SetDialogueUI(dialogueUI);
-            
             dialogue.Runner = runner;
             _runnerToDialogueMap[runner] = dialogue;
 
             runner.OnDialogueStart.AddListener(() => OnAnyDialogueStart(runner));
-            runner.OnDialogueEnd.AddListener(() => OnAnyDialogueEnd(runner));
+            
+            // 【關鍵】確認事件是否被接收的日誌
+            runner.OnDialogueEnd.AddListener(() => {
+                Debug.Log("<color=aqua>CHAIN_STEP_3: DialogueManager 成功接收到 OnDialogueEnd 事件！準備呼叫 OnAnyDialogueEnd()。</color>");
+                OnAnyDialogueEnd(runner);
+            });
         }
     }
 
@@ -127,25 +108,18 @@ public class DialogueManager : MonoBehaviour
     {
         if (pauseGameDuringDialogue) Time.timeScale = 0f;
         if (gameplayUI != null) gameplayUI.SetActive(false);
-
         UIInputManager.Instance?.EnterDialogueMode();
     }
 
     private void OnAnyDialogueEnd(DialogueRunner dialogueRunner)
     {
+        Debug.Log("<color=aqua>CHAIN_STEP_4: OnAnyDialogueEnd() 方法開始執行。</color>");
         if (_runnerToDialogueMap.TryGetValue(dialogueRunner, out ManagedDialogue dialogue))
         {
             if (pauseGameDuringDialogue) Time.timeScale = _originalTimeScale;
             if (gameplayUI != null) gameplayUI.SetActive(true);
-            
-            if (dialogue.TriggerOnlyOnce)
-            {
-                dialogue.HasBeenTriggered = true;
-            }
-            
-            Debug.Log($"對話結束：{dialogue.Name}");
-
-            // 【最終修改】指揮 UIInputManager 回到遊戲模式
+            if(dialogueUI != null) dialogueUI.Hide();
+            if (dialogue.TriggerOnlyOnce) { dialogue.HasBeenTriggered = true; }
             UIInputManager.Instance?.EnterGameplayMode();
         }
     }

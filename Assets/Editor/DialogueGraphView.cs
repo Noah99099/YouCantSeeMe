@@ -37,131 +37,99 @@ public class DialogueGraphView : GraphView
         graphViewChanged -= OnGraphViewChanged;
         DeleteElements(graphElements);
         graphViewChanged += OnGraphViewChanged;
-
         if (dialogueContainer == null) return;
         
-        Debug.Log("--- 開始載入視圖 (PopulateView) ---");
-        Debug.Log($"準備載入 {dialogueContainer.Blocks.Count} 個區塊 (Blocks) 和 {dialogueContainer.NodeLinks.Count} 條連線 (Links)。");
-
-        // 1. 創建節點
         var createdNodes = new Dictionary<string, BlockNode>();
+        
+        // 1. 創建節點
         foreach (var blockData in dialogueContainer.Blocks)
         {
-            // 【監視點 1】印出剛從檔案讀取出來的原始資料
-            Debug.Log($"讀取 Block 資料: 名稱='{blockData.BlockName}', GUID='{blockData.GUID}', 指令數量={blockData.Commands.Count}");
-
             var node = CreateBlockNode(blockData);
-
-            // 【監視點 2】印出創建完成後，節點實際持有的 GUID
-            Debug.Log($"創建 Node 物件: 名稱='{node.BlockData.BlockName}', 實際 GUID='{node.GUID}'");
-
-            // 【監視點 3】檢查是否有重複的 GUID 被創建，這是最可能出錯的地方
-            if (!string.IsNullOrEmpty(node.GUID) && createdNodes.ContainsKey(node.GUID))
-            {
-                Debug.LogError($"致命錯誤：偵測到重複的 GUID！GUID '{node.GUID}' 已經被節點 '{createdNodes[node.GUID].BlockData.BlockName}' 佔用。這是導致連線錯誤的直接原因。");
-            }
-            else
-            {
-                createdNodes[node.GUID] = node;
-            }
+            createdNodes[blockData.GUID] = node;
         }
 
-        Debug.Log("--- 所有節點創建完畢，開始處理連線 ---");
-
-        // 2. 創建連線
-        foreach (var linkData in dialogueContainer.NodeLinks)
+        // 2. 將列表中的第一個節點設為入口點樣式
+        if (dialogueContainer.Blocks.Count > 0 && createdNodes.ContainsKey(dialogueContainer.Blocks[0].GUID))
         {
-            Debug.Log($"嘗試連線: 來源GUID='{linkData.BaseNodeGuid}' -> 目標GUID='{linkData.TargetNodeGuid}'");
-            if (createdNodes.TryGetValue(linkData.BaseNodeGuid, out var sourceNode) && 
-                createdNodes.TryGetValue(linkData.TargetNodeGuid, out var targetNode))
+            createdNodes[dialogueContainer.Blocks[0].GUID].SetEntryPointStyle(true);
+        }
+
+        // 3. 創建連線
+        foreach (var blockData in dialogueContainer.Blocks)
+        {
+            if (!string.IsNullOrEmpty(blockData.NextBlockGuid))
             {
-                Debug.Log($"<color=green>連線成功</color>: 找到來源='{sourceNode.BlockData.BlockName}' 和 目標='{targetNode.BlockData.BlockName}'。");
-                var sourcePort = sourceNode.outputContainer.Q<Port>();
-                var targetPort = targetNode.inputContainer.Q<Port>();
-                var edge = sourcePort.ConnectTo(targetPort);
-                AddElement(edge);
-            }
-            else
-            {
-                Debug.LogError($"<color=red>連線失敗</color>: 找不到對應的 GUID。來源是否存在: {createdNodes.ContainsKey(linkData.BaseNodeGuid)}, 目標是否存在: {createdNodes.ContainsKey(linkData.TargetNodeGuid)}");
+                if (createdNodes.TryGetValue(blockData.GUID, out var sourceNode) && 
+                    createdNodes.TryGetValue(blockData.NextBlockGuid, out var targetNode))
+                {
+                    var sourcePort = sourceNode.outputContainer.Q<Port>();
+                    var targetPort = targetNode.inputContainer.Q<Port>();
+                    var edge = sourcePort.ConnectTo(targetPort);
+                    AddElement(edge);
+                }
             }
         }
-        Debug.Log("--- 載入視圖結束 ---");
     }
 
     public void Save(DialogueContainerSO dialogueContainer)
     {
         if (dialogueContainer == null) return;
 
-        // 清除舊資料
-        dialogueContainer.Blocks.Clear();
-        dialogueContainer.NodeLinks.Clear();
-
         var blockNodes = nodes.Cast<BlockNode>().ToList();
         
-        // 1. 儲存節點
+        // 清除舊的連線資料
         foreach (var node in blockNodes)
         {
-            node.BlockData.GUID = node.GUID; 
-            node.BlockData.Position = node.GetPosition().position;
-            dialogueContainer.Blocks.Add(node.BlockData);
+            node.BlockData.NextBlockGuid = null;
         }
-        
-        // 2. 儲存連線
+
+        // 根據畫面上的連線，重新寫入連線資料
         foreach (var edge in edges)
         {
             var sourceNode = edge.output.node as BlockNode;
             var targetNode = edge.input.node as BlockNode;
-
-            if (sourceNode == null || targetNode == null) continue;
-
-            dialogueContainer.NodeLinks.Add(new NodeLinkData
+            if (sourceNode != null && targetNode != null)
             {
-                BaseNodeGuid = sourceNode.GUID,
-                PortName = edge.output.portName,
-                TargetNodeGuid = targetNode.GUID
-            });
+                sourceNode.BlockData.NextBlockGuid = targetNode.GUID;
+            }
+        }
+        
+        // 將節點資料存入 Container 中
+        dialogueContainer.Blocks.Clear();
+        foreach (var node in blockNodes)
+        {
+            node.BlockData.Position = node.GetPosition().position;
+            dialogueContainer.Blocks.Add(node.BlockData);
         }
         
         EditorUtility.SetDirty(dialogueContainer);
-        AssetDatabase.SaveAssets();
     }
     
     private BlockNode CreateBlockNode(DialogueBlock block)
     {
-        // 【關鍵修正】在載入時，檢查 GUID 是否因序列化問題而遺失。
-        // 如果遺失了 (變成空值或 null)，就立刻為它重新生成一個，確保它永遠有有效的ID。
         if (string.IsNullOrEmpty(block.GUID))
         {
-            Debug.LogWarning($"偵測到一個 Block (名稱: {block.BlockName}) 缺少 GUID，已為其自動生成一個新ID。");
             block.GUID = Guid.NewGuid().ToString();
         }
-
-        // 後續邏輯不變，現在傳入的 block 一定有 GUID
         var node = new BlockNode(block);
         node.SetPosition(new Rect(block.Position, new Vector2(250, 200)));
         AddElement(node);
-
         foreach (var command in block.Commands)
         {
-            if (command is SayCommand sayCommand)
-            {
-                node.AddSayCommandUI(sayCommand);
-            }
+            if (command is SayCommand sayCommand) node.AddSayCommandUI(sayCommand);
         }
         return node;
     }
-    // 【修改】右鍵創建新節點的邏輯
+
     public override void BuildContextualMenu(ContextualMenuPopulateEvent evt)
     {
         var graphMousePosition = contentViewContainer.WorldToLocal(evt.mousePosition);
-        evt.menu.AppendAction("Create Block", (action) => 
+        evt.menu.AppendAction("創建區塊 (Create Block)", (action) => 
         {
-            // 【修正】創建新 Block 時，立即為其分配一個新的、隨機的 GUID
             CreateBlockNode(new DialogueBlock 
             { 
                 BlockName = "New Block",
-                GUID = Guid.NewGuid().ToString(), // 確保新節點有唯一的ID
+                GUID = Guid.NewGuid().ToString(),
                 Position = graphMousePosition
             });
         });
@@ -176,6 +144,37 @@ public class DialogueGraphView : GraphView
     
     private GraphViewChange OnGraphViewChanged(GraphViewChange graphViewChange)
     {
+        // 當有元素被刪除時 (這部分邏輯不變)
+        if (graphViewChange.elementsToRemove != null)
+        {
+            // 目前我們依靠儲存時重建所有資料，所以此處暫時不需要額外邏輯
+        }
+
+        // 當有連線被建立時
+        if (graphViewChange.edgesToCreate != null)
+        {
+            foreach (var edge in graphViewChange.edgesToCreate)
+            {
+                // 取得連線的來源節點
+                var sourceNode = edge.output.node as BlockNode;
+                if (sourceNode == null) continue;
+
+                // 【修正】從節點的 outputContainer 中，明確地查詢 Port 類型的物件
+                var outputPort = sourceNode.outputContainer.Q<Port>();
+                if (outputPort == null) continue;
+                
+                // 【修正】現在我們在正確的 Port 物件上，檢查其連線數量
+                if (outputPort.connections.Count() > 1)
+                {
+                    // 找到舊的連線 (即不是我們剛剛建立的這一條)
+                    var oldEdge = outputPort.connections.First(x => x != edge);
+                    
+                    // 將舊的連線從圖表中移除
+                    RemoveElement(oldEdge);
+                }
+            }
+        }
+
         return graphViewChange;
     }
 }
