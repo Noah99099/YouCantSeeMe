@@ -5,9 +5,9 @@ using UnityEngine;
 
 public class DialogueManager : MonoBehaviour
 {
-    [Header("全域資源參考")]
-    [Tooltip("請將場景中掛載了 DialogueUI 腳本的物件拖曳到此處")]
-    [SerializeField] private DialogueUI dialogueUI; 
+    //[Header("全域資源參考")]
+    //[Tooltip("請將場景中掛載了 DialogueUI 腳本的物件拖曳到此處")]
+    //[SerializeField] private DialogueUI dialogueUI; 
 
     [Header("統一對話管理")]
     [Tooltip("在此處設定場景中的所有對話及其觸發方式")]
@@ -48,7 +48,7 @@ public class DialogueManager : MonoBehaviour
             runnerGO.transform.SetParent(this.transform);
             var runner = runnerGO.AddComponent<DialogueRunner>();
             runner.SetDialogue(dialogue.DialogueContainer);
-            runner.SetDialogueUI(dialogueUI);
+            //runner.SetDialogueUI(dialogueUI);
             dialogue.Runner = runner;
             _runnerToDialogueMap[runner] = dialogue;
 
@@ -118,7 +118,7 @@ public class DialogueManager : MonoBehaviour
         {
             if (pauseGameDuringDialogue) Time.timeScale = _originalTimeScale;
             if (gameplayUI != null) gameplayUI.SetActive(true);
-            if(dialogueUI != null) dialogueUI.Hide();
+            //if(dialogueUI != null) dialogueUI.Hide();
             if (dialogue.TriggerOnlyOnce) { dialogue.HasBeenTriggered = true; }
             UIInputManager.Instance?.EnterGameplayMode();
         }

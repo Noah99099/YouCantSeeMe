@@ -6,7 +6,7 @@ using UnityEngine.Events;
 public class DialogueRunner : MonoBehaviour
 {
     [SerializeField] private DialogueContainerSO dialogueContainer;
-    private DialogueUI dialogueUI;
+    //private DialogueUI dialogueUI;
     public UnityEvent OnDialogueStart = new UnityEvent();
     public UnityEvent OnDialogueEnd = new UnityEvent();
 
@@ -14,9 +14,9 @@ public class DialogueRunner : MonoBehaviour
     private int _currentCommandIndex = 0;
     private bool _isRunning = false;
 
-    public void SetDialogueUI(DialogueUI ui) { dialogueUI = ui; }
+    //public void SetDialogueUI(DialogueUI ui) { dialogueUI = ui; }
     public void SetDialogue(DialogueContainerSO container) { dialogueContainer = container; }
-    public DialogueUI GetDialogueUI() => dialogueUI;
+    public DialogueUI GetDialogueUI() => DialogueUI.Instance;
 
     public void StartDialogue()
     {
@@ -35,6 +35,7 @@ public class DialogueRunner : MonoBehaviour
 
     private void ExecuteNextCommand()
     {
+        Debug.Log($"[Runner.ExecuteNextCommand] 開始執行. 目前區塊='{_currentBlock.BlockName}', 指令索引={_currentCommandIndex}, 指令總數={_currentBlock.Commands.Count}");
         if (!_isRunning) return;
         
         if (_currentCommandIndex >= _currentBlock.Commands.Count)
@@ -79,7 +80,7 @@ public class DialogueRunner : MonoBehaviour
         ExecuteNextCommand();
     }
 
-    private void EndDialogue()
+    public void EndDialogue()
     {
         Debug.Log("<color=yellow>--- EndDialogue() 方法已被呼叫！正在觸發 OnDialogueEnd 事件... ---</color>");
         if (!_isRunning) return; 

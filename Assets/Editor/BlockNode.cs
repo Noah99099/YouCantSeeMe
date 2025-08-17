@@ -1,7 +1,8 @@
+using UnityEditor;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine.UIElements;
 using UnityEngine;
-using System.Collections.Generic;
+using System.Linq;
 
 public class BlockNode : Node
 {
@@ -10,23 +11,22 @@ public class BlockNode : Node
     public bool EntryPoint = false;
     public DialogueBlock BlockData;
 
-    // 用來存放所有指令UI的容器
+    private Port _defaultOutputPort;
     private VisualElement _commandsContainer;
 
     public BlockNode(DialogueBlock block)
     {
         this.BlockData = block;
         this.title = block.BlockName;
-        this.GUID = block.GUID; // 【修正】直接從傳入的資料中讀取 GUID，確保其持久不變
+        this.GUID = block.GUID;
 
-        // --- 後續的 UI 創建邏輯與之前相同 ---
         var inputPort = InstantiatePort(Orientation.Horizontal, Direction.Input, Port.Capacity.Multi, typeof(bool));
         inputPort.portName = "In";
         inputContainer.Add(inputPort);
 
-        var outputPort = InstantiatePort(Orientation.Horizontal, Direction.Output, Port.Capacity.Single, typeof(bool));
-        outputPort.portName = "Next";
-        outputContainer.Add(outputPort);
+        _defaultOutputPort = InstantiatePort(Orientation.Horizontal, Direction.Output, Port.Capacity.Single, typeof(bool));
+        _defaultOutputPort.portName = "Next";
+        outputContainer.Add(_defaultOutputPort);
 
         var titleLabel = this.Q<Label>("title-label");
         var titleContainer = this.Q("title");
@@ -34,24 +34,30 @@ public class BlockNode : Node
         titleField.RegisterValueChangedCallback(evt =>
         {
             this.title = evt.newValue;
-            BlockData.BlockName = evt.newValue; // 改名只影響名稱，不影響 GUID
+            BlockData.BlockName = evt.newValue;
         });
         titleContainer.Insert(0, titleField);
         titleLabel.visible = false;
 
         _commandsContainer = new VisualElement { name = "commands-container" };
         this.mainContainer.Add(_commandsContainer);
-
-        var addSayCommandButton = new Button(AddSayCommand) { text = "新增說話指令 (Say)" };
-        this.mainContainer.Add(addSayCommandButton);
+        
+        var buttonContainer = new VisualElement();
+        buttonContainer.style.flexDirection = FlexDirection.Row;
+        
+        var addSayCommandButton = new Button(AddSayCommand) { text = "新增說話 (Say)" };
+        buttonContainer.Add(addSayCommandButton);
+        
+        // 【修正】確保按鈕呼叫的方法存在
+        var addChoiceCommandButton = new Button(AddChoiceCommand) { text = "新增選項 (Choice)" };
+        buttonContainer.Add(addChoiceCommandButton);
+        
+        this.mainContainer.Add(buttonContainer);
     }
-
-    /// <summary>
-    /// 為一個 SayCommand 資料創建對應的 UI 元素並加入到節點中
-    /// </summary>
+    
+    // --- 以下是原本 SayCommand 的方法，保持不變 ---
     public void AddSayCommandUI(SayCommand command)
     {
-        // 建立一個容器來放這個指令的所有UI
         var commandContainer = new VisualElement();
         commandContainer.style.flexDirection = FlexDirection.Column;
         commandContainer.style.borderLeftWidth = 1;
@@ -64,71 +70,145 @@ public class BlockNode : Node
         commandContainer.style.borderRightColor = Color.gray;
         commandContainer.style.marginTop = 5;
 
-        // 說話者名稱的輸入框
         var speakerField = new TextField("說話者 (Speaker)") { value = command.SpeakerName };
-        speakerField.RegisterValueChangedCallback(evt =>
-        {
-            command.SpeakerName = evt.newValue;
-        });
+        speakerField.RegisterValueChangedCallback(evt => { command.SpeakerName = evt.newValue; });
         commandContainer.Add(speakerField);
 
-        // 對話內容的輸入框
         var dialogueField = new TextField("對話內容 (Text)") { value = command.DialogueText, multiline = true };
-        dialogueField.style.minHeight = 40; // 讓多行輸入框有個初始高度
-        dialogueField.RegisterValueChangedCallback(evt =>
-        {
-            command.DialogueText = evt.newValue;
-        });
+        dialogueField.style.minHeight = 40;
+        dialogueField.RegisterValueChangedCallback(evt => { command.DialogueText = evt.newValue; });
         commandContainer.Add(dialogueField);
 
-        // 刪除按鈕
-        var deleteButton = new Button(() =>
-        {
-            BlockData.Commands.Remove(command); // 從資料中移除
-            _commandsContainer.Remove(commandContainer); // 從UI中移除
-        })
-        { text = "刪除此指令" };
+        var deleteButton = new Button(() => {
+            BlockData.Commands.Remove(command);
+            _commandsContainer.Remove(commandContainer);
+        }) { text = "刪除此指令" };
         commandContainer.Add(deleteButton);
 
-        // 將這個指令的UI容器，加入到節點的指令列表中
         _commandsContainer.Add(commandContainer);
     }
 
-    /// <summary>
-    /// 處理按鈕點擊：創建新的 SayCommand 資料，並呼叫 UI 創建方法
-    /// </summary>
     private void AddSayCommand()
     {
-        // 1. 創建新的指令資料
-        var newCommand = new SayCommand
-        {
-            SpeakerName = "新角色",
-            DialogueText = "新的對話內容..."
-        };
-
-        // 2. 將資料加入到 Block 的指令列表中
+        var newCommand = new SayCommand { SpeakerName = "新角色", DialogueText = "新的對話內容..." };
         BlockData.Commands.Add(newCommand);
-
-        // 3. 根據新的資料，創建對應的 UI
         AddSayCommandUI(newCommand);
     }
-    
-    public void SetEntryPointStyle(bool isEntryPoint)
-{
-    this.EntryPoint = isEntryPoint;
-    var titleStyle = this.Q("title").style;
 
-    if (isEntryPoint)
+    // --- 以下是新增與修正的 ChoiceCommand 相關方法 ---
+
+    public bool HasChoiceCommand()
     {
-        // 如果是入口點，設定為明亮的綠色，且不可刪除
-        titleStyle.backgroundColor = new StyleColor(new Color(0.2f, 0.8f, 0.2f, 0.8f));
-        this.capabilities &= ~Capabilities.Deletable;
+        return BlockData.Commands.OfType<ChoiceCommand>().Any();
     }
-    else
+
+    public void UpdateDefaultPortVisibility()
     {
-        // 如果不是入口點，還原為預設顏色，且可以被刪除
-        titleStyle.backgroundColor = new StyleColor(StyleKeyword.Null); 
-        this.capabilities |= Capabilities.Deletable;
+        _defaultOutputPort.SetEnabled(!HasChoiceCommand());
+        // 【修正】使用 .visible 屬性，而不是 SetVisible() 方法
+        _defaultOutputPort.visible = !HasChoiceCommand();
     }
-}
+
+    /// <summary>
+    /// 【新增】補上這個遺漏的方法
+    /// </summary>
+    private void AddChoiceCommand()
+    {
+        if (HasChoiceCommand())
+        {
+            EditorUtility.DisplayDialog("錯誤", "一個區塊 (Block) 只能有一個選項指令 (Choice Command)。", "確定");
+            return;
+        }
+
+        var newCommand = new ChoiceCommand();
+        BlockData.Commands.Add(newCommand);
+        AddChoiceCommandUI(newCommand);
+        UpdateDefaultPortVisibility();
+    }
+    
+    public void AddChoiceCommandUI(ChoiceCommand command)
+    {
+        var commandContainer = new VisualElement { name = "choice-command-container" };
+        // 【修正】分別設定 padding 的四個方向
+        commandContainer.style.paddingTop = 5;
+        commandContainer.style.paddingBottom = 5;
+        commandContainer.style.paddingLeft = 5;
+        commandContainer.style.paddingRight = 5;
+        commandContainer.style.borderTopWidth = 1;
+        commandContainer.style.borderTopColor = Color.gray;
+
+        var addChoiceButton = new Button(() => {
+            var newChoice = new ChoiceCommand.Choice { ChoiceText = "新選項" };
+            command.Choices.Add(newChoice);
+            CreateChoicePort(command, newChoice, commandContainer);
+        }) { text = "新增選項" };
+        commandContainer.Add(addChoiceButton);
+
+        var deleteButton = new Button(() => {
+            // 在刪除指令前，先把所有由這個指令創建的 Port 都從節點上移除
+            var portsToRemove = outputContainer.Query<Port>().Where(p => p.userData is ChoiceCommand.Choice).ToList();
+            foreach (var port in portsToRemove)
+            {
+                outputContainer.Remove(port);
+            }
+            
+            BlockData.Commands.Remove(command);
+            _commandsContainer.Remove(commandContainer);
+            UpdateDefaultPortVisibility();
+        }) { text = "刪除此選項指令" };
+        commandContainer.Add(deleteButton);
+
+        _commandsContainer.Add(commandContainer);
+
+        foreach (var choice in command.Choices)
+        {
+            CreateChoicePort(command, choice, commandContainer);
+        }
+        UpdateDefaultPortVisibility();
+    }
+
+    private void CreateChoicePort(ChoiceCommand ownerCommand, ChoiceCommand.Choice choice, VisualElement commandContainer)
+    {
+        var choiceContainer = new VisualElement();
+        choiceContainer.style.flexDirection = FlexDirection.Row;
+        choiceContainer.style.alignItems = Align.Center;
+
+        var port = InstantiatePort(Orientation.Horizontal, Direction.Output, Port.Capacity.Single, typeof(bool));
+        port.portName = "";
+        port.userData = choice;
+        choiceContainer.Add(port);
+
+        var textField = new TextField { value = choice.ChoiceText, isDelayed = true };
+        textField.RegisterValueChangedCallback(evt => { choice.ChoiceText = evt.newValue; });
+        textField.style.flexGrow = 1;
+        choiceContainer.Add(textField);
+
+        var deleteChoiceButton = new Button(() => {
+            ownerCommand.Choices.Remove(choice);
+            outputContainer.Remove(port);
+            commandContainer.Remove(choiceContainer);
+        }) { text = "X" };
+        choiceContainer.Add(deleteChoiceButton);
+
+        outputContainer.Add(port);
+        commandContainer.Insert(commandContainer.childCount - 2, choiceContainer);
+    }
+    
+    // --- SetEntryPointStyle 方法保持不變 ---
+    public void SetEntryPointStyle(bool isEntryPoint)
+    {
+        this.EntryPoint = isEntryPoint;
+        var titleStyle = this.Q("title").style;
+
+        if (isEntryPoint)
+        {
+            titleStyle.backgroundColor = new StyleColor(new Color(0.2f, 0.8f, 0.2f, 0.8f));
+            this.capabilities &= ~Capabilities.Deletable;
+        }
+        else
+        {
+            titleStyle.backgroundColor = new StyleColor(StyleKeyword.Null); 
+            this.capabilities |= Capabilities.Deletable;
+        }
+    }
 }

@@ -1,10 +1,9 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using static UnityEditor.ShaderGraph.Internal.KeywordDependentCollection;
+
 public enum ViewType { Yang, Yin }
 
 public class ViewManager : MonoBehaviour
@@ -12,34 +11,34 @@ public class ViewManager : MonoBehaviour
     [Header("視野UI提示")]
     public GameObject yangUI;
     public GameObject yinUI;
-    public static ViewManager Instance { get; private set; } //�}����ҹ��
+    public static ViewManager Instance { get; private set; }
     public static event Action<ViewType> OnViewChanged;
     public ViewType CurrentView { get; private set; } = ViewType.Yang;
-    //private PlayerControls controls;
+    
     private InputAction viewAction;
 
     void Awake()
     {
-        if (Instance != null && Instance != this) //�Y Instasce������ �B Instasce�����Ӹ}��
+        if (Instance != null && Instance != this) // 如果 Instance 已存在且不是自己
         {
-            Destroy(gameObject); //�R���ӹC������
-            return; //�����o��if���P�_
+            Destroy(gameObject); // 則銷毀這個重複的物件
+            return; // 結束 Awake
         }
-        Instance = this; //�Ӹ}����ȵ�Instasce
-        DontDestroyOnLoad(gameObject); //�ӹC�����󤣾P��
-        //controls = new PlayerControls();
+        Instance = this; // 將自己設為唯一的 Instance
+        DontDestroyOnLoad(gameObject); // 確保切換場景時物件不被銷毀
 
-        yangUI.SetActive(true); //�q�{������
+        yangUI.SetActive(true);
         yinUI.SetActive(false);
     }
 
     void Start()
     {
-        // 從場景中唯一的 UIInputManager 獲取共享的 controls
         UIInputManager inputManager = FindObjectOfType<UIInputManager>();
-        if (inputManager != null && inputManager.playerControls != null)
+        if (inputManager != null && inputManager.PlayerControls != null) // 【核心修正 #1】使用大寫的 'PlayerControls'
         {
-            viewAction = inputManager.playerControls.FindActionMap("Player").FindAction("View");
+            // 【核心修正 #2】直接存取 Player Action Map 和 View Action
+            viewAction = inputManager.PlayerControls.Player.View;
+            
             if (viewAction != null)
             {
                 viewAction.performed += OnViewPerformed;
@@ -47,32 +46,31 @@ public class ViewManager : MonoBehaviour
         }
         else
         {
-            Debug.LogError("在 ViewManager 中找不到 UIInputManager 或其 playerControls！", this);
+            Debug.LogError("在 ViewManager 中找不到 UIInputManager 或其 PlayerControls！", this);
         }
     }
 
-    //void OnEnable()
-    //{
-        //controls.Player.Enable();
-        //controls.Player.View.performed += OnViewPerformed;
-    //} 
-    //void OnDisable()
-    //{
-        //controls.Player.View.performed -= OnViewPerformed;
-        //controls.Player.Disable();
-    //}
+    private void OnDestroy() // 【新增】當物件被銷毀時，取消訂閱
+    {
+        if (viewAction != null)
+        {
+            viewAction.performed -= OnViewPerformed;
+        }
+    }
+
     private void OnViewPerformed(InputAction.CallbackContext context)
     {
-        ToggleView();
+        // 【新增】確保只有在玩家模式下才能切換視野
+        if(UIInputManager.Instance.IsInPlayerMode)
+        {
+            ToggleView();
+        }
     }
-    /// <summary>
-    /// ��������
-    /// </summary>
+
     void ToggleView()
     {
         CurrentView = (CurrentView == ViewType.Yang) ? ViewType.Yin : ViewType.Yang;
         
-        //�s���ƥ�
         OnViewChanged?.Invoke(CurrentView);
 
         yangUI.SetActive(CurrentView == ViewType.Yang);

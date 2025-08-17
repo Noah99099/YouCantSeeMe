@@ -11,8 +11,8 @@ public class ChoiceCommand : Command
     {
         [Tooltip("顯示在按鈕上的文字")]
         public string ChoiceText;
-        [Tooltip("選擇此項後要跳轉到的 Block 名稱")]
-        public string TargetBlockName;
+        [Tooltip("選擇此項後要跳轉到的 Block 的 GUID")]
+        public string TargetBlockGuid;
     }
 
     [Tooltip("要提供給玩家的選項列表")]
@@ -25,11 +25,19 @@ public class ChoiceCommand : Command
         Action<Choice> onChoiceSelected = (selectedChoice) => 
         {
             // 當玩家做出選擇後，命令 runner 跳轉到目標 Block
-            runner.JumpToBlock(selectedChoice.TargetBlockName);
+            // 【核心修改】使用 GUID 進行跳轉
+            if (!string.IsNullOrEmpty(selectedChoice.TargetBlockGuid))
+            {
+                runner.JumpToBlock(selectedChoice.TargetBlockGuid);
+            }
+            else
+            {
+                // 如果選項沒有連接到任何地方，就直接結束對話
+                // 這是為了防止流程卡住
+                runner.EndDialogue(); 
+            }
             
-            // 選項指令的任務在這裡就結束了，呼叫 onComplete
-            // 但因為 JumpToBlock 會啟動新的執行流程，這裡的 onComplete 其實可以不用呼叫
-            // 為了嚴謹，我們還是呼叫它，但 Runner 在 Jump 後會重置狀態
+            // 因為 JumpToBlock 會啟動新的執行流程，這裡不需要呼叫 onComplete
         };
         
         dialogueUI.ShowChoices(Choices, onChoiceSelected);
