@@ -4852,9 +4852,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 260b7077e4f5d374894f0cedd9f200f2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerControls: {fileID: -944628639613478452, guid: 0c67ffdfc88b05643a7007cd03d06742,
-    type: 3}
-  dialogueUI: {fileID: 0}
 --- !u!114 &850149771
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7644,7 +7641,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7ab9b80b4ea2c4b40941ce8ca648ef41, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  dialogueUI: {fileID: 1518284043}
   managedDialogues:
   - Name: "\u958B\u59CB"
     DialogueContainer: {fileID: 11400000, guid: 4a35e88f7198597439dd0f518db8bb29,
@@ -8178,6 +8174,7 @@ MonoBehaviour:
   characterPortrait: {fileID: 1792053042}
   dialogueCanvasGroup: {fileID: 0}
   fadeSpeed: 2
+  charactersPerSecond: 25
 --- !u!1 &1519451969
 GameObject:
   m_ObjectHideFlags: 0
