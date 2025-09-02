@@ -366,6 +366,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "Click",
+                    "type": "Button",
+                    "id": "192fb349-ba93-4a67-a800-183b68cfb310",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -438,7 +447,7 @@
                 {
                     "name": "up",
                     "id": "f3b040f7-a5be-44b9-97e8-dc602f1ae374",
-                    "path": "<Keyboard>/upArrow",
+                    "path": "<Keyboard>/w",
                     "interactions": "",
                     "processors": "",
                     "groups": ";鍵鼠",
@@ -449,7 +458,7 @@
                 {
                     "name": "down",
                     "id": "058d6d8a-1c47-4894-ac76-56f2aec799f4",
-                    "path": "<Keyboard>/downArrow",
+                    "path": "<Keyboard>/s",
                     "interactions": "",
                     "processors": "",
                     "groups": ";鍵鼠",
@@ -460,7 +469,7 @@
                 {
                     "name": "Left",
                     "id": "34071e6a-126d-477d-96b3-c10d8ea1e1ed",
-                    "path": "<Keyboard>/leftArrow",
+                    "path": "<Keyboard>/a",
                     "interactions": "",
                     "processors": "",
                     "groups": ";鍵鼠",
@@ -471,7 +480,7 @@
                 {
                     "name": "Right",
                     "id": "2a93e59c-83f7-442f-98b0-220b958f5f9f",
-                    "path": "<Keyboard>/rightArrow",
+                    "path": "<Keyboard>/d",
                     "interactions": "",
                     "processors": "",
                     "groups": ";鍵鼠",
@@ -536,12 +545,12 @@
                 },
                 {
                     "name": "",
-                    "id": "9145218c-71cf-41f8-ba82-8d8b46e2846a",
-                    "path": "<Gamepad>/rightStick",
+                    "id": "698b0b68-21d1-4550-af6d-5f6497378857",
+                    "path": "<Mouse>/leftButton",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Gamepad",
-                    "action": "Point",
+                    "groups": ";鍵鼠",
+                    "action": "Click",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
