@@ -23,6 +23,7 @@ public class PlayerView : MonoBehaviour
     [Tooltip("相機y軸偏移量（眼睛高度）")]
     public float upper;
 
+    [Header("輸入系統")]
     [Tooltip("Look Action 的 InputActionReference")]
     [SerializeField] private InputActionReference lookAction;
 
@@ -46,7 +47,7 @@ public class PlayerView : MonoBehaviour
     private void Start()
     {
         // 確保遊戲一開始就進入遊戲模式
-        CursorManager.EnterGameplayMode();
+        //CursorManager.EnterGameplayMode();
 
         Debug.Log("滑鼠靈敏度：" + SensitivityManager.Instance.mouseSensitivity);
         Debug.Log("手柄靈敏度：" + SensitivityManager.Instance.gamepadSensitivity);
@@ -73,12 +74,14 @@ public class PlayerView : MonoBehaviour
 
     private void Update()
     {
+        if (!UIInputManager.Instance.IsGameStarted) return; //新增
+
         // --- 修改點 2: 在 Update 開頭加入守衛條件 ---
         // 如果當前滑鼠不是鎖定狀態（代表在UI模式），就直接跳出 Update，不執行後面的程式碼。
-        if (Cursor.lockState != CursorLockMode.Locked)
-        {
-            return; // 提早結束此函式
-        }
+        //if (Cursor.lockState != CursorLockMode.Locked)
+        //{
+        //    return; // 提早結束此函式
+        //}
 
         // --- 以下是原本的程式碼，現在只有在滑鼠鎖定時才會執行 ---
         lookInput = lookAction.action.ReadValue<Vector2>();
@@ -100,6 +103,11 @@ public class PlayerView : MonoBehaviour
         playerRigidbody.MoveRotation(newRotation);
     }
 
+    /// <summary>
+    /// 處理手柄控制
+    /// </summary>
+    /// <param name="input">搖桿輸入</param>
+    /// <returns></returns>
     private Vector2 ApplyJoystickDeadZone(Vector2 input)
     {
         float deadZone = 0.1f;

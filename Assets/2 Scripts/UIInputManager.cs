@@ -1,3 +1,4 @@
+using Unity.Burst.CompilerServices;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -16,6 +17,14 @@ public class UIInputManager : MonoBehaviour
     public bool IsInInventoryMode { get; private set; } = false;
     public bool IsInDialogueMode { get; private set; } = false;
 
+    // 新增: 遊戲開始狀態
+    public bool IsGameStarted { get; private set; } = false;
+
+    // 新增: 輸入設備類型引用
+    private InputDeviceManager inputDeviceManager;
+
+    [Tooltip("提示按下視野按鈕才能開始遊戲")] public GameObject hintUI;
+
     private void Awake()
     {
         if (Instance == null)
@@ -31,6 +40,13 @@ public class UIInputManager : MonoBehaviour
 
         // 在 Awake 中就建立 PlayerControls 的實例
         PlayerControls = new PlayerControls();
+
+        // 獲取 InputDeviceManager 引用
+        inputDeviceManager = FindObjectOfType<InputDeviceManager>();
+        if (inputDeviceManager == null)
+        {
+            Debug.LogWarning("找不到 InputDeviceManager，將使用默認游標設置");
+        }
     }
 
     private void OnEnable()
@@ -47,8 +63,18 @@ public class UIInputManager : MonoBehaviour
  
     void Start()
     {
-        // 遊戲一開始，預設進入玩家模式
-        EnterGameplayMode();
+        // 遊戲一開始，禁用所有操作，等待玩家按下開始按鈕
+        DisableAllMaps();
+
+        // 只啟用 StartGame 操作
+        PlayerControls.Player.StartGame.Enable();
+
+        // 設置初始游標狀態
+        UpdateCursorState();
+
+        hintUI.SetActive(true); //新增
+
+        Debug.Log("[UIInputManager] 等待玩家按下開始按鈕");
     }
 
     private void DisableAllMaps()
@@ -60,13 +86,82 @@ public class UIInputManager : MonoBehaviour
         PlayerControls.Dialogue.Disable();
     }
 
+    // 新增: 開始遊戲的方法
+    public void StartGame()
+    {
+        if (IsGameStarted) return;
+
+        IsGameStarted = true;
+
+        // 先禁用所有操作，然後重新啟用 Player Action Map
+        DisableAllMaps();
+        PlayerControls.Player.Enable();
+
+        SetModeFlags(isPlayer: true);
+        UpdateCursorState();
+
+        hintUI.SetActive(false); //新增
+
+        Debug.Log("[UIInputManager] 遊戲開始，啟用玩家控制");
+    }
+
+    // 新增: 更新游標狀態的方法
+    private void UpdateCursorState()
+    {
+        if (inputDeviceManager != null)
+        {
+            // 根據輸入設備類型和當前模式設置游標
+            if (IsInPlayerMode)
+            {
+                // 玩家模式下，無論使用什麼設備都隱藏游標
+                Cursor.lockState = CursorLockMode.Locked;
+                Cursor.visible = false;
+            }
+            else if (IsInInventoryMode)
+            {
+                // 背包模式下，根據設備類型設置游標
+                if (inputDeviceManager.CurrentInputType == InputDeviceManager.InputType.KeyboardMouse)
+                {
+                    Cursor.lockState = CursorLockMode.None;
+                    Cursor.visible = true;
+                }
+                else // 手柄
+                {
+                    Cursor.lockState = CursorLockMode.Locked;
+                    Cursor.visible = false;
+                }
+            }
+            else // UI模式或對話模式
+            {
+                Cursor.lockState = CursorLockMode.None;
+                Cursor.visible = true;
+            }
+        }
+        else
+        {
+            // 沒有 InputDeviceManager 時的默認行為
+            if (IsInPlayerMode)
+            {
+                Cursor.lockState = CursorLockMode.Locked;
+                Cursor.visible = false;
+            }
+            else
+            {
+                Cursor.lockState = CursorLockMode.None;
+                Cursor.visible = true;
+            }
+        }
+
+        Debug.Log($"[UIInputManager] 游標狀態: LockState={Cursor.lockState}, Visible={Cursor.visible}");
+    }
+
     public void EnterUIMode()
     {
         if (IsInUIMode) return;
         DisableAllMaps();
         PlayerControls.UI.Enable();
-        CursorManager.EnterUIMode();
         SetModeFlags(isUI: true);
+        UpdateCursorState();
         Debug.Log("[UIInputManager] 遊戲模式切換為：UI 模式");
     }
 
@@ -75,17 +170,18 @@ public class UIInputManager : MonoBehaviour
         if (IsInPlayerMode) return;
         DisableAllMaps();
         PlayerControls.Player.Enable();
-        CursorManager.EnterGameplayMode();
         SetModeFlags(isPlayer: true);
+        UpdateCursorState();
         Debug.Log("[UIInputManager] 遊戲模式切換為：Gameplay 模式");
     }
 
-    public void EnterInventoryModeNoCursor()
+    public void EnterInventoryMode()
     {
         if (IsInInventoryMode) return;
         DisableAllMaps();
         PlayerControls.Inventory.Enable();
         SetModeFlags(isInventory: true);
+        UpdateCursorState();
         Debug.Log("[UIInputManager] 遊戲模式切換為：Inventory（無滑鼠）模式");
     }
 
@@ -94,8 +190,8 @@ public class UIInputManager : MonoBehaviour
         if (IsInDialogueMode) return;
         DisableAllMaps();
         PlayerControls.Dialogue.Enable();
-        CursorManager.EnterUIMode();
         SetModeFlags(isDialogue: true);
+        UpdateCursorState();
         Debug.Log("[UIInputManager] 遊戲模式切換為：Dialogue 模式");
     }
     

@@ -42,7 +42,8 @@ public class PlayerInteraction : MonoBehaviour
     
     void Start()
     {
-        CursorManager.EnterGameplayMode();
+        //CursorManager.EnterGameplayMode();
+        pickupPromptText.gameObject.SetActive(false);
     }
 
     private void OnDestroy()
@@ -55,6 +56,8 @@ public class PlayerInteraction : MonoBehaviour
 
     private void Update()
     {
+        if (!UIInputManager.Instance.IsGameStarted) return; //新增
+
         if (!inputManager.IsInPlayerMode)
         {
             HidePrompt();

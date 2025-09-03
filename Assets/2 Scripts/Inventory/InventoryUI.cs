@@ -98,7 +98,7 @@ public class InventoryUI : MonoBehaviour
         if (isInventoryVisible) return;
         inventoryPanel.SetActive(true);
         isInventoryVisible = true;
-        uiInputManager?.EnterInventoryModeNoCursor();
+        uiInputManager?.EnterInventoryMode();
 
         UpdateUI(); // 打開時確保刷新
     }

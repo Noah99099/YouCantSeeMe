@@ -32,7 +32,7 @@ public class LogoAnimLoop : MonoBehaviour
     private void OnAnimationComplete(TrackEntry trackEntry)
     {
         // 只有非 idle 動畫會經由這裡進下一步
-        if (trackEntry.Animation.Name != "idle")
+        if (trackEntry.Animation.Name != "open_idle")
         {
             PlayNextInGroup();
         }
@@ -47,20 +47,20 @@ public class LogoAnimLoop : MonoBehaviour
             case 1:
                 switch (currentStep % 4)
                 {
-                    case 0: nextAnim = "idle"; break;
+                    case 0: nextAnim = "open_idle"; break;
                     case 1: nextAnim = moveAnimations[Random.Range(0, moveAnimations.Length)]; break;
-                    case 2: nextAnim = "idle"; break;
-                    case 3: nextAnim = "blink_Ball"; break;
+                    case 2: nextAnim = "open_idle"; break;
+                    case 3: nextAnim = "full_blinkClose"; break;
                 }
                 break;
 
             case 2:
                 switch (currentStep % 4)
                 {
-                    case 0: nextAnim = "blink_Ball"; break;
-                    case 1: nextAnim = "idle"; break;
+                    case 0: nextAnim = "full_blinkClose"; break;
+                    case 1: nextAnim = "open_idle"; break;
                     case 2: nextAnim = moveAnimations[Random.Range(0, moveAnimations.Length)]; break;
-                    case 3: nextAnim = "idle"; break;
+                    case 3: nextAnim = "open_idle"; break;
                 }
                 break;
 
@@ -68,9 +68,9 @@ public class LogoAnimLoop : MonoBehaviour
                 switch (currentStep % 4)
                 {
                     case 0: nextAnim = moveAnimations[Random.Range(0, moveAnimations.Length)]; break;
-                    case 1: nextAnim = "idle"; break;
-                    case 2: nextAnim = "blink_Ball"; break;
-                    case 3: nextAnim = "idle"; break;
+                    case 1: nextAnim = "open_idle"; break;
+                    case 2: nextAnim = "full_blinkClose"; break;
+                    case 3: nextAnim = "open_idle"; break;
                 }
                 break;
         }
@@ -78,9 +78,9 @@ public class LogoAnimLoop : MonoBehaviour
         logoAnim.AnimationState.SetAnimation(0, nextAnim, false);
         currentStep++;
 
-        if (nextAnim == "idle")
+        if (nextAnim == "open_idle")
         {
-            logoAnim.AnimationState.SetAnimation(0, "idle", true);
+            logoAnim.AnimationState.SetAnimation(0, "open_idle", true);
             if (idleCoroutine != null)
                 StopCoroutine(idleCoroutine);
             idleCoroutine = StartCoroutine(WaitIdleAndNext());

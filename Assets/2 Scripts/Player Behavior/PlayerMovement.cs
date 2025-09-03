@@ -37,6 +37,8 @@ public class PlayerMovement : MonoBehaviour
 
     private void FixedUpdate()
     {
+        if (!UIInputManager.Instance.IsGameStarted) return; //·s¼W
+
         if (moveAction == null || rb == null) return;
 
         moveInput = moveAction.action.ReadValue<Vector2>();
