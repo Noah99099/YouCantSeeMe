@@ -42,27 +42,9 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "OpenUIMode",
-                    "type": "Button",
-                    "id": "a77b2271-b7ed-4367-bdc5-1a5a7417bb79",
-                    "expectedControlType": "",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
                     "name": "OpenInventory",
                     "type": "Button",
                     "id": "14df317b-393b-49e7-8a5f-38fd8175289b",
-                    "expectedControlType": "",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
-                    "name": "StartGame",
-                    "type": "Button",
-                    "id": "1f52afe5-2aaa-4e27-9e1d-3734c869a623",
                     "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
@@ -106,7 +88,7 @@
                 {
                     "name": "",
                     "id": "02697f6a-1617-4462-922b-3ddc89db36bf",
-                    "path": "<Gamepad>/buttonNorth",
+                    "path": "<Gamepad>/buttonWest",
                     "interactions": "",
                     "processors": "",
                     "groups": ";Gamepad",
@@ -315,44 +297,11 @@
                 {
                     "name": "",
                     "id": "79315047-0ece-480a-9c5c-b0958759a98e",
-                    "path": "<DualShockGamepad>/rightShoulder",
+                    "path": "<Gamepad>/rightShoulder",
                     "interactions": "",
                     "processors": "",
                     "groups": "Gamepad",
                     "action": "View",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "7ee865a2-bf79-4b28-8709-98b9aefbbe8a",
-                    "path": "<Keyboard>/escape",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": ";鍵鼠",
-                    "action": "OpenUIMode",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "86846f20-0d39-40e6-a142-041f060acbe1",
-                    "path": "<Keyboard>/leftShift",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": ";鍵鼠",
-                    "action": "StartGame",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "89d79c12-dcab-4fb8-a542-a1e686ed90cb",
-                    "path": "<Gamepad>/rightShoulder",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": ";Gamepad",
-                    "action": "StartGame",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
@@ -588,6 +537,45 @@
             ]
         },
         {
+            "name": "Startup",
+            "id": "134c64a1-fdeb-4f91-be4f-0adc69a98aba",
+            "actions": [
+                {
+                    "name": "StartGame",
+                    "type": "Button",
+                    "id": "b698c362-bf26-4fe0-824b-bad6e0c01bf1",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "19794579-474d-424b-9fb2-2511ece99869",
+                    "path": "<Keyboard>/leftShift",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";鍵鼠",
+                    "action": "StartGame",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "16d8718a-d337-4b7e-97f4-d03b354cba2f",
+                    "path": "<Gamepad>/rightShoulder",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Gamepad",
+                    "action": "StartGame",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        },
+        {
             "name": "Inventory",
             "id": "8f74790c-da07-4236-b969-aafdbc43ed3b",
             "actions": [
@@ -619,18 +607,9 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "Zoom",
-                    "type": "Value",
-                    "id": "d19936d0-c167-46ac-9094-0500e4bfba06",
-                    "expectedControlType": "Axis",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": true
-                },
-                {
-                    "name": "CloseItemDetail",
+                    "name": "OpenItemDetail",
                     "type": "Button",
-                    "id": "722b2566-a127-434d-8963-db7d6ebdafe9",
+                    "id": "ac697413-0cf7-4ad5-a7ab-cf50122ad924",
                     "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
@@ -707,7 +686,7 @@
                 {
                     "name": "up",
                     "id": "a603a2ab-c52b-4c0c-a67e-71f8c6d3f7b0",
-                    "path": "<Keyboard>/upArrow",
+                    "path": "<Keyboard>/w",
                     "interactions": "",
                     "processors": "",
                     "groups": ";鍵鼠",
@@ -718,7 +697,7 @@
                 {
                     "name": "down",
                     "id": "2e0d8e26-0262-4745-bbd7-6637632ee60f",
-                    "path": "<Keyboard>/downArrow",
+                    "path": "<Keyboard>/s",
                     "interactions": "",
                     "processors": "",
                     "groups": ";鍵鼠",
@@ -729,7 +708,7 @@
                 {
                     "name": "left",
                     "id": "041c09ef-79f6-46b9-b230-8a91f73c69fe",
-                    "path": "<Keyboard>/leftArrow",
+                    "path": "<Keyboard>/a",
                     "interactions": "",
                     "processors": "",
                     "groups": ";鍵鼠",
@@ -740,7 +719,7 @@
                 {
                     "name": "right",
                     "id": "4a0bb455-410b-4a7a-be89-6f2be509c31b",
-                    "path": "<Keyboard>/rightArrow",
+                    "path": "<Keyboard>/d",
                     "interactions": "",
                     "processors": "",
                     "groups": ";鍵鼠",
@@ -773,21 +752,10 @@
                 {
                     "name": "",
                     "id": "ee7a6d7d-d319-4fa3-9db5-a8d9337498ce",
-                    "path": "<Keyboard>/b",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": ";鍵鼠",
-                    "action": "CloseInventory",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "8fa1b4f3-fce1-4be5-b9dd-ccfdb3e126b9",
                     "path": "<Keyboard>/backspace",
                     "interactions": "",
                     "processors": "",
-                    "groups": "",
+                    "groups": ";鍵鼠",
                     "action": "CloseInventory",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -805,56 +773,23 @@
                 },
                 {
                     "name": "",
-                    "id": "8c984820-6423-4638-bcba-62e897ccbb70",
+                    "id": "cadc4780-3338-4a44-aa74-125c25873d70",
+                    "path": "<Keyboard>/x",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";鍵鼠",
+                    "action": "OpenItemDetail",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "79ea8a87-12f8-4ff6-b7fc-b310c9e1e9b6",
                     "path": "<Gamepad>/buttonNorth",
                     "interactions": "",
                     "processors": "",
                     "groups": ";Gamepad",
-                    "action": "CloseInventory",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "49bc9d4d-a31c-4faa-9a2b-c45f61355123",
-                    "path": "<Mouse>/scroll/y",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": ";鍵鼠",
-                    "action": "Zoom",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "9aa68339-22f0-4814-867b-bd963c50a54a",
-                    "path": "<DualShockGamepad>/leftStick/y",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": ";Gamepad",
-                    "action": "Zoom",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "838303a4-fc4f-4553-9a45-bb5cf75261bf",
-                    "path": "<Keyboard>/backspace",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": ";鍵鼠",
-                    "action": "CloseItemDetail",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "eef39393-5497-45a7-a8dd-d5203f499d21",
-                    "path": "<Gamepad>/buttonEast",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": ";Gamepad",
-                    "action": "CloseItemDetail",
+                    "action": "OpenItemDetail",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

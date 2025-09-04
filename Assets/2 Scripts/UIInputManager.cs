@@ -53,12 +53,18 @@ public class UIInputManager : MonoBehaviour
     {
         // 在 OnEnable 中訂閱所有需要的事件
         PlayerControls.Dialogue.AdvanceDialogue.performed += OnAdvanceDialoguePerformed;
+
+        // 新增：在這裡訂閱 Startup/StartGame 按鍵
+        PlayerControls.Startup.StartGame.performed += OnStartupStartGamePerformed;
     }
 
     private void OnDisable()
     {
         // 在 OnDisable 中取消訂閱，防止記憶體洩漏
         PlayerControls.Dialogue.AdvanceDialogue.performed -= OnAdvanceDialoguePerformed;
+
+        // 新增：取消訂閱
+        PlayerControls.Startup.StartGame.performed -= OnStartupStartGamePerformed;
     }
  
     void Start()
@@ -66,8 +72,8 @@ public class UIInputManager : MonoBehaviour
         // 遊戲一開始，禁用所有操作，等待玩家按下開始按鈕
         DisableAllMaps();
 
-        // 只啟用 StartGame 操作
-        PlayerControls.Player.StartGame.Enable();
+        // 啟用 Startup Map（只有 StartGame 可用）
+        PlayerControls.Startup.Enable();
 
         // 設置初始游標狀態
         UpdateCursorState();
@@ -84,6 +90,17 @@ public class UIInputManager : MonoBehaviour
         PlayerControls.UI.Disable();
         PlayerControls.Inventory.Disable();
         PlayerControls.Dialogue.Disable();
+
+        // 新增：把 Startup 也一併關掉
+        PlayerControls.Startup.Disable();
+    }
+
+    // 新增：啟動流程入口（由 Startup/StartGame 的 performed 事件觸發）
+    private void OnStartupStartGamePerformed(InputAction.CallbackContext ctx)
+    {
+        // 避免重複觸發
+        if (IsGameStarted) return;
+        StartGame();
     }
 
     // 新增: 開始遊戲的方法
@@ -95,14 +112,18 @@ public class UIInputManager : MonoBehaviour
 
         // 先禁用所有操作，然後重新啟用 Player Action Map
         DisableAllMaps();
+        // 正式啟用 Player Map（之後 OpenInventory 就在這裡正常運作）
         PlayerControls.Player.Enable();
+
+        // 如果你的設計是進遊戲後先不進 Inventory，也不要啟用 Inventory Map
+        // PlayerControls.Inventory.Enable(); // 只有進入背包模式時才會開，見 EnterInventoryMode()
 
         SetModeFlags(isPlayer: true);
         UpdateCursorState();
 
-        hintUI.SetActive(false); //新增
+        hintUI.SetActive(false); //新增: 關閉提示按下按鈕
 
-        Debug.Log("[UIInputManager] 遊戲開始，啟用玩家控制");
+        Debug.Log("[UIInputManager] 遊戲開始：Startup → Player。現已啟用玩家控制（OpenInventory 第一時間可用）");
     }
 
     // 新增: 更新游標狀態的方法
@@ -120,7 +141,7 @@ public class UIInputManager : MonoBehaviour
             else if (IsInInventoryMode)
             {
                 // 背包模式下，根據設備類型設置游標
-                if (inputDeviceManager.CurrentInputType == InputDeviceManager.InputType.KeyboardMouse)
+                if (inputDeviceManager.CurrentInputType == InputDeviceManager.InputType.KeyboardMouse) // 鍵鼠
                 {
                     Cursor.lockState = CursorLockMode.None;
                     Cursor.visible = true;
@@ -182,7 +203,7 @@ public class UIInputManager : MonoBehaviour
         PlayerControls.Inventory.Enable();
         SetModeFlags(isInventory: true);
         UpdateCursorState();
-        Debug.Log("[UIInputManager] 遊戲模式切換為：Inventory（無滑鼠）模式");
+        Debug.Log("[UIInputManager] 遊戲模式切換為：Inventory 模式");
     }
 
     public void EnterDialogueMode()

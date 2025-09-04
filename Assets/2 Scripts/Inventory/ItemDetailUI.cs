@@ -6,7 +6,7 @@ using UnityEngine.UIElements;
 
 public class ItemDetailUI : MonoBehaviour
 {
-    [Header("功能：查看物件介紹")]
+    [Header("功能：查看3D物件")]
     [Header("物件面板UI設置")]
     public GameObject detailPanel;
     public Text nameText;

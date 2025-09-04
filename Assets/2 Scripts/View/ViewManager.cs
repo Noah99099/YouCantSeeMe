@@ -69,7 +69,7 @@ public class ViewManager : MonoBehaviour
             }
 
             // 獲取開始遊戲操作
-            startGameAction = inputManager.PlayerControls.Player.StartGame;
+            startGameAction = inputManager.PlayerControls.Startup.StartGame;
             if (startGameAction != null)
             {
                 startGameAction.performed += OnStartGamePerformed;

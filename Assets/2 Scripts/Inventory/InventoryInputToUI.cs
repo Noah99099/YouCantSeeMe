@@ -11,7 +11,7 @@ public class InventoryInputToUI : MonoBehaviour
     [Tooltip("Inventory Action Map 的 SelectSlot")] public InputActionReference selectSlotAction;
     [Tooltip("Player Action Map 的 OpenInventory")] public InputActionReference openInventoryAction;
     [Tooltip("Inventory Action Map 的 CloseInventory")] public InputActionReference closeInventoryAction;
-    [Tooltip("Inventory Action Map 的 CloseItemDetail")] public InputActionReference closeItemDetailAction;
+    //[Tooltip("Inventory Action Map 的 CloseItemDetail")] public InputActionReference closeItemDetailAction;
 
     [Header("UI References")]
     public GameObject inventoryPanel; // 包含所有 Inventory 按鈕的父物件
@@ -28,14 +28,14 @@ public class InventoryInputToUI : MonoBehaviour
         selectSlotAction?.action.Enable();
         openInventoryAction?.action.Enable();
         closeInventoryAction?.action.Enable();
-        closeItemDetailAction?.action.Enable();
+        //closeItemDetailAction?.action.Enable();
 
         // 訂閱事件
         navigateAction.action.performed += OnNavigate;
         selectSlotAction.action.performed += OnSelectSlot;
         openInventoryAction.action.performed += OnOpenInventory;
         closeInventoryAction.action.performed += OnCloseInventory;
-        closeItemDetailAction.action.performed += OnCloseItemDetail;
+        //closeItemDetailAction.action.performed += OnCloseItemDetail;
 
         CacheSelectableButtons();
         SelectFirstValidButton(); // 初始化選擇第一個可選按鈕
@@ -47,14 +47,14 @@ public class InventoryInputToUI : MonoBehaviour
         selectSlotAction.action.performed -= OnSelectSlot;
         openInventoryAction.action.performed -= OnOpenInventory;
         closeInventoryAction.action.performed -= OnCloseInventory;
-        closeItemDetailAction.action.performed -= OnCloseItemDetail;
+        //closeItemDetailAction.action.performed -= OnCloseItemDetail;
 
         // 禁用所有動作
         navigateAction?.action.Disable();
         selectSlotAction?.action.Disable();
         openInventoryAction?.action.Disable();
         closeInventoryAction?.action.Disable();
-        closeItemDetailAction?.action.Disable();
+        //closeItemDetailAction?.action.Disable();
     }
     #region 輸入處理方法
     private void OnNavigate(InputAction.CallbackContext context)

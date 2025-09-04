@@ -128,27 +128,9 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""initialStateCheck"": false
                 },
                 {
-                    ""name"": ""OpenUIMode"",
-                    ""type"": ""Button"",
-                    ""id"": ""a77b2271-b7ed-4367-bdc5-1a5a7417bb79"",
-                    ""expectedControlType"": """",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": false
-                },
-                {
                     ""name"": ""OpenInventory"",
                     ""type"": ""Button"",
                     ""id"": ""14df317b-393b-49e7-8a5f-38fd8175289b"",
-                    ""expectedControlType"": """",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": false
-                },
-                {
-                    ""name"": ""StartGame"",
-                    ""type"": ""Button"",
-                    ""id"": ""1f52afe5-2aaa-4e27-9e1d-3734c869a623"",
                     ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """",
@@ -192,7 +174,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                 {
                     ""name"": """",
                     ""id"": ""02697f6a-1617-4462-922b-3ddc89db36bf"",
-                    ""path"": ""<Gamepad>/buttonNorth"",
+                    ""path"": ""<Gamepad>/buttonWest"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": "";Gamepad"",
@@ -401,44 +383,11 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                 {
                     ""name"": """",
                     ""id"": ""79315047-0ece-480a-9c5c-b0958759a98e"",
-                    ""path"": ""<DualShockGamepad>/rightShoulder"",
+                    ""path"": ""<Gamepad>/rightShoulder"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Gamepad"",
                     ""action"": ""View"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""7ee865a2-bf79-4b28-8709-98b9aefbbe8a"",
-                    ""path"": ""<Keyboard>/escape"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": "";鍵鼠"",
-                    ""action"": ""OpenUIMode"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""86846f20-0d39-40e6-a142-041f060acbe1"",
-                    ""path"": ""<Keyboard>/leftShift"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": "";鍵鼠"",
-                    ""action"": ""StartGame"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""89d79c12-dcab-4fb8-a542-a1e686ed90cb"",
-                    ""path"": ""<Gamepad>/rightShoulder"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": "";Gamepad"",
-                    ""action"": ""StartGame"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -674,6 +623,45 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             ]
         },
         {
+            ""name"": ""Startup"",
+            ""id"": ""134c64a1-fdeb-4f91-be4f-0adc69a98aba"",
+            ""actions"": [
+                {
+                    ""name"": ""StartGame"",
+                    ""type"": ""Button"",
+                    ""id"": ""b698c362-bf26-4fe0-824b-bad6e0c01bf1"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""19794579-474d-424b-9fb2-2511ece99869"",
+                    ""path"": ""<Keyboard>/leftShift"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";鍵鼠"",
+                    ""action"": ""StartGame"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""16d8718a-d337-4b7e-97f4-d03b354cba2f"",
+                    ""path"": ""<Gamepad>/rightShoulder"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Gamepad"",
+                    ""action"": ""StartGame"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                }
+            ]
+        },
+        {
             ""name"": ""Inventory"",
             ""id"": ""8f74790c-da07-4236-b969-aafdbc43ed3b"",
             ""actions"": [
@@ -705,18 +693,9 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""initialStateCheck"": false
                 },
                 {
-                    ""name"": ""Zoom"",
-                    ""type"": ""Value"",
-                    ""id"": ""d19936d0-c167-46ac-9094-0500e4bfba06"",
-                    ""expectedControlType"": ""Axis"",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": true
-                },
-                {
-                    ""name"": ""CloseItemDetail"",
+                    ""name"": ""OpenItemDetail"",
                     ""type"": ""Button"",
-                    ""id"": ""722b2566-a127-434d-8963-db7d6ebdafe9"",
+                    ""id"": ""ac697413-0cf7-4ad5-a7ab-cf50122ad924"",
                     ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """",
@@ -793,7 +772,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                 {
                     ""name"": ""up"",
                     ""id"": ""a603a2ab-c52b-4c0c-a67e-71f8c6d3f7b0"",
-                    ""path"": ""<Keyboard>/upArrow"",
+                    ""path"": ""<Keyboard>/w"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": "";鍵鼠"",
@@ -804,7 +783,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                 {
                     ""name"": ""down"",
                     ""id"": ""2e0d8e26-0262-4745-bbd7-6637632ee60f"",
-                    ""path"": ""<Keyboard>/downArrow"",
+                    ""path"": ""<Keyboard>/s"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": "";鍵鼠"",
@@ -815,7 +794,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                 {
                     ""name"": ""left"",
                     ""id"": ""041c09ef-79f6-46b9-b230-8a91f73c69fe"",
-                    ""path"": ""<Keyboard>/leftArrow"",
+                    ""path"": ""<Keyboard>/a"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": "";鍵鼠"",
@@ -826,7 +805,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                 {
                     ""name"": ""right"",
                     ""id"": ""4a0bb455-410b-4a7a-be89-6f2be509c31b"",
-                    ""path"": ""<Keyboard>/rightArrow"",
+                    ""path"": ""<Keyboard>/d"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": "";鍵鼠"",
@@ -859,21 +838,10 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                 {
                     ""name"": """",
                     ""id"": ""ee7a6d7d-d319-4fa3-9db5-a8d9337498ce"",
-                    ""path"": ""<Keyboard>/b"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": "";鍵鼠"",
-                    ""action"": ""CloseInventory"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""8fa1b4f3-fce1-4be5-b9dd-ccfdb3e126b9"",
                     ""path"": ""<Keyboard>/backspace"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": """",
+                    ""groups"": "";鍵鼠"",
                     ""action"": ""CloseInventory"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
@@ -891,56 +859,23 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
-                    ""id"": ""8c984820-6423-4638-bcba-62e897ccbb70"",
+                    ""id"": ""cadc4780-3338-4a44-aa74-125c25873d70"",
+                    ""path"": ""<Keyboard>/x"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";鍵鼠"",
+                    ""action"": ""OpenItemDetail"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""79ea8a87-12f8-4ff6-b7fc-b310c9e1e9b6"",
                     ""path"": ""<Gamepad>/buttonNorth"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": "";Gamepad"",
-                    ""action"": ""CloseInventory"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""49bc9d4d-a31c-4faa-9a2b-c45f61355123"",
-                    ""path"": ""<Mouse>/scroll/y"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": "";鍵鼠"",
-                    ""action"": ""Zoom"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""9aa68339-22f0-4814-867b-bd963c50a54a"",
-                    ""path"": ""<DualShockGamepad>/leftStick/y"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": "";Gamepad"",
-                    ""action"": ""Zoom"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""838303a4-fc4f-4553-9a45-bb5cf75261bf"",
-                    ""path"": ""<Keyboard>/backspace"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": "";鍵鼠"",
-                    ""action"": ""CloseItemDetail"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""eef39393-5497-45a7-a8dd-d5203f499d21"",
-                    ""path"": ""<Gamepad>/buttonEast"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": "";Gamepad"",
-                    ""action"": ""CloseItemDetail"",
+                    ""action"": ""OpenItemDetail"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -1109,9 +1044,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         m_Player_Move = m_Player.FindAction("Move", throwIfNotFound: true);
         m_Player_Interaction = m_Player.FindAction("Interaction", throwIfNotFound: true);
         m_Player_View = m_Player.FindAction("View", throwIfNotFound: true);
-        m_Player_OpenUIMode = m_Player.FindAction("OpenUIMode", throwIfNotFound: true);
         m_Player_OpenInventory = m_Player.FindAction("OpenInventory", throwIfNotFound: true);
-        m_Player_StartGame = m_Player.FindAction("StartGame", throwIfNotFound: true);
         // UI
         m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
         m_UI_Navigate = m_UI.FindAction("Navigate", throwIfNotFound: true);
@@ -1119,13 +1052,15 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         m_UI_Cancel = m_UI.FindAction("Cancel", throwIfNotFound: true);
         m_UI_Point = m_UI.FindAction("Point", throwIfNotFound: true);
         m_UI_Click = m_UI.FindAction("Click", throwIfNotFound: true);
+        // Startup
+        m_Startup = asset.FindActionMap("Startup", throwIfNotFound: true);
+        m_Startup_StartGame = m_Startup.FindAction("StartGame", throwIfNotFound: true);
         // Inventory
         m_Inventory = asset.FindActionMap("Inventory", throwIfNotFound: true);
         m_Inventory_Navigate = m_Inventory.FindAction("Navigate", throwIfNotFound: true);
         m_Inventory_SelectSlot = m_Inventory.FindAction("SelectSlot", throwIfNotFound: true);
         m_Inventory_CloseInventory = m_Inventory.FindAction("CloseInventory", throwIfNotFound: true);
-        m_Inventory_Zoom = m_Inventory.FindAction("Zoom", throwIfNotFound: true);
-        m_Inventory_CloseItemDetail = m_Inventory.FindAction("CloseItemDetail", throwIfNotFound: true);
+        m_Inventory_OpenItemDetail = m_Inventory.FindAction("OpenItemDetail", throwIfNotFound: true);
         // Dialogue
         m_Dialogue = asset.FindActionMap("Dialogue", throwIfNotFound: true);
         m_Dialogue_ToggleAutoPlay = m_Dialogue.FindAction("ToggleAutoPlay", throwIfNotFound: true);
@@ -1138,6 +1073,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
     {
         UnityEngine.Debug.Assert(!m_Player.enabled, "This will cause a leak and performance issues, PlayerControls.Player.Disable() has not been called.");
         UnityEngine.Debug.Assert(!m_UI.enabled, "This will cause a leak and performance issues, PlayerControls.UI.Disable() has not been called.");
+        UnityEngine.Debug.Assert(!m_Startup.enabled, "This will cause a leak and performance issues, PlayerControls.Startup.Disable() has not been called.");
         UnityEngine.Debug.Assert(!m_Inventory.enabled, "This will cause a leak and performance issues, PlayerControls.Inventory.Disable() has not been called.");
         UnityEngine.Debug.Assert(!m_Dialogue.enabled, "This will cause a leak and performance issues, PlayerControls.Dialogue.Disable() has not been called.");
     }
@@ -1219,9 +1155,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_Move;
     private readonly InputAction m_Player_Interaction;
     private readonly InputAction m_Player_View;
-    private readonly InputAction m_Player_OpenUIMode;
     private readonly InputAction m_Player_OpenInventory;
-    private readonly InputAction m_Player_StartGame;
     /// <summary>
     /// Provides access to input actions defined in input action map "Player".
     /// </summary>
@@ -1250,17 +1184,9 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         /// </summary>
         public InputAction @View => m_Wrapper.m_Player_View;
         /// <summary>
-        /// Provides access to the underlying input action "Player/OpenUIMode".
-        /// </summary>
-        public InputAction @OpenUIMode => m_Wrapper.m_Player_OpenUIMode;
-        /// <summary>
         /// Provides access to the underlying input action "Player/OpenInventory".
         /// </summary>
         public InputAction @OpenInventory => m_Wrapper.m_Player_OpenInventory;
-        /// <summary>
-        /// Provides access to the underlying input action "Player/StartGame".
-        /// </summary>
-        public InputAction @StartGame => m_Wrapper.m_Player_StartGame;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -1299,15 +1225,9 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @View.started += instance.OnView;
             @View.performed += instance.OnView;
             @View.canceled += instance.OnView;
-            @OpenUIMode.started += instance.OnOpenUIMode;
-            @OpenUIMode.performed += instance.OnOpenUIMode;
-            @OpenUIMode.canceled += instance.OnOpenUIMode;
             @OpenInventory.started += instance.OnOpenInventory;
             @OpenInventory.performed += instance.OnOpenInventory;
             @OpenInventory.canceled += instance.OnOpenInventory;
-            @StartGame.started += instance.OnStartGame;
-            @StartGame.performed += instance.OnStartGame;
-            @StartGame.canceled += instance.OnStartGame;
         }
 
         /// <summary>
@@ -1331,15 +1251,9 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @View.started -= instance.OnView;
             @View.performed -= instance.OnView;
             @View.canceled -= instance.OnView;
-            @OpenUIMode.started -= instance.OnOpenUIMode;
-            @OpenUIMode.performed -= instance.OnOpenUIMode;
-            @OpenUIMode.canceled -= instance.OnOpenUIMode;
             @OpenInventory.started -= instance.OnOpenInventory;
             @OpenInventory.performed -= instance.OnOpenInventory;
             @OpenInventory.canceled -= instance.OnOpenInventory;
-            @StartGame.started -= instance.OnStartGame;
-            @StartGame.performed -= instance.OnStartGame;
-            @StartGame.canceled -= instance.OnStartGame;
         }
 
         /// <summary>
@@ -1514,14 +1428,109 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
     /// </summary>
     public UIActions @UI => new UIActions(this);
 
+    // Startup
+    private readonly InputActionMap m_Startup;
+    private List<IStartupActions> m_StartupActionsCallbackInterfaces = new List<IStartupActions>();
+    private readonly InputAction m_Startup_StartGame;
+    /// <summary>
+    /// Provides access to input actions defined in input action map "Startup".
+    /// </summary>
+    public struct StartupActions
+    {
+        private @PlayerControls m_Wrapper;
+
+        /// <summary>
+        /// Construct a new instance of the input action map wrapper class.
+        /// </summary>
+        public StartupActions(@PlayerControls wrapper) { m_Wrapper = wrapper; }
+        /// <summary>
+        /// Provides access to the underlying input action "Startup/StartGame".
+        /// </summary>
+        public InputAction @StartGame => m_Wrapper.m_Startup_StartGame;
+        /// <summary>
+        /// Provides access to the underlying input action map instance.
+        /// </summary>
+        public InputActionMap Get() { return m_Wrapper.m_Startup; }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Enable()" />
+        public void Enable() { Get().Enable(); }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Disable()" />
+        public void Disable() { Get().Disable(); }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.enabled" />
+        public bool enabled => Get().enabled;
+        /// <summary>
+        /// Implicitly converts an <see ref="StartupActions" /> to an <see ref="InputActionMap" /> instance.
+        /// </summary>
+        public static implicit operator InputActionMap(StartupActions set) { return set.Get(); }
+        /// <summary>
+        /// Adds <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
+        /// </summary>
+        /// <param name="instance">Callback instance.</param>
+        /// <remarks>
+        /// If <paramref name="instance" /> is <c>null</c> or <paramref name="instance"/> have already been added this method does nothing.
+        /// </remarks>
+        /// <seealso cref="StartupActions" />
+        public void AddCallbacks(IStartupActions instance)
+        {
+            if (instance == null || m_Wrapper.m_StartupActionsCallbackInterfaces.Contains(instance)) return;
+            m_Wrapper.m_StartupActionsCallbackInterfaces.Add(instance);
+            @StartGame.started += instance.OnStartGame;
+            @StartGame.performed += instance.OnStartGame;
+            @StartGame.canceled += instance.OnStartGame;
+        }
+
+        /// <summary>
+        /// Removes <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
+        /// </summary>
+        /// <remarks>
+        /// Calling this method when <paramref name="instance" /> have not previously been registered has no side-effects.
+        /// </remarks>
+        /// <seealso cref="StartupActions" />
+        private void UnregisterCallbacks(IStartupActions instance)
+        {
+            @StartGame.started -= instance.OnStartGame;
+            @StartGame.performed -= instance.OnStartGame;
+            @StartGame.canceled -= instance.OnStartGame;
+        }
+
+        /// <summary>
+        /// Unregisters <param cref="instance" /> and unregisters all input action callbacks via <see cref="StartupActions.UnregisterCallbacks(IStartupActions)" />.
+        /// </summary>
+        /// <seealso cref="StartupActions.UnregisterCallbacks(IStartupActions)" />
+        public void RemoveCallbacks(IStartupActions instance)
+        {
+            if (m_Wrapper.m_StartupActionsCallbackInterfaces.Remove(instance))
+                UnregisterCallbacks(instance);
+        }
+
+        /// <summary>
+        /// Replaces all existing callback instances and previously registered input action callbacks associated with them with callbacks provided via <param cref="instance" />.
+        /// </summary>
+        /// <remarks>
+        /// If <paramref name="instance" /> is <c>null</c>, calling this method will only unregister all existing callbacks but not register any new callbacks.
+        /// </remarks>
+        /// <seealso cref="StartupActions.AddCallbacks(IStartupActions)" />
+        /// <seealso cref="StartupActions.RemoveCallbacks(IStartupActions)" />
+        /// <seealso cref="StartupActions.UnregisterCallbacks(IStartupActions)" />
+        public void SetCallbacks(IStartupActions instance)
+        {
+            foreach (var item in m_Wrapper.m_StartupActionsCallbackInterfaces)
+                UnregisterCallbacks(item);
+            m_Wrapper.m_StartupActionsCallbackInterfaces.Clear();
+            AddCallbacks(instance);
+        }
+    }
+    /// <summary>
+    /// Provides a new <see cref="StartupActions" /> instance referencing this action map.
+    /// </summary>
+    public StartupActions @Startup => new StartupActions(this);
+
     // Inventory
     private readonly InputActionMap m_Inventory;
     private List<IInventoryActions> m_InventoryActionsCallbackInterfaces = new List<IInventoryActions>();
     private readonly InputAction m_Inventory_Navigate;
     private readonly InputAction m_Inventory_SelectSlot;
     private readonly InputAction m_Inventory_CloseInventory;
-    private readonly InputAction m_Inventory_Zoom;
-    private readonly InputAction m_Inventory_CloseItemDetail;
+    private readonly InputAction m_Inventory_OpenItemDetail;
     /// <summary>
     /// Provides access to input actions defined in input action map "Inventory".
     /// </summary>
@@ -1546,13 +1555,9 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         /// </summary>
         public InputAction @CloseInventory => m_Wrapper.m_Inventory_CloseInventory;
         /// <summary>
-        /// Provides access to the underlying input action "Inventory/Zoom".
+        /// Provides access to the underlying input action "Inventory/OpenItemDetail".
         /// </summary>
-        public InputAction @Zoom => m_Wrapper.m_Inventory_Zoom;
-        /// <summary>
-        /// Provides access to the underlying input action "Inventory/CloseItemDetail".
-        /// </summary>
-        public InputAction @CloseItemDetail => m_Wrapper.m_Inventory_CloseItemDetail;
+        public InputAction @OpenItemDetail => m_Wrapper.m_Inventory_OpenItemDetail;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -1588,12 +1593,9 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @CloseInventory.started += instance.OnCloseInventory;
             @CloseInventory.performed += instance.OnCloseInventory;
             @CloseInventory.canceled += instance.OnCloseInventory;
-            @Zoom.started += instance.OnZoom;
-            @Zoom.performed += instance.OnZoom;
-            @Zoom.canceled += instance.OnZoom;
-            @CloseItemDetail.started += instance.OnCloseItemDetail;
-            @CloseItemDetail.performed += instance.OnCloseItemDetail;
-            @CloseItemDetail.canceled += instance.OnCloseItemDetail;
+            @OpenItemDetail.started += instance.OnOpenItemDetail;
+            @OpenItemDetail.performed += instance.OnOpenItemDetail;
+            @OpenItemDetail.canceled += instance.OnOpenItemDetail;
         }
 
         /// <summary>
@@ -1614,12 +1616,9 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @CloseInventory.started -= instance.OnCloseInventory;
             @CloseInventory.performed -= instance.OnCloseInventory;
             @CloseInventory.canceled -= instance.OnCloseInventory;
-            @Zoom.started -= instance.OnZoom;
-            @Zoom.performed -= instance.OnZoom;
-            @Zoom.canceled -= instance.OnZoom;
-            @CloseItemDetail.started -= instance.OnCloseItemDetail;
-            @CloseItemDetail.performed -= instance.OnCloseItemDetail;
-            @CloseItemDetail.canceled -= instance.OnCloseItemDetail;
+            @OpenItemDetail.started -= instance.OnOpenItemDetail;
+            @OpenItemDetail.performed -= instance.OnOpenItemDetail;
+            @OpenItemDetail.canceled -= instance.OnOpenItemDetail;
         }
 
         /// <summary>
@@ -1844,26 +1843,12 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnView(InputAction.CallbackContext context);
         /// <summary>
-        /// Method invoked when associated input action "OpenUIMode" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
-        /// </summary>
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-        void OnOpenUIMode(InputAction.CallbackContext context);
-        /// <summary>
         /// Method invoked when associated input action "OpenInventory" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
         /// </summary>
         /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnOpenInventory(InputAction.CallbackContext context);
-        /// <summary>
-        /// Method invoked when associated input action "StartGame" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
-        /// </summary>
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-        void OnStartGame(InputAction.CallbackContext context);
     }
     /// <summary>
     /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "UI" which allows adding and removing callbacks.
@@ -1909,6 +1894,21 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         void OnClick(InputAction.CallbackContext context);
     }
     /// <summary>
+    /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "Startup" which allows adding and removing callbacks.
+    /// </summary>
+    /// <seealso cref="StartupActions.AddCallbacks(IStartupActions)" />
+    /// <seealso cref="StartupActions.RemoveCallbacks(IStartupActions)" />
+    public interface IStartupActions
+    {
+        /// <summary>
+        /// Method invoked when associated input action "StartGame" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnStartGame(InputAction.CallbackContext context);
+    }
+    /// <summary>
     /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "Inventory" which allows adding and removing callbacks.
     /// </summary>
     /// <seealso cref="InventoryActions.AddCallbacks(IInventoryActions)" />
@@ -1937,19 +1937,12 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnCloseInventory(InputAction.CallbackContext context);
         /// <summary>
-        /// Method invoked when associated input action "Zoom" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// Method invoked when associated input action "OpenItemDetail" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
         /// </summary>
         /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-        void OnZoom(InputAction.CallbackContext context);
-        /// <summary>
-        /// Method invoked when associated input action "CloseItemDetail" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
-        /// </summary>
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-        void OnCloseItemDetail(InputAction.CallbackContext context);
+        void OnOpenItemDetail(InputAction.CallbackContext context);
     }
     /// <summary>
     /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "Dialogue" which allows adding and removing callbacks.
