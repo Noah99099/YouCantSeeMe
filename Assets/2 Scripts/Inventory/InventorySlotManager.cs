@@ -104,9 +104,9 @@ public class InventorySlotManager : MonoBehaviour
             }
             else
             {
-                // 設置為空圖標（您需要有一個預設的空圖標）
-                // itemIcon.sprite = emptyIcon;
-                itemIcon.enabled = true; // 保持顯示空圖標
+                // 顯示空格子的預設圖（若沒有預設圖就隱藏）
+                itemIcon.sprite = InventoryManager.Instance.defaultItem != null ? InventoryManager.Instance.defaultItem.icon : null;
+                itemIcon.enabled = itemIcon.sprite != null;
             }
         }
 
@@ -117,11 +117,21 @@ public class InventorySlotManager : MonoBehaviour
             if (item != null)
             {
                 button.onClick.AddListener(() => onClickAction?.Invoke(item));
+
+                // 更新右側資訊面板
+                InventoryManager.Instance.UpdateDetailPanel(item);
+
                 button.interactable = true; // 有物品的格子可以交互
             }
             else
             {
                 button.onClick.AddListener(() => onClickAction?.Invoke(null));
+
+                // 如果沒有物品，顯示默認內容
+                InventoryManager.Instance.itemImage.sprite = InventoryManager.Instance.defaultItem.icon;
+                InventoryManager.Instance.itemNameText.text = InventoryManager.Instance.defaultItem.itemName;
+                InventoryManager.Instance.itemDescriptionText.text = InventoryManager.Instance.defaultItem.description;
+
                 button.interactable = true; // 空格子也可以交互，但會傳遞null
             }
         }

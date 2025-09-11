@@ -1,13 +1,16 @@
 using UnityEngine;
+using UnityEngine.UI;
+using TMPro;
 
 // 這個屬性讓我們可以直接在 Project 視窗中右鍵 Create -> Inventory -> Item
 [CreateAssetMenu(fileName = "New Item", menuName = "Inventory/Item")]
 public class ItemData : ScriptableObject
 {
-    [Header("物品資訊")]
-    public string itemName; // 物品名稱
-    public Sprite icon;     // 物品在 UI 上顯示的圖示
-    
+    [Header("物品資訊：UI元件")]
+    public Image itemImage;
+    public Sprite icon;
+    public string itemName;
+
     [TextArea(3,10)]
     public string description; // 物品描述
 

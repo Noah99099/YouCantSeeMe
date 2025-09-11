@@ -1,6 +1,9 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using System; // 需要引用 System 才能使用 Action
+using UnityEngine.UIElements;
+using TMPro;
 
 [DefaultExecutionOrder(-15)] //更早初始化此腳本
 public class InventoryManager : MonoBehaviour
@@ -13,6 +16,13 @@ public class InventoryManager : MonoBehaviour
 
     // 儲存所有物品資料的 List
     public List<ItemData> items = new List<ItemData>();
+
+    [Header("物件面板UI設置")]
+    public UnityEngine.UI.Image itemImage;
+    public TMP_Text itemNameText;
+    public TMP_Text itemDescriptionText;
+    [Header("默認顯示物品 (請在 Inspector 指派一個 ItemData 資產)")]
+    public ItemData defaultItem;
 
     [Header("UI管理")]
     [SerializeField][Tooltip("ItemDetailUI 腳本")] private ItemDetailUI _itemDetailUI; // 現在直接引用組件
@@ -86,7 +96,6 @@ public class InventoryManager : MonoBehaviour
         _itemDetailUI.enabled = false;
     }
 
-
     /// <summary>
     /// 新增物品到背包
     /// </summary>
@@ -127,5 +136,29 @@ public class InventoryManager : MonoBehaviour
         // 使用 System.Linq 的 Any 方法，可以很有效率地檢查 List 中是否有符合條件的項目
         // 這行程式碼的意思是：「在 items 這個 List 中，是否有任何一個 item 的 itemName 等於我們要檢查的名稱？」
         return items.Exists(item => item.itemName == itemNameToCheck);
+    }
+
+    public void UpdateDetailPanel(ItemData item)
+    {
+        // 如果 item 為 null，就用 defaultItem 代替
+        ItemData dataToShow = item ?? defaultItem;
+
+        if (dataToShow == null)
+        {
+            // 若連 defaultItem 都沒設，就清空
+            if (itemImage != null) { itemImage.sprite = null; itemImage.enabled = false; }
+            if (itemNameText != null) itemNameText.text = "";
+            if (itemDescriptionText != null) itemDescriptionText.text = "";
+            return;
+        }
+
+        if (itemImage != null)
+        {
+            itemImage.sprite = dataToShow.icon;
+            itemImage.enabled = dataToShow.icon != null;
+        }
+
+        if (itemNameText != null) itemNameText.text = dataToShow.itemName ?? "";
+        if (itemDescriptionText != null) itemDescriptionText.text = dataToShow.description ?? "";
     }
 }
