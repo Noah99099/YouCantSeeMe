@@ -6,24 +6,24 @@ using UnityEngine.InputSystem;
 public class UIInputManager : MonoBehaviour
 {
     public static UIInputManager Instance { get; private set; }
-
-    // 我們將使用由 Input Action Asset 生成的 C# 類別來管理所有控制
-    // 這是最安全且最高效的方式
     public PlayerControls PlayerControls { get; private set; }
 
     // 用布林值來追蹤目前的遊戲狀態
-    public bool IsInPlayerMode { get; private set; } = false;
-    public bool IsInUIMode { get; private set; } = false;
-    public bool IsInInventoryMode { get; private set; } = false;
-    public bool IsInDialogueMode { get; private set; } = false;
+    public bool IsInPlayerMode { get; private set; } = false; //遊玩
+    public bool IsInUIMode { get; private set; } = false; //主選單 或 菜單?
+    public bool IsInInventoryMode { get; private set; } = false; //背包（不包含3D）
+    public bool IsInModelPreviewMode { get; private set; } = false; //3D預覽
+    public bool IsInDialogueMode { get; private set; } = false; //對話系統
 
     // 新增: 遊戲開始狀態
     public bool IsGameStarted { get; private set; } = false;
 
+    [Header("功能：全局輸入模式管理和Action Map切換")]
+
     // 新增: 輸入設備類型引用
     private InputDeviceManager inputDeviceManager;
 
-    [Tooltip("提示按下視野按鈕才能開始遊戲")] public GameObject hintUI;
+    [Tooltip("提示按下視野按鈕才能開始遊戲")] public GameObject hintUI; //畫面至中下的提示，不是右下的看無
 
     private void Awake()
     {
@@ -69,7 +69,7 @@ public class UIInputManager : MonoBehaviour
  
     void Start()
     {
-        // 遊戲一開始，禁用所有操作，等待玩家按下開始按鈕
+        // 遊戲一開始，禁用所有操作，等待玩家按下切換視野按鈕（左shift、R1）
         DisableAllMaps();
 
         // 啟用 Startup Map（只有 StartGame 可用）
@@ -83,6 +83,7 @@ public class UIInputManager : MonoBehaviour
         Debug.Log("[UIInputManager] 等待玩家按下開始按鈕");
     }
 
+    #region ===== 關閉所有的 Action Map：目前有5個 =====
     private void DisableAllMaps()
     {
         // 透過 PlayerControls 實例來停用所有的 Action Map
@@ -90,14 +91,14 @@ public class UIInputManager : MonoBehaviour
         PlayerControls.UI.Disable();
         PlayerControls.Inventory.Disable();
         PlayerControls.Dialogue.Disable();
-
-        // 新增：把 Startup 也一併關掉
         PlayerControls.Startup.Disable();
     }
+    #endregion
 
     // 新增：啟動流程入口（由 Startup/StartGame 的 performed 事件觸發）
     private void OnStartupStartGamePerformed(InputAction.CallbackContext ctx)
     {
+        //按下 切換視野按鈕（左shift、R1） 後執行的方法
         // 避免重複觸發
         if (IsGameStarted) return;
         StartGame();
@@ -115,13 +116,16 @@ public class UIInputManager : MonoBehaviour
         // 正式啟用 Player Map（之後 OpenInventory 就在這裡正常運作）
         PlayerControls.Player.Enable();
 
-        // 如果你的設計是進遊戲後先不進 Inventory，也不要啟用 Inventory Map
-        // PlayerControls.Inventory.Enable(); // 只有進入背包模式時才會開，見 EnterInventoryMode()
-
         SetModeFlags(isPlayer: true);
         UpdateCursorState();
 
         hintUI.SetActive(false); //新增: 關閉提示按下按鈕
+
+        // 新增: 通知 ViewManager 遊戲已開始
+        if (ViewManager.Instance != null)
+        {
+            ViewManager.Instance.OnGameStarted();
+        }
 
         Debug.Log("[UIInputManager] 遊戲開始：Startup → Player。現已啟用玩家控制（OpenInventory 第一時間可用）");
     }
@@ -152,6 +156,20 @@ public class UIInputManager : MonoBehaviour
                     Cursor.visible = false;
                 }
             }
+            else if (IsInModelPreviewMode)
+            {
+                // 3D預覽模式下，根據設備類型設置游標
+                if (inputDeviceManager.CurrentInputType == InputDeviceManager.InputType.KeyboardMouse) // 鍵鼠
+                {
+                    Cursor.lockState = CursorLockMode.None;
+                    Cursor.visible = true;
+                }
+                else // 手柄
+                {
+                    Cursor.lockState = CursorLockMode.Locked;
+                    Cursor.visible = false;
+                }
+            }// 沒補完的：菜單、組合物件線索
             else // UI模式或對話模式
             {
                 Cursor.lockState = CursorLockMode.None;
@@ -176,7 +194,8 @@ public class UIInputManager : MonoBehaviour
         Debug.Log($"[UIInputManager] 游標狀態: LockState={Cursor.lockState}, Visible={Cursor.visible}");
     }
 
-    public void EnterUIMode()
+    // 沒補完的：3D預覽、組合物件線索
+    public void EnterUIMode() //菜單模式
     {
         if (IsInUIMode) return;
         DisableAllMaps();
@@ -186,7 +205,7 @@ public class UIInputManager : MonoBehaviour
         Debug.Log("[UIInputManager] 遊戲模式切換為：UI 模式");
     }
 
-    public void EnterGameplayMode()
+    public void EnterGameplayMode() //玩家模式
     {
         if (IsInPlayerMode) return;
         DisableAllMaps();
@@ -196,7 +215,7 @@ public class UIInputManager : MonoBehaviour
         Debug.Log("[UIInputManager] 遊戲模式切換為：Gameplay 模式");
     }
 
-    public void EnterInventoryMode()
+    public void EnterInventoryMode() //背包模式
     {
         if (IsInInventoryMode) return;
         DisableAllMaps();
@@ -206,7 +225,17 @@ public class UIInputManager : MonoBehaviour
         Debug.Log("[UIInputManager] 遊戲模式切換為：Inventory 模式");
     }
 
-    public void EnterDialogueMode()
+    public void EnterModelPreviewMode() //模型預覽模式
+    {
+        if (IsInModelPreviewMode) return;
+        DisableAllMaps();
+        PlayerControls.ModelPreview.Enable();
+        SetModeFlags(isModelPreview: true);
+        UpdateCursorState();
+        Debug.Log("[UIInputManager] 遊戲模式切換為：ModelPreview 模式");
+    }
+
+    public void EnterDialogueMode() //對話模式
     {
         if (IsInDialogueMode) return;
         DisableAllMaps();
@@ -229,11 +258,12 @@ public class UIInputManager : MonoBehaviour
     }
 
     // 輔助方法，用來集中設定模式旗標，讓程式碼更乾淨
-    private void SetModeFlags(bool isPlayer = false, bool isUI = false, bool isInventory = false, bool isDialogue = false)
+    private void SetModeFlags(bool isPlayer = false, bool isUI = false, bool isInventory = false, bool isDialogue = false, bool isModelPreview = false)
     {
         IsInPlayerMode = isPlayer;
         IsInUIMode = isUI;
         IsInInventoryMode = isInventory;
         IsInDialogueMode = isDialogue;
+        IsInModelPreviewMode = isModelPreview;
     }
 }

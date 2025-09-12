@@ -14,6 +14,7 @@ public class InventoryManager : MonoBehaviour
     // 當背包內容改變時觸發的事件，UI 會訂閱這個事件來更新顯示
     public event Action OnInventoryChanged;
 
+    [Header("功能：管理背包物件的增減，及初始化2個面板")]
     // 儲存所有物品資料的 List
     public List<ItemData> items = new List<ItemData>();
 
@@ -58,22 +59,11 @@ public class InventoryManager : MonoBehaviour
         if (_inventoryUI == null)
         {
             _inventoryUI = FindObjectOfType<InventoryUI>();
-            Debug.LogWarning("自动添加 InventoryUI 组件到 InventoryManager，请配置 UI 元素");
-            if (_inventoryUI == null) 
+            if (_inventoryUI == null)
             {
                 Debug.LogError("找不到 InventoryUI 組件！");
                 return;
             }
-        }
-
-        // 關閉背包面板
-        if (_inventoryUI.inventoryPanel != null)
-        {
-            _inventoryUI.inventoryPanel.SetActive(false);
-        }
-        else
-        {
-            Debug.LogWarning("InventoryUI 的 inventoryPanel 未設定！");
         }
     }
 

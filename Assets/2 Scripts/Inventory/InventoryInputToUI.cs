@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -6,15 +7,17 @@ using UnityEngine.UI;
 
 public class InventoryInputToUI : MonoBehaviour
 {
-    [Header("Input Actions")]
+    [Header("功能：透過偵測的輸入(Input Actions)，調用{InventoryUI 腳本}的方法")]
+    [Header("Input Actions：背包模式")]
     [Tooltip("Inventory Action Map 的 Navigate")] public InputActionReference navigateAction;
     [Tooltip("Inventory Action Map 的 SelectSlot")] public InputActionReference selectSlotAction;
-    [Tooltip("Player Action Map 的 OpenInventory")] public InputActionReference openInventoryAction;
     [Tooltip("Inventory Action Map 的 CloseInventory")] public InputActionReference closeInventoryAction;
-    //[Tooltip("Inventory Action Map 的 CloseItemDetail")] public InputActionReference closeItemDetailAction;
+
+    [Header("Input Actions：玩家模式")]
+    [Tooltip("Player Action Map 的 OpenInventory")] public InputActionReference openInventoryAction;
 
     [Header("UI References")]
-    public GameObject inventoryPanel; // 包含所有 Inventory 按鈕的父物件
+    //public GameObject inventoryPanel; // 包含所有 Inventory 按鈕的父物件
     public ItemDetailUI itemDetailUI;
     public InventoryUI inventoryUI;
 
@@ -24,39 +27,41 @@ public class InventoryInputToUI : MonoBehaviour
     private void OnEnable()
     {
         // 啟用所有動作
-        navigateAction?.action.Enable();
-        selectSlotAction?.action.Enable();
-        openInventoryAction?.action.Enable();
-        closeInventoryAction?.action.Enable();
-        //closeItemDetailAction?.action.Enable();
+        //背包
+        navigateAction?.action.Enable(); //導航按鈕
+        selectSlotAction?.action.Enable(); //?
+        closeInventoryAction?.action.Enable(); //關背包
+        //玩家
+        openInventoryAction?.action.Enable(); //開背包
 
         // 訂閱事件
+        //背包
         navigateAction.action.performed += OnNavigate;
         selectSlotAction.action.performed += OnSelectSlot;
-        openInventoryAction.action.performed += OnOpenInventory;
         closeInventoryAction.action.performed += OnCloseInventory;
-        //closeItemDetailAction.action.performed += OnCloseItemDetail;
-
-        CacheSelectableButtons();
-        SelectFirstValidButton(); // 初始化選擇第一個可選按鈕
+        //玩家
+        openInventoryAction.action.performed += OnOpenInventory;
     }
 
     private void OnDisable()
     {
+        //背包
         navigateAction.action.performed -= OnNavigate;
         selectSlotAction.action.performed -= OnSelectSlot;
-        openInventoryAction.action.performed -= OnOpenInventory;
         closeInventoryAction.action.performed -= OnCloseInventory;
-        //closeItemDetailAction.action.performed -= OnCloseItemDetail;
+        //玩家
+        openInventoryAction.action.performed -= OnOpenInventory;
 
         // 禁用所有動作
+        //背包
         navigateAction?.action.Disable();
         selectSlotAction?.action.Disable();
-        openInventoryAction?.action.Disable();
         closeInventoryAction?.action.Disable();
-        //closeItemDetailAction?.action.Disable();
+        //玩家
+        openInventoryAction?.action.Disable();     
     }
-    #region 輸入處理方法
+
+    #region ===== 輸入處理方法 =====
     private void OnNavigate(InputAction.CallbackContext context)
     {
         Vector2 navigationInput = context.ReadValue<Vector2>();
@@ -90,29 +95,27 @@ public class InventoryInputToUI : MonoBehaviour
     private void OnOpenInventory(InputAction.CallbackContext context)
     {
         if (inventoryUI == null) return;
-        inventoryUI.ToggleInventory();
+        inventoryUI.ToggleInventory(); // 執行 inventoryUI腳本的 處理開關背包面板 方法
     }
 
     private void OnCloseInventory(InputAction.CallbackContext context)
     {
-        if (itemDetailUI != null && itemDetailUI.detailPanel.activeSelf) return;
+        if (itemDetailUI != null && itemDetailUI.detailPanel.activeSelf)
+        {
+            // 如果有詳情面板打開，先關閉詳情面板
+            itemDetailUI.HideItemDetail();
+            return;
+        }
+
         if (inventoryUI == null) return;
         inventoryUI.CloseInventory();
     }
-
-    private void OnCloseItemDetail(InputAction.CallbackContext context)
-    {
-        if (itemDetailUI == null) return;
-        itemDetailUI.HideItemDetail();
-        SelectFirstValidButton();
-    }
-    #endregion
 
     // 找出可選擇的按鈕，排除標籤 "NoSelect" 或導航模式為 None 的按鈕
     private void CacheSelectableButtons()
     {
         selectableButtons.Clear();
-        Button[] buttons = inventoryPanel.GetComponentsInChildren<Button>(true);
+        Button[] buttons = inventoryUI.inventoryPanel.GetComponentsInChildren<Button>(true);
 
         foreach (var btn in buttons)
         {
@@ -168,4 +171,5 @@ public class InventoryInputToUI : MonoBehaviour
             }
         }
     }
+    #endregion
 }

@@ -29,10 +29,8 @@ public class PlayerView : MonoBehaviour
 
     private Vector2 lookInput;
     private float xRotation = 0f;
-
-    //private PlayerControls playerControls;
-    //private InputDevice lastUsedDevice;
     private bool isUsingGamepad;
+    private UIInputManager uiInputManager;
 
     private void Awake()
     {
@@ -41,6 +39,9 @@ public class PlayerView : MonoBehaviour
         {
             cameraPivot.localPosition = new Vector3(0f, upper, 0f);
         }
+
+        // 獲取 UIInputManager 引用
+        uiInputManager = UIInputManager.Instance;
     }
     
     // --- 新增點: 在 Start() 中設定初始狀態 ---
@@ -56,13 +57,11 @@ public class PlayerView : MonoBehaviour
 
     private void OnEnable()
     {
-        lookAction.action.Enable();
         lookAction.action.performed += OnLookPerformed;
     }
 
     private void OnDisable()
     {
-        lookAction.action.Disable();
         lookAction.action.performed -= OnLookPerformed;
     }
 
@@ -74,14 +73,11 @@ public class PlayerView : MonoBehaviour
 
     private void Update()
     {
-        if (!UIInputManager.Instance.IsGameStarted) return; //新增
+        // 檢查遊戲是否已開始
+        if (!UIInputManager.Instance.IsGameStarted) return;
 
-        // --- 修改點 2: 在 Update 開頭加入守衛條件 ---
-        // 如果當前滑鼠不是鎖定狀態（代表在UI模式），就直接跳出 Update，不執行後面的程式碼。
-        //if (Cursor.lockState != CursorLockMode.Locked)
-        //{
-        //    return; // 提早結束此函式
-        //}
+        // 檢查是否處於玩家模式（允許視角移動的模式）
+        if (!UIInputManager.Instance.IsInPlayerMode) return;
 
         // --- 以下是原本的程式碼，現在只有在滑鼠鎖定時才會執行 ---
         lookInput = lookAction.action.ReadValue<Vector2>();

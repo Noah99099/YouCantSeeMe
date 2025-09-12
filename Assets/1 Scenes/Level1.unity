@@ -4396,7 +4396,7 @@ MonoBehaviour:
   itemsContainer: {fileID: 1005355398}
   isInteractionMode: 0
   useItemButton: {fileID: 1221919128}
-  tips: "\u300C\u4F7F\u7528\u7269\u4EF6\u300D\u6309\u9215\u53C3\u8003\u4E86\u9006\u8F49\u88C1\u5224\u7684\u300C\u8A73\u7D30\u8CC7\u8A0A\u300D\u6309\u9215\u3002"
+  tips: "\u300C\u4F7F\u7528\u7269\u4EF6\u300D\u6309\u9215\u53C3\u8003\u4E86\u9006\u8F49\u88C1\u5224\u7684\u300C\u8A73\u7D30\u8CC7\u8A0A\u300D\u6309\u9215\u3002\n*\u8A72\u9762\u7248\u6700\u597D\u6253\u958B\uFF0C\u4E0D\u7136\u6703\u51FA\u73FE\u300C\u63093\u6B21\u80CC\u5305\u624D\u6210\u529F\u6253\u958B\u300D\u7684bug\u3002"
 --- !u!1 &667035554
 GameObject:
   m_ObjectHideFlags: 0
@@ -23072,7 +23072,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1640733869}
-  - component: {fileID: 1640733868}
   - component: {fileID: 1640733870}
   - component: {fileID: 1640733871}
   - component: {fileID: 1640733872}
@@ -23083,18 +23082,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1640733868
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1640733867}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 70290b0edcf297c4c8cd2b0f8a69bb3c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!4 &1640733869
 Transform:
   m_ObjectHideFlags: 0
@@ -23151,11 +23138,10 @@ MonoBehaviour:
     type: 3}
   selectSlotAction: {fileID: -3032102290367486902, guid: 0c67ffdfc88b05643a7007cd03d06742,
     type: 3}
-  openInventoryAction: {fileID: 3983031988066161156, guid: 0c67ffdfc88b05643a7007cd03d06742,
-    type: 3}
   closeInventoryAction: {fileID: 1337837542212814459, guid: 0c67ffdfc88b05643a7007cd03d06742,
     type: 3}
-  inventoryPanel: {fileID: 656544612}
+  openInventoryAction: {fileID: 3983031988066161156, guid: 0c67ffdfc88b05643a7007cd03d06742,
+    type: 3}
   itemDetailUI: {fileID: 1530991767}
   inventoryUI: {fileID: 656544619}
 --- !u!1 &1685303895
@@ -33377,7 +33363,7 @@ Transform:
   m_GameObject: {fileID: 381171150214237389}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0, y: 0, z: 0}
+  m_LocalPosition: {x: -2.869, y: 0.107, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

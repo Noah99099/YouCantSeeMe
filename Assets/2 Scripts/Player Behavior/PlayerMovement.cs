@@ -16,28 +16,24 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private InputActionReference moveAction;
 
     private Vector2 moveInput; //儲存WASD、手柄移動的數值
+    private UIInputManager uiInputManager;
 
     private void Awake()
     {
         if (rb == null) rb = GetComponent<Rigidbody>();
         if (playerBody == null) playerBody = transform;
-    }
 
-    private void OnEnable()
-    {
-        if (moveAction != null)
-            moveAction.action.Enable();
-    }
-
-    private void OnDisable()
-    {
-        if (moveAction != null)
-            moveAction.action.Disable();
+        // 獲取 UIInputManager 引用
+        uiInputManager = UIInputManager.Instance;
     }
 
     private void FixedUpdate()
     {
-        if (!UIInputManager.Instance.IsGameStarted) return; //新增
+        // 檢查遊戲是否已開始
+        if (!UIInputManager.Instance.IsGameStarted) return;
+
+        // 檢查是否處於玩家模式（允許移動的模式）
+        if (!UIInputManager.Instance.IsInPlayerMode) return;
 
         if (moveAction == null || rb == null) return;
 

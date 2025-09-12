@@ -19,11 +19,11 @@ public class ViewManager : MonoBehaviour
     // 腳本設置：單例、接收 ViewType
     public static ViewManager Instance { get; private set; }
     public static event Action<ViewType> OnViewChanged;
-    public ViewType CurrentView { get; private set; } = ViewType.Yin; // 初始為陰視野：等待玩家按下切換，變回陽視野
+    public ViewType CurrentView { get; private set; } = ViewType.Yin; // 初始為陰視野(張眼)：等待玩家按下切換，變回陽視野(閉眼)
 
     // 輸入系統
     private InputAction viewAction;
-    private InputAction startGameAction;
+    //private InputAction startGameAction;
 
     // Spine動畫名稱常量
     private const string BLINK_IDLE_ANIM = "blink_idle";
@@ -33,6 +33,8 @@ public class ViewManager : MonoBehaviour
 
     // 新增: 防止動畫重複執行
     private bool isAnimating = false;
+    // 新增: 標記是否已初始化
+    private bool isInitialized = false;
 
     void Awake()
     {
@@ -56,31 +58,48 @@ public class ViewManager : MonoBehaviour
 
     void Start()
     {
-        UIInputManager inputManager = FindObjectOfType<UIInputManager>();
-        if (inputManager != null && inputManager.PlayerControls != null) // 【核心修正 #1】使用大寫的 'PlayerControls'
+        InitializeInputActions();
+    }
+
+    private void OnEnable()
+    {
+        // 訂閱 UIInputManager 的遊戲開始事件
+        if (UIInputManager.Instance != null)
         {
-            // 【核心修正 #2】直接存取 Player Action Map 和 View Action
+            // 如果遊戲已經開始，直接執行開始邏輯
+            if (UIInputManager.Instance.IsGameStarted)
+            {
+                OnGameStarted();
+            }
+        }
+    }
+
+    private void InitializeInputActions()
+    {
+        if (isInitialized) return;
+
+        UIInputManager inputManager = UIInputManager.Instance;
+        if (inputManager != null && inputManager.PlayerControls != null)
+        {
             // 獲取視圖切換操作
             viewAction = inputManager.PlayerControls.Player.View;
-            
+
             if (viewAction != null)
             {
                 viewAction.performed += OnViewPerformed;
+                // 初始時禁用 View 操作，等待遊戲開始
+                viewAction.Disable();
             }
 
-            // 獲取開始遊戲操作
-            startGameAction = inputManager.PlayerControls.Startup.StartGame;
-            if (startGameAction != null)
-            {
-                startGameAction.performed += OnStartGamePerformed;
-            }
-
-            // 初始時只啟用 StartGame 操作
-            viewAction.Disable();
+            // 訂閱遊戲開始事件
+            // 注意：這裡使用事件訂閱而不是直接監聽輸入
+            isInitialized = true;
         }
         else
         {
             Debug.LogError("在 ViewManager 中找不到 UIInputManager 或其 PlayerControls！", this);
+            // 如果找不到，延遲初始化
+            Invoke("InitializeInputActions", 0.5f);
         }
     }
 
@@ -90,19 +109,21 @@ public class ViewManager : MonoBehaviour
         {
             viewAction.performed -= OnViewPerformed;
         }
-        if (startGameAction != null)
-        {
-            startGameAction.performed -= OnStartGamePerformed;
-        }
     }
 
-    // 開始遊戲的輸入處理
-    private void OnStartGamePerformed(InputAction.CallbackContext context)
+    // 新增: 遊戲開始時調用
+    public void OnGameStarted()
     {
-        if (!UIInputManager.Instance.IsGameStarted)
+        Debug.Log("ViewManager: 遊戲開始，啟用視角切換功能");
+
+        // 啟用 View 操作
+        if (viewAction != null)
         {
-            StartGame();
+            viewAction.Enable();
         }
+
+        // 從陰視圖切換回陽視圖
+        StartCoroutine(SwitchToYangView());
     }
 
     private void OnViewPerformed(InputAction.CallbackContext context)
@@ -113,34 +134,17 @@ public class ViewManager : MonoBehaviour
         }
     }
 
-    // 開始遊戲的方法
-    public void StartGame()
-    {
-        UIInputManager.Instance.StartGame();
-
-        // 啟用 View 操作
-        if (viewAction != null)
-        {
-            viewAction.Enable();
-        }
-
-        // 從陰視圖切換回陽視圖
-        StartCoroutine(SwitchToYangView());
-
-        Debug.Log("遊戲開始，玩家現在可以行動了");
-    }
-
     void ToggleView()
     {
         if (isAnimating) return;
 
-        if (CurrentView == ViewType.Yang)
+        if (CurrentView == ViewType.Yang) //當前陽視野(閉眼)
         {
-            StartCoroutine(SwitchToYinView());
+            StartCoroutine(SwitchToYinView()); //閉眼到張眼
         }
         else
         {
-            StartCoroutine(SwitchToYangView());
+            StartCoroutine(SwitchToYangView()); //張眼到閉眼
         }
     }
 

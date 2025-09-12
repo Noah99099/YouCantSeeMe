@@ -13,10 +13,9 @@ public class InventoryUI : MonoBehaviour
     [Header("UI 元件")]
     public GameObject inventoryPanel; // 整個背包 UI 的面板
     public Transform itemsContainer;  // 用來放置所有物品格子的容器（現在是 InventoryGrid）
-    //public GameObject itemSlotPrefab; // 單一物品格子的 Prefab
 
     [Header("交互模式設定")]
-    public bool isInteractionMode = false; // 是否為交互模式
+    public bool isInteractionMode = false; // 是否為交互模式：使用物件模式用到
     public GameObject useItemButton; // 使用物件按鈕
     [TextArea(3, 4)] public string tips;
 
@@ -203,7 +202,7 @@ public class InventoryUI : MonoBehaviour
 
         inventoryPanel.SetActive(false);
         isInventoryVisible = false;
-        if (uiInputManager?.IsInInventoryMode == true) uiInputManager.EnterGameplayMode();
+        uiInputManager?.EnterGameplayMode();
 
         // 清除 ItemDetail 的預覽
         InventoryManager.Instance?.ItemDetailUI?.ClearPreview();
