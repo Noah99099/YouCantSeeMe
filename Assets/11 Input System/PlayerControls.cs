@@ -361,7 +361,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                 {
                     ""name"": """",
                     ""id"": ""4a76c147-2b81-4c11-a028-d6f6cd4dd42b"",
-                    ""path"": ""<DualShockGamepad>/buttonSouth"",
+                    ""path"": ""<Gamepad>/buttonSouth"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Gamepad"",
@@ -667,18 +667,9 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             ""actions"": [
                 {
                     ""name"": ""Navigate"",
-                    ""type"": ""Value"",
+                    ""type"": ""PassThrough"",
                     ""id"": ""26819354-ad02-47af-93d5-b1d2ecd94c0d"",
                     ""expectedControlType"": ""Vector2"",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": true
-                },
-                {
-                    ""name"": ""SelectSlot"",
-                    ""type"": ""Button"",
-                    ""id"": ""febe77c6-2f68-4e6a-8412-b62998079125"",
-                    ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
@@ -693,9 +684,18 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""initialStateCheck"": false
                 },
                 {
-                    ""name"": ""OpenItemDetail"",
+                    ""name"": ""OpenModelPreview"",
                     ""type"": ""Button"",
                     ""id"": ""ac697413-0cf7-4ad5-a7ab-cf50122ad924"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""UseItem"",
+                    ""type"": ""Button"",
+                    ""id"": ""ab725f49-b281-46c3-9af5-54b3312adc9d"",
                     ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """",
@@ -815,39 +815,6 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
-                    ""id"": ""ac857a02-b440-4360-a05f-d510b8b0f7d0"",
-                    ""path"": ""<Keyboard>/enter"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": "";鍵鼠"",
-                    ""action"": ""SelectSlot"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""2c1175c5-f37c-4aa0-a171-b59eb47b920f"",
-                    ""path"": ""<Gamepad>/buttonSouth"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": "";Gamepad"",
-                    ""action"": ""SelectSlot"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""ee7a6d7d-d319-4fa3-9db5-a8d9337498ce"",
-                    ""path"": ""<Keyboard>/backspace"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": "";鍵鼠"",
-                    ""action"": ""CloseInventory"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
                     ""id"": ""ecbe38e3-8d22-4b36-b608-9aa2673ecfd9"",
                     ""path"": ""<Gamepad>/buttonEast"",
                     ""interactions"": """",
@@ -859,12 +826,34 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
+                    ""id"": ""f6bf7caf-7cd7-467b-af49-2d38793f1350"",
+                    ""path"": ""<Keyboard>/b"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";鍵鼠"",
+                    ""action"": ""CloseInventory"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""fb6938df-df29-4e26-8029-1374aa933f59"",
+                    ""path"": ""<Keyboard>/backspace"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";鍵鼠"",
+                    ""action"": ""CloseInventory"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
                     ""id"": ""cadc4780-3338-4a44-aa74-125c25873d70"",
                     ""path"": ""<Keyboard>/x"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": "";鍵鼠"",
-                    ""action"": ""OpenItemDetail"",
+                    ""action"": ""OpenModelPreview"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -875,7 +864,29 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": "";Gamepad"",
-                    ""action"": ""OpenItemDetail"",
+                    ""action"": ""OpenModelPreview"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""690c3046-0e27-456b-b5e2-e0b6a1b69772"",
+                    ""path"": ""<Keyboard>/enter"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";鍵鼠"",
+                    ""action"": ""UseItem"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""c8782da5-1377-4ca1-a4fe-2e5e359956e4"",
+                    ""path"": ""<Gamepad>/buttonSouth"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Gamepad"",
+                    ""action"": ""UseItem"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -1086,9 +1097,9 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         // Inventory
         m_Inventory = asset.FindActionMap("Inventory", throwIfNotFound: true);
         m_Inventory_Navigate = m_Inventory.FindAction("Navigate", throwIfNotFound: true);
-        m_Inventory_SelectSlot = m_Inventory.FindAction("SelectSlot", throwIfNotFound: true);
         m_Inventory_CloseInventory = m_Inventory.FindAction("CloseInventory", throwIfNotFound: true);
-        m_Inventory_OpenItemDetail = m_Inventory.FindAction("OpenItemDetail", throwIfNotFound: true);
+        m_Inventory_OpenModelPreview = m_Inventory.FindAction("OpenModelPreview", throwIfNotFound: true);
+        m_Inventory_UseItem = m_Inventory.FindAction("UseItem", throwIfNotFound: true);
         // Dialogue
         m_Dialogue = asset.FindActionMap("Dialogue", throwIfNotFound: true);
         m_Dialogue_ToggleAutoPlay = m_Dialogue.FindAction("ToggleAutoPlay", throwIfNotFound: true);
@@ -1560,9 +1571,9 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
     private readonly InputActionMap m_Inventory;
     private List<IInventoryActions> m_InventoryActionsCallbackInterfaces = new List<IInventoryActions>();
     private readonly InputAction m_Inventory_Navigate;
-    private readonly InputAction m_Inventory_SelectSlot;
     private readonly InputAction m_Inventory_CloseInventory;
-    private readonly InputAction m_Inventory_OpenItemDetail;
+    private readonly InputAction m_Inventory_OpenModelPreview;
+    private readonly InputAction m_Inventory_UseItem;
     /// <summary>
     /// Provides access to input actions defined in input action map "Inventory".
     /// </summary>
@@ -1579,17 +1590,17 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         /// </summary>
         public InputAction @Navigate => m_Wrapper.m_Inventory_Navigate;
         /// <summary>
-        /// Provides access to the underlying input action "Inventory/SelectSlot".
-        /// </summary>
-        public InputAction @SelectSlot => m_Wrapper.m_Inventory_SelectSlot;
-        /// <summary>
         /// Provides access to the underlying input action "Inventory/CloseInventory".
         /// </summary>
         public InputAction @CloseInventory => m_Wrapper.m_Inventory_CloseInventory;
         /// <summary>
-        /// Provides access to the underlying input action "Inventory/OpenItemDetail".
+        /// Provides access to the underlying input action "Inventory/OpenModelPreview".
         /// </summary>
-        public InputAction @OpenItemDetail => m_Wrapper.m_Inventory_OpenItemDetail;
+        public InputAction @OpenModelPreview => m_Wrapper.m_Inventory_OpenModelPreview;
+        /// <summary>
+        /// Provides access to the underlying input action "Inventory/UseItem".
+        /// </summary>
+        public InputAction @UseItem => m_Wrapper.m_Inventory_UseItem;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -1619,15 +1630,15 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @Navigate.started += instance.OnNavigate;
             @Navigate.performed += instance.OnNavigate;
             @Navigate.canceled += instance.OnNavigate;
-            @SelectSlot.started += instance.OnSelectSlot;
-            @SelectSlot.performed += instance.OnSelectSlot;
-            @SelectSlot.canceled += instance.OnSelectSlot;
             @CloseInventory.started += instance.OnCloseInventory;
             @CloseInventory.performed += instance.OnCloseInventory;
             @CloseInventory.canceled += instance.OnCloseInventory;
-            @OpenItemDetail.started += instance.OnOpenItemDetail;
-            @OpenItemDetail.performed += instance.OnOpenItemDetail;
-            @OpenItemDetail.canceled += instance.OnOpenItemDetail;
+            @OpenModelPreview.started += instance.OnOpenModelPreview;
+            @OpenModelPreview.performed += instance.OnOpenModelPreview;
+            @OpenModelPreview.canceled += instance.OnOpenModelPreview;
+            @UseItem.started += instance.OnUseItem;
+            @UseItem.performed += instance.OnUseItem;
+            @UseItem.canceled += instance.OnUseItem;
         }
 
         /// <summary>
@@ -1642,15 +1653,15 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @Navigate.started -= instance.OnNavigate;
             @Navigate.performed -= instance.OnNavigate;
             @Navigate.canceled -= instance.OnNavigate;
-            @SelectSlot.started -= instance.OnSelectSlot;
-            @SelectSlot.performed -= instance.OnSelectSlot;
-            @SelectSlot.canceled -= instance.OnSelectSlot;
             @CloseInventory.started -= instance.OnCloseInventory;
             @CloseInventory.performed -= instance.OnCloseInventory;
             @CloseInventory.canceled -= instance.OnCloseInventory;
-            @OpenItemDetail.started -= instance.OnOpenItemDetail;
-            @OpenItemDetail.performed -= instance.OnOpenItemDetail;
-            @OpenItemDetail.canceled -= instance.OnOpenItemDetail;
+            @OpenModelPreview.started -= instance.OnOpenModelPreview;
+            @OpenModelPreview.performed -= instance.OnOpenModelPreview;
+            @OpenModelPreview.canceled -= instance.OnOpenModelPreview;
+            @UseItem.started -= instance.OnUseItem;
+            @UseItem.performed -= instance.OnUseItem;
+            @UseItem.canceled -= instance.OnUseItem;
         }
 
         /// <summary>
@@ -2051,13 +2062,6 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnNavigate(InputAction.CallbackContext context);
         /// <summary>
-        /// Method invoked when associated input action "SelectSlot" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
-        /// </summary>
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-        void OnSelectSlot(InputAction.CallbackContext context);
-        /// <summary>
         /// Method invoked when associated input action "CloseInventory" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
         /// </summary>
         /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
@@ -2065,12 +2069,19 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnCloseInventory(InputAction.CallbackContext context);
         /// <summary>
-        /// Method invoked when associated input action "OpenItemDetail" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// Method invoked when associated input action "OpenModelPreview" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
         /// </summary>
         /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-        void OnOpenItemDetail(InputAction.CallbackContext context);
+        void OnOpenModelPreview(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "UseItem" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnUseItem(InputAction.CallbackContext context);
     }
     /// <summary>
     /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "Dialogue" which allows adding and removing callbacks.

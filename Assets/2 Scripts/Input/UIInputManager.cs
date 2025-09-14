@@ -1,4 +1,3 @@
-using Unity.Burst.CompilerServices;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -14,14 +13,14 @@ public class UIInputManager : MonoBehaviour
     public bool IsInInventoryMode { get; private set; } = false; //背包（不包含3D）
     public bool IsInModelPreviewMode { get; private set; } = false; //3D預覽
     public bool IsInDialogueMode { get; private set; } = false; //對話系統
-
-    // 新增: 遊戲開始狀態
-    public bool IsGameStarted { get; private set; } = false;
+    public bool IsGameStarted { get; private set; } = false; //遊戲開始狀態
 
     [Header("功能：全局輸入模式管理和Action Map切換")]
 
     // 新增: 輸入設備類型引用
     private InputDeviceManager inputDeviceManager;
+    // 添加对 InventoryInputToUI腳本 的引用
+    private InventoryInputToUI inventoryInput;
 
     [Tooltip("提示按下視野按鈕才能開始遊戲")] public GameObject hintUI; //畫面至中下的提示，不是右下的看無
 
@@ -46,6 +45,12 @@ public class UIInputManager : MonoBehaviour
         if (inputDeviceManager == null)
         {
             Debug.LogWarning("找不到 InputDeviceManager，將使用默認游標設置");
+        }
+        // 獲取 InventoryInputToUI 引用
+        inventoryInput = FindObjectOfType<InventoryInputToUI>();
+        if (inventoryInput == null)
+        {
+            Debug.LogWarning("找不到 InventoryInputToUI 組件");
         }
     }
 
@@ -75,6 +80,9 @@ public class UIInputManager : MonoBehaviour
         // 啟用 Startup Map（只有 StartGame 可用）
         PlayerControls.Startup.Enable();
 
+        // 特別確保 Player Action Map 中的 OpenInventory 被禁用
+        PlayerControls.Player.OpenInventory.Disable();
+
         // 設置初始游標狀態
         UpdateCursorState();
 
@@ -95,6 +103,7 @@ public class UIInputManager : MonoBehaviour
     }
     #endregion
 
+    #region ===== 開始遊戲 =====
     // 新增：啟動流程入口（由 Startup/StartGame 的 performed 事件觸發）
     private void OnStartupStartGamePerformed(InputAction.CallbackContext ctx)
     {
@@ -113,11 +122,14 @@ public class UIInputManager : MonoBehaviour
 
         // 先禁用所有操作，然後重新啟用 Player Action Map
         DisableAllMaps();
+
+        // 特別啟用 Player Action Map 中的 OpenInventory
+        //PlayerControls.Player.OpenInventory.Enable();
+
         // 正式啟用 Player Map（之後 OpenInventory 就在這裡正常運作）
-        PlayerControls.Player.Enable();
+        EnterGameplayMode();
 
         SetModeFlags(isPlayer: true);
-        UpdateCursorState();
 
         hintUI.SetActive(false); //新增: 關閉提示按下按鈕
 
@@ -128,6 +140,105 @@ public class UIInputManager : MonoBehaviour
         }
 
         Debug.Log("[UIInputManager] 遊戲開始：Startup → Player。現已啟用玩家控制（OpenInventory 第一時間可用）");
+    }
+    #endregion
+
+    #region ===== 模式切換方法 =====
+    // 沒補完的：3D預覽、組合物件線索
+    public void EnterUIMode() //菜單模式
+    {
+        if (IsInUIMode) return;
+        DisableAllMaps();
+        PlayerControls.UI.Enable();
+        SetModeFlags(isUI: true);
+        UpdateCursorState();
+        if (inventoryInput != null)
+        {
+            inventoryInput.BindOpenInventory(false); // UI 模式不允許開背包
+        }
+        Debug.Log("[UIInputManager] 遊戲模式切換為：UI 模式");
+    }
+
+    public void EnterGameplayMode() //玩家模式
+    {
+        if (IsInPlayerMode) return;
+        DisableAllMaps();
+        PlayerControls.Player.Enable();
+        SetModeFlags(isPlayer: true);
+        UpdateCursorState();
+        // 集中管理：在玩家模式下，綁定 openInventory
+        if (inventoryInput != null)
+        {
+            inventoryInput.BindOpenInventory(true);
+        }
+        Debug.Log("[UIInputManager] 遊戲模式切換為：Gameplay 模式");
+    }
+
+    public void EnterInventoryMode() //背包模式
+    {
+        if (IsInInventoryMode) return;
+        DisableAllMaps();
+        PlayerControls.Inventory.Enable();
+        SetModeFlags(isInventory: true);
+        UpdateCursorState();
+        // 離開玩家模式，解除 openInventory
+        if (inventoryInput != null)
+        {
+            inventoryInput.BindOpenInventory(false);
+        }
+        Debug.Log("[UIInputManager] 遊戲模式切換為：Inventory 模式");
+    }
+
+    public void EnterModelPreviewMode() //模型預覽模式
+    {
+        if (IsInModelPreviewMode) return;
+        DisableAllMaps();
+        PlayerControls.ModelPreview.Enable();
+        SetModeFlags(isModelPreview: true);
+        UpdateCursorState();
+        if (inventoryInput != null)
+        {
+            inventoryInput.BindOpenInventory(false); // 模型預覽模式不允許開背包
+        }
+        Debug.Log("[UIInputManager] 遊戲模式切換為：ModelPreview 模式");
+    }
+
+    public void EnterDialogueMode() //對話模式
+    {
+        if (IsInDialogueMode) return;
+        DisableAllMaps();
+        PlayerControls.Dialogue.Enable();
+        SetModeFlags(isDialogue: true);
+        UpdateCursorState();
+        if (inventoryInput != null)
+        {
+            inventoryInput.BindOpenInventory(false); // 對話模式不允許開背包
+        }
+        Debug.Log("[UIInputManager] 遊戲模式切換為：Dialogue 模式");
+    }
+    
+    // 【核心修正】這裡的函式名稱必須與 OnEnable/OnDisable 中的訂閱名稱一致
+    private void OnAdvanceDialoguePerformed(InputAction.CallbackContext context)
+    {
+        Debug.Log("<color=magenta>--- OnAdvanceDialogue: 點擊訊號已收到！ ---</color>");
+        if (!IsInDialogueMode) return;
+
+        if (DialogueUI.Instance != null && DialogueUI.Instance.gameObject.activeInHierarchy)
+        {
+            DialogueUI.Instance.OnContinueClicked();
+        }
+    }
+    #endregion
+
+    #region ===== 輔助 =====
+    // 輔助方法，用來集中設定模式旗標，讓程式碼更乾淨
+    private void SetModeFlags(bool isPlayer = false, bool isUI = false, bool isInventory = false, bool isDialogue = false, bool isModelPreview = false)
+    {
+        IsInPlayerMode = isPlayer;
+        IsInUIMode = isUI;
+        IsInInventoryMode = isInventory;
+        IsInDialogueMode = isDialogue;
+        IsInModelPreviewMode = isModelPreview;
     }
 
     // 新增: 更新游標狀態的方法
@@ -193,77 +304,5 @@ public class UIInputManager : MonoBehaviour
 
         Debug.Log($"[UIInputManager] 游標狀態: LockState={Cursor.lockState}, Visible={Cursor.visible}");
     }
-
-    // 沒補完的：3D預覽、組合物件線索
-    public void EnterUIMode() //菜單模式
-    {
-        if (IsInUIMode) return;
-        DisableAllMaps();
-        PlayerControls.UI.Enable();
-        SetModeFlags(isUI: true);
-        UpdateCursorState();
-        Debug.Log("[UIInputManager] 遊戲模式切換為：UI 模式");
-    }
-
-    public void EnterGameplayMode() //玩家模式
-    {
-        if (IsInPlayerMode) return;
-        DisableAllMaps();
-        PlayerControls.Player.Enable();
-        SetModeFlags(isPlayer: true);
-        UpdateCursorState();
-        Debug.Log("[UIInputManager] 遊戲模式切換為：Gameplay 模式");
-    }
-
-    public void EnterInventoryMode() //背包模式
-    {
-        if (IsInInventoryMode) return;
-        DisableAllMaps();
-        PlayerControls.Inventory.Enable();
-        SetModeFlags(isInventory: true);
-        UpdateCursorState();
-        Debug.Log("[UIInputManager] 遊戲模式切換為：Inventory 模式");
-    }
-
-    public void EnterModelPreviewMode() //模型預覽模式
-    {
-        if (IsInModelPreviewMode) return;
-        DisableAllMaps();
-        PlayerControls.ModelPreview.Enable();
-        SetModeFlags(isModelPreview: true);
-        UpdateCursorState();
-        Debug.Log("[UIInputManager] 遊戲模式切換為：ModelPreview 模式");
-    }
-
-    public void EnterDialogueMode() //對話模式
-    {
-        if (IsInDialogueMode) return;
-        DisableAllMaps();
-        PlayerControls.Dialogue.Enable();
-        SetModeFlags(isDialogue: true);
-        UpdateCursorState();
-        Debug.Log("[UIInputManager] 遊戲模式切換為：Dialogue 模式");
-    }
-    
-    // 【核心修正】這裡的函式名稱必須與 OnEnable/OnDisable 中的訂閱名稱一致
-    private void OnAdvanceDialoguePerformed(InputAction.CallbackContext context)
-    {
-        Debug.Log("<color=magenta>--- OnAdvanceDialogue: 點擊訊號已收到！ ---</color>");
-        if (!IsInDialogueMode) return;
-
-        if (DialogueUI.Instance != null && DialogueUI.Instance.gameObject.activeInHierarchy)
-        {
-            DialogueUI.Instance.OnContinueClicked();
-        }
-    }
-
-    // 輔助方法，用來集中設定模式旗標，讓程式碼更乾淨
-    private void SetModeFlags(bool isPlayer = false, bool isUI = false, bool isInventory = false, bool isDialogue = false, bool isModelPreview = false)
-    {
-        IsInPlayerMode = isPlayer;
-        IsInUIMode = isUI;
-        IsInInventoryMode = isInventory;
-        IsInDialogueMode = isDialogue;
-        IsInModelPreviewMode = isModelPreview;
-    }
+    #endregion
 }

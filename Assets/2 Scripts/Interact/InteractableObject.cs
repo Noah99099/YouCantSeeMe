@@ -2,6 +2,7 @@ using UnityEngine;
 
 public class InteractableObject : MonoBehaviour
 {
+    [Header("功能：使用物件進行場景交互的設置腳本")]
     [Header("交互物件設置")]
     public string objectName = "物件"; // 物件名稱
     public ItemData requiredItem; // 需要的物品

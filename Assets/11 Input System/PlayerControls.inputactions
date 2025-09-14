@@ -275,7 +275,7 @@
                 {
                     "name": "",
                     "id": "4a76c147-2b81-4c11-a028-d6f6cd4dd42b",
-                    "path": "<DualShockGamepad>/buttonSouth",
+                    "path": "<Gamepad>/buttonSouth",
                     "interactions": "",
                     "processors": "",
                     "groups": "Gamepad",
@@ -581,18 +581,9 @@
             "actions": [
                 {
                     "name": "Navigate",
-                    "type": "Value",
+                    "type": "PassThrough",
                     "id": "26819354-ad02-47af-93d5-b1d2ecd94c0d",
                     "expectedControlType": "Vector2",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": true
-                },
-                {
-                    "name": "SelectSlot",
-                    "type": "Button",
-                    "id": "febe77c6-2f68-4e6a-8412-b62998079125",
-                    "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
@@ -607,9 +598,18 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "OpenItemDetail",
+                    "name": "OpenModelPreview",
                     "type": "Button",
                     "id": "ac697413-0cf7-4ad5-a7ab-cf50122ad924",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "UseItem",
+                    "type": "Button",
+                    "id": "ab725f49-b281-46c3-9af5-54b3312adc9d",
                     "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
@@ -729,39 +729,6 @@
                 },
                 {
                     "name": "",
-                    "id": "ac857a02-b440-4360-a05f-d510b8b0f7d0",
-                    "path": "<Keyboard>/enter",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": ";鍵鼠",
-                    "action": "SelectSlot",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "2c1175c5-f37c-4aa0-a171-b59eb47b920f",
-                    "path": "<Gamepad>/buttonSouth",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": ";Gamepad",
-                    "action": "SelectSlot",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "ee7a6d7d-d319-4fa3-9db5-a8d9337498ce",
-                    "path": "<Keyboard>/backspace",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": ";鍵鼠",
-                    "action": "CloseInventory",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
                     "id": "ecbe38e3-8d22-4b36-b608-9aa2673ecfd9",
                     "path": "<Gamepad>/buttonEast",
                     "interactions": "",
@@ -773,12 +740,34 @@
                 },
                 {
                     "name": "",
+                    "id": "f6bf7caf-7cd7-467b-af49-2d38793f1350",
+                    "path": "<Keyboard>/b",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";鍵鼠",
+                    "action": "CloseInventory",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "fb6938df-df29-4e26-8029-1374aa933f59",
+                    "path": "<Keyboard>/backspace",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";鍵鼠",
+                    "action": "CloseInventory",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
                     "id": "cadc4780-3338-4a44-aa74-125c25873d70",
                     "path": "<Keyboard>/x",
                     "interactions": "",
                     "processors": "",
                     "groups": ";鍵鼠",
-                    "action": "OpenItemDetail",
+                    "action": "OpenModelPreview",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -789,7 +778,29 @@
                     "interactions": "",
                     "processors": "",
                     "groups": ";Gamepad",
-                    "action": "OpenItemDetail",
+                    "action": "OpenModelPreview",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "690c3046-0e27-456b-b5e2-e0b6a1b69772",
+                    "path": "<Keyboard>/enter",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";鍵鼠",
+                    "action": "UseItem",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "c8782da5-1377-4ca1-a4fe-2e5e359956e4",
+                    "path": "<Gamepad>/buttonSouth",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Gamepad",
+                    "action": "UseItem",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

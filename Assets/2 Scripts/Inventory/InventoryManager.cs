@@ -1,8 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using System; // 需要引用 System 才能使用 Action
-using UnityEngine.UIElements;
 using TMPro;
 
 [DefaultExecutionOrder(-15)] //更早初始化此腳本
@@ -31,7 +29,6 @@ public class InventoryManager : MonoBehaviour
 
     public ItemDetailUI ItemDetailUI => _itemDetailUI;
     public InventoryUI InventoryUI => _inventoryUI;
-
 
     private void Awake()
     {
@@ -128,27 +125,33 @@ public class InventoryManager : MonoBehaviour
         return items.Exists(item => item.itemName == itemNameToCheck);
     }
 
-    public void UpdateDetailPanel(ItemData item)
+    public void UpdateInformationPanel(ItemData item)
     {
         // 如果 item 為 null，就用 defaultItem 代替
         ItemData dataToShow = item ?? defaultItem;
 
         if (dataToShow == null)
         {
-            // 若連 defaultItem 都沒設，就清空
+            // 若連 defaultItem 都沒設，就清空 UI
             if (itemImage != null) { itemImage.sprite = null; itemImage.enabled = false; }
             if (itemNameText != null) itemNameText.text = "";
             if (itemDescriptionText != null) itemDescriptionText.text = "";
             return;
         }
 
+        // 顯示物件圖片
         if (itemImage != null)
         {
-            itemImage.sprite = dataToShow.icon;
-            itemImage.enabled = dataToShow.icon != null;
+            itemImage.sprite = dataToShow.itemImage; // 使用物件圖片 Sprite
+            itemImage.enabled = dataToShow.itemImage != null;
         }
 
+        // 顯示物件名稱
         if (itemNameText != null) itemNameText.text = dataToShow.itemName ?? "";
+
+        // 顯示物件描述
         if (itemDescriptionText != null) itemDescriptionText.text = dataToShow.description ?? "";
     }
+
+    // 將3D物件與覽的名稱一律改成［ModelPreview］，因為叫［DetailPanel］太容易出錯了
 }

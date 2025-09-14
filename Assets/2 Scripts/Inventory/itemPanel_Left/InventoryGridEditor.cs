@@ -1,6 +1,8 @@
 using UnityEngine;
 using UnityEngine.UI;
 using System.Collections.Generic;
+using System;
+
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -15,23 +17,29 @@ public class InventoryGridEditor : MonoBehaviour
     public int columns = 8; // 每行列數
     public float spacing = 10f; // 間距
 
-    [Header("佈局設置")]
+    [Header("參考組件")]
+    public RectTransform contentRect; // Content 的 RectTransform
     public GridLayoutGroup gridLayout; // 網格佈局組件
+
+    [Header("布局設置")]
+    public bool autoSetupAnchors = true; // 自動設置Anchor
 
     private List<GameObject> currentSlots = new List<GameObject>(); // 當前格子列表
     private int lastSlotCount = 0; // 上一次的格子數量
 
     void Awake()
     {
-        if (Application.isPlaying)
+        // 自動獲取必要的組件
+        if (gridLayout == null)
+            gridLayout = GetComponent<GridLayoutGroup>();
+
+        //if (contentRect == null && transform.parent != null)
+        //    contentRect = transform.parent.GetComponent<RectTransform>();
+
+        if (Application.isPlaying && transform.childCount != slotCount)
         {
-            // 遊戲模式不要清除編輯器生成的格子
-            // 只要數量不對，再更新一次即可
-            if (transform.childCount != slotCount)
-            {
-                UpdateGrid();
-                lastSlotCount = slotCount;
-            }
+            UpdateGrid();
+            lastSlotCount = slotCount;
         }
     }
 
@@ -109,6 +117,12 @@ public class InventoryGridEditor : MonoBehaviour
         gridLayout.constraint = GridLayoutGroup.Constraint.FixedColumnCount;
         gridLayout.constraintCount = columns;
 
+        // --- 自動設置Anchor ---
+        if (autoSetupAnchors)
+        {
+            SetupContentAnchors();
+        }
+
         // --- 調整格子數量 ---
         // 如果子物件比 slotCount 多，刪掉多的
         while (transform.childCount > slotCount)
@@ -128,9 +142,8 @@ public class InventoryGridEditor : MonoBehaviour
         {
             if (slotPrefab != null)
             {
-                int index = transform.childCount;
                 GameObject slot = Instantiate(slotPrefab, transform);
-                slot.name = $"Slot_{index}";
+                slot.name = $"Slot_{transform.childCount -1}";
 
                 // 設置為空狀態
                 Image itemIcon = slot.transform.Find("ItemIcon")?.GetComponent<Image>();
@@ -141,7 +154,73 @@ public class InventoryGridEditor : MonoBehaviour
             }
         }
 
+        // 更新 Content 大小
+        UpdateContentSize();
+        // 重置滾動位置到頂部
+        ResetScrollPosition();
+
         Debug.Log($"更新背包格子數量: {slotCount}");
+    }
+
+    /// <summary>
+    /// 設置Content的Anchor以確保正確布局
+    /// </summary>
+    private void SetupContentAnchors()
+    {
+        //if (contentRect == null) return;
+
+        //// 設置Content的Anchor為Top-Left
+        //contentRect.anchorMin = new Vector2(0, 1); // Top-Left
+        //contentRect.anchorMax = new Vector2(0, 1); // Top-Left
+        //contentRect.pivot = new Vector2(0, 1);     // Top-Left
+        //contentRect.anchoredPosition = Vector2.zero;
+
+        // 設置InventoryGrid的Anchor
+        RectTransform gridRect = GetComponent<RectTransform>();
+        if (gridRect != null)
+        {
+            gridRect.anchorMin = new Vector2(0, 1); // Top-Left
+            gridRect.anchorMax = new Vector2(0, 1); // Top-Left
+            gridRect.pivot = new Vector2(0, 1);     // Top-Left
+        }
+
+        Debug.Log("已自動設置Anchor為Top-Left布局");
+    }
+
+    /// <summary>
+    /// 更新 Content 的大小以適應所有格子
+    /// </summary>
+    private void UpdateContentSize()
+    {
+        if (contentRect == null || gridLayout == null) return;
+
+        // 計算需要的行數
+        int rows = Mathf.CeilToInt((float)slotCount / columns);
+
+        // 計算 Content 的高度
+        float cellHeight = gridLayout.cellSize.y;
+        float totalHeight = rows * cellHeight + (rows - 1) * gridLayout.spacing.y;
+
+        // 設置 Content 的大小
+        //contentRect.sizeDelta = new Vector2(contentRect.sizeDelta.x, totalHeight);
+
+        //// 確保 Content 的錨點設置正確
+        //contentRect.anchorMin = new Vector2(0, 1); // 左上角
+        //contentRect.anchorMax = new Vector2(0, 1); // 左上角
+        //contentRect.pivot = new Vector2(0, 1); // 左上角
+    }
+
+    // 添加重置滾動位置的方法
+    private void ResetScrollPosition()
+    {
+        if (contentRect != null && contentRect.parent != null)
+        {
+            ScrollRect scrollRect = contentRect.parent.GetComponent<ScrollRect>();
+            if (scrollRect != null)
+            {
+                scrollRect.verticalNormalizedPosition = 1f; // 設置為頂部
+            }
+        }
     }
 
     // 在Inspector中添加一個按鈕來手動更新網格
@@ -161,6 +240,18 @@ public class InventoryGridEditorInspector : Editor
         DrawDefaultInspector();
 
         InventoryGridEditor editor = (InventoryGridEditor)target;
+
+        // 自動分配按鈕
+        if (GUILayout.Button("自動分配組件"))
+        {
+            if (editor.gridLayout == null)
+                editor.gridLayout = editor.GetComponent<GridLayoutGroup>();
+
+            //if (editor.contentRect == null && editor.transform.parent != null)
+            //    editor.contentRect = editor.transform.parent.GetComponent<RectTransform>();
+
+            EditorUtility.SetDirty(editor);
+        }
 
         if (GUILayout.Button("更新背包格子"))
         {
