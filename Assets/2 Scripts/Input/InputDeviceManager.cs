@@ -1,8 +1,6 @@
 using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 using System;
-using UnityEngine.InputSystem.Controls;
 
 public class InputDeviceManager : MonoBehaviour
 {

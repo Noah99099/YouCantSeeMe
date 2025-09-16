@@ -14,7 +14,6 @@ public class InventorySlotManager : MonoBehaviour
     public void Initialize(Transform container)
     {
         itemsContainer = container;
-        //itemSlotPrefab = prefab;
         InitializeAllSlots();
     }
 

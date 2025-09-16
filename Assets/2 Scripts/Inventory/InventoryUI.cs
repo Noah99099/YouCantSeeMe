@@ -71,6 +71,7 @@ public class InventoryUI : MonoBehaviour
             InventoryManager.Instance.OnInventoryChanged -= UpdateUI; // 先移除避免重複
             InventoryManager.Instance.OnInventoryChanged += UpdateUI;
         }
+        UpdateUI();
     }
     private void OnDisable()
     {
@@ -275,10 +276,12 @@ public class InventoryUI : MonoBehaviour
             }
             else if (slotManager.ActiveSlotsCount > 0 && EventSystem.current != null)
             {
-                EventSystem.current.SetSelectedGameObject(slotManager.GetFirstSlot());
+                // 改用 InventorySelection
+                InventorySelection.Instance.SetSelected(slotManager.GetFirstSlot());
             }
             else
             {
+                InventorySelection.Instance.ClearSelection();
                 HideItemDetail();
             }
         }

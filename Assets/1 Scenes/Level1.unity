@@ -27961,6 +27961,7 @@ GameObject:
   - component: {fileID: 1530991766}
   - component: {fileID: 1530991765}
   - component: {fileID: 1530991767}
+  - component: {fileID: 1530991768}
   m_Layer: 0
   m_Name: InventoryManager
   m_TagString: Untagged
@@ -28022,6 +28023,18 @@ MonoBehaviour:
   modelSpawnPoint: {fileID: 1021975863}
   previewCamera: {fileID: 53566301}
   previewController: {fileID: 273982282}
+--- !u!114 &1530991768
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1530991764}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4003668395c09ed49b95e6ab8f08f207, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1545080797
 GameObject:
   m_ObjectHideFlags: 0
@@ -28413,7 +28426,7 @@ MonoBehaviour:
     type: 3}
   closeInventoryAction: {fileID: 1337837542212814459, guid: 0c67ffdfc88b05643a7007cd03d06742,
     type: 3}
-  openItemDetailAction: {fileID: 5608677074877842925, guid: 0c67ffdfc88b05643a7007cd03d06742,
+  openModelPreviewAction: {fileID: 5608677074877842925, guid: 0c67ffdfc88b05643a7007cd03d06742,
     type: 3}
   openInventoryAction: {fileID: 3983031988066161156, guid: 0c67ffdfc88b05643a7007cd03d06742,
     type: 3}
@@ -30814,7 +30827,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1884559585}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 01614664b831546d2ae94a42149d80ac, type: 3}
   m_Name: 
@@ -30825,19 +30838,17 @@ MonoBehaviour:
   m_XRTrackingOrigin: {fileID: 0}
   m_ActionsAsset: {fileID: -944628639613478452, guid: 0c67ffdfc88b05643a7007cd03d06742,
     type: 3}
-  m_PointAction: {fileID: 2608711828663299790, guid: 0c67ffdfc88b05643a7007cd03d06742,
+  m_PointAction: {fileID: 6103412345985174112, guid: 0c67ffdfc88b05643a7007cd03d06742,
     type: 3}
-  m_MoveAction: {fileID: 120682545788012269, guid: 0c67ffdfc88b05643a7007cd03d06742,
-    type: 3}
-  m_SubmitAction: {fileID: -6151896165863308141, guid: 0c67ffdfc88b05643a7007cd03d06742,
-    type: 3}
-  m_CancelAction: {fileID: -1020204658264704697, guid: 0c67ffdfc88b05643a7007cd03d06742,
-    type: 3}
-  m_LeftClickAction: {fileID: -1837624609885479855, guid: 0c67ffdfc88b05643a7007cd03d06742,
+  m_MoveAction: {fileID: 0}
+  m_SubmitAction: {fileID: 0}
+  m_CancelAction: {fileID: 0}
+  m_LeftClickAction: {fileID: 6037615007523780627, guid: 0c67ffdfc88b05643a7007cd03d06742,
     type: 3}
   m_MiddleClickAction: {fileID: 0}
   m_RightClickAction: {fileID: 0}
-  m_ScrollWheelAction: {fileID: 0}
+  m_ScrollWheelAction: {fileID: -5340450585863717878, guid: 0c67ffdfc88b05643a7007cd03d06742,
+    type: 3}
   m_TrackedDevicePositionAction: {fileID: 0}
   m_TrackedDeviceOrientationAction: {fileID: 0}
   m_DeselectOnBackgroundClick: 1
