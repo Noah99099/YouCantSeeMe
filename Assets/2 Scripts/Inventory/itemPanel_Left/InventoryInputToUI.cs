@@ -22,6 +22,7 @@ public class InventoryInputToUI : MonoBehaviour
     [Header("UI References")]
     public ItemDetailUI itemDetailUI;
     public InventoryUI inventoryUI;
+    [SerializeField] private InventorySlotManager slotManager;
 
     private List<Button> selectableButtons = new List<Button>();
     private int currentSelectedIndex = -1;
@@ -55,9 +56,23 @@ public class InventoryInputToUI : MonoBehaviour
         navigateAction.action.performed += OnNavigate;
         closeInventoryAction.action.performed += OnCloseInventory;
         openModelPreviewAction.action.performed += OnOpenModelPreview;
-    }
 
-    
+        // 手柄模式 → 打開背包時自動選中第一個格子
+        if (InputDeviceManager.Instance != null &&
+            InputDeviceManager.Instance.CurrentInputType == InputDeviceManager.InputType.Gamepad)
+        {
+            var firstSlot = slotManager?.GetFirstSlot();
+            if (firstSlot != null && InventorySelection.Instance != null)
+            {
+                InventorySelection.Instance.SetSelected(firstSlot);
+            }
+        }
+        else
+        {
+            // 鍵鼠模式 → 確保沒有強制選中
+            InventorySelection.Instance?.ClearSelection();
+        }
+    }
 
     private void OnDisable()
     {
@@ -68,7 +83,7 @@ public class InventoryInputToUI : MonoBehaviour
         //背包
         navigateAction.action.performed -= OnNavigate;
         closeInventoryAction.action.performed -= OnCloseInventory;
-        openModelPreviewAction.action.performed -= OnCloseInventory;
+        openModelPreviewAction.action.performed -= OnModelPreview;
 
         // 禁用所有動作
         //背包
@@ -76,7 +91,16 @@ public class InventoryInputToUI : MonoBehaviour
         closeInventoryAction?.action.Disable();
         openModelPreviewAction?.action.Disable();
 
-        InventorySelection.Instance.ClearSelection();
+        // === 修正：避免 NullReferenceException ===
+        if (InventorySelection.Instance != null)
+        {
+            InventorySelection.Instance.ClearSelection();
+        }
+    }
+
+    private void OnModelPreview(InputAction.CallbackContext context) //打開預覽物件面板的方法
+    {
+        throw new System.NotImplementedException();
     }
     #endregion
 
@@ -257,20 +281,6 @@ public class InventoryInputToUI : MonoBehaviour
     // 移動選擇焦點，跳過不可選按鈕
     private void MoveSelection(int direction, bool isVertical)
     {
-        //if (selectableButtons.Count == 0)
-        //{
-        //    CacheSelectableButtons();
-        //    if (selectableButtons.Count == 0) return;
-        //}
-
-        //// 獲取當前選中的按鈕索引
-        //int currentIndex = GetCurrentSelectedIndex();
-        //if (currentIndex == -1)
-        //{
-        //    // 如果沒有選中任何按鈕，選擇第一個
-        //    SelectFirstValidButton();
-        //    return;
-        //}
         if (selectableButtons.Count == 0) return;
 
         int newIndex = currentSelectedIndex;
@@ -287,41 +297,6 @@ public class InventoryInputToUI : MonoBehaviour
         // 確保滾動到可見範圍
         if (inventoryUI != null)
             inventoryUI.EnsureSlotVisible(selectableButtons[currentSelectedIndex].transform);
-
-        //int newIndex = currentIndex;
-        //int attempts = 0;
-        //int maxAttempts = selectableButtons.Count; // 防止無限循環
-
-        //do
-        //{
-        //    if (isVertical)
-        //    {
-        //        newIndex += direction * columnsCount; // 上下跳一行
-        //    }
-        //    else
-        //    {
-        //        newIndex += direction; // 左右跳一格
-        //    }
-
-        //    // 環繞循環
-        //    if (newIndex < 0)
-        //        newIndex = selectableButtons.Count - 1;
-        //    else if (newIndex >= selectableButtons.Count)
-        //        newIndex = 0;
-
-        //    attempts++;
-
-        //    Button candidate = selectableButtons[newIndex];
-        //    if (candidate.interactable &&
-        //        candidate.navigation.mode != Navigation.Mode.None &&
-        //        !candidate.gameObject.CompareTag("NoSelect"))
-        //    {
-        //        EventSystem.current.SetSelectedGameObject(candidate.gameObject); //強制設定導致無法用滑鼠點擊按鈕的原因之一?
-        //        if (inventoryUI != null)
-        //            inventoryUI.EnsureSlotVisible(candidate.transform);
-        //        return;
-        //    }
-        //} while (attempts < maxAttempts);
     }
 
     // 添加獲取當前選中索引的方法

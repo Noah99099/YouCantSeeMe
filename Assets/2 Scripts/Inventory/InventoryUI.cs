@@ -25,7 +25,7 @@ public class InventoryUI : MonoBehaviour
     public GameObject useItemButton; // 使用物件按鈕
     [TextArea(3, 4)] public string tips;
 
-    private InventorySlotManager slotManager; // 取得管理背包格子的腳本
+    public InventorySlotManager slotManager; // 取得管理背包格子的腳本
     private bool isInventoryVisible = false; //面板是否顯示
 
     private ItemData currentSelectedItem = null; // 當前選中的物品
@@ -115,10 +115,33 @@ public class InventoryUI : MonoBehaviour
         HideItemDetail();
         UpdateUI();
 
-        // === 新增 ===
+        // === 新增：顯示 defaultItem ===
+        InventoryManager.Instance.UpdateInformationPanel(null);
+
+        // === 新增：手柄模式才強制選第一格 ===
+        if (InputDeviceManager.Instance != null &&
+            InputDeviceManager.Instance.CurrentInputType == InputDeviceManager.InputType.Gamepad)
+        {
+            StartCoroutine(SelectFirstSlotNextFrame());
+        }
+
+        // === 已有 ===
         UIInputManager.Instance?.EnterInventoryMode();
 
         Debug.Log("背包已成功打開");
+    }
+    /// <summary>
+    /// 協程：延遲一幀後選中第一個可選格子
+    /// </summary>
+    private System.Collections.IEnumerator SelectFirstSlotNextFrame()
+    {
+        yield return null; // 等一幀，確保 UI 已更新
+
+        var firstSlot = GetFirstSelectableSlot();
+        if (firstSlot != null && InventorySelection.Instance != null)
+        {
+            InventorySelection.Instance.SetSelected(firstSlot);
+        }
     }
 
     public void CloseInventory() //關閉背包面板
@@ -146,7 +169,13 @@ public class InventoryUI : MonoBehaviour
     public void OnSlotClicked(ItemData item)
     {
         currentSelectedItem = item;
-        InventoryManager.Instance?.UpdateInformationPanel(item); // 更新右側圖文描述
+
+        // 找到對應的 slotGO
+        var slotGO = slotManager.GetSlotGOByItem(item);
+        if (slotGO != null)
+            InventoryManager.Instance.SelectSlot(slotGO, item);
+
+
         // == 確保交互模式下顯示使用按鈕 ==
         if (isInteractionMode && useItemButton != null)
             useItemButton.SetActive(true);
@@ -266,7 +295,8 @@ public class InventoryUI : MonoBehaviour
         }
 
         Debug.Log($"更新背包UI (isInventoryVisible={isInventoryVisible})");
-        slotManager.UpdateSlots(InventoryManager.Instance.items, OnSlotClicked);
+        slotManager.UpdateSlots(InventoryManager.Instance.items, OnSlotClicked); // 更新所有格子
+        if (!isInventoryVisible) return; //新增
 
         if (isInventoryVisible)
         {
@@ -276,8 +306,16 @@ public class InventoryUI : MonoBehaviour
             }
             else if (slotManager.ActiveSlotsCount > 0 && EventSystem.current != null)
             {
-                // 改用 InventorySelection
-                InventorySelection.Instance.SetSelected(slotManager.GetFirstSlot());
+                // 手柄模式下自動選中第一個格子
+                if (InputDeviceManager.Instance != null &&
+                    InputDeviceManager.Instance.CurrentInputType == InputDeviceManager.InputType.Gamepad)
+                {
+                    var firstSlot = slotManager.GetFirstSlot();
+                    if (firstSlot != null)
+                    {
+                        InventorySelection.Instance.SetSelected(firstSlot);
+                    }
+                }
             }
             else
             {

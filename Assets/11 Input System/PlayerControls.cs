@@ -806,6 +806,17 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                 {
                     ""name"": """",
                     ""id"": ""ecbe38e3-8d22-4b36-b608-9aa2673ecfd9"",
+                    ""path"": ""<Gamepad>/buttonWest"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Gamepad"",
+                    ""action"": ""CloseInventory"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""f2ca7de4-ddad-45df-9bb2-a3eb5597d6f5"",
                     ""path"": ""<Gamepad>/buttonEast"",
                     ""interactions"": """",
                     ""processors"": """",
@@ -1087,6 +1098,15 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""CloseModelPreview"",
+                    ""type"": ""Button"",
+                    ""id"": ""a642d3b4-4946-4a00-a6b1-9149d0eca582"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -1098,6 +1118,17 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""Zoom"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""271429eb-99ca-4b73-b39a-2c1c55e1d4f9"",
+                    ""path"": """",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""CloseModelPreview"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -1151,6 +1182,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         // ModelPreview
         m_ModelPreview = asset.FindActionMap("ModelPreview", throwIfNotFound: true);
         m_ModelPreview_Zoom = m_ModelPreview.FindAction("Zoom", throwIfNotFound: true);
+        m_ModelPreview_CloseModelPreview = m_ModelPreview.FindAction("CloseModelPreview", throwIfNotFound: true);
     }
 
     ~@PlayerControls()
@@ -1893,6 +1925,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
     private readonly InputActionMap m_ModelPreview;
     private List<IModelPreviewActions> m_ModelPreviewActionsCallbackInterfaces = new List<IModelPreviewActions>();
     private readonly InputAction m_ModelPreview_Zoom;
+    private readonly InputAction m_ModelPreview_CloseModelPreview;
     /// <summary>
     /// Provides access to input actions defined in input action map "ModelPreview".
     /// </summary>
@@ -1908,6 +1941,10 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "ModelPreview/Zoom".
         /// </summary>
         public InputAction @Zoom => m_Wrapper.m_ModelPreview_Zoom;
+        /// <summary>
+        /// Provides access to the underlying input action "ModelPreview/CloseModelPreview".
+        /// </summary>
+        public InputAction @CloseModelPreview => m_Wrapper.m_ModelPreview_CloseModelPreview;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -1937,6 +1974,9 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @Zoom.started += instance.OnZoom;
             @Zoom.performed += instance.OnZoom;
             @Zoom.canceled += instance.OnZoom;
+            @CloseModelPreview.started += instance.OnCloseModelPreview;
+            @CloseModelPreview.performed += instance.OnCloseModelPreview;
+            @CloseModelPreview.canceled += instance.OnCloseModelPreview;
         }
 
         /// <summary>
@@ -1951,6 +1991,9 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @Zoom.started -= instance.OnZoom;
             @Zoom.performed -= instance.OnZoom;
             @Zoom.canceled -= instance.OnZoom;
+            @CloseModelPreview.started -= instance.OnCloseModelPreview;
+            @CloseModelPreview.performed -= instance.OnCloseModelPreview;
+            @CloseModelPreview.canceled -= instance.OnCloseModelPreview;
         }
 
         /// <summary>
@@ -2211,5 +2254,12 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnZoom(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "CloseModelPreview" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnCloseModelPreview(InputAction.CallbackContext context);
     }
 }

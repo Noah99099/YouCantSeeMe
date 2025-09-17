@@ -720,6 +720,17 @@
                 {
                     "name": "",
                     "id": "ecbe38e3-8d22-4b36-b608-9aa2673ecfd9",
+                    "path": "<Gamepad>/buttonWest",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Gamepad",
+                    "action": "CloseInventory",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "f2ca7de4-ddad-45df-9bb2-a3eb5597d6f5",
                     "path": "<Gamepad>/buttonEast",
                     "interactions": "",
                     "processors": "",
@@ -1001,6 +1012,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "CloseModelPreview",
+                    "type": "Button",
+                    "id": "a642d3b4-4946-4a00-a6b1-9149d0eca582",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -1012,6 +1032,17 @@
                     "processors": "",
                     "groups": "",
                     "action": "Zoom",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "271429eb-99ca-4b73-b39a-2c1c55e1d4f9",
+                    "path": "",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "CloseModelPreview",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

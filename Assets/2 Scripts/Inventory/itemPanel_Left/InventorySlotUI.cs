@@ -4,6 +4,7 @@ using UnityEngine.EventSystems;
 public class InventorySlotUI : MonoBehaviour, ISelectHandler, IPointerClickHandler
 {
     private ItemData boundItem;
+    public ItemData BoundItem => boundItem; // ← 新增公開屬性
 
     public void Bind(ItemData item)
     {
@@ -13,7 +14,8 @@ public class InventorySlotUI : MonoBehaviour, ISelectHandler, IPointerClickHandl
     // 手柄 / 鍵盤選中 → 更新右側資訊 (selected 行為)
     public void OnSelect(BaseEventData eventData)
     {
-        InventoryManager.Instance?.UpdateInformationPanel(boundItem);
+        // 只更新面板和 currentSelectedItem，不再重複呼叫 SetSelectedGameObject
+        InventoryManager.Instance?.SelectSlot(gameObject, boundItem);
         InventoryUI.Instance?.SetCurrentSelectedItem(boundItem);
     }
 
