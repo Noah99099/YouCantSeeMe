@@ -8,28 +8,28 @@ public class InteractableObject : MonoBehaviour
     public ItemData requiredItem; // 需要的物品
 
     [Header("事件")]
-    public UnityEngine.Events.UnityEvent onCorrectItemUsed; // 正確使用物品時觸發
-    public UnityEngine.Events.UnityEvent onWrongItemUsed; // 錯誤使用物品時觸發
+    public UnityEngine.Events.UnityEvent onCorrectItemUsed;
+    public UnityEngine.Events.UnityEvent onWrongItemUsed;
 
     /// <summary>
-    /// 當正確使用物品時調用
+    /// 嘗試使用物品
     /// </summary>
-    public void OnCorrectItemUsed()
+    public bool UseItem(ItemData item)
     {
-        Debug.Log($"正確物品被使用於 {objectName}");
-        onCorrectItemUsed.Invoke();
+        if (item == null) return false;
 
-        // 可以在這裡添加其他邏輯，例如禁用物件、播放動畫等
-    }
-
-    /// <summary>
-    /// 當錯誤使用物品時調用
-    /// </summary>
-    public void OnWrongItemUsed()
-    {
-        Debug.Log($"錯誤物品被使用於 {objectName}");
-        onWrongItemUsed.Invoke();
-
-        // 可以在這裡添加其他邏輯，例如顯示錯誤訊息、播放聲音等
+        if (item == requiredItem)
+        {
+            Debug.Log($"[InteractableObject] 使用了正確物品 {item.itemName} 於 {objectName}");
+            onCorrectItemUsed?.Invoke();
+            Destroy(gameObject); // 物件消失
+            return true; // 使用成功
+        }
+        else
+        {
+            Debug.Log($"[InteractableObject] 使用了錯誤物品 {item.itemName} 於 {objectName}");
+            onWrongItemUsed?.Invoke();
+            return false; // 使用失敗
+        }
     }
 }

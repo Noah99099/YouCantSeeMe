@@ -12,6 +12,7 @@ public class InventoryInputToUI : MonoBehaviour
     [Tooltip("Inventory Action Map 的 Navigate")] public InputActionReference navigateAction;
     [Tooltip("Inventory Action Map 的 CloseInventory")] public InputActionReference closeInventoryAction;
     [Tooltip("Inventory Action Map 的 OpenModelPreview")] public InputActionReference openModelPreviewAction;
+    [Tooltip("Inventory Action Map 的 UseItem")] public InputActionReference useItemAction;
 
     [Header("Input Actions：玩家模式")]
     [Tooltip("Player Action Map 的 OpenInventory")] public InputActionReference openInventoryAction;
@@ -30,8 +31,7 @@ public class InventoryInputToUI : MonoBehaviour
     // 防抖設定
     private bool canToggleInventory = true;
     private float toggleCooldown = 0.15f;
-
-    //處理第一次開背包的瞬間 ToggleInventory 被呼叫兩次，導致 UI 被立即關閉
+    private bool canMoveSelection = true;
 
 
     #region ===== 初始化 =====
@@ -47,15 +47,21 @@ public class InventoryInputToUI : MonoBehaviour
             return;
         }
 
-        // 背包相關動作始終啟用
+        // 啟用除 OpenInventory 外的背包相關動作
         navigateAction?.action.Enable(); //導航按鈕
         closeInventoryAction?.action.Enable(); //關背包
-        openModelPreviewAction?.action.Enable(); //開模型預覽
+        //openModelPreviewAction?.action.Enable(); //開模型預覽
+        useItemAction?.action.Enable(); //使用物品
 
         // 背包相關訂閱事件
         navigateAction.action.performed += OnNavigate;
         closeInventoryAction.action.performed += OnCloseInventory;
-        openModelPreviewAction.action.performed += OnOpenModelPreview;
+        //openModelPreviewAction.action.performed += OnOpenModelPreview;
+        useItemAction.action.performed += OnUseItem;
+
+        //新增
+        if (openModelPreviewAction != null)
+            openModelPreviewAction.action.performed += OnOpenModelPreview;
 
         // 手柄模式 → 打開背包時自動選中第一個格子
         if (InputDeviceManager.Instance != null &&
@@ -64,7 +70,7 @@ public class InventoryInputToUI : MonoBehaviour
             var firstSlot = slotManager?.GetFirstSlot();
             if (firstSlot != null && InventorySelection.Instance != null)
             {
-                InventorySelection.Instance.SetSelected(firstSlot);
+                InventorySelection.Instance.SetSelected(firstSlot.gameObject);
             }
         }
         else
@@ -80,16 +86,22 @@ public class InventoryInputToUI : MonoBehaviour
         if (navigateAction == null || closeInventoryAction == null || openInventoryAction == null || openModelPreviewAction == null)
             return;
 
-        //背包
+        //移除訂閱
         navigateAction.action.performed -= OnNavigate;
         closeInventoryAction.action.performed -= OnCloseInventory;
-        openModelPreviewAction.action.performed -= OnModelPreview;
+        //openModelPreviewAction.action.performed -= OnOpenModelPreview;
+        useItemAction.action.performed -= OnUseItem;
 
         // 禁用所有動作
         //背包
         navigateAction?.action.Disable();
         closeInventoryAction?.action.Disable();
-        openModelPreviewAction?.action.Disable();
+        //openModelPreviewAction?.action.Disable();
+        useItemAction?.action.Disable();
+
+        //新增
+        if (openModelPreviewAction != null)
+            openModelPreviewAction.action.performed -= OnOpenModelPreview;
 
         // === 修正：避免 NullReferenceException ===
         if (InventorySelection.Instance != null)
@@ -98,10 +110,6 @@ public class InventoryInputToUI : MonoBehaviour
         }
     }
 
-    private void OnModelPreview(InputAction.CallbackContext context) //打開預覽物件面板的方法
-    {
-        throw new System.NotImplementedException();
-    }
     #endregion
 
     /// <summary>
@@ -129,19 +137,6 @@ public class InventoryInputToUI : MonoBehaviour
             MoveSelection(1, false);
     }
 
-    //private void OnSelectSlot(InputAction.CallbackContext context)
-    //{
-    //    GameObject currentSelected = EventSystem.current.currentSelectedGameObject;
-    //    if (currentSelected == null) return;
-
-    //    Button btn = currentSelected.GetComponent<Button>();
-    //    if (btn == null || !btn.interactable) return;
-
-    //    // 正確呼叫 Button 的 OnSubmit，必須帶 BaseEventData 參數
-    //    BaseEventData eventData = new BaseEventData(EventSystem.current);
-    //    currentSelected.SendMessage("OnSubmit", eventData, SendMessageOptions.DontRequireReceiver);
-    //}
-
     #region ===== 玩家模式開關背包 =====
     public void BindOpenInventory(bool bind)
     {
@@ -165,33 +160,23 @@ public class InventoryInputToUI : MonoBehaviour
     {
         if (!canToggleInventory) return;
 
-        StartCoroutine(ToggleInventoryWithCooldown());
-    }
-
-    private IEnumerator ToggleInventoryWithCooldown()
-    {
         canToggleInventory = false;
 
-        if (inventoryUI == null) yield break;
+        if (inventoryUI != null)
+            inventoryUI.ToggleInventory();
 
-        // 切換到 Inventory 模式
-        UIInputManager.Instance?.EnterInventoryMode();
+        // 防抖
+        Invoke(nameof(ResetToggleInventoryCooldown), toggleCooldown);
+    }
 
-        // 打開背包 UI
-        inventoryUI.ToggleInventory();
-
-        // 緩存按鈕並選第一個
-        CacheSelectableButtons();
-        if (selectableButtons.Count > 0) yield return SelectFirstButtonNextFrame();
-
-        // 等待 cooldown
-        yield return new WaitForSeconds(toggleCooldown);
+    private void ResetToggleInventoryCooldown()
+    {
         canToggleInventory = true;
     }
 
     private void OnCloseInventory(InputAction.CallbackContext context)
     {
-        if (itemDetailUI != null && itemDetailUI.detailPanel.activeSelf)
+        if (itemDetailUI != null && itemDetailUI.modelPreviewPanel.activeSelf)
         {
             itemDetailUI.HideItemDetail();
             return;
@@ -205,9 +190,35 @@ public class InventoryInputToUI : MonoBehaviour
     }
     #endregion
 
-    private void OnOpenModelPreview(InputAction.CallbackContext context)
+    private void OnOpenModelPreview(InputAction.CallbackContext context) // 物品預覽面板
     {
-        inventoryUI?.OpenSelectedItemDetail();
+        //if (inventoryUI == null || itemDetailUI == null) return;
+
+        //if (!inventoryUI.isInventoryVisible) return; // <-- 只有當背包面板開啟時，手柄按鈕才有效
+
+        //// 取得選中物品
+        //ItemData item = inventoryUI.CurrentSelectedItem;
+        //if (item == null) return;
+
+        //itemDetailUI.ShowItemDetail(item);
+        if (!InventoryUI.Instance.isInventoryVisible) return;
+
+        var item = InventoryUI.Instance.CurrentSelectedItem;
+        if (item == null) return;
+
+        var slotUI = slotManager.GetSlotByItem(item);
+        if (slotUI == null) return;
+
+        InventoryManager.Instance.ItemDetailUI.ShowModelPreview(item);
+        UIInputManager.Instance?.EnterModelPreviewMode();
+    }
+
+    private void OnUseItem(InputAction.CallbackContext context) // 使用背包物品
+    {
+        if (inventoryUI == null) return;
+        ItemData item = inventoryUI.CurrentSelectedItem;
+        if (item != null)
+            PlayerInteraction.Instance?.OnItemUsed(item);
     }
 
     #region ===== UI 輔助方法 =====
@@ -238,11 +249,11 @@ public class InventoryInputToUI : MonoBehaviour
             return indexA.CompareTo(indexB);
         });
     }
-    private IEnumerator SelectFirstButtonNextFrame()
-    {
-        yield return null; // 等待一幀確保UI佈局完成
-        SelectFirstValidButton();
-    }
+    //private IEnumerator SelectFirstButtonNextFrame()
+    //{
+    //    yield return null; // 等待一幀確保UI佈局完成
+    //    SelectFirstValidButton();
+    //}
 
     private int GetSlotIndex(Transform slotTransform)
     {
@@ -250,26 +261,37 @@ public class InventoryInputToUI : MonoBehaviour
         string name = slotTransform.name;
         if (name.StartsWith("Slot_"))
         {
-            string indexStr = name.Substring(5);
-            int index;
-            if (int.TryParse(indexStr, out index))
-            {
+            if (int.TryParse(name.Substring(5), out int index))
                 return index;
-            }
         }
 
         // 如果無法從名稱中提取，使用 sibling index
         return slotTransform.GetSiblingIndex();
     }
 
-    private void SelectFirstValidButton()
+    private void SelectFirstValidButtonNextFrame()
     {
+        StartCoroutine(SelectFirstButtonCoroutine());
+    }
+
+    private IEnumerator SelectFirstButtonCoroutine()
+    {
+        yield return null; // 延遲一幀，避免 EventSystem 報錯
+
         if (selectableButtons.Count > 0)
         {
             currentSelectedIndex = 0;
-
-            // 改用 UISelectionManager
             InventorySelection.Instance.SetSelected(selectableButtons[currentSelectedIndex].gameObject);
+
+            // 更新右側詳情
+            var slotUI = selectableButtons[currentSelectedIndex].GetComponent<InventorySlotUI>();
+            if (slotUI != null)
+            {
+                inventoryUI.SetCurrentSelectedItem(slotUI.BoundItem);
+                inventoryUI.UpdateItemDetail(slotUI.BoundItem, true);
+            }
+
+            inventoryUI.EnsureSlotVisible(selectableButtons[currentSelectedIndex].transform);
         }
         else
         {
@@ -278,41 +300,69 @@ public class InventoryInputToUI : MonoBehaviour
         }
     }
 
+    //private void SelectFirstValidButton()
+    //{
+    //    if (selectableButtons.Count > 0)
+    //    {
+    //        currentSelectedIndex = 0;
+
+    //        // 改用 UISelectionManager
+    //        InventorySelection.Instance.SetSelected(selectableButtons[currentSelectedIndex].gameObject);
+    //    }
+    //    else
+    //    {
+    //        currentSelectedIndex = -1;
+    //        InventorySelection.Instance.ClearSelection();
+    //    }
+    //}
+
     // 移動選擇焦點，跳過不可選按鈕
     private void MoveSelection(int direction, bool isVertical)
     {
         if (selectableButtons.Count == 0) return;
 
         int newIndex = currentSelectedIndex;
+
         if (isVertical)
-            newIndex += direction * columnsCount; // 上下移動跳一整行
+            newIndex += direction * columnsCount; // 上下跳一行
         else
-            newIndex += direction; // 左右移動跳一格
+            newIndex += direction; // 左右跳一格
 
-        if (newIndex < 0 || newIndex >= selectableButtons.Count) return;
+        // 邊界限制
+        newIndex = Mathf.Clamp(newIndex, 0, selectableButtons.Count - 1);
 
-        currentSelectedIndex = newIndex;
-        InventorySelection.Instance.SetSelected(selectableButtons[currentSelectedIndex].gameObject);
+        // 跳過不可互動格子
+        while (!selectableButtons[newIndex].interactable)
+        {
+            newIndex += isVertical ? direction * columnsCount : direction;
+            if (newIndex < 0 || newIndex >= selectableButtons.Count)
+            {
+                newIndex = currentSelectedIndex;
+                break;
+            }
+        }
 
-        // 確保滾動到可見範圍
-        if (inventoryUI != null)
-            inventoryUI.EnsureSlotVisible(selectableButtons[currentSelectedIndex].transform);
+        StartCoroutine(SelectSlotNextFrame(newIndex));
     }
 
     // 添加獲取當前選中索引的方法
-    private int GetCurrentSelectedIndex()
+    private IEnumerator SelectSlotNextFrame(int index)
     {
-        GameObject currentSelected = EventSystem.current.currentSelectedGameObject;
-        if (currentSelected == null) return -1;
+        yield return null; // 延遲一幀
 
-        for (int i = 0; i < selectableButtons.Count; i++)
+        currentSelectedIndex = index;
+        var slotGO = selectableButtons[currentSelectedIndex].gameObject;
+
+        InventorySelection.Instance.SetSelected(slotGO);
+
+        var slotUI = slotGO.GetComponent<InventorySlotUI>();
+        if (slotUI != null)
         {
-            if (selectableButtons[i].gameObject == currentSelected)
-            {
-                return i;
-            }
+            inventoryUI.SetCurrentSelectedItem(slotUI.BoundItem);
+            inventoryUI.UpdateItemDetail(slotUI.BoundItem, true);
         }
-        return -1;
+
+        inventoryUI.EnsureSlotVisible(slotGO.transform);
     }
     #endregion
 }

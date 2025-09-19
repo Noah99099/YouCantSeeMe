@@ -11,17 +11,16 @@ public class UIInputManager : MonoBehaviour
     public bool IsInPlayerMode { get; private set; } = false; //遊玩
     public bool IsInUIMode { get; private set; } = false; //主選單 或 菜單?
     public bool IsInInventoryMode { get; private set; } = false; //背包（不包含3D）
-    public bool IsInModelPreviewMode { get; private set; } = false; //3D預覽
+    public bool IsInModelPreviewMode { get; private set; } = false; //3D模型預覽
     public bool IsInDialogueMode { get; private set; } = false; //對話系統
     public bool IsGameStarted { get; private set; } = false; //遊戲開始狀態
-
-    [Header("功能：全局輸入模式管理和Action Map切換")]
 
     // 新增: 輸入設備類型引用
     private InputDeviceManager inputDeviceManager;
     // 添加对 InventoryInputToUI腳本 的引用
     private InventoryInputToUI inventoryInput;
 
+    [Header("功能：全局輸入模式管理和Action Map切換")]
     [Tooltip("提示按下視野按鈕才能開始遊戲")] public GameObject hintUI; //畫面至中下的提示，不是右下的看無
 
     private void Awake()

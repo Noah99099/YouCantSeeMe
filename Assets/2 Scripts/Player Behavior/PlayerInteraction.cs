@@ -5,6 +5,7 @@ using TMPro;
 public class PlayerInteraction : MonoBehaviour
 {
     public static PlayerInteraction Instance { get; private set; } // 添加單例模式
+    public InteractableObject CurrentTarget { get; set; } // 玩家正在交互的物件
 
     [Header("互動設定")]
     [SerializeField] private float interactionRange = 3f;
@@ -55,7 +56,6 @@ public class PlayerInteraction : MonoBehaviour
     
     void Start()
     {
-        //CursorManager.EnterGameplayMode();
         pickupPromptText.gameObject.SetActive(false);
     }
 
@@ -157,10 +157,13 @@ public class PlayerInteraction : MonoBehaviour
             else if (hitObject.TryGetComponent<InteractableObject>(out var interactable)) //使用物件
             {
                 Debug.Log($"Interacting with: {interactable.objectName}");
+                // 設定交互目標
+                CurrentTarget = interactable;
                 // 打開背包（交互模式）
                 if (InventoryUI.Instance != null)
                 {
                     InventoryUI.Instance.ToggleInventory(true);
+                    InventoryUI.Instance.isInteractionMode = true;
                 }
                 HidePrompt();
             }
@@ -171,33 +174,61 @@ public class PlayerInteraction : MonoBehaviour
         }
     }
 
+    #region ===== 使用物品 =====
     /// <summary>
-    /// 當物品被使用時調用（從InventoryUI調用）
+    /// 從背包使用物品按鈕呼叫
     /// </summary>
     /// <param name="item">被使用的物品</param>
+    // 從背包使用物品按鈕呼叫
     public void OnItemUsed(ItemData item)
     {
-        if (currentInteractable != null)
+        if (CurrentTarget == null)
         {
-            // 檢查物品是否正確
-            if (currentInteractable.requiredItem == item)
-            {
-                Debug.Log($"正確使用物品: {item.itemName} 於 {currentInteractable.objectName}");
-                // 觸發正確使用物品的事件
-                currentInteractable.OnCorrectItemUsed();
-            }
-            else
-            {
-                Debug.Log($"錯誤使用物品: {item.itemName} 於 {currentInteractable.objectName}");
-                // 觸發錯誤使用物品的事件
-                currentInteractable.OnWrongItemUsed();
-            }
+            Debug.LogWarning("[PlayerInteraction] 沒有交互目標，無法使用物品");
+            CloseInventoryAndExitInteraction();
+            return;
+        }
+
+        bool success = CurrentTarget.UseItem(item); // 呼叫 InteractableObject 的邏輯
+
+        if (success)
+        {
+            // 使用成功才消耗物品
+            InventoryManager.Instance.RemoveItem(item);
+            Debug.Log($"[PlayerInteraction] {item.itemName} 使用成功並消耗");
         }
         else
         {
-            Debug.LogWarning("沒有可交互物件，無法使用物品");
+            Debug.Log($"[PlayerInteraction] {item.itemName} 使用失敗，未消耗");
         }
+
+        // 無論成功或失敗都關閉背包 + 退出交互模式
+        CloseInventoryAndExitInteraction();
     }
+
+    /// <summary>
+    /// 關閉背包並退出交互模式
+    /// </summary>
+    private void CloseInventoryAndExitInteraction()
+    {
+        Debug.Log($"[PlayerInteraction] CloseInventoryAndExitInteraction start. CurrentTarget={(CurrentTarget != null ? CurrentTarget.name : "null")}, isInventoryVisible={InventoryUI.Instance.isInventoryVisible}");
+
+        InventoryUI.Instance.CloseInventory();
+        InventoryUI.Instance.isInteractionMode = false;
+
+        // 清空選中物品
+        InventoryUI.Instance.SetCurrentSelectedItem(null);
+
+        // 清空交互目標
+        CurrentTarget = null;
+
+        // 最後再刷新 UI（此時面板已關閉，就不會觸發 modelPreview）
+        InventoryUI.Instance.UpdateUI();
+
+        Debug.Log($"[PlayerInteraction] CloseInventoryAndExitInteraction end. isInventoryVisible={InventoryUI.Instance.isInventoryVisible}, currentSelectedItem={(InventoryUI.Instance.CurrentSelectedItem != null ? InventoryUI.Instance.CurrentSelectedItem.itemName : "null")}");
+    }
+
+    #endregion
 
     private void HidePrompt() 
     {

@@ -13,7 +13,5 @@ public class ItemData : ScriptableObject
     [TextArea(3,10)]
     public string description; // 物品描述文本
 
-    // 你未來可以擴充更多屬性，例如：
-    // public int maxStack; // 最大堆疊數量
     public GameObject modelPrefab; // 預覽物品的模型
 }

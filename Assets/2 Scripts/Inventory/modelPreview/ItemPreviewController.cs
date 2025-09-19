@@ -103,7 +103,7 @@ public class ItemPreviewController : MonoBehaviour
 
         //Debug.Log($"✅ 模型已生成：{instance.name}，距離相機 {distance:F2}，位置 {modelRoot.position}");
         float actualDistance = Vector3.Distance(modelRoot.position, previewCamera.transform.position);
-        Debug.Log($"✅ 模型已生成：{instance.name}，距離相機 {actualDistance:F2}，位置 {modelRoot.position}");
+        Debug.Log($"[ItemPreviewController] ✅ 模型已生成：{instance.name}，距離相機 {actualDistance:F2}，位置 {modelRoot.position}");
     }
 
     private void SetLayerRecursively(GameObject obj, int newLayer)

@@ -208,6 +208,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: BlackWalnutTree_Spring (6)
       objectReference: {fileID: 0}
+    - target: {fileID: 4343467426761706808, guid: e061c3c2929a4ff4ea6e1fcc179c3f99,
+        type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 18
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -436,6 +441,11 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 459515823}
     m_Modifications:
+    - target: {fileID: 2248741501083583225, guid: 972c378e51b4b1b458167da621a28fd0,
+        type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 18
+      objectReference: {fileID: 0}
     - target: {fileID: 2873784948236536173, guid: 972c378e51b4b1b458167da621a28fd0,
         type: 3}
       propertyPath: m_Name
@@ -540,6 +550,11 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 459515823}
     m_Modifications:
+    - target: {fileID: 323005560937833554, guid: 2a3a5cfe03b8d4745bd77dae5a5f5774,
+        type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 18
+      objectReference: {fileID: 0}
     - target: {fileID: 7035193621582100787, guid: 2a3a5cfe03b8d4745bd77dae5a5f5774,
         type: 3}
       propertyPath: m_Name
@@ -2468,6 +2483,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: BlackWalnutTree_Spring (1)
       objectReference: {fileID: 0}
+    - target: {fileID: 4343467426761706808, guid: e061c3c2929a4ff4ea6e1fcc179c3f99,
+        type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 18
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -2611,7 +2631,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 693.1682, y: 468.89197}
+  m_AnchoredPosition: {x: 693.1682, y: -402}
   m_SizeDelta: {x: 117.6636, y: 63.4752}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &235694681
@@ -2627,7 +2647,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Navigation:
-    m_Mode: 3
+    m_Mode: 0
     m_WrapAround: 0
     m_SelectOnUp: {fileID: 0}
     m_SelectOnDown: {fileID: 0}
@@ -2658,10 +2678,10 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 2064508794}
-        m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
-        m_MethodName: SetActive
-        m_Mode: 6
+      - m_Target: {fileID: 1530991767}
+        m_TargetAssemblyTypeName: ItemDetailUI, Assembly-CSharp
+        m_MethodName: ClosePreviewAndReturnToInventory
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -4017,85 +4037,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &362383370
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 362383371}
-  - component: {fileID: 362383373}
-  - component: {fileID: 362383372}
-  m_Layer: 5
-  m_Name: Description
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!224 &362383371
-RectTransform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 362383370}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 918151080}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0.0001}
-  m_SizeDelta: {x: 1136.3408, y: 156.2813}
-  m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &362383372
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 362383370}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5f7201a12d95ffc409449d95f23cf332, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Material: {fileID: 0}
-  m_Color: {r: 0.19607843, g: 0.19607843, b: 0.19607843, a: 1}
-  m_RaycastTarget: 1
-  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-  m_Maskable: 1
-  m_OnCullStateChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  m_FontData:
-    m_Font: {fileID: 12800000, guid: 9565f80e033d755418ead76682fe4531, type: 3}
-    m_FontSize: 25
-    m_FontStyle: 0
-    m_BestFit: 0
-    m_MinSize: 10
-    m_MaxSize: 46
-    m_Alignment: 1
-    m_AlignByGeometry: 0
-    m_RichText: 1
-    m_HorizontalOverflow: 0
-    m_VerticalOverflow: 0
-    m_LineSpacing: 1
-  m_Text: "\u7269\u4EF6\u63CF\u8FF0"
---- !u!222 &362383373
-CanvasRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 362383370}
-  m_CullTransparentMesh: 1
 --- !u!1 &368210402
 GameObject:
   m_ObjectHideFlags: 0
@@ -6311,6 +6252,7 @@ GameObject:
   - component: {fileID: 656544615}
   - component: {fileID: 656544618}
   - component: {fileID: 656544619}
+  - component: {fileID: 656544620}
   m_Layer: 5
   m_Name: InventoryPanel
   m_TagString: Untagged
@@ -6392,7 +6334,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c3f9f8d0d870e9340a044f601cce4d12, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  itemsContainer: {fileID: 0}
+  itemsContainer: {fileID: 697952839}
 --- !u!114 &656544619
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6407,13 +6349,27 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   inventoryPanel: {fileID: 656544612}
   itemsContainer: {fileID: 1005355398}
+  itemPreviewButton: {fileID: 1916088462}
+  useItemButton: {fileID: 1221919130}
   scrollRect: {fileID: 2001281751}
   visibleSlots: 16
   scrollSmoothTime: 0.2
+  slotManager: {fileID: 656544618}
+  itemDetailUI: {fileID: 1530991767}
   isInteractionMode: 0
-  useItemButton: {fileID: 1221919128}
   tips: "\u300C\u4F7F\u7528\u7269\u4EF6\u300D\u6309\u9215\u53C3\u8003\u4E86\u9006\u8F49\u88C1\u5224\u7684\u300C\u8A73\u7D30\u8CC7\u8A0A\u300D\u6309\u9215\u3002\n*\u907A\u7559\u7B2C\u4E00\u6B21\u958B\u95DC\u4E0D\u6B63\u5E38\u7684bug\u3002"
-  slotManager: {fileID: 0}
+--- !u!114 &656544620
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 656544612}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4003668395c09ed49b95e6ab8f08f207, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &667035554
 GameObject:
   m_ObjectHideFlags: 0
@@ -8080,6 +8036,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: BlackWalnutTree_Spring (5)
       objectReference: {fileID: 0}
+    - target: {fileID: 4343467426761706808, guid: e061c3c2929a4ff4ea6e1fcc179c3f99,
+        type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 18
+      objectReference: {fileID: 0}
     - target: {fileID: 8724785602645472151, guid: e061c3c2929a4ff4ea6e1fcc179c3f99,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -8374,82 +8335,6 @@ CanvasRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 907533073}
-  m_CullTransparentMesh: 1
---- !u!1 &918151079
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 918151080}
-  - component: {fileID: 918151082}
-  - component: {fileID: 918151081}
-  m_Layer: 5
-  m_Name: LowerBG
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!224 &918151080
-RectTransform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 918151079}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 362383371}
-  m_Father: {fileID: 2064508795}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 1}
-  m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: -0.00177, y: -218.94128}
-  m_SizeDelta: {x: 1590.9, y: 197.88257}
-  m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &918151081
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 918151079}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Material: {fileID: 0}
-  m_Color: {r: 0.4716981, g: 0.4716981, b: 0.4716981, a: 1}
-  m_RaycastTarget: 1
-  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-  m_Maskable: 1
-  m_OnCullStateChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  m_Sprite: {fileID: 0}
-  m_Type: 0
-  m_PreserveAspect: 0
-  m_FillCenter: 1
-  m_FillMethod: 4
-  m_FillAmount: 1
-  m_FillClockwise: 1
-  m_FillOrigin: 0
-  m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 1
---- !u!222 &918151082
-CanvasRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 918151079}
   m_CullTransparentMesh: 1
 --- !u!1 &931178067
 GameObject:
@@ -8779,6 +8664,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: BlackWalnutTree_Spring
       objectReference: {fileID: 0}
+    - target: {fileID: 4343467426761706808, guid: e061c3c2929a4ff4ea6e1fcc179c3f99,
+        type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 18
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -9007,6 +8897,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: BlackWalnutTree_Spring (4)
       objectReference: {fileID: 0}
+    - target: {fileID: 4343467426761706808, guid: e061c3c2929a4ff4ea6e1fcc179c3f99,
+        type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 18
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -9100,6 +8995,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: BlackWalnutTree_Spring (2)
+      objectReference: {fileID: 0}
+    - target: {fileID: 4343467426761706808, guid: e061c3c2929a4ff4ea6e1fcc179c3f99,
+        type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 18
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -9624,7 +9524,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -137}
+  m_AnchoredPosition: {x: 0, y: 17}
   m_SizeDelta: {x: 512, y: 512}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1021975864
@@ -10057,7 +9957,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: 0, y: -70}
+  m_AnchoredPosition: {x: 0, y: -941}
   m_SizeDelta: {x: 1590.9429, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1120955291
@@ -10240,6 +10140,11 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 459515823}
     m_Modifications:
+    - target: {fileID: 323005560937833554, guid: 2a3a5cfe03b8d4745bd77dae5a5f5774,
+        type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 18
+      objectReference: {fileID: 0}
     - target: {fileID: 7035193621582100787, guid: 2a3a5cfe03b8d4745bd77dae5a5f5774,
         type: 3}
       propertyPath: m_Name
@@ -10618,6 +10523,11 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 459515823}
     m_Modifications:
+    - target: {fileID: 2248741501083583225, guid: 972c378e51b4b1b458167da621a28fd0,
+        type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 18
+      objectReference: {fileID: 0}
     - target: {fileID: 2873784948236536173, guid: 972c378e51b4b1b458167da621a28fd0,
         type: 3}
       propertyPath: m_Name
@@ -11118,6 +11028,11 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 459515823}
     m_Modifications:
+    - target: {fileID: 2248741501083583225, guid: 972c378e51b4b1b458167da621a28fd0,
+        type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 18
+      objectReference: {fileID: 0}
     - target: {fileID: 2873784948236536173, guid: 972c378e51b4b1b458167da621a28fd0,
         type: 3}
       propertyPath: m_Name
@@ -11296,7 +11211,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1221919131}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 656544619}
+        m_TargetAssemblyTypeName: InventoryUI, Assembly-CSharp
+        m_MethodName: OnUseItemButtonClicked
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1221919131
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -12523,8 +12450,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4281479730
-  m_fontColor: {r: 0.19607843, g: 0.19607843, b: 0.19607843, a: 1}
+    rgba: 4278190080
+  m_fontColor: {r: 0, g: 0, b: 0, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -12541,8 +12468,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 8
-  m_fontSizeBase: 8
+  m_fontSize: 18
+  m_fontSizeBase: 18
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -14147,8 +14074,10 @@ GameObject:
   - component: {fileID: 1506014632}
   - component: {fileID: 1506014631}
   - component: {fileID: 1506014634}
+  - component: {fileID: 1506014636}
+  - component: {fileID: 1506014635}
   m_Layer: 3
-  m_Name: Cube
+  m_Name: testUseItem
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -14173,7 +14102,7 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1.89, y: 1, z: 1}
+  m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!4 &1506014632
 Transform:
@@ -14184,7 +14113,7 @@ Transform:
   m_GameObject: {fileID: 1506014630}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.66, z: 0}
+  m_LocalPosition: {x: -1.55, y: 0.66, z: 1.06}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -14206,22 +14135,60 @@ MonoBehaviour:
   requiredItem: {fileID: 11400000, guid: fff66b3c86c39a3469aa20b2be413b71, type: 2}
   onCorrectItemUsed:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 1506014634}
-        m_TargetAssemblyTypeName: InteractableObject, Assembly-CSharp
-        m_MethodName: OnCorrectItemUsed
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
   onWrongItemUsed:
     m_PersistentCalls:
       m_Calls: []
+--- !u!23 &1506014635
+MeshRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1506014630}
+  m_Enabled: 1
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2100000, guid: 84d34a5437a925f4abea9a741eea7cca, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
+--- !u!33 &1506014636
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1506014630}
+  m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
 --- !u!1001 &1511693949
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -14230,6 +14197,11 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 459515823}
     m_Modifications:
+    - target: {fileID: 323005560937833554, guid: 2a3a5cfe03b8d4745bd77dae5a5f5774,
+        type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 18
+      objectReference: {fileID: 0}
     - target: {fileID: 7035193621582100787, guid: 2a3a5cfe03b8d4745bd77dae5a5f5774,
         type: 3}
       propertyPath: m_Name
@@ -14458,6 +14430,11 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 459515823}
     m_Modifications:
+    - target: {fileID: 2248741501083583225, guid: 972c378e51b4b1b458167da621a28fd0,
+        type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 18
+      objectReference: {fileID: 0}
     - target: {fileID: 2873784948236536173, guid: 972c378e51b4b1b458167da621a28fd0,
         type: 3}
       propertyPath: m_Name
@@ -14562,6 +14539,11 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 459515823}
     m_Modifications:
+    - target: {fileID: 323005560937833554, guid: 2a3a5cfe03b8d4745bd77dae5a5f5774,
+        type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 18
+      objectReference: {fileID: 0}
     - target: {fileID: 7035193621582100787, guid: 2a3a5cfe03b8d4745bd77dae5a5f5774,
         type: 3}
       propertyPath: m_Name
@@ -14659,7 +14641,6 @@ GameObject:
   - component: {fileID: 1530991766}
   - component: {fileID: 1530991765}
   - component: {fileID: 1530991767}
-  - component: {fileID: 1530991768}
   m_Layer: 0
   m_Name: InventoryManager
   m_TagString: Untagged
@@ -14713,26 +14694,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4ffc8300c0942ef4d913a55c312e8b22, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  detailPanel: {fileID: 2064508794}
+  modelPreviewPanel: {fileID: 2064508794}
   nameText: {fileID: 613384259}
-  descriptionText: {fileID: 362383372}
   modelPreview: {fileID: 1021975864}
   renderTexture: {fileID: 8400000, guid: 9cf588ec8d98e30419e4cde73800aba2, type: 2}
   modelSpawnPoint: {fileID: 1021975863}
   previewCamera: {fileID: 53566301}
   previewController: {fileID: 273982282}
---- !u!114 &1530991768
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1530991764}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4003668395c09ed49b95e6ab8f08f207, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &1536937222
 GameObject:
   m_ObjectHideFlags: 0
@@ -15024,8 +14992,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4281479730
-  m_fontColor: {r: 0.19607843, g: 0.19607843, b: 0.19607843, a: 1}
+    rgba: 4278190080
+  m_fontColor: {r: 0, g: 0, b: 0, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -15243,6 +15211,8 @@ MonoBehaviour:
   closeInventoryAction: {fileID: 1337837542212814459, guid: 0c67ffdfc88b05643a7007cd03d06742,
     type: 3}
   openModelPreviewAction: {fileID: 5608677074877842925, guid: 0c67ffdfc88b05643a7007cd03d06742,
+    type: 3}
+  useItemAction: {fileID: 2095328635730077477, guid: 0c67ffdfc88b05643a7007cd03d06742,
     type: 3}
   openInventoryAction: {fileID: 3983031988066161156, guid: 0c67ffdfc88b05643a7007cd03d06742,
     type: 3}
@@ -16204,6 +16174,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: BlackWalnutTree_Spring (7)
+      objectReference: {fileID: 0}
+    - target: {fileID: 4343467426761706808, guid: e061c3c2929a4ff4ea6e1fcc179c3f99,
+        type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 18
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -17517,6 +17492,11 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 459515823}
     m_Modifications:
+    - target: {fileID: 2248741501083583225, guid: 972c378e51b4b1b458167da621a28fd0,
+        type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 18
+      objectReference: {fileID: 0}
     - target: {fileID: 2873784948236536173, guid: 972c378e51b4b1b458167da621a28fd0,
         type: 3}
       propertyPath: m_Name
@@ -17940,7 +17920,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1916088463}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 656544619}
+        m_TargetAssemblyTypeName: InventoryUI, Assembly-CSharp
+        m_MethodName: OnPreviewButtonPressed
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1916088463
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -18056,6 +18048,11 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 459515823}
     m_Modifications:
+    - target: {fileID: 323005560937833554, guid: 2a3a5cfe03b8d4745bd77dae5a5f5774,
+        type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 18
+      objectReference: {fileID: 0}
     - target: {fileID: 7035193621582100787, guid: 2a3a5cfe03b8d4745bd77dae5a5f5774,
         type: 3}
       propertyPath: m_Name
@@ -18359,6 +18356,11 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 459515823}
     m_Modifications:
+    - target: {fileID: 323005560937833554, guid: 2a3a5cfe03b8d4745bd77dae5a5f5774,
+        type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 18
+      objectReference: {fileID: 0}
     - target: {fileID: 7035193621582100787, guid: 2a3a5cfe03b8d4745bd77dae5a5f5774,
         type: 3}
       propertyPath: m_Name
@@ -19250,7 +19252,6 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1120955290}
-  - {fileID: 918151080}
   - {fileID: 1021975863}
   - {fileID: 235694680}
   m_Father: {fileID: 254457078}
@@ -20621,6 +20622,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: BlackWalnutTree_Spring (3)
       objectReference: {fileID: 0}
+    - target: {fileID: 4343467426761706808, guid: e061c3c2929a4ff4ea6e1fcc179c3f99,
+        type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 18
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -20904,7 +20910,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 18
   m_IsActive: 1
 --- !u!23 &608360958727316456
 MeshRenderer:
@@ -20986,7 +20992,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 18
   m_IsActive: 1
 --- !u!1 &770231325667811741
 GameObject:
@@ -21300,7 +21306,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 18
   m_IsActive: 1
 --- !u!1 &1800081803688277628
 GameObject:
@@ -22729,7 +22735,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 18
   m_IsActive: 1
 --- !u!1 &5671531587678468815
 GameObject:
@@ -23522,7 +23528,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 18
   m_IsActive: 1
 --- !u!23 &8054033602765276282
 MeshRenderer:
@@ -23680,7 +23686,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 18
   m_IsActive: 1
 --- !u!1 &8395106867889395895
 GameObject:
@@ -23944,7 +23950,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 18
   m_IsActive: 1
 --- !u!33 &9177250469506208273
 MeshFilter:
@@ -23985,9 +23991,9 @@ SceneRoots:
   - {fileID: 1857212052}
   - {fileID: 2045496374}
   - {fileID: 1877293738}
-  - {fileID: 1506014632}
   - {fileID: 2093728655}
   - {fileID: 339165807547377075}
   - {fileID: 459515823}
   - {fileID: 1986345375}
   - {fileID: 1536937225}
+  - {fileID: 1506014632}

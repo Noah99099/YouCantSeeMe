@@ -1,6 +1,8 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
+[DefaultExecutionOrder(-10)] //第二個初始化此腳本
 public class InventorySelection : MonoBehaviour
 {
     public static InventorySelection Instance { get; private set; }
@@ -28,16 +30,26 @@ public class InventorySelection : MonoBehaviour
     public void SetSelected(GameObject target)
     {
         if (target == null) return;
+
+        // 如果已經選中同一個物件，不重複設置
+        if (EventSystem.current.currentSelectedGameObject == target) return;
+
         if (InputDeviceManager.Instance != null &&
             InputDeviceManager.Instance.CurrentInputType == InputDeviceManager.InputType.Gamepad)
         {
-            EventSystem.current.SetSelectedGameObject(target);
+            // 使用 Coroutine 延遲一幀
+            InventoryUI.Instance.StartCoroutine(SetSelectedNextFrame(target));
         }
         else
         {
-            // 鍵鼠模式 → 不要強制鎖定
-            EventSystem.current.SetSelectedGameObject(null);
+            EventSystem.current.SetSelectedGameObject(null); // 鍵鼠模式 → 不要強制鎖定
         }
+    }
+    private IEnumerator SetSelectedNextFrame(GameObject target)
+    {
+        yield return null; // 等一幀
+        if (EventSystem.current.currentSelectedGameObject != target)
+            EventSystem.current.SetSelectedGameObject(target);
     }
 
     /// <summary>

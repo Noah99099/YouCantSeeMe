@@ -1,150 +1,149 @@
+using Spine;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class InventorySlotManager : MonoBehaviour
 {
+    [Header("功能：管理背包格子的更新與顯示，確保使用物品後格子自動遞補")]
     //private Queue<GameObject> itemSlotPool = new Queue<GameObject>();
-    private List<GameObject> allSlots = new List<GameObject>(); // 核心背包格子列表
-    private List<GameObject> activeSlots = new List<GameObject>(); // 當前有物品的格子
+    //private List<GameObject> allSlots = new List<GameObject>(); // 核心背包格子列表。暫時註解，已用 slotUIs 替代
+    //private List<GameObject> activeSlots = new List<GameObject>(); // 當前有物品的格子。暫時註解，已用 slotUIs 過濾
 
-    [Header("背包格子容器")]
+    [Tooltip("背包格子容器 / 放置所有格子的父物件")]
     [SerializeField] private Transform itemsContainer;
 
-    public int ActiveSlotsCount => activeSlots.Count;
+    // 緩存每個格子的 InventorySlotUI，避免 GetComponent
+    private List<InventorySlotUI> slotUIs = new List<InventorySlotUI>();
+    private int totalSlots => slotUIs.Count;
 
-    /// <summary>
-    /// 當前有物品的格子列表
-    /// </summary>
-    public List<GameObject> ActiveSlots => allSlots.FindAll(slot =>
-    {
-        var slotUI = slot.GetComponent<InventorySlotUI>();
-        return slotUI != null && slotUI.BoundItem != null && slotUI.BoundItem != InventoryManager.Instance.defaultItem;
-    });
-
-    //初始化
+    //初始化格子
     public void Initialize(Transform container)
     {
-        //itemsContainer = container;
-        //InitializeAllSlots();
         itemsContainer = container;
-        allSlots.Clear();
+        //InitializeAllSlots();
+        slotUIs.Clear();
 
-        foreach (Transform child in container)
-        {
-            GameObject slot = child.gameObject;
-            allSlots.Add(slot);
-
-            // 初始化為默認格子狀態
-            SetupSlot(slot, InventoryManager.Instance.defaultItem, null);
-        }
-    }
-
-    private void InitializeAllSlots()
-    {
-        allSlots.Clear();
         foreach (Transform child in itemsContainer)
         {
-            GameObject slot = child.gameObject;
-            allSlots.Add(slot);
-            SetupSlot(slot, InventoryManager.Instance.defaultItem, null);
+            InventorySlotUI slotUI = child.GetComponent<InventorySlotUI>();
+            if (slotUI != null)
+            {
+                slotUI.ClearSlot(); // 初始清空
+                slotUIs.Add(slotUI);
+            }
         }
     }
 
-    // 根據 ItemData 找對應格子
-    public GameObject GetSlotGOByItem(ItemData item)
-    {
-        if (item == null) return null;
-
-        foreach (var slot in allSlots)
-        {
-            var slotUI = slot.GetComponent<InventorySlotUI>();
-            if (slotUI != null && slotUI.BoundItem == item)
-                return slot;
-        }
-        return null;
-    }
-
+    /// <summary>
+    /// 更新背包格子顯示，使用物品或新增物品後呼叫
+    /// </summary>
+    /// <param name="items">當前背包物品列表</param>
+    /// <param name="onClickAction">Slot 點擊回調</param>
     public void UpdateSlots(List<ItemData> items, System.Action<ItemData> onClickAction)
     {
-        //// 先重置所有格子為空狀態
-        //foreach (GameObject slot in allSlots)
-        //{
-        //    SetupSlot(slot, null, onClickAction);
-        //}
-
-        //// 更新活躍格子列表
-        //activeSlots.Clear();
-
-        //// 設置有物品的格子
-        //for (int i = 0; i < items.Count && i < allSlots.Count; i++)
-        //{
-        //    GameObject slot = allSlots[i];
-        //    SetupSlot(slot, items[i], onClickAction);
-        //    activeSlots.Add(slot);
-        //}
-        for (int i = 0; i < allSlots.Count; i++)
+        for (int i = 0; i < totalSlots; i++)
         {
+            var slotUI = slotUIs[i];
+
+            //if (i < items.Count && items[i] != null)
+            //{
+            //    // 有物品 → 顯示並綁定
+            //    slotUI.SetItem(items[i], onClickAction);
+            //}
+            //else
+            //{
+            //    // 空格子 → 清空
+            //    slotUI.ClearSlot();
+            //}
+
+            // 即使是 defaultItem 也要呼叫 SetItem 來保持按鈕可點
             ItemData item = i < items.Count ? items[i] : InventoryManager.Instance.defaultItem;
-            SetupSlot(allSlots[i], item, onClickAction);
+            slotUI.SetItem(item, onClickAction);
         }
     }
 
     /// <summary>
     /// 設置單個格子
     /// </summary>
-    private void SetupSlot(GameObject slot, ItemData item, System.Action<ItemData> onClickAction)
+    private void SetupSlot(InventorySlotUI slotUI, ItemData item, System.Action<ItemData> onClickAction)
     {
-        if (slot == null) return;
+        if (slotUI == null) return;
 
-        // 設置圖標
-        Image itemIcon = slot.transform.Find("ItemIcon")?.GetComponent<Image>();
-        if (itemIcon != null)
-        {
-            if (item != null && item.icon != null)
-            {
-                itemIcon.sprite = item.icon;
-                itemIcon.enabled = true;
-            }
-            else
-            {
-                itemIcon.sprite = null;
-                itemIcon.enabled = false;
-            }
-        }
+        // 綁定資料
+        slotUI.Bind(item);
 
-        // 綁定 InventorySlotUI
-        InventorySlotUI slotUI = slot.GetComponent<InventorySlotUI>();
-        if (slotUI != null)
-        {
-            slotUI.Bind(item);
-        }
-
-        // 設置按鈕點擊事件
-        Button button = slot.GetComponent<Button>();
-        if (button != null)
-        {
-            button.onClick.RemoveAllListeners();
-            button.onClick.AddListener(() => onClickAction?.Invoke(item));
-            button.interactable = true;
-        }
+        // 設定顯示與按鈕事件
+        slotUI.SetItem(item, onClickAction);
     }
 
     /// <summary>
-    /// 獲取首個可用的遊戲物件插槽
-    /// 優先返回活躍插槽列表中的第一個元素，
-    /// 若無活躍插槽則返回全部插槽列表中的第一個元素，
-    /// 若兩個列表皆空則返回 null
+    /// 使用物品後，背包自動遞補
     /// </summary>
-    /// <returns>
-    /// 返回找到的首個遊戲物件插槽，若無可用插槽則返回 null
-    /// </returns>
-    //public GameObject GetFirstSlot()
-    //{
-    //    return activeSlots.Count > 0 ? activeSlots[0] : (allSlots.Count > 0 ? allSlots[0] : null);
-    //}
-    public GameObject GetFirstSlot()
+    /// <param name="usedIndex">被使用物品在背包列表的索引</param>
+    /// <param name="items">背包當前物品列表</param>
+    /// <param name="onClickAction">Slot 點擊回調</param>
+    public void RemoveAndShift(int usedIndex, List<ItemData> items, System.Action<ItemData> onClickAction)
     {
-        return allSlots.Count > 0 ? allSlots[0] : null;
+        // 從列表移除已使用物品
+        items.RemoveAt(usedIndex);
+
+        // 重新刷新格子
+        UpdateSlots(items, onClickAction);
     }
+
+    /// <summary>
+    /// 根據 ItemData 找到對應 Slot GameObject
+    /// </summary>
+    /// <param name="item">目標物品</param>
+    /// <returns>對應 Slot GameObject 或 null</returns>
+    public GameObject GetSlotGOByItem(ItemData item)
+    {
+        if (itemsContainer == null || item == null) return null;
+
+        foreach (Transform child in itemsContainer)
+        {
+            var slotUI = child.GetComponent<InventorySlotUI>();
+            if (slotUI != null && slotUI.BoundItem == item)
+                return child.gameObject;
+        }
+
+        return null;
+    }
+
+    /// <summary>
+    /// 取得第一個可選 Slot，用於手柄模式自動選中
+    /// </summary>
+    public InventorySlotUI GetFirstSlot()
+    {
+        return slotUIs.Find(slot => slot.BoundItem != null && slot.BoundItem != InventoryManager.Instance.defaultItem);
+    }
+
+    /// <summary>
+    /// 取得格子對應的 InventorySlotUI
+    /// </summary>
+    public InventorySlotUI GetSlotUI(int index)
+    {
+        if (index >= 0 && index < slotUIs.Count)
+            return slotUIs[index];
+        return null;
+    }
+
+    /// <summary>
+    /// 根據 ItemData 找到對應 SlotUI
+    /// </summary>
+    public InventorySlotUI GetSlotByItem(ItemData item)
+    {
+        if (item == null) return null;
+        return slotUIs.Find(slot => slot.BoundItem == item);
+    }
+
+    // 用來明確取 slot_0(第一個格子)
+    public InventorySlotUI GetSlotByIndex(int index)
+    {
+        if (index >= 0 && index < slotUIs.Count)
+            return slotUIs[index];
+        return null;
+    }
+
 }
