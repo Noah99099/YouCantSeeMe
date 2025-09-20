@@ -25,6 +25,7 @@ public class PasswordLockManager : MonoBehaviour
 
     private string currentInput = "";
     private const int MaxDigits = 4;
+    
 
     private void Awake()
     {
