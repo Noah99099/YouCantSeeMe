@@ -2,13 +2,17 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using System.Collections;
-using Spine;
+using System;
 
 public class InventoryUI : MonoBehaviour
 {
     public static InventoryUI Instance { get; private set; }
 
     [Header("功能：控制背包裡的所有UI，包含開關背包面板。調用{InventoryInputToUI 腳本}")]
+    [Header("Canvas面板")]
+    public GameObject crossHairCanvas;
+    public GameObject uiCanvas;
+
     [Header("UI 元件")]
     public GameObject inventoryPanel; // 整個背包 UI 的面板
     public Transform itemsContainer;  // 用來放置所有物品格子的容器（現在是 InventoryGrid）
@@ -22,14 +26,13 @@ public class InventoryUI : MonoBehaviour
     public int visibleSlots = 16; // Viewport 可視的格子數量
     public float scrollSmoothTime = 0.2f; // 滾動平滑時間
 
-    [Header("格子管理")]
+    [Header("格子管理腳本")]
     public InventorySlotManager slotManager; // 取得管理背包格子的腳本
-    [Header("模型預覽面板")]
+    [Header("模型預覽面板腳本")]
     public ItemDetailUI itemDetailUI;
 
     [Header("交互模式設定")]
     public bool isInteractionMode = false; // 是否為交互模式：使用物件模式用到
-    
     [TextArea(3, 4)] public string tips;
 
     [Header("背包狀態")]
@@ -40,6 +43,10 @@ public class InventoryUI : MonoBehaviour
 
     private ItemData currentSelectedItem = null; // 當前選中的物品
     public ItemData CurrentSelectedItem => currentSelectedItem;
+
+    // SwitchInventoryPageButton腳本接收
+    public event Action OnInventoryOpened;
+    public event Action OnInventoryClosed;
 
     #region ===== 初始化設置 =====
     private void Awake()
@@ -129,6 +136,7 @@ public class InventoryUI : MonoBehaviour
         // 先啟用面板，避免協程報錯
         inventoryPanel.SetActive(true);
         isInventoryVisible = true;
+        OnInventoryOpened?.Invoke(); //通知SwitchInventoryPageButton腳本
 
         currentSelectedItem = null;
         //HideItemDetail();
@@ -144,6 +152,8 @@ public class InventoryUI : MonoBehaviour
         StartCoroutine(SelectFirstSlotNextFrame(restorePreviousSlot));
 
         UIInputManager.Instance?.EnterInventoryMode();
+        crossHairCanvas.SetActive(false); //2個準心畫布關掉
+        uiCanvas.SetActive(false);
         Debug.Log("背包已成功打開");
     }
     // Coroutine 延遲一幀
@@ -173,6 +183,7 @@ public class InventoryUI : MonoBehaviour
 
         inventoryPanel.SetActive(false);
         isInventoryVisible = false;
+        OnInventoryClosed?.Invoke(); //通知SwitchInventoryPageButton腳本
 
         InventoryManager.Instance?.ItemDetailUI?.ClearPreview();
         //if (useItemButton != null) useItemButton.gameObject.SetActive(false);
@@ -180,6 +191,8 @@ public class InventoryUI : MonoBehaviour
         useItemButton?.gameObject.SetActive(false);
 
         UIInputManager.Instance?.EnterGameplayMode();
+        crossHairCanvas.SetActive(true); //2個準心畫布打開
+        uiCanvas.SetActive(true);
         Debug.Log("背包已成功關閉");
     }
     #endregion
@@ -253,7 +266,7 @@ public class InventoryUI : MonoBehaviour
     }
     #endregion
 
-    #region ===== 按鈕事件 =====
+    #region ===== 按鈕事件：使用物品、預覽物品 =====
     /// <summary>
     /// 預覽物件模型按鈕事件方法
     /// </summary>
