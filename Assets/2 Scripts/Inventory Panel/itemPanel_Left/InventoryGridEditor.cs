@@ -14,7 +14,7 @@ public class InventoryGridEditor : MonoBehaviour
     [Header("璉砞竚")]
     public GameObject slotPrefab; // 箇籹砰
     public int slotCount = 40; // 计秖
-    public int columns = 8; // –︽计
+    public int columns = 8; // –绢︽计
     public float spacing = 10f; // 丁禯
 
     [Header("把σ舱ン")]
