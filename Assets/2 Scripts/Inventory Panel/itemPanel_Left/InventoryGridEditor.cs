@@ -1,235 +1,132 @@
 using UnityEngine;
 using UnityEngine.UI;
 using System.Collections.Generic;
-using System;
-
 
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
 
 [ExecuteInEditMode]
+[RequireComponent(typeof(GridLayoutGroup))] // ç¢ºä¿ç‰©ä»¶ä¸Šä¸€å®šæœ‰ GridLayoutGroup
 public class InventoryGridEditor : MonoBehaviour
 {
-    [Header("­I¥]®æ¤l³]¸m")]
-    public GameObject slotPrefab; // ®æ¤l¹w»sÅé
-    public int slotCount = 40; // ®æ¤l¼Æ¶q
-    public int columns = 8; // ¨C¾î¦æ¼Æ
-    public float spacing = 10f; // ¶¡¶Z
+    [Header("èƒŒåŒ…æ ¼å­è¨­ç½®")]
+    [SerializeField] private GameObject slotPrefab; // æ ¼å­é è£½é«”
+    [SerializeField, Range(0, 500)] private int slotCount = 40; // æ ¼å­æ•¸é‡
+    [SerializeField] private int columns = 8; // æ¯æ©«è¡Œæ•¸
+    [SerializeField] private float spacing = 10f; // é–“è·
 
-    [Header("°Ñ¦Ò²Õ¥ó")]
-    public RectTransform contentRect; // Content ªº RectTransform
-    public GridLayoutGroup gridLayout; // ºô®æ§G§½²Õ¥ó
+    // ç§»é™¤ contentRectï¼Œå‡è¨­æ­¤è…³æœ¬å°±åœ¨ Content ç‰©ä»¶ä¸Š
+    private RectTransform gridRect;
+    private GridLayoutGroup gridLayout;
 
-    [Header("¥¬§½³]¸m")]
-    public bool autoSetupAnchors = true; // ¦Û°Ê³]¸mAnchor
-
-    private List<GameObject> currentSlots = new List<GameObject>(); // ·í«e®æ¤l¦Cªí
-    private int lastSlotCount = 0; // ¤W¤@¦¸ªº®æ¤l¼Æ¶q
-
+    // ä¸å†éœ€è¦ lastSlotCountï¼ŒOnValidate èƒ½è™•ç†æ‰€æœ‰è®Šæ›´
+    
+    // Awake åƒ…åœ¨ Play Mode ä¸­åŸ·è¡Œä¸€æ¬¡åˆå§‹åŒ–ï¼Œç¢ºä¿åŸ·è¡Œæ™‚ç‹€æ…‹æ­£ç¢º
     void Awake()
     {
-        // ¦Û°ÊÀò¨ú¥²­nªº²Õ¥ó
-        if (gridLayout == null)
-            gridLayout = GetComponent<GridLayoutGroup>();
-
-        //if (contentRect == null && transform.parent != null)
-        //    contentRect = transform.parent.GetComponent<RectTransform>();
-
-        if (Application.isPlaying && transform.childCount != slotCount)
+        if (Application.isPlaying)
         {
+            // éŠæˆ²åŸ·è¡Œæ™‚ï¼Œä»¥ Inspector çš„è¨­å®šç‚ºæœ€çµ‚ä¾æ“šï¼Œå¼·åˆ¶æ›´æ–°ä¸€æ¬¡
             UpdateGrid();
-            lastSlotCount = slotCount;
         }
     }
 
+    // OnValidate æ˜¯è™•ç†ç·¨è¼¯å™¨ä¸­æ•¸å€¼è®Šæ›´æœ€ç†æƒ³çš„åœ°æ–¹
     void OnValidate()
     {
-#if UNITY_EDITOR
-        if (!Application.isPlaying && lastSlotCount != slotCount)
+        // OnValidate æœƒåœ¨ Awake å‰åŸ·è¡Œï¼Œæ‰€ä»¥ç”¨ EditorApplication.delayCallç¢ºä¿çµ„ä»¶ç²å–å®Œæˆå¾Œå†æ›´æ–°
+        // é€™ä¹Ÿé¿å…äº†åœ¨ Prefab ç·¨è¼¯æ¨¡å¼ä¸‹çš„ä¸€äº›å•é¡Œ
+        #if UNITY_EDITOR
+        UnityEditor.EditorApplication.delayCall += () =>
         {
-            UpdateGrid();
-            lastSlotCount = slotCount;
-        }
-#endif
-    }
-
-    void Update()
-    {
-        // ½s¿è¼Ò¦¡¤U«ùÄòÀË¬d¬O§_»İ­n§ó·s
-#if UNITY_EDITOR
-        if (!Application.isPlaying && lastSlotCount != slotCount)
-        {
-            UpdateGrid();
-            lastSlotCount = slotCount;
-        }
-#endif
-    }
-
-    private void ClearAllSlots()
-    {
-#if UNITY_EDITOR
-        if (!Application.isPlaying)
-        {
-            // ©µ¿ğ¨ì¤U¤@´V¦A§R¡AÁ×§K OnValidate ª½±µ DestroyImmediate ³ø¿ù
-            UnityEditor.EditorApplication.delayCall += () =>
+            if (this != null && gameObject != null) // ç¢ºä¿ç‰©ä»¶æœªè¢«éŠ·æ¯€
             {
-                for (int i = transform.childCount - 1; i >= 0; i--)
-                {
-                    if (transform.GetChild(i) != null)
-                        DestroyImmediate(transform.GetChild(i).gameObject);
-                }
-            };
-        }
-        else
-        {
-            for (int i = transform.childCount - 1; i >= 0; i--)
-            {
-                if (transform.GetChild(i) != null)
-                    Destroy(transform.GetChild(i).gameObject);
+                UpdateGrid();
             }
-        }
-#else
-    for (int i = transform.childCount - 1; i >= 0; i--)
-    {
-        if (transform.GetChild(i) != null)
-            Destroy(transform.GetChild(i).gameObject);
-    }
-#endif
-
-        currentSlots.Clear();
+        };
+        #endif
     }
 
-    void UpdateGrid()
+    // å…¬é–‹æ–¹æ³•ï¼Œä¾›å¤–éƒ¨æˆ–æŒ‰éˆ•èª¿ç”¨
+    public void UpdateGrid()
     {
-        // ½T«O¦³ºô®æ§G§½²Õ¥ó
-        if (gridLayout == null)
+        // --- 1. åˆå§‹åŒ–èˆ‡ç²å–çµ„ä»¶ ---
+        if (gridRect == null) gridRect = GetComponent<RectTransform>();
+        if (gridLayout == null) gridLayout = GetComponent<GridLayoutGroup>();
+        
+        if (slotPrefab == null)
         {
-            gridLayout = GetComponent<GridLayoutGroup>();
-            if (gridLayout == null)
-            {
-                gridLayout = gameObject.AddComponent<GridLayoutGroup>();
-            }
+            // å¦‚æœ slotPrefab ç‚ºç©ºï¼Œå‰‡ä¸åŸ·è¡Œä»»ä½•æ“ä½œï¼Œé¿å…å ±éŒ¯
+            // åœ¨ Custom Inspector ä¸­å¯ä»¥æ·»åŠ æç¤º
+            return;
         }
 
-        // ³]¸mºô®æ§G§½
+        // --- 2. è¨­ç½®ç¶²æ ¼ä½ˆå±€ ---
         gridLayout.spacing = new Vector2(spacing, spacing);
         gridLayout.constraint = GridLayoutGroup.Constraint.FixedColumnCount;
         gridLayout.constraintCount = columns;
 
-        // --- ¦Û°Ê³]¸mAnchor ---
-        if (autoSetupAnchors)
-        {
-            SetupContentAnchors();
-        }
+        SetupGridAnchors();
 
-        // --- ½Õ¾ã®æ¤l¼Æ¶q ---
-        // ¦pªG¤lª«¥ó¤ñ slotCount ¦h¡A§R±¼¦hªº
-        while (transform.childCount > slotCount)
-        {
-#if UNITY_EDITOR
-            if (!Application.isPlaying)
-                DestroyImmediate(transform.GetChild(transform.childCount - 1).gameObject);
-            else
-                Destroy(transform.GetChild(transform.childCount - 1).gameObject);
-#else
-        Destroy(transform.GetChild(transform.childCount - 1).gameObject);
-#endif
-        }
+        // --- 3. èª¿æ•´æ ¼å­æ•¸é‡ ---
+        int currentChildCount = transform.childCount;
+        int difference = slotCount - currentChildCount;
 
-        // ¦pªG¤lª«¥ó¤ñ slotCount ¤Ö¡A¸É»ô
-        while (transform.childCount < slotCount)
+        if (difference > 0) // éœ€è¦å¢åŠ æ ¼å­
         {
-            if (slotPrefab != null)
+            for (int i = 0; i < difference; i++)
             {
                 GameObject slot = Instantiate(slotPrefab, transform);
-                slot.name = $"Slot_{transform.childCount -1}";
-
-                // ³]¸m¬°ªÅª¬ºA
-                Image itemIcon = slot.transform.Find("ItemIcon")?.GetComponent<Image>();
-                if (itemIcon != null)
-                {
-                    itemIcon.enabled = true;
-                }
+                slot.name = $"{slotPrefab.name}_{currentChildCount + i}";
             }
         }
-
-        // §ó·s Content ¤j¤p
-        UpdateContentSize();
-        // ­«¸mºu°Ê¦ì¸m¨ì³»³¡
-        ResetScrollPosition();
-
-        Debug.Log($"§ó·s­I¥]®æ¤l¼Æ¶q: {slotCount}");
-    }
-
-    /// <summary>
-    /// ³]¸mContentªºAnchor¥H½T«O¥¿½T¥¬§½
-    /// </summary>
-    private void SetupContentAnchors()
-    {
-        //if (contentRect == null) return;
-
-        //// ³]¸mContentªºAnchor¬°Top-Left
-        //contentRect.anchorMin = new Vector2(0, 1); // Top-Left
-        //contentRect.anchorMax = new Vector2(0, 1); // Top-Left
-        //contentRect.pivot = new Vector2(0, 1);     // Top-Left
-        //contentRect.anchoredPosition = Vector2.zero;
-
-        // ³]¸mInventoryGridªºAnchor
-        RectTransform gridRect = GetComponent<RectTransform>();
-        if (gridRect != null)
+        else if (difference < 0) // éœ€è¦åˆªé™¤æ ¼å­
         {
-            gridRect.anchorMin = new Vector2(0, 1); // Top-Left
-            gridRect.anchorMax = new Vector2(0, 1); // Top-Left
-            gridRect.pivot = new Vector2(0, 1);     // Top-Left
+            for (int i = 0; i < -difference; i++)
+            {
+                // åœ¨ç·¨è¼¯æ¨¡å¼ä¸‹ä½¿ç”¨ DestroyImmediateï¼Œåœ¨åŸ·è¡Œæ¨¡å¼ä¸‹ä½¿ç”¨ Destroy
+                GameObject toDestroy = transform.GetChild(transform.childCount - 1).gameObject;
+                #if UNITY_EDITOR
+                    if(!Application.isPlaying)
+                        DestroyImmediate(toDestroy);
+                    else
+                        Destroy(toDestroy);
+                #else
+                    Destroy(toDestroy);
+                #endif
+            }
         }
-
-        Debug.Log("¤w¦Û°Ê³]¸mAnchor¬°Top-Left¥¬§½");
+        
+        // --- 4. æ›´æ–° UI ä½ˆå±€ ---
+        // åœ¨ä¸‹ä¸€å¹€æ›´æ–°ä½ˆå±€ï¼Œç¢ºä¿ ContentSizeFitter (å¦‚æœæœ‰) èƒ½æ­£ç¢ºè¨ˆç®—å¤§å°
+        LayoutRebuilder.MarkLayoutForRebuild(gridRect);
+        ResetScrollPosition();
     }
-
-    /// <summary>
-    /// §ó·s Content ªº¤j¤p¥H¾AÀ³©Ò¦³®æ¤l
-    /// </summary>
-    private void UpdateContentSize()
+    
+    private void SetupGridAnchors()
     {
-        if (contentRect == null || gridLayout == null) return;
-
-        // ­pºâ»İ­nªº¦æ¼Æ
-        int rows = Mathf.CeilToInt((float)slotCount / columns);
-
-        // ­pºâ Content ªº°ª«×
-        float cellHeight = gridLayout.cellSize.y;
-        float totalHeight = rows * cellHeight + (rows - 1) * gridLayout.spacing.y;
-
-        // ³]¸m Content ªº¤j¤p
-        //contentRect.sizeDelta = new Vector2(contentRect.sizeDelta.x, totalHeight);
-
-        //// ½T«O Content ªºÁãÂI³]¸m¥¿½T
-        //contentRect.anchorMin = new Vector2(0, 1); // ¥ª¤W¨¤
-        //contentRect.anchorMax = new Vector2(0, 1); // ¥ª¤W¨¤
-        //contentRect.pivot = new Vector2(0, 1); // ¥ª¤W¨¤
+        // å‡è¨­é€™å€‹è…³æœ¬æ›åœ¨ Content ç‰©ä»¶ä¸Šï¼Œå°‡å…¶éŒ¨é»è¨­ç‚ºå·¦ä¸Šè§’å°é½Š
+        // é€™å° ScrollView ä¸‹çš„ Content ä½ˆå±€å¾ˆé‡è¦
+        gridRect.anchorMin = new Vector2(0, 1);
+        gridRect.anchorMax = new Vector2(0, 1);
+        gridRect.pivot = new Vector2(0.5f, 1); // é€šå¸¸ pivot x=0.5, y=1 æ•ˆæœæ›´å¥½
     }
 
-    // ²K¥[­«¸mºu°Ê¦ì¸mªº¤èªk
     private void ResetScrollPosition()
     {
-        if (contentRect != null && contentRect.parent != null)
+        // å˜—è©¦æ‰¾åˆ°çˆ¶ç‰©ä»¶çš„ ScrollRect ä¸¦å°‡å…¶æ»¾å‹•ä½ç½®é‡è¨­åˆ°é ‚éƒ¨
+        if (transform.parent != null)
         {
-            ScrollRect scrollRect = contentRect.parent.GetComponent<ScrollRect>();
+            ScrollRect scrollRect = GetComponentInParent<ScrollRect>();
             if (scrollRect != null)
             {
-                scrollRect.verticalNormalizedPosition = 1f; // ³]¸m¬°³»³¡
+                scrollRect.verticalNormalizedPosition = 1f;
             }
         }
     }
-
-    // ¦bInspector¤¤²K¥[¤@­Ó«ö¶s¨Ó¤â°Ê§ó·sºô®æ
-    [ContextMenu("§ó·s­I¥]®æ¤l")]
-    public void UpdateGridManual() // ±N¦¹¤èªk§ï¬° public
-    {
-        UpdateGrid();
-    }
 }
+
 
 #if UNITY_EDITOR
 [CustomEditor(typeof(InventoryGridEditor))]
@@ -237,31 +134,31 @@ public class InventoryGridEditorInspector : Editor
 {
     public override void OnInspectorGUI()
     {
+        // ç¹ªè£½é è¨­çš„ Inspector ä»‹é¢
         DrawDefaultInspector();
 
-        InventoryGridEditor editor = (InventoryGridEditor)target;
+        InventoryGridEditor editorScript = (InventoryGridEditor)target;
 
-        // ¦Û°Ê¤À°t«ö¶s
-        if (GUILayout.Button("¦Û°Ê¤À°t²Õ¥ó"))
+        // å¦‚æœ slotPrefab æœªè¢«æŒ‡æ´¾ï¼Œé¡¯ç¤ºä¸€å€‹è­¦å‘Šæ¡†
+        SerializedProperty slotPrefabProp = serializedObject.FindProperty("slotPrefab");
+        if (slotPrefabProp.objectReferenceValue == null)
         {
-            if (editor.gridLayout == null)
-                editor.gridLayout = editor.GetComponent<GridLayoutGroup>();
-
-            //if (editor.contentRect == null && editor.transform.parent != null)
-            //    editor.contentRect = editor.transform.parent.GetComponent<RectTransform>();
-
-            EditorUtility.SetDirty(editor);
+            EditorGUILayout.HelpBox("è«‹æŒ‡æ´¾ Slot Prefab ä»¥ç”Ÿæˆæ ¼å­ã€‚", MessageType.Warning);
         }
 
-        if (GUILayout.Button("§ó·s­I¥]®æ¤l"))
+        EditorGUILayout.Space();
+
+        if (GUILayout.Button("å¼·åˆ¶æ›´æ–°èƒŒåŒ…æ ¼å­"))
         {
-            editor.UpdateGridManual();
+            editorScript.UpdateGrid();
         }
 
-        if (GUILayout.Button("²M°£©Ò¦³®æ¤l"))
+        if (GUILayout.Button("æ¸…é™¤æ‰€æœ‰æ ¼å­"))
         {
-            editor.slotCount = 0;
-            editor.UpdateGridManual();
+            // é€šéä¿®æ”¹ SerializedObject ä¾†è§¸ç™¼ OnValidate ä¸¦æ”¯æŒæ’¤éŠ·æ“ä½œ
+            SerializedProperty slotCountProp = serializedObject.FindProperty("slotCount");
+            slotCountProp.intValue = 0;
+            serializedObject.ApplyModifiedProperties(); // æ‡‰ç”¨ä¿®æ”¹
         }
     }
 }
