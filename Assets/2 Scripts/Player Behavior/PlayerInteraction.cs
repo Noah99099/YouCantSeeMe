@@ -22,7 +22,7 @@ public class PlayerInteraction : MonoBehaviour
     private Camera playerCamera;
     
     private GameObject currentInteractableObject = null;
-    private InteractableObject currentInteractable; // 用於存儲當前可交互物件
+    private InteractableObject currentInteractable; // 用於存儲當前可交互物件 腳本
 
     private void Awake()
     {
@@ -123,6 +123,16 @@ public class PlayerInteraction : MonoBehaviour
                 }
                 return;
             }
+            else if (currentInteractableObject.TryGetComponent<InteractableVoice>(out var voice)) // 檢查是否是 InteractableVoice（需聲音物品的交互物件）
+            {
+                //currentInteractable = interactable;
+                if (pickupPromptText != null)
+                {
+                    pickupPromptText.text = $"按 [滑鼠左鍵] 與 {voice.objectName} 交互";
+                    pickupPromptText.gameObject.SetActive(true);
+                }
+                return;
+            }
         }
 
         HidePrompt();
@@ -141,11 +151,17 @@ public class PlayerInteraction : MonoBehaviour
         {
             GameObject hitObject = hit.collider.gameObject;
 
-            if (hitObject.TryGetComponent<InteractableItem>(out var itemToPickUp)) //獲得物件
+            if (hitObject.TryGetComponent<InteractableItem>(out var itemToPickUp)) //獲得物件，進物品背包
             {
                 Debug.Log($"Picked up: {itemToPickUp.itemData.itemName}");
                 InventoryManager.Instance.AddItem(itemToPickUp.itemData);
                 Destroy(hitObject);
+                HidePrompt();
+            }
+            else if (hitObject.TryGetComponent<InteractableVoice>(out var voiceItem)) //獲得物件，進聲音背包
+            {
+                Debug.Log($"Pressed button: {voiceItem.objectName}");
+                voiceItem.Interact();
                 HidePrompt();
             }
             else if (hitObject.TryGetComponent<PasswordButton>(out var button)) //密碼鎖
