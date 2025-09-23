@@ -133,6 +133,15 @@ public class PlayerInteraction : MonoBehaviour
                 }
                 return;
             }
+            else if (currentInteractableObject.TryGetComponent<InteractableRole>(out var role)) // 檢查是否是 InteractableRole（解鎖 Carousel）
+            {
+                if (pickupPromptText != null)
+                {
+                    pickupPromptText.text = $"按 [滑鼠左鍵] 與 {role.objectName} 交互";
+                    pickupPromptText.gameObject.SetActive(true);
+                }
+                return;
+            }
         }
 
         HidePrompt();
@@ -162,6 +171,12 @@ public class PlayerInteraction : MonoBehaviour
             {
                 Debug.Log($"Pressed button: {voiceItem.objectName}");
                 voiceItem.Interact();
+                HidePrompt();
+            }
+            else if (hitObject.TryGetComponent<InteractableRole>(out var roleUnlock)) //獲得個別Role的Carousel
+            {
+                Debug.Log($"與 {roleUnlock.objectName} 交互 → 解鎖 Carousel");
+                roleUnlock.Interact();
                 HidePrompt();
             }
             else if (hitObject.TryGetComponent<PasswordButton>(out var button)) //密碼鎖

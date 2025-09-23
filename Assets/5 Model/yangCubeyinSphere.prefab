@@ -13,14 +13,13 @@ GameObject:
   - component: {fileID: 5462053105041970689}
   - component: {fileID: 2209655156461898757}
   - component: {fileID: -2441982105872420586}
-  - component: {fileID: -5857376311044491883}
   - component: {fileID: -8506524830033822527}
   m_Layer: 3
   m_Name: yangCubeyinSphere
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &6944131342881745911
 Transform:
@@ -131,19 +130,6 @@ CapsuleCollider:
   m_Height: 1
   m_Direction: 1
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &-5857376311044491883
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4041554916608328734}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b4d06a04543aaca4d8ba109f4044dad6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  itemData: {fileID: 11400000, guid: 8d01f8a8badafed4f93747131927a113, type: 2}
 --- !u!114 &-8506524830033822527
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -156,6 +142,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 778196790939939438401f4c7638ef89, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  objectID: level1_cube
   visibleInYang: 1
   visibleInYin: 0
   interactiveInYang: 1
@@ -164,3 +151,5 @@ MonoBehaviour:
   yinMesh: {fileID: 10208, guid: 0000000000000000e000000000000000, type: 0}
   yangCollider: {fileID: 2209655156461898757}
   yinCollider: {fileID: -2441982105872420586}
+  yangMaterial: {fileID: 2100000, guid: 4198834217d71be4b9f7cc87f02695e5, type: 2}
+  yinMaterial: {fileID: 2100000, guid: 0600e7c123a10034eb9b6aa957a26c3e, type: 2}
