@@ -7,6 +7,9 @@ public class TeleportTrigger : MonoBehaviour
 
     [Tooltip("場景加載器（SceneLoader）物件")]
     public SceneLoader sceneLoader;
+    
+    [Tooltip("下一個場景名稱")]
+    public string sceneName;
 
     private void OnTriggerEnter(Collider other)
     {
@@ -22,7 +25,7 @@ public class TeleportTrigger : MonoBehaviour
             // 呼叫 SceneLoader 載入場景
             if (sceneLoader != null)
             {
-                sceneLoader.LoadScene();
+                sceneLoader.LoadScene(sceneName);
             }
             else
             {

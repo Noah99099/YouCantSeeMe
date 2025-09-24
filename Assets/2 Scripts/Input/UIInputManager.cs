@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 
 [DefaultExecutionOrder(-10)] // 確保此腳本優先初始化
 public class UIInputManager : MonoBehaviour
@@ -161,6 +162,15 @@ public class UIInputManager : MonoBehaviour
     public void EnterGameplayMode() //玩家模式
     {
         if (IsInPlayerMode) return;
+
+        Debug.Log("[UIInputManager] 切換到玩家模式中，檢查背包狀態"); //0924新增
+        // 強制關閉所有UI面板
+        if (InventoryUI.Instance != null && InventoryUI.Instance.isInventoryVisible)
+        {
+            Debug.Log("[UIInputManager] 檢測到背包未關閉，強制關閉");
+            InventoryUI.Instance.CloseInventory();
+        }
+
         DisableAllMaps();
         PlayerControls.Player.Enable();
         SetModeFlags(isPlayer: true);

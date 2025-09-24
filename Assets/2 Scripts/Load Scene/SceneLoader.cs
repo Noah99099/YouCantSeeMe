@@ -5,6 +5,7 @@ using System.Collections;
 public class SceneLoader : MonoBehaviour
 {
     //public static SceneLoader Instance;
+    public static SceneLoader Instance { get; private set; }
 
     [Header("黑幕與轉場設定")]
     public GameObject loadingPanel;
@@ -15,6 +16,23 @@ public class SceneLoader : MonoBehaviour
     [Header("要加載的場景名稱（已加入 Build Settings）")]
     public string sceneToLoad = "type me";
 
+    private void Awake()
+    {
+        if (Instance == null)
+        {
+            Instance = this;
+            DontDestroyOnLoad(gameObject); // 跨場景保存
+
+            // 初始化設定
+            if (loadingPanel != null)
+                loadingPanel.SetActive(false);
+        }
+        else
+        {
+            Destroy(gameObject); // 如果已經存在，銷毀重複的
+        }
+    }
+
     private void OnEnable()
     {
         SceneManager.sceneLoaded += OnSceneLoaded;
@@ -24,10 +42,40 @@ public class SceneLoader : MonoBehaviour
     {
         SceneManager.sceneLoaded -= OnSceneLoaded;
     }
-
-    public void LoadScene()
+    // 加上 OnDestroy 確保清理
+    private void OnDestroy()
     {
-        StartCoroutine(LoadSceneRoutine(sceneToLoad));
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+
+    public void LoadScene(string sceneName) //// 0924 靜態方法方便呼叫
+    {
+        if (Instance != null)
+        {
+            Instance.StartCoroutine(Instance.LoadSceneRoutine(sceneName));
+        }
+        else
+        {
+            // 如果 Instance 不存在，自動建立
+            CreateInstance();
+            Instance.StartCoroutine(Instance.LoadSceneRoutine(sceneName)); // 修正遞迴問題
+        }
+    }
+
+    private static void CreateInstance()
+    {
+        // 從 Resources 載入預製物
+        GameObject loaderPrefab = Resources.Load<GameObject>("SceneLoader");
+        if (loaderPrefab != null)
+        {
+            Instantiate(loaderPrefab);
+        }
+        else
+        {
+            // 或者動態建立
+            GameObject go = new GameObject("SceneLoader");
+            go.AddComponent<SceneLoader>();
+        }
     }
 
     private IEnumerator LoadSceneRoutine(string sceneName)
@@ -58,6 +106,7 @@ public class SceneLoader : MonoBehaviour
         yield return new WaitForSeconds(0.1f);
 
         yield return StartCoroutine(FadeOut());
+        loadingPanel.SetActive(false);
     }
 
     private IEnumerator FadeIn()
@@ -89,7 +138,7 @@ public class SceneLoader : MonoBehaviour
 
         loadingCanvasGroup.alpha = 0f;
         
-        Destroy(this.gameObject); // 刪除自己
+        //Destroy(this.gameObject); // 刪除自己
     }
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
@@ -120,6 +169,7 @@ public class SceneLoader : MonoBehaviour
             yield return null;
         }
 
+        yield return StartCoroutine(FadeOut()); // 加入淡出 0924
         // 直接使用 LoadScene（會清除整個場景內容）
         SceneManager.LoadScene(startSceneName);
 

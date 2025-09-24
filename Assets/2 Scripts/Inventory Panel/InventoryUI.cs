@@ -1,6 +1,5 @@
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.EventSystems;
 using System.Collections;
 using System;
 
@@ -51,8 +50,17 @@ public class InventoryUI : MonoBehaviour
     #region ===== 初始化設置 =====
     private void Awake()
     {
-        if (Instance == null) Instance = this;
-        else { Destroy(gameObject); return; }
+        // 單例模式 + 跨場景存活
+        if (Instance == null)
+        {
+            Instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
+        else
+        {
+            Destroy(gameObject);
+            return;
+        }
 
         // 嘗試取得 InventorySlotManager 腳本
         slotManager = GetComponent<InventorySlotManager>();
@@ -167,7 +175,7 @@ public class InventoryUI : MonoBehaviour
 
         if (firstSlot != null)
         {
-            InventorySelection.Instance.SetSelected(firstSlot.gameObject);
+            //InventorySelection.Instance.SetSelected(firstSlot.gameObject);
             SetCurrentSelectedItem(firstSlot.BoundItem);
         }
     }
@@ -180,16 +188,31 @@ public class InventoryUI : MonoBehaviour
     public void CloseInventory() //關閉背包面板
     {
         if (!isInventoryVisible || inventoryPanel == null) return;
+        Debug.Log($"[InventoryUI] 開始關閉背包，預覽面板狀態: {itemDetailUI?.modelPreviewPanel?.activeSelf}");
+
+        // 0924新增 強制關閉所有子面板
+        if (itemDetailUI != null)
+        {
+            // 直接關閉預覽面板，不經過複雜邏輯
+            if (itemDetailUI.modelPreviewPanel != null)
+                itemDetailUI.modelPreviewPanel.SetActive(false);
+
+            itemDetailUI.ClearPreview();
+        }
 
         inventoryPanel.SetActive(false);
         isInventoryVisible = false;
         OnInventoryClosed?.Invoke(); //通知SwitchInventoryPageButton腳本
 
-        InventoryManager.Instance?.ItemDetailUI?.ClearPreview();
+        // 0924 清空當前選中物品
+        currentSelectedItem = null;
+
+        //InventoryManager.Instance?.ItemDetailUI?.ClearPreview();
         //if (useItemButton != null) useItemButton.gameObject.SetActive(false);
         //isInteractionMode = false;
-        useItemButton?.gameObject.SetActive(false);
+        useItemButton?.gameObject.SetActive(false); // 重置UI狀態
 
+        // 統一在這裡切換到遊戲模式
         UIInputManager.Instance?.EnterGameplayMode();
         crossHairCanvas.SetActive(true); //2個準心畫布打開
         uiCanvas.SetActive(true);
@@ -212,7 +235,7 @@ public class InventoryUI : MonoBehaviour
         if (InputDeviceManager.Instance?.CurrentInputType == InputDeviceManager.InputType.Gamepad)
         {
             var slotUI = slotManager?.GetSlotByItem(currentSelectedItem);
-            if (slotUI != null) InventorySelection.Instance?.SetSelected(slotUI.gameObject);
+            //if (slotUI != null) InventorySelection.Instance?.SetSelected(slotUI.gameObject);
         }
 
         // 更新右側詳情面板文字（InventoryManager）
@@ -262,7 +285,9 @@ public class InventoryUI : MonoBehaviour
     /// </summary>
     private void HideItemDetail()
     {
-        InventoryManager.Instance?.ItemDetailUI?.HideItemDetail();
+        //應該是調錯方法導致Player還能ModelPreview
+        //InventoryManager.Instance?.ItemDetailUI?.HideItemDetail();
+        InventoryManager.Instance?.ItemDetailUI?.ClosePreviewAndReturnToInventory();
     }
     #endregion
 

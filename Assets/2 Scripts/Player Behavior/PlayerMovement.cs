@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 
 public class PlayerMovement : MonoBehaviour
 {
@@ -25,6 +26,22 @@ public class PlayerMovement : MonoBehaviour
 
         // 獲取 UIInputManager 引用
         uiInputManager = UIInputManager.Instance;
+
+        // 0924訂閱場景加載事件
+        SceneManager.sceneLoaded += OnSceneLoaded;
+    }
+    void OnDestroy()
+    {
+        // 取消訂閱避免記憶體洩漏
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+
+    }
+
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        // 場景加載後強制重新啟用腳本
+        this.enabled = true;
+        Debug.Log($"場景加載完成，強制啟用 PlayerMovement: {this.enabled}");
     }
 
     private void FixedUpdate()

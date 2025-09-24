@@ -146,7 +146,7 @@ public class MainMenuController : MonoBehaviour
         SceneLoader loader = FindObjectOfType<SceneLoader>();
         if (loader != null)
         {
-            loader.LoadScene();
+            loader.LoadScene("Level1");
         }
         else
         {

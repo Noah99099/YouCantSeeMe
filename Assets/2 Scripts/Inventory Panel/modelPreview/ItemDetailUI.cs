@@ -68,11 +68,16 @@ public class ItemDetailUI : MonoBehaviour
     /// </summary>
     public void ClosePreviewAndReturnToInventory()
     {
+        Debug.Log("[ItemDetailUI] ClosePreviewAndReturnToInventory called");
+
         HideItemDetail();
         ClearPreview();
 
         // 重新打開背包並切回 Inventory 模式
-        InventoryUI.Instance?.OpenInventoryPublic();
-        UIInputManager.Instance?.EnterInventoryMode();
+        //InventoryUI.Instance?.OpenInventoryPublic();
+        //UIInputManager.Instance?.EnterInventoryMode();
+
+        // 只切換到背包模式，不重新打開背包
+        // UIInputManager.Instance?.EnterInventoryMode(); // 這行移除，讓調用者處理模式切換
     }
 }

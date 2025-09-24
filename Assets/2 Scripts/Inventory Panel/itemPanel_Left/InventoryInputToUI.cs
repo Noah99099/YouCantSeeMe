@@ -70,7 +70,7 @@ public class InventoryInputToUI : MonoBehaviour
             var firstSlot = slotManager?.GetFirstSlot();
             if (firstSlot != null && InventorySelection.Instance != null)
             {
-                InventorySelection.Instance.SetSelected(firstSlot.gameObject);
+                //InventorySelection.Instance.SetSelected(firstSlot.gameObject);
             }
         }
         else
@@ -174,19 +174,34 @@ public class InventoryInputToUI : MonoBehaviour
         canToggleInventory = true;
     }
 
-    private void OnCloseInventory(InputAction.CallbackContext context)
+    private void OnCloseInventory(InputAction.CallbackContext context) //0924修改
     {
-        if (itemDetailUI != null && itemDetailUI.modelPreviewPanel.activeSelf)
+        Debug.Log($"[InventoryInputToUI] OnCloseInventory called - InventoryVisible: {inventoryUI?.isInventoryVisible}, PreviewActive: {itemDetailUI?.modelPreviewPanel?.activeSelf}");
+        //if (itemDetailUI != null && itemDetailUI.modelPreviewPanel.activeSelf)
+        //{
+        //    itemDetailUI.HideItemDetail();
+        //    return;
+        //}
+        //if (inventoryUI == null) return;
+
+        //inventoryUI.CloseInventory();
+        //UIInputManager.Instance?.EnterGameplayMode();
+
+        // 理論上不該出現的情況1：預覽面板開啟時，關閉預覽面板
+        if (itemDetailUI != null && itemDetailUI.modelPreviewPanel != null &&
+            itemDetailUI.modelPreviewPanel.activeSelf)
         {
-            itemDetailUI.HideItemDetail();
+            itemDetailUI.ClosePreviewAndReturnToInventory();
+            UIInputManager.Instance?.EnterInventoryMode(); // 確保回到背包模式
             return;
         }
 
-        if (inventoryUI == null) return;
-
-        inventoryUI.CloseInventory();
-
-        UIInputManager.Instance?.EnterGameplayMode();
+        // 情況2：只有背包面板開啟時，關閉整個背包
+        if (inventoryUI != null && inventoryUI.isInventoryVisible)
+        {
+            inventoryUI.CloseInventory();
+            // 不要在這裡調用 EnterGameplayMode，讓InventoryUI腳本的CloseInventory 統一處理
+        }
     }
     #endregion
 
@@ -206,8 +221,8 @@ public class InventoryInputToUI : MonoBehaviour
         var item = InventoryUI.Instance.CurrentSelectedItem;
         if (item == null) return;
 
-        var slotUI = slotManager.GetSlotByItem(item);
-        if (slotUI == null) return;
+        //var slotUI = slotManager.GetSlotByItem(item); //0924 這一句是讓預覽面板跳出的兇手
+        //if (slotUI == null) return;
 
         InventoryManager.Instance.ItemDetailUI.ShowModelPreview(item);
         UIInputManager.Instance?.EnterModelPreviewMode();
@@ -281,7 +296,7 @@ public class InventoryInputToUI : MonoBehaviour
         if (selectableButtons.Count > 0)
         {
             currentSelectedIndex = 0;
-            InventorySelection.Instance.SetSelected(selectableButtons[currentSelectedIndex].gameObject);
+            //InventorySelection.Instance.SetSelected(selectableButtons[currentSelectedIndex].gameObject);
 
             // 更新右側詳情
             var slotUI = selectableButtons[currentSelectedIndex].GetComponent<InventorySlotUI>();
@@ -353,7 +368,7 @@ public class InventoryInputToUI : MonoBehaviour
         currentSelectedIndex = index;
         var slotGO = selectableButtons[currentSelectedIndex].gameObject;
 
-        InventorySelection.Instance.SetSelected(slotGO);
+        //InventorySelection.Instance.SetSelected(slotGO);
 
         var slotUI = slotGO.GetComponent<InventorySlotUI>();
         if (slotUI != null)

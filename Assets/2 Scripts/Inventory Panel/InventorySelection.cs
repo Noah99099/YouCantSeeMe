@@ -27,24 +27,29 @@ public class InventorySelection : MonoBehaviour
     /// <summary>
     /// 設定當前選中的 UI 物件，但會根據輸入類型判斷。
     /// </summary>
-    public void SetSelected(GameObject target)
-    {
-        if (target == null) return;
+    //public void SetSelected(GameObject target)
+    //{
+    //    // 添加空值檢查
+    //    if (target == null)
+    //    {
+    //        Debug.LogWarning("SetSelected: target 為 null，忽略選擇操作");
+    //        return;
+    //    }
 
-        // 如果已經選中同一個物件，不重複設置
-        if (EventSystem.current.currentSelectedGameObject == target) return;
+    //    // 如果已經選中同一個物件，不重複設置
+    //    if (EventSystem.current.currentSelectedGameObject == target) return;
 
-        if (InputDeviceManager.Instance != null &&
-            InputDeviceManager.Instance.CurrentInputType == InputDeviceManager.InputType.Gamepad)
-        {
-            // 使用 Coroutine 延遲一幀
-            InventoryUI.Instance.StartCoroutine(SetSelectedNextFrame(target));
-        }
-        else
-        {
-            EventSystem.current.SetSelectedGameObject(null); // 鍵鼠模式 → 不要強制鎖定
-        }
-    }
+    //    if (InputDeviceManager.Instance != null &&
+    //        InputDeviceManager.Instance.CurrentInputType == InputDeviceManager.InputType.Gamepad)
+    //    {
+    //        // 使用 Coroutine 延遲一幀
+    //        InventoryUI.Instance.StartCoroutine(SetSelectedNextFrame(target));
+    //    }
+    //    else
+    //    {
+    //        EventSystem.current.SetSelectedGameObject(null); // 鍵鼠模式 → 不要強制鎖定
+    //    }
+    //}
     private IEnumerator SetSelectedNextFrame(GameObject target)
     {
         yield return null; // 等一幀
