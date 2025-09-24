@@ -12,9 +12,8 @@ GameObject:
   - component: {fileID: 5961749388914132617}
   - component: {fileID: 8872742433522860489}
   - component: {fileID: 8411674881974276332}
-  - component: {fileID: 1435843554665470886}
-  - component: {fileID: 1358309333137059299}
-  m_Layer: 3
+  - component: {fileID: 1006192013796184580}
+  m_Layer: 0
   m_Name: F1_Plate6
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -107,28 +106,7 @@ SphereCollider:
   serializedVersion: 3
   m_Radius: 0.11807552
   m_Center: {x: -0.000000044703484, y: -0.0000000037252899, z: 0.0092955595}
---- !u!135 &1435843554665470886
-SphereCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 607786221866663555}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Radius: 0.11807552
-  m_Center: {x: -0.000000044703484, y: -0.0000000037252899, z: 0.0092955595}
---- !u!114 &1358309333137059299
+--- !u!114 &1006192013796184580
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -137,17 +115,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 607786221866663555}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 778196790939939438401f4c7638ef89, type: 3}
+  m_Script: {fileID: 11500000, guid: dbbdae311db9e0c46adadf4ff5e8ad16, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  objectID: type me
-  visibleInYang: 1
-  visibleInYin: 1
-  interactiveInYang: 0
-  interactiveInYin: 0
-  yangMesh: {fileID: 934958931996650022, guid: e2507125d04bd1c459d1d046e2fc0c88, type: 3}
+  yangMesh: {fileID: 934958931996650022, guid: e6cbd333d20c4b44386d2b1a87aa240c, type: 3}
   yinMesh: {fileID: 934958931996650022, guid: e2507125d04bd1c459d1d046e2fc0c88, type: 3}
-  yangCollider: {fileID: 8411674881974276332}
-  yinCollider: {fileID: 1435843554665470886}
-  yangMaterial: {fileID: 2100000, guid: 01d78b95112dabe42bfeec237691f245, type: 2}
+  yangMaterial: {fileID: -6518380632535569532, guid: e6cbd333d20c4b44386d2b1a87aa240c,
+    type: 3}
   yinMaterial: {fileID: 2100000, guid: d198361109e70a84eacb46e427183dc8, type: 2}

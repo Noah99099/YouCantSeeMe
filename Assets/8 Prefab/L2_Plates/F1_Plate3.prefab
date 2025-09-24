@@ -12,9 +12,8 @@ GameObject:
   - component: {fileID: 5287681564046679524}
   - component: {fileID: 8311219932934199775}
   - component: {fileID: 5577336375273276631}
-  - component: {fileID: 7569308643103818820}
-  - component: {fileID: 1985802063022666286}
-  m_Layer: 3
+  - component: {fileID: -5576107552511196329}
+  m_Layer: 0
   m_Name: F1_Plate3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -107,28 +106,7 @@ SphereCollider:
   serializedVersion: 3
   m_Radius: 0.118647635
   m_Center: {x: 0, y: -0.000000029802319, z: 0.009295552}
---- !u!135 &7569308643103818820
-SphereCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6803438099138553579}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Radius: 0.118647635
-  m_Center: {x: 0, y: -0.000000029802319, z: 0.009295552}
---- !u!114 &1985802063022666286
+--- !u!114 &-5576107552511196329
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -137,19 +115,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 6803438099138553579}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 778196790939939438401f4c7638ef89, type: 3}
+  m_Script: {fileID: 11500000, guid: dbbdae311db9e0c46adadf4ff5e8ad16, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  objectID: type me
-  visibleInYang: 1
-  visibleInYin: 1
-  interactiveInYang: 0
-  interactiveInYin: 0
   yangMesh: {fileID: -1850747092569542083, guid: e2507125d04bd1c459d1d046e2fc0c88,
     type: 3}
   yinMesh: {fileID: -1850747092569542083, guid: e2507125d04bd1c459d1d046e2fc0c88,
     type: 3}
-  yangCollider: {fileID: 5577336375273276631}
-  yinCollider: {fileID: 7569308643103818820}
-  yangMaterial: {fileID: 2100000, guid: 01d78b95112dabe42bfeec237691f245, type: 2}
+  yangMaterial: {fileID: -6518380632535569532, guid: e6cbd333d20c4b44386d2b1a87aa240c,
+    type: 3}
   yinMaterial: {fileID: 2100000, guid: d198361109e70a84eacb46e427183dc8, type: 2}

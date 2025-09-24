@@ -2,6 +2,7 @@ using UnityEngine;
 
 public class InteractableRole : MonoBehaviour
 {
+    [Header("功能：鬼視野結束後獲得情報")]
     [Header("要解鎖的角色")]
     public RoleData targetRole; // ex: Role1, Role2
     [Header("要解鎖的 Carousel")]
