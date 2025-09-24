@@ -7,13 +7,13 @@ public class SceneLoader : MonoBehaviour
     //public static SceneLoader Instance;
     public static SceneLoader Instance { get; private set; }
 
-    [Header("¶Â¹õ»PÂà³õ³]©w")]
+    [Header("ï¿½Â¹ï¿½ï¿½Pï¿½ï¿½ï¿½ï¿½]ï¿½w")]
     public GameObject loadingPanel;
     public CanvasGroup loadingCanvasGroup;
     public float fadeDuration = 1f;
     public float minLoadingTime = 2f;
 
-    [Header("­n¥[¸üªº³õ´º¦WºÙ¡]¤w¥[¤J Build Settings¡^")]
+    [Header("ï¿½nï¿½[ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Wï¿½Ù¡]ï¿½wï¿½[ï¿½J Build Settingsï¿½^")]
     public string sceneToLoad = "type me";
 
     private void Awake()
@@ -21,15 +21,15 @@ public class SceneLoader : MonoBehaviour
         if (Instance == null)
         {
             Instance = this;
-            DontDestroyOnLoad(gameObject); // ¸ó³õ´º«O¦s
+            DontDestroyOnLoad(gameObject); // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Oï¿½s
 
-            // ªì©l¤Æ³]©w
+            // ï¿½ï¿½lï¿½Æ³]ï¿½w
             if (loadingPanel != null)
                 loadingPanel.SetActive(false);
         }
         else
         {
-            Destroy(gameObject); // ¦pªG¤w¸g¦s¦b¡A¾P·´­«½Æªº
+            Destroy(gameObject); // ï¿½pï¿½Gï¿½wï¿½gï¿½sï¿½bï¿½Aï¿½Pï¿½ï¿½ï¿½ï¿½ï¿½Æªï¿½
         }
     }
 
@@ -42,13 +42,13 @@ public class SceneLoader : MonoBehaviour
     {
         SceneManager.sceneLoaded -= OnSceneLoaded;
     }
-    // ¥[¤W OnDestroy ½T«O²M²z
+    // ï¿½[ï¿½W OnDestroy ï¿½Tï¿½Oï¿½Mï¿½z
     private void OnDestroy()
     {
         SceneManager.sceneLoaded -= OnSceneLoaded;
     }
 
-    public void LoadScene(string sceneName) //// 0924 ÀRºA¤èªk¤è«K©I¥s
+    public void LoadScene(string sceneName) //// 0924 ï¿½Rï¿½Aï¿½ï¿½kï¿½ï¿½Kï¿½Iï¿½s
     {
         if (Instance != null)
         {
@@ -56,15 +56,15 @@ public class SceneLoader : MonoBehaviour
         }
         else
         {
-            // ¦pªG Instance ¤£¦s¦b¡A¦Û°Ê«Ø¥ß
+            // ï¿½pï¿½G Instance ï¿½ï¿½ï¿½sï¿½bï¿½Aï¿½Û°Ê«Ø¥ï¿½
             CreateInstance();
-            Instance.StartCoroutine(Instance.LoadSceneRoutine(sceneName)); // ­×¥¿»¼°j°ÝÃD
+            Instance.StartCoroutine(Instance.LoadSceneRoutine(sceneName)); // ï¿½×¥ï¿½ï¿½ï¿½ï¿½jï¿½ï¿½ï¿½D
         }
     }
 
     private static void CreateInstance()
     {
-        // ±q Resources ¸ü¤J¹w»sª«
+        // ï¿½q Resources ï¿½ï¿½ï¿½Jï¿½wï¿½sï¿½ï¿½
         GameObject loaderPrefab = Resources.Load<GameObject>("SceneLoader");
         if (loaderPrefab != null)
         {
@@ -72,7 +72,7 @@ public class SceneLoader : MonoBehaviour
         }
         else
         {
-            // ©ÎªÌ°ÊºA«Ø¥ß
+            // ï¿½ÎªÌ°ÊºAï¿½Ø¥ï¿½
             GameObject go = new GameObject("SceneLoader");
             go.AddComponent<SceneLoader>();
         }
@@ -101,7 +101,7 @@ public class SceneLoader : MonoBehaviour
 
         asyncLoad.allowSceneActivation = true;
 
-        // µ¥³õ´º¯uªº¤Á¹L¥h
+        // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½uï¿½ï¿½ï¿½ï¿½ï¿½Lï¿½h
         yield return null;
         yield return new WaitForSeconds(0.1f);
 
@@ -138,17 +138,17 @@ public class SceneLoader : MonoBehaviour
 
         loadingCanvasGroup.alpha = 0f;
         
-        //Destroy(this.gameObject); // §R°£¦Û¤v
+        //Destroy(this.gameObject); // ï¿½Rï¿½ï¿½ï¿½Û¤v
     }
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        // ©ñ§A¨C¦¸¸ü¤J³õ´º³£­n­«¸mªºÅÞ¿è
-        // ¤ñ¦p­«³]¤@¨Ç³æ¨Òª¬ºA
-        Debug.Log("³õ´º¸ü¤J§¹¦¨¡G" + scene.name);
+        // ï¿½ï¿½Aï¿½Cï¿½ï¿½ï¿½ï¿½ï¿½Jï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½nï¿½ï¿½ï¿½mï¿½ï¿½ï¿½Þ¿ï¿½
+        // ï¿½ï¿½pï¿½ï¿½ï¿½]ï¿½@ï¿½Ç³ï¿½Òªï¿½ï¿½A
+        Debug.Log("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Jï¿½ï¿½ï¿½ï¿½ï¿½G" + scene.name);
     }
 
-    // 8/5¼È¥Î
+    // 8/5ï¿½È¥ï¿½
     public void RestartGame(string startSceneName)
     {
         StartCoroutine(RestartGameRoutine(startSceneName));
@@ -159,9 +159,9 @@ public class SceneLoader : MonoBehaviour
         loadingPanel.SetActive(true);
         yield return StartCoroutine(FadeIn());
 
-        // ­«³]®É¶¡»P¹CÀ¸ª¬ºA¡]¥iµø±¡ªp·s¼W¡^
+        // ï¿½ï¿½ï¿½]ï¿½É¶ï¿½ï¿½Pï¿½Cï¿½ï¿½ï¿½ï¿½ï¿½Aï¿½]ï¿½iï¿½ï¿½ï¿½ï¿½ï¿½pï¿½sï¿½Wï¿½^
 
-        // µ¥«Ý³Ì¤p®É¶¡
+        // ï¿½ï¿½ï¿½Ý³Ì¤pï¿½É¶ï¿½
         float timer = 0f;
         while (timer < minLoadingTime)
         {
@@ -169,11 +169,12 @@ public class SceneLoader : MonoBehaviour
             yield return null;
         }
 
-        yield return StartCoroutine(FadeOut()); // ¥[¤J²H¥X 0924
-        // ª½±µ¨Ï¥Î LoadScene¡]·|²M°£¾ã­Ó³õ´º¤º®e¡^
+        yield return StartCoroutine(FadeOut()); // ï¿½[ï¿½Jï¿½Hï¿½X 0924
+        loadingPanel.SetActive(false); //æ–°åŠ 
+        // ï¿½ï¿½ï¿½ï¿½ï¿½Ï¥ï¿½ LoadSceneï¿½]ï¿½|ï¿½Mï¿½ï¿½ï¿½ï¿½Ó³ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½eï¿½^
         SceneManager.LoadScene(startSceneName);
 
-        // ª`·N¡I¦]¬°³o¬O­«·s¶i¤J³õ´º¡A¦]¦¹ SceneLoader ¥²¶·¯à¦b·s³õ´º¤¤­««Ø¡I
+        // ï¿½`ï¿½Nï¿½Iï¿½]ï¿½ï¿½ï¿½oï¿½Oï¿½ï¿½ï¿½sï¿½iï¿½Jï¿½ï¿½ï¿½ï¿½ï¿½Aï¿½]ï¿½ï¿½ SceneLoader ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½bï¿½sï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ø¡I
 
         yield return null;
     }
