@@ -56,20 +56,12 @@ public class UIInputManager : MonoBehaviour
 
     private void OnEnable()
     {
-        // 在 OnEnable 中訂閱所有需要的事件
-        PlayerControls.Dialogue.AdvanceDialogue.performed += OnAdvanceDialoguePerformed;
 
-        // 新增：在這裡訂閱 Startup/StartGame 按鍵
-        PlayerControls.Startup.StartGame.performed += OnStartupStartGamePerformed;
     }
 
     private void OnDisable()
     {
-        // 在 OnDisable 中取消訂閱，防止記憶體洩漏
-        PlayerControls.Dialogue.AdvanceDialogue.performed -= OnAdvanceDialoguePerformed;
 
-        // 新增：取消訂閱
-        PlayerControls.Startup.StartGame.performed -= OnStartupStartGamePerformed;
     }
  
     void Start()
@@ -210,32 +202,6 @@ public class UIInputManager : MonoBehaviour
             inventoryInput.BindOpenInventory(false); // 模型預覽模式不允許開背包
         }
         Debug.Log("[UIInputManager] 遊戲模式切換為：ModelPreview 模式");
-    }
-
-    public void EnterDialogueMode() //對話模式
-    {
-        if (IsInDialogueMode) return;
-        DisableAllMaps();
-        PlayerControls.Dialogue.Enable();
-        SetModeFlags(isDialogue: true);
-        UpdateCursorState();
-        if (inventoryInput != null)
-        {
-            inventoryInput.BindOpenInventory(false); // 對話模式不允許開背包
-        }
-        Debug.Log("[UIInputManager] 遊戲模式切換為：Dialogue 模式");
-    }
-    
-    // 【核心修正】這裡的函式名稱必須與 OnEnable/OnDisable 中的訂閱名稱一致
-    private void OnAdvanceDialoguePerformed(InputAction.CallbackContext context)
-    {
-        Debug.Log("<color=magenta>--- OnAdvanceDialogue: 點擊訊號已收到！ ---</color>");
-        if (!IsInDialogueMode) return;
-
-        if (DialogueUI.Instance != null && DialogueUI.Instance.gameObject.activeInHierarchy)
-        {
-            DialogueUI.Instance.OnContinueClicked();
-        }
     }
     #endregion
 

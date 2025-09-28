@@ -862,6 +862,15 @@
             "id": "5743ca70-f817-49f8-b2d1-9139833daa77",
             "actions": [
                 {
+                    "name": "Submit",
+                    "type": "Button",
+                    "id": "1361407c-d27d-4fb9-bbd7-34d83ec8ec5a",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
                     "name": "ToggleAutoPlay",
                     "type": "Button",
                     "id": "757f53a1-a68d-4028-af7b-334cf58cb4ad",
@@ -871,7 +880,7 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "ToggleSkipMode",
+                    "name": "Skip",
                     "type": "Button",
                     "id": "2f3d42cc-f15f-4b83-b111-d205d844bca4",
                     "expectedControlType": "",
@@ -928,7 +937,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": ";鍵鼠",
-                    "action": "ToggleSkipMode",
+                    "action": "Skip",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -939,7 +948,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": ";Gamepad",
-                    "action": "ToggleSkipMode",
+                    "action": "Skip",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -995,6 +1004,28 @@
                     "processors": "",
                     "groups": ";Gamepad",
                     "action": "AdvanceDialogue",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "f42a3ff6-3769-4707-852c-1e7c1b4c58a6",
+                    "path": "<Keyboard>/space",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";鍵鼠",
+                    "action": "Submit",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "75234c91-b181-436d-b0f4-19287be74f7e",
+                    "path": "<Gamepad>/buttonSouth",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Gamepad",
+                    "action": "Submit",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

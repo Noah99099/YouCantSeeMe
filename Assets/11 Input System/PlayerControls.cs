@@ -948,6 +948,15 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             ""id"": ""5743ca70-f817-49f8-b2d1-9139833daa77"",
             ""actions"": [
                 {
+                    ""name"": ""Submit"",
+                    ""type"": ""Button"",
+                    ""id"": ""1361407c-d27d-4fb9-bbd7-34d83ec8ec5a"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
                     ""name"": ""ToggleAutoPlay"",
                     ""type"": ""Button"",
                     ""id"": ""757f53a1-a68d-4028-af7b-334cf58cb4ad"",
@@ -957,7 +966,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""initialStateCheck"": false
                 },
                 {
-                    ""name"": ""ToggleSkipMode"",
+                    ""name"": ""Skip"",
                     ""type"": ""Button"",
                     ""id"": ""2f3d42cc-f15f-4b83-b111-d205d844bca4"",
                     ""expectedControlType"": """",
@@ -1014,7 +1023,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": "";鍵鼠"",
-                    ""action"": ""ToggleSkipMode"",
+                    ""action"": ""Skip"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -1025,7 +1034,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": "";Gamepad"",
-                    ""action"": ""ToggleSkipMode"",
+                    ""action"": ""Skip"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -1081,6 +1090,28 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": "";Gamepad"",
                     ""action"": ""AdvanceDialogue"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""f42a3ff6-3769-4707-852c-1e7c1b4c58a6"",
+                    ""path"": ""<Keyboard>/space"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";鍵鼠"",
+                    ""action"": ""Submit"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""75234c91-b181-436d-b0f4-19287be74f7e"",
+                    ""path"": ""<Gamepad>/buttonSouth"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Gamepad"",
+                    ""action"": ""Submit"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -1208,8 +1239,9 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         m_Startup_StartGame = m_Startup.FindAction("StartGame", throwIfNotFound: true);
         // Dialogue
         m_Dialogue = asset.FindActionMap("Dialogue", throwIfNotFound: true);
+        m_Dialogue_Submit = m_Dialogue.FindAction("Submit", throwIfNotFound: true);
         m_Dialogue_ToggleAutoPlay = m_Dialogue.FindAction("ToggleAutoPlay", throwIfNotFound: true);
-        m_Dialogue_ToggleSkipMode = m_Dialogue.FindAction("ToggleSkipMode", throwIfNotFound: true);
+        m_Dialogue_Skip = m_Dialogue.FindAction("Skip", throwIfNotFound: true);
         m_Dialogue_Pause = m_Dialogue.FindAction("Pause", throwIfNotFound: true);
         m_Dialogue_AdvanceDialogue = m_Dialogue.FindAction("AdvanceDialogue", throwIfNotFound: true);
         // ModelPreview
@@ -1828,8 +1860,9 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
     // Dialogue
     private readonly InputActionMap m_Dialogue;
     private List<IDialogueActions> m_DialogueActionsCallbackInterfaces = new List<IDialogueActions>();
+    private readonly InputAction m_Dialogue_Submit;
     private readonly InputAction m_Dialogue_ToggleAutoPlay;
-    private readonly InputAction m_Dialogue_ToggleSkipMode;
+    private readonly InputAction m_Dialogue_Skip;
     private readonly InputAction m_Dialogue_Pause;
     private readonly InputAction m_Dialogue_AdvanceDialogue;
     /// <summary>
@@ -1844,13 +1877,17 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         /// </summary>
         public DialogueActions(@PlayerControls wrapper) { m_Wrapper = wrapper; }
         /// <summary>
+        /// Provides access to the underlying input action "Dialogue/Submit".
+        /// </summary>
+        public InputAction @Submit => m_Wrapper.m_Dialogue_Submit;
+        /// <summary>
         /// Provides access to the underlying input action "Dialogue/ToggleAutoPlay".
         /// </summary>
         public InputAction @ToggleAutoPlay => m_Wrapper.m_Dialogue_ToggleAutoPlay;
         /// <summary>
-        /// Provides access to the underlying input action "Dialogue/ToggleSkipMode".
+        /// Provides access to the underlying input action "Dialogue/Skip".
         /// </summary>
-        public InputAction @ToggleSkipMode => m_Wrapper.m_Dialogue_ToggleSkipMode;
+        public InputAction @Skip => m_Wrapper.m_Dialogue_Skip;
         /// <summary>
         /// Provides access to the underlying input action "Dialogue/Pause".
         /// </summary>
@@ -1885,12 +1922,15 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         {
             if (instance == null || m_Wrapper.m_DialogueActionsCallbackInterfaces.Contains(instance)) return;
             m_Wrapper.m_DialogueActionsCallbackInterfaces.Add(instance);
+            @Submit.started += instance.OnSubmit;
+            @Submit.performed += instance.OnSubmit;
+            @Submit.canceled += instance.OnSubmit;
             @ToggleAutoPlay.started += instance.OnToggleAutoPlay;
             @ToggleAutoPlay.performed += instance.OnToggleAutoPlay;
             @ToggleAutoPlay.canceled += instance.OnToggleAutoPlay;
-            @ToggleSkipMode.started += instance.OnToggleSkipMode;
-            @ToggleSkipMode.performed += instance.OnToggleSkipMode;
-            @ToggleSkipMode.canceled += instance.OnToggleSkipMode;
+            @Skip.started += instance.OnSkip;
+            @Skip.performed += instance.OnSkip;
+            @Skip.canceled += instance.OnSkip;
             @Pause.started += instance.OnPause;
             @Pause.performed += instance.OnPause;
             @Pause.canceled += instance.OnPause;
@@ -1908,12 +1948,15 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         /// <seealso cref="DialogueActions" />
         private void UnregisterCallbacks(IDialogueActions instance)
         {
+            @Submit.started -= instance.OnSubmit;
+            @Submit.performed -= instance.OnSubmit;
+            @Submit.canceled -= instance.OnSubmit;
             @ToggleAutoPlay.started -= instance.OnToggleAutoPlay;
             @ToggleAutoPlay.performed -= instance.OnToggleAutoPlay;
             @ToggleAutoPlay.canceled -= instance.OnToggleAutoPlay;
-            @ToggleSkipMode.started -= instance.OnToggleSkipMode;
-            @ToggleSkipMode.performed -= instance.OnToggleSkipMode;
-            @ToggleSkipMode.canceled -= instance.OnToggleSkipMode;
+            @Skip.started -= instance.OnSkip;
+            @Skip.performed -= instance.OnSkip;
+            @Skip.canceled -= instance.OnSkip;
             @Pause.started -= instance.OnPause;
             @Pause.performed -= instance.OnPause;
             @Pause.canceled -= instance.OnPause;
@@ -2245,6 +2288,13 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
     public interface IDialogueActions
     {
         /// <summary>
+        /// Method invoked when associated input action "Submit" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnSubmit(InputAction.CallbackContext context);
+        /// <summary>
         /// Method invoked when associated input action "ToggleAutoPlay" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
         /// </summary>
         /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
@@ -2252,12 +2302,12 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnToggleAutoPlay(InputAction.CallbackContext context);
         /// <summary>
-        /// Method invoked when associated input action "ToggleSkipMode" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// Method invoked when associated input action "Skip" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
         /// </summary>
         /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-        void OnToggleSkipMode(InputAction.CallbackContext context);
+        void OnSkip(InputAction.CallbackContext context);
         /// <summary>
         /// Method invoked when associated input action "Pause" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
         /// </summary>
