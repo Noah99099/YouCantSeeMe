@@ -18,7 +18,8 @@ public class MainMenuController : MonoBehaviour
     [Header("遊戲設定面板")]
     public Slider bgmSlider;
     public Slider seSlider;
-    public Slider sensitivitySlider;
+    public Slider mouseSensitivitySlider;
+    public Slider gamepadSensitivitySlider;
     [Tooltip("Setting 面板")] public GameObject settingPanel;
     [Tooltip("退出遊戲設定")] public Button settingPanelExitButton;
 
@@ -84,7 +85,7 @@ public class MainMenuController : MonoBehaviour
         // 監聽 Slider 被滑鼠點擊
         bgmSlider.onValueChanged.AddListener((v) => OnSliderSelected(bgmSlider));
         seSlider.onValueChanged.AddListener((v) => OnSliderSelected(seSlider));
-        sensitivitySlider.onValueChanged.AddListener((v) => OnSliderSelected(sensitivitySlider));
+        mouseSensitivitySlider.onValueChanged.AddListener((v) => OnSliderSelected(mouseSensitivitySlider));
     }
 
     private void OnEnable()

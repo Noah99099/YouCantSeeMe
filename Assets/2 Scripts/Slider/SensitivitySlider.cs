@@ -2,10 +2,13 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
 
+public enum SensitivityType { Mouse, Gamepad }
+
 public class SensitivitySlider : MonoBehaviour
 {
     [SerializeField] private Slider sensitivitySlider;
     [SerializeField] private GameObject sensitivityManagerPrefab; // 拖進 SensitivityManager prefab
+    [SerializeField] private SensitivityType sensitivityType; // 選擇控制 Mouse 或 Gamepad
 
     private void Start()
     {
@@ -28,7 +31,15 @@ public class SensitivitySlider : MonoBehaviour
             sensitivitySlider.maxValue = SensitivityManager.Instance.maxSensitivity;
 
             // 設定初始值
-            sensitivitySlider.value = SensitivityManager.Instance.mouseSensitivity;
+            switch (sensitivityType)
+            {
+                case SensitivityType.Mouse:
+                    sensitivitySlider.value = SensitivityManager.Instance.mouseSensitivity;
+                    break;
+                case SensitivityType.Gamepad:
+                    sensitivitySlider.value = SensitivityManager.Instance.gamepadSensitivity;
+                    break;
+            }
 
             // 訂閱事件
             sensitivitySlider.onValueChanged.AddListener(OnSensitivityChanged);
@@ -41,9 +52,16 @@ public class SensitivitySlider : MonoBehaviour
 
     private void OnSensitivityChanged(float value)
     {
-        if (SensitivityManager.Instance != null)
+        if (SensitivityManager.Instance == null) return;
+
+        switch (sensitivityType)
         {
-            SensitivityManager.Instance.mouseSensitivity = value;
+            case SensitivityType.Mouse:
+                SensitivityManager.Instance.mouseSensitivity = value;
+                break;
+            case SensitivityType.Gamepad:
+                SensitivityManager.Instance.gamepadSensitivity = value;
+                break;
         }
     }
 }
