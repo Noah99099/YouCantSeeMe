@@ -4,6 +4,11 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 
+/// <summary>
+/// UIInputManager 相關的內容不用
+/// 要重寫，代替UIInputManager
+/// 改好了
+/// </summary>
 public class PlayerMovement : MonoBehaviour
 {
     [Tooltip("玩家設置")]
@@ -12,20 +17,15 @@ public class PlayerMovement : MonoBehaviour
     [Tooltip("玩家基礎移動速度")]
     [SerializeField] private float moveSpeed = 50f;
 
-    [Header("輸入設定")]
-    [Tooltip("Move Action 的 InputActionReference")]
-    [SerializeField] private InputActionReference moveAction;
-
+    private Level1UIController inputHandler; // 新增：從這裡拿輸入
     private Vector2 moveInput; //儲存WASD、手柄移動的數值
-    private UIInputManager uiInputManager;
 
     private void Awake()
     {
         if (rb == null) rb = GetComponent<Rigidbody>();
         if (playerBody == null) playerBody = transform;
 
-        // 獲取 UIInputManager 引用
-        uiInputManager = UIInputManager.Instance;
+        inputHandler = GetComponent<Level1UIController>(); // 同物件上自動取得
 
         // 0924訂閱場景加載事件
         SceneManager.sceneLoaded += OnSceneLoaded;
@@ -34,7 +34,6 @@ public class PlayerMovement : MonoBehaviour
     {
         // 取消訂閱避免記憶體洩漏
         SceneManager.sceneLoaded -= OnSceneLoaded;
-
     }
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
@@ -46,19 +45,15 @@ public class PlayerMovement : MonoBehaviour
 
     private void FixedUpdate()
     {
-        // 檢查遊戲是否已開始
-        if (!UIInputManager.Instance.IsGameStarted) return;
+        if (rb == null || inputHandler == null) return;
 
-        // 檢查是否處於玩家模式（允許移動的模式）
-        if (!UIInputManager.Instance.IsInPlayerMode) return;
-
-        if (moveAction == null || rb == null) return;
-
-        moveInput = moveAction.action.ReadValue<Vector2>();
+        moveInput = inputHandler.MoveInput; // 從 Level1UIController 取得輸入
         if (moveInput.sqrMagnitude < 0.01f) return;
 
         Vector3 moveDirection = (playerBody.forward * moveInput.y + playerBody.right * moveInput.x).normalized;
         Vector3 movement = moveDirection * moveSpeed * Time.fixedDeltaTime;
         rb.MovePosition(rb.position + movement);
+
+        print("移動成功");
     }
 }

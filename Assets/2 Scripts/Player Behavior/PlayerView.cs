@@ -5,6 +5,11 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.DualShock;
 
+/// <summary>
+/// UIInputManager 相關的內容不用
+/// 要重寫，代替UIInputManager
+/// 改好了
+/// </summary>
 public class PlayerView : MonoBehaviour
 {
     [Header("基本設定")]
@@ -23,14 +28,14 @@ public class PlayerView : MonoBehaviour
     [Tooltip("相機y軸偏移量（眼睛高度）")]
     public float upper;
 
-    [Header("輸入系統")]
-    [Tooltip("Look Action 的 InputActionReference")]
-    [SerializeField] private InputActionReference lookAction;
+    //[Header("輸入系統")]
+    //[Tooltip("Look Action 的 InputActionReference")]
+    //[SerializeField] private InputActionReference lookAction;
 
     private Vector2 lookInput;
     private float xRotation = 0f;
     private bool isUsingGamepad;
-    private UIInputManager uiInputManager;
+    //private UIInputManager uiInputManager;
 
     private void Awake()
     {
@@ -39,51 +44,37 @@ public class PlayerView : MonoBehaviour
         {
             cameraPivot.localPosition = new Vector3(0f, upper, 0f);
         }
-
-        // 獲取 UIInputManager 引用
-        uiInputManager = UIInputManager.Instance;
     }
     
     // --- 新增點: 在 Start() 中設定初始狀態 ---
     private void Start()
     {
-        // 確保遊戲一開始就進入遊戲模式
-        //CursorManager.EnterGameplayMode();
 
         Debug.Log("滑鼠靈敏度：" + SensitivityManager.Instance.mouseSensitivity);
         Debug.Log("手柄靈敏度：" + SensitivityManager.Instance.gamepadSensitivity);
     }
 
 
-    private void OnEnable()
+    /// <summary>
+    /// 由 PlayerInputHandler 傳入輸入值
+    /// </summary>
+    public void SetLookInput(Vector2 input, bool usingGamepad)
     {
-        lookAction.action.performed += OnLookPerformed;
-    }
-
-    private void OnDisable()
-    {
-        lookAction.action.performed -= OnLookPerformed;
-    }
-
-    private void OnLookPerformed(InputAction.CallbackContext context)
-    {
-        var device = context.control.device;
-        isUsingGamepad = device is Gamepad;
+        lookInput = input;
+        isUsingGamepad = usingGamepad;
     }
 
     private void Update()
     {
-        // 檢查遊戲是否已開始
-        if (!UIInputManager.Instance.IsGameStarted) return;
+        RotateView();  
+    }
 
-        // 檢查是否處於玩家模式（允許視角移動的模式）
-        if (!UIInputManager.Instance.IsInPlayerMode) return;
-
-        // --- 以下是原本的程式碼，現在只有在滑鼠鎖定時才會執行 ---
-        lookInput = lookAction.action.ReadValue<Vector2>();
-
+    private void RotateView() 
+    {
         //滑鼠靈敏度相關設定
-        float currentSensitivity = isUsingGamepad ? SensitivityManager.Instance.gamepadSensitivity : SensitivityManager.Instance.mouseSensitivity;
+        float currentSensitivity = isUsingGamepad
+            ? SensitivityManager.Instance.gamepadSensitivity
+            : SensitivityManager.Instance.mouseSensitivity;
 
         if (isUsingGamepad) lookInput = ApplyJoystickDeadZone(lookInput);
 

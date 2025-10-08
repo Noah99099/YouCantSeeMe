@@ -30,7 +30,7 @@ public class InventoryManager : MonoBehaviour
     [SerializeField][Tooltip("InventoryUI 腳本")] private InventoryUI _inventoryUI; // 現在直接引用組件
 
     public ItemDetailUI ItemDetailUI => _itemDetailUI;
-    public InventoryUI InventoryUI => _inventoryUI;
+    //public InventoryUI InventoryUI => _inventoryUI;
 
     // 在 InventoryManager 裡，class 成員底下新增：
     public GameObject CurrentSelectedSlot => currentSelectedSlot;
@@ -45,26 +45,26 @@ public class InventoryManager : MonoBehaviour
         DontDestroyOnLoad(gameObject);
 
         // 確保 _itemDetailUI 與 _inventoryUI 都有被指派，避免 null reference
-        InitializeInventoryUI();
+        //InitializeInventoryUI();
         InitializeItemDetailUI();
 
         UpdateInformationPanel(null);
     }
     /// <summary>
-    /// 初始化 InventoryUI 組件
+    /// 初始化 InventoryUI 組件 10月9日註解
     /// </summary>
-    private void InitializeInventoryUI()
-    {
-        if (_inventoryUI == null)
-        {
-            _inventoryUI = FindObjectOfType<InventoryUI>();
-            if (_inventoryUI == null)
-            {
-                Debug.LogError("找不到 InventoryUI 組件！");
-                return;
-            }
-        }
-    }
+    //private void InitializeInventoryUI()
+    //{
+    //    if (_inventoryUI == null)
+    //    {
+    //        _inventoryUI = FindObjectOfType<InventoryUI>();
+    //        if (_inventoryUI == null)
+    //        {
+    //            Debug.LogError("找不到 InventoryUI 組件！");
+    //            return;
+    //        }
+    //    }
+    //}
 
     /// <summary>
     /// 初始化 ItemDetailUI 組件

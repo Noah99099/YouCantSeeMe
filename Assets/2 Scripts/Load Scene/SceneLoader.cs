@@ -143,9 +143,7 @@ public class SceneLoader : MonoBehaviour
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        // ��A�C�����J�������n���m���޿�
-        // ��p���]�@�ǳ�Ҫ��A
-        Debug.Log("�������J�����G" + scene.name);
+        Debug.Log("[SceneLoader] " + scene.name);
     }
 
     // 8/5�ȥ�

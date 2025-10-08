@@ -2,7 +2,10 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 
-[DefaultExecutionOrder(-10)] // 確保此腳本優先初始化
+/// <summary>
+/// 目前不用了。
+/// </summary>
+//[DefaultExecutionOrder(-10)] // 確保此腳本優先初始化
 public class UIInputManager : MonoBehaviour
 {
     public static UIInputManager Instance { get; private set; }
@@ -53,16 +56,6 @@ public class UIInputManager : MonoBehaviour
             Debug.LogWarning("找不到 InventoryInputToUI 組件");
         }
     }
-
-    private void OnEnable()
-    {
-
-    }
-
-    private void OnDisable()
-    {
-
-    }
  
     void Start()
     {
@@ -70,7 +63,7 @@ public class UIInputManager : MonoBehaviour
         DisableAllMaps();
 
         // 啟用 Startup Map（只有 StartGame 可用）
-        PlayerControls.Startup.Enable();
+        //PlayerControls.Startup.Enable();
 
         // 特別確保 Player Action Map 中的 OpenInventory 被禁用
         PlayerControls.Player.OpenInventory.Disable();
@@ -91,48 +84,49 @@ public class UIInputManager : MonoBehaviour
         PlayerControls.UI.Disable();
         PlayerControls.Inventory.Disable();
         PlayerControls.Dialogue.Disable();
-        PlayerControls.Startup.Disable();
+        //PlayerControls.Startup.Disable();
     }
     #endregion
 
     #region ===== 開始遊戲 =====
     // 新增：啟動流程入口（由 Startup/StartGame 的 performed 事件觸發）
-    private void OnStartupStartGamePerformed(InputAction.CallbackContext ctx)
-    {
-        //按下 切換視野按鈕（左shift、R1） 後執行的方法
-        // 避免重複觸發
-        if (IsGameStarted) return;
-        StartGame();
-    }
+    //private void OnStartupStartGamePerformed(InputAction.CallbackContext ctx)
+    //{
+    //    //按下 切換視野按鈕（左shift、R1） 後執行的方法
+    //    // 避免重複觸發
+    //    if (IsGameStarted) return;
+    //    StartGame();
+    //}
 
     // 新增: 開始遊戲的方法
-    public void StartGame()
-    {
-        if (IsGameStarted) return;
+    //public void StartGame()
+    //{
+    //    if (IsGameStarted) return;
 
-        IsGameStarted = true;
+    //    IsGameStarted = true;
 
-        // 先禁用所有操作，然後重新啟用 Player Action Map
-        DisableAllMaps();
+    //    // 先禁用所有操作，然後重新啟用 Player Action Map
+    //    DisableAllMaps();
 
-        // 特別啟用 Player Action Map 中的 OpenInventory
-        //PlayerControls.Player.OpenInventory.Enable();
+    //    // 特別啟用 Player Action Map 中的 OpenInventory
+    //    //PlayerControls.Player.OpenInventory.Enable();
 
-        // 正式啟用 Player Map（之後 OpenInventory 就在這裡正常運作）
-        EnterGameplayMode();
+    //    // 正式啟用 Player Map（之後 OpenInventory 就在這裡正常運作）
+    //    EnterGameplayMode();
 
-        SetModeFlags(isPlayer: true);
+    //    SetModeFlags(isPlayer: true);
 
-        hintUI.SetActive(false); //新增: 關閉提示按下按鈕
+    //    hintUI.SetActive(false); //新增: 關閉提示按下按鈕
 
-        // 新增: 通知 ViewManager 遊戲已開始
-        if (ViewManager.Instance != null)
-        {
-            ViewManager.Instance.OnGameStarted();
-        }
+    //    //10月09日註解
+    //    // 新增: 通知 ViewManager 遊戲已開始
+    //    //if (ViewManager.Instance != null)
+    //    //{
+    //    //    ViewManager.Instance.OnGameStarted();
+    //    //}
 
-        Debug.Log("[UIInputManager] 遊戲開始：Startup → Player。現已啟用玩家控制（OpenInventory 第一時間可用）");
-    }
+    //    Debug.Log("[UIInputManager] 遊戲開始：Startup → Player。現已啟用玩家控制（OpenInventory 第一時間可用）");
+    //}
     #endregion
 
     #region ===== 模式切換方法 =====

@@ -31,7 +31,7 @@ public class InventoryInputToUI : MonoBehaviour
     // 防抖設定
     private bool canToggleInventory = true;
     private float toggleCooldown = 0.15f;
-    private bool canMoveSelection = true;
+    //private bool canMoveSelection = true;
 
 
     #region ===== 初始化 =====

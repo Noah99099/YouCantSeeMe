@@ -31,6 +31,24 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "Point",
+                    "type": "Value",
+                    "id": "d932f3fe-d761-4d76-bd85-02afe6dba0ec",
+                    "expectedControlType": "Vector2",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                },
+                {
+                    "name": "Click",
+                    "type": "Button",
+                    "id": "b411b5e2-29e3-4082-83c4-0a4f5a4c02a4",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -187,6 +205,28 @@
                     "action": "Submit",
                     "isComposite": false,
                     "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "133186ef-2dda-476f-9dab-08b419fa1209",
+                    "path": "<Mouse>/position",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";鍵鼠",
+                    "action": "Point",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "c50e32d0-4cbb-4d36-869b-6f8e93e22049",
+                    "path": "<Mouse>/leftButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";鍵鼠",
+                    "action": "Click",
+                    "isComposite": false,
+                    "isPartOfComposite": false
                 }
             ]
         },
@@ -234,6 +274,15 @@
                     "name": "OpenInventory",
                     "type": "Button",
                     "id": "14df317b-393b-49e7-8a5f-38fd8175289b",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "OpenSetting",
+                    "type": "Button",
+                    "id": "22240c6c-9153-43fe-8aa4-3ab41e5dfe67",
                     "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
@@ -491,6 +540,28 @@
                     "processors": "",
                     "groups": "Gamepad",
                     "action": "View",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "0b029c1a-abef-411d-a8ee-b962c669d88c",
+                    "path": "<Keyboard>/escape",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";鍵鼠",
+                    "action": "OpenSetting",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "2b87aeee-0d98-4b0f-8b4e-bf96d7d8da67",
+                    "path": "<Gamepad>/start",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Gamepad",
+                    "action": "OpenSetting",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
@@ -779,45 +850,6 @@
             ]
         },
         {
-            "name": "Startup",
-            "id": "134c64a1-fdeb-4f91-be4f-0adc69a98aba",
-            "actions": [
-                {
-                    "name": "StartGame",
-                    "type": "Button",
-                    "id": "b698c362-bf26-4fe0-824b-bad6e0c01bf1",
-                    "expectedControlType": "",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                }
-            ],
-            "bindings": [
-                {
-                    "name": "",
-                    "id": "19794579-474d-424b-9fb2-2511ece99869",
-                    "path": "<Keyboard>/leftShift",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": ";鍵鼠",
-                    "action": "StartGame",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "16d8718a-d337-4b7e-97f4-d03b354cba2f",
-                    "path": "<Gamepad>/rightShoulder",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": ";Gamepad",
-                    "action": "StartGame",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                }
-            ]
-        },
-        {
             "name": "Dialogue",
             "id": "5743ca70-f817-49f8-b2d1-9139833daa77",
             "actions": [
@@ -1029,32 +1061,10 @@
                 {
                     "name": "",
                     "id": "271429eb-99ca-4b73-b39a-2c1c55e1d4f9",
-                    "path": "<Keyboard>/backspace",
+                    "path": "<Keyboard>/escape",
                     "interactions": "",
                     "processors": "",
                     "groups": ";鍵鼠",
-                    "action": "CloseModelPreview",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "bfbc1ce1-5da1-476e-8bce-b1585ab5ca20",
-                    "path": "<Keyboard>/x",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": ";鍵鼠",
-                    "action": "CloseModelPreview",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "8446d7c4-afa5-4825-ae9f-570167e3ba95",
-                    "path": "<Gamepad>/buttonNorth",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": ";Gamepad",
                     "action": "CloseModelPreview",
                     "isComposite": false,
                     "isPartOfComposite": false

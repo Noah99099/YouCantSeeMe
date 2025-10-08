@@ -2,6 +2,11 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using TMPro;
 
+/// <summary>
+/// UIInputManager 相關的內容不用
+/// 要重寫，代替UIInputManager
+/// 處理好了
+/// </summary>
 public class PlayerInteraction : MonoBehaviour
 {
     public static PlayerInteraction Instance { get; private set; } // 添加單例模式
@@ -17,8 +22,6 @@ public class PlayerInteraction : MonoBehaviour
     [Header("Debug")]
     [SerializeField] private bool showDebugRay = true;
 
-    private UIInputManager inputManager;
-    private InputAction interactionAction;
     private Camera playerCamera;
     
     private GameObject currentInteractableObject = null;
@@ -37,21 +40,7 @@ public class PlayerInteraction : MonoBehaviour
             return;
         }
 
-        inputManager = FindObjectOfType<UIInputManager>();
-        if (inputManager == null)
-        {
-            Debug.LogError("找不到 UIInputManager 實例！請確認場景中存在一個。", this);
-            this.enabled = false;
-            return;
-        }
-
         playerCamera = Camera.main;
-
-        // 【核心修正】
-        // 1. 使用大寫的 'PlayerControls'
-        // 2. 直接存取 Player Action Map 和 Interaction Action，更簡潔安全
-        interactionAction = inputManager.PlayerControls.Player.Interaction;
-        interactionAction.performed += HandleInteraction;
     }
     
     void Start()
@@ -59,24 +48,8 @@ public class PlayerInteraction : MonoBehaviour
         pickupPromptText.gameObject.SetActive(false);
     }
 
-    private void OnDestroy()
-    {
-        if (interactionAction != null)
-        {
-            interactionAction.performed -= HandleInteraction;
-        }
-        if (Instance == this) Instance = null;
-    }
-
     private void Update()
     {
-        if (!UIInputManager.Instance.IsGameStarted) return; //新增
-
-        if (!inputManager.IsInPlayerMode)
-        {
-            HidePrompt();
-            return;
-        }
         ContinuousCheck();
     }
     
@@ -147,13 +120,8 @@ public class PlayerInteraction : MonoBehaviour
         HidePrompt();
     }
 
-    private void HandleInteraction(InputAction.CallbackContext context)
+    public void HandleInteraction()
     {
-        if (!inputManager.IsInPlayerMode)
-        {
-            return;
-        }
-        
         Ray ray = new Ray(playerCamera.transform.position, playerCamera.transform.forward);
 
         if (Physics.Raycast(ray, out RaycastHit hit, interactionRange, interactionLayer))

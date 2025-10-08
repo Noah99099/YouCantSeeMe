@@ -3,6 +3,10 @@ using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement; // 引用場景管理
 using System;
 
+/// <summary>
+/// 此腳本的職責：
+/// 檢測當前是"鍵鼠模式"還是"手柄模式"。
+/// </summary>
 public class InputDeviceManager : MonoBehaviour
 {
     public static InputDeviceManager Instance { get; private set; }

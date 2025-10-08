@@ -7,6 +7,9 @@ using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
+/// <summary>
+/// 管理 StartScene 的 Action Map：UI。
+/// </summary>
 public class StartSceneUIController : MonoBehaviour
 {
     [Header("主菜單按鈕")]
@@ -33,7 +36,7 @@ public class StartSceneUIController : MonoBehaviour
 
     void Start()
     {
-        // 遊戲開始，初始化為玩家控制
+        // 遊戲開始，初始化為 UI Map
         InputStackManager.Instance.Init(InputActionMaps._UI);
 
         //默認2面板關閉
