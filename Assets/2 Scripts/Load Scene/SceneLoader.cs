@@ -7,13 +7,13 @@ public class SceneLoader : MonoBehaviour
     //public static SceneLoader Instance;
     public static SceneLoader Instance { get; private set; }
 
-    [Header("�¹��P����]�w")]
+    [Header("轉場物件")]
     public GameObject loadingPanel;
     public CanvasGroup loadingCanvasGroup;
     public float fadeDuration = 1f;
     public float minLoadingTime = 2f;
 
-    [Header("�n�[���������W�١]�w�[�J Build Settings�^")]
+    [Header("下一場景名稱")]
     public string sceneToLoad = "type me";
 
     private void Awake()
@@ -21,15 +21,14 @@ public class SceneLoader : MonoBehaviour
         if (Instance == null)
         {
             Instance = this;
-            DontDestroyOnLoad(gameObject); // ������O�s
+            DontDestroyOnLoad(gameObject);
 
-            // ��l�Ƴ]�w
             if (loadingPanel != null)
                 loadingPanel.SetActive(false);
         }
         else
         {
-            Destroy(gameObject); // �p�G�w�g�s�b�A�P�����ƪ�
+            Destroy(gameObject);
         }
     }
 
@@ -42,13 +41,13 @@ public class SceneLoader : MonoBehaviour
     {
         SceneManager.sceneLoaded -= OnSceneLoaded;
     }
-    // �[�W OnDestroy �T�O�M�z
+
     private void OnDestroy()
     {
         SceneManager.sceneLoaded -= OnSceneLoaded;
     }
 
-    public void LoadScene(string sceneName) //// 0924 �R�A��k��K�I�s
+    public void LoadScene(string sceneName) 
     {
         if (Instance != null)
         {
@@ -56,15 +55,15 @@ public class SceneLoader : MonoBehaviour
         }
         else
         {
-            // �p�G Instance ���s�b�A�۰ʫإ�
+            
             CreateInstance();
-            Instance.StartCoroutine(Instance.LoadSceneRoutine(sceneName)); // �ץ����j���D
+            Instance.StartCoroutine(Instance.LoadSceneRoutine(sceneName)); 
         }
     }
 
     private static void CreateInstance()
     {
-        // �q Resources ���J�w�s��
+        
         GameObject loaderPrefab = Resources.Load<GameObject>("SceneLoader");
         if (loaderPrefab != null)
         {
@@ -72,7 +71,7 @@ public class SceneLoader : MonoBehaviour
         }
         else
         {
-            // �Ϊ̰ʺA�إ�
+            
             GameObject go = new GameObject("SceneLoader");
             go.AddComponent<SceneLoader>();
         }
@@ -101,7 +100,7 @@ public class SceneLoader : MonoBehaviour
 
         asyncLoad.allowSceneActivation = true;
 
-        // �������u�����L�h
+        
         yield return null;
         yield return new WaitForSeconds(0.1f);
 
@@ -137,8 +136,6 @@ public class SceneLoader : MonoBehaviour
         }
 
         loadingCanvasGroup.alpha = 0f;
-        
-        //Destroy(this.gameObject); // �R���ۤv
     }
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
@@ -146,7 +143,6 @@ public class SceneLoader : MonoBehaviour
         Debug.Log("[SceneLoader] " + scene.name);
     }
 
-    // 8/5�ȥ�
     public void RestartGame(string startSceneName)
     {
         StartCoroutine(RestartGameRoutine(startSceneName));
@@ -157,9 +153,6 @@ public class SceneLoader : MonoBehaviour
         loadingPanel.SetActive(true);
         yield return StartCoroutine(FadeIn());
 
-        // ���]�ɶ��P�C�����A�]�i�����p�s�W�^
-
-        // ���ݳ̤p�ɶ�
         float timer = 0f;
         while (timer < minLoadingTime)
         {
@@ -167,12 +160,10 @@ public class SceneLoader : MonoBehaviour
             yield return null;
         }
 
-        yield return StartCoroutine(FadeOut()); // �[�J�H�X 0924
+        yield return StartCoroutine(FadeOut());
         loadingPanel.SetActive(false); //新加
-        // �����ϥ� LoadScene�]�|�M����ӳ������e�^
-        SceneManager.LoadScene(startSceneName);
 
-        // �`�N�I�]���o�O���s�i�J�����A�]�� SceneLoader ������b�s���������ءI
+        SceneManager.LoadScene(startSceneName);
 
         yield return null;
     }

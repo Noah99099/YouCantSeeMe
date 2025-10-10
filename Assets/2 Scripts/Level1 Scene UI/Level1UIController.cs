@@ -20,14 +20,14 @@ public class Level1UIController : MonoBehaviour
     public GameObject settingPanel;
 
     private PlayerControls inputActions;
-    private PlayerView playerView; //腳本
     public Vector2 MoveInput { get; private set; }  // 給 PlayerMovement 讀取移動的值
+    //10/10新增
+    public Vector2 LookInput { get; private set; }
+    public bool IsMouseDevice { get; private set; } // 用來判斷Look輸入是否來自滑鼠
     private void Awake()
     {
         // 初始化 Input Actions，若未初始化，OnEnable中會報錯。
         inputActions = new PlayerControls();
-
-        playerView = GetComponent<PlayerView>(); //獲取 PlayerView 腳本
     }
 
     void Start()
@@ -43,6 +43,10 @@ public class Level1UIController : MonoBehaviour
         modelPreviewPanel.SetActive(false); //物品模型預覽panel
         settingPanel.SetActive(false); //遊戲設定panel
 
+        // 只要在Player Map，必定不顯示滑鼠 + 滑鼠鎖定中央
+        Cursor.visible = false;
+        Cursor.lockState = CursorLockMode.Locked;
+
         Debug.Log("初始化 [Level1UIController] 成功");
 
         // 啟動時，根據當前模式立即設定一次焦點
@@ -53,40 +57,36 @@ public class Level1UIController : MonoBehaviour
     {
         // 啟用Player Action Map
         inputActions.Player.Enable();
-        //inputActions.Player.Look.performed += OnLookAction;
+
+        // --- 註冊 Move 事件 ---
         inputActions.Player.Move.performed += OnMovePerformed;
         inputActions.Player.Move.canceled += OnMoveCanceled;
+
+        // --- 註冊 Look 事件 ---
+        inputActions.Player.Look.performed += OnLookPerformed;
+        inputActions.Player.Look.canceled += OnLookCanceled;
+
         inputActions.Player.Interaction.performed += OnInteractionAction;
         inputActions.Player.View.performed += OnViewAction;
         inputActions.Player.OpenSetting.performed += OnOpenSettingAction;
         //一開始沒有打開背包
     }
+
     private void OnDisable()
     {
         // 關閉 Player Action Map
-        //inputActions.Player.Look.performed -= OnLookAction;
+        // --- 取消註冊 Move 事件 ---
         inputActions.Player.Move.performed -= OnMovePerformed;
         inputActions.Player.Move.canceled -= OnMoveCanceled;
+
+        // --- 取消註冊 Look 事件 ---
+        inputActions.Player.Look.performed -= OnLookPerformed;
+        inputActions.Player.Look.canceled -= OnLookCanceled;
+
         inputActions.Player.Interaction.performed -= OnInteractionAction;
         inputActions.Player.View.performed -= OnViewAction;
         inputActions.Player.OpenSetting.performed -= OnOpenSettingAction;
         inputActions.Player.Disable();
-    }
-
-    private void Update()
-    {
-        //Debug.Log($"[Update] MoveInput={inputActions.Player.Move.ReadValue<Vector2>()}, ActionEnabled={inputActions.Player.Move.enabled}");
-
-        // 每幀更新 MoveInput
-        //MoveInput = inputActions.Player.Move.ReadValue<Vector2>();
-
-        // --- Look 處理 ---
-        if (inputActions.Player.Look != null && playerView != null)
-        {
-            Vector2 lookInput = inputActions.Player.Look.ReadValue<Vector2>();
-            bool usingGamepad = inputActions.Player.Look.activeControl?.device is Gamepad;
-            playerView.SetLookInput(lookInput, usingGamepad); // 使用 playerView 腳本的 SetLookInput方法
-        }
     }
 
     private void OnMovePerformed(InputAction.CallbackContext context)
@@ -99,6 +99,18 @@ public class Level1UIController : MonoBehaviour
         MoveInput = Vector2.zero;
     }
 
+    private void OnLookPerformed(InputAction.CallbackContext context)
+    {
+        LookInput = context.ReadValue<Vector2>();
+        // 檢查輸入的裝置是否為滑鼠
+        IsMouseDevice = context.control.device is Mouse;
+    }
+
+    private void OnLookCanceled(InputAction.CallbackContext context)
+    {
+        LookInput = Vector2.zero;
+    }
+    
     private void OnInteractionAction(InputAction.CallbackContext context) //和場景物件、交互點、人物交互
     {
         // 呼叫 PlayerInteraction 的方法
