@@ -15,13 +15,6 @@ public class TeleportTrigger : MonoBehaviour
     {
         if (other.CompareTag(playerTag))
         {
-            // 關閉 PlayerMovement 腳本
-            PlayerMovement playerMovement = other.GetComponent<PlayerMovement>();
-            if (playerMovement != null)
-            {
-                playerMovement.enabled = false;
-            }
-
             // 呼叫 SceneLoader 載入場景
             if (sceneLoader != null)
             {

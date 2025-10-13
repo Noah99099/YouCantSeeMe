@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -39,13 +40,24 @@ public class PlayerRespawnManager : MonoBehaviour
     {
         Debug.Log($"場景加載完成: {scene.name}");
         // 重要修正：每次加載新場景時，自動使用該場景的默認重生點
-        ResetToSceneDefaultSpawnPoint();
+        StartCoroutine(DelayedRespawn());
+
+        //ResetToSceneDefaultSpawnPoint();
     }
 
     public void SetSpawnPoint(string newSpawnPointID)
     {
         currentSpawnPointID = newSpawnPointID;
         Debug.Log($"重生點設置為: {newSpawnPointID}");
+    }
+
+    private IEnumerator DelayedRespawn()
+    {
+        // 延遲 1~2 幀，確保其他 Start() 腳本都執行完
+        yield return null;
+        yield return null;
+
+        ResetToSceneDefaultSpawnPoint();
     }
 
     // 新增方法：自動尋找並使用場景的默認重生點

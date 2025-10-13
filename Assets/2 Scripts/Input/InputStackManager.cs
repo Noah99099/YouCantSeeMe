@@ -16,9 +16,10 @@ public class InputStackManager : MonoBehaviour
     /// </summary>
     public static InputStackManager Instance { get; private set; }
 
-    private PlayerInput playerInput;
+    //private PlayerInput playerInput;
     private readonly Stack<string> mapStack = new Stack<string>();
     //private Stack<string> mapStack = new Stack<string>();
+    private InputActionAsset inputActionAsset; // 使用通用的 InputActionAsset
 
     private void Awake()
     {
@@ -31,50 +32,24 @@ public class InputStackManager : MonoBehaviour
         }
         Instance = this;
         DontDestroyOnLoad(gameObject);
-        // -------------------------
-
-        //playerInput = GetComponent<PlayerInput>();
-        //if (playerInput == null)
-        //{
-        //    Debug.LogError("InputStackManager 必須掛載在擁有 PlayerInput 元件的 GameObject 上！");
-        //    enabled = false; // 禁用此腳本以避免後續錯誤
-        //}
     }
 
     // +++ 新增 +++
     /// <summary>
-    /// (註冊) 向管理器註冊一個 PlayerInput 實例。
-    /// PlayerInput 物件應該在自己的 Awake() 中呼叫此方法。
+    /// (註冊) 向管理器註冊一個 PlayerControls 實例。
     /// </summary>
-    public void RegisterPlayerInput(PlayerInput pi)
+    public void RegisterControls(PlayerControls controls)
     {
-        // 如果已經有一個 PlayerInput，先將其註銷，以新的為主
-        if (this.playerInput != null)
-        {
-            Debug.LogWarning($"InputStackManager: 一個新的 PlayerInput ({pi.gameObject.name}) 正在註冊，舊的 PlayerInput ({this.playerInput.gameObject.name}) 將被覆蓋。");
-        }
-
-        this.playerInput = pi;
-        Debug.Log($"InputStackManager: 成功註冊了來自 '{pi.gameObject.name}' 的 PlayerInput。");
-
-        // 可選：如果註冊時有特殊需求，可以在此處處理，例如強制初始化
-        // Init(InputActionMaps.UI); 
+        // 從 PlayerControls 實例中獲取底層的 asset
+        this.inputActionAsset = controls.asset;
+        Debug.Log("InputStackManager: 成功註冊了 PlayerControls 資源。");
     }
 
     // +++ 新增 +++
-    /// <summary>
-    /// (註銷) 從管理器中移除 PlayerInput 的引用。
-    /// PlayerInput 物件應該在自己的 OnDestroy() 中呼叫此方法。
-    /// </summary>
-    public void UnregisterPlayerInput(PlayerInput pi)
+    public void UnregisterControls()
     {
-        // 確保要註銷的是當前註冊的那個實例，避免錯誤註銷
-        if (this.playerInput == pi)
-        {
-            Debug.Log($"InputStackManager: 來自 '{pi.gameObject.name}' 的 PlayerInput 已註銷。");
-            this.playerInput = null;
-            mapStack.Clear(); // 清空輸入棧，因為輸入源已消失
-        }
+        this.inputActionAsset = null;
+        mapStack.Clear();
     }
 
     /// <summary>
@@ -84,7 +59,7 @@ public class InputStackManager : MonoBehaviour
     /// <param name="initialMap">要設定為棧底的 Action Map 名稱。</param>
     public void Init(string initialMap)
     {
-        if (playerInput == null) return; // 如果沒有 PlayerInput，不做任何事
+        if (inputActionAsset == null) return; // 如果沒有 inputActionAsset，不做任何事
         mapStack.Clear();
         SwitchToExclusive(null); // 停用所有 Map
 
@@ -104,9 +79,9 @@ public class InputStackManager : MonoBehaviour
     /// </param>
     public void PushMap(string mapName, bool isOverlay = false)
     {
-        if (playerInput == null) return; // 如果沒有 PlayerInput，不做任何事
+        if (inputActionAsset == null) return; // 如果沒有 inputActionAsset，不做任何事
 
-        if (playerInput.actions.FindActionMap(mapName) == null)
+        if (inputActionAsset.FindActionMap(mapName) == null)
         {
             Debug.LogError($"嘗試 Push 一個不存在的 Action Map: {mapName}");
             return;
@@ -129,8 +104,7 @@ public class InputStackManager : MonoBehaviour
     /// </summary>
     public void PopMap()
     {
-        if (playerInput == null) return; // 如果沒有 PlayerInput，不做任何事
-
+        if (inputActionAsset == null) return; // 如果沒有 PlayerInput，不做任何事
         if (mapStack.Count <= 1)
         {
             Debug.LogWarning("嘗試 PopMap 但棧中只剩下最後一個 Map，操作已取消。");
@@ -203,7 +177,7 @@ public class InputStackManager : MonoBehaviour
     public InputActionMap GetCurrentActionMap()
     {
         if (mapStack.Count == 0) return null;
-        return playerInput.actions.FindActionMap(mapStack.Peek());
+        return inputActionAsset.FindActionMap(mapStack.Peek());
     }
 
     /// <summary>
@@ -212,7 +186,8 @@ public class InputStackManager : MonoBehaviour
     /// </summary>
     private void SwitchToExclusive(string mapName)
     {
-        foreach (var map in playerInput.actions.actionMaps)
+        if (inputActionAsset == null) return;
+        foreach (var map in inputActionAsset.actionMaps)
         {
             if (map.name != mapName)
             {
@@ -231,7 +206,8 @@ public class InputStackManager : MonoBehaviour
     /// </summary>
     private void SetMapEnabled(string mapName, bool enabled)
     {
-        var map = playerInput.actions.FindActionMap(mapName);
+        if (inputActionAsset == null) return;
+        var map = inputActionAsset.FindActionMap(mapName);
         if (map != null)
         {
             if (enabled) map.Enable();

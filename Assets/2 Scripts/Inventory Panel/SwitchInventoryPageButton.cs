@@ -18,7 +18,7 @@ public class SwitchInventoryPageButton : MonoBehaviour
     //    SetButtonsActive(false);
     //}
 
-    private void OnEnable()
+    private void OnEnable() //要修改的部分，因為用了InventoryUI
     {
         // 訂閱事件
         if (InventoryUI.Instance != null)

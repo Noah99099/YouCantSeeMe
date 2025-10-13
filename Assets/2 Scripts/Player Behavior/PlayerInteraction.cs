@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 using TMPro;
+using UnityEngine.EventSystems;
 
 /// <summary>
 /// UIInputManager 相關的內容不用
@@ -72,7 +73,15 @@ public class PlayerInteraction : MonoBehaviour
             {
                 if (pickupPromptText != null)
                 {
-                    pickupPromptText.text = $"按 [滑鼠左鍵] 拾取 {item.itemData.itemName}";
+                    // 如果是手把模式，更換UI文本提示
+                    if (InputDeviceManager.Instance.CurrentInputType == InputDeviceManager.InputType.Gamepad) 
+                    {
+                        pickupPromptText.text = $"按 [叉] 拾取 {item.itemData.itemName}";
+                    }
+                    else //鍵鼠
+                    {
+                        pickupPromptText.text = $"按 [滑鼠左鍵] 拾取 {item.itemData.itemName}";
+                    }    
                     pickupPromptText.gameObject.SetActive(true);
                 }
                 return;
@@ -81,7 +90,15 @@ public class PlayerInteraction : MonoBehaviour
             {
                 if (pickupPromptText != null)
                 {
-                    pickupPromptText.text = "按 [滑鼠左鍵] 按下按鈕";
+                    // 如果是手把模式，更換UI文本提示
+                    if (InputDeviceManager.Instance.CurrentInputType == InputDeviceManager.InputType.Gamepad)
+                    {
+                        pickupPromptText.text = "按 [叉] 按下按鈕";
+                    }
+                    else //鍵鼠
+                    {
+                        pickupPromptText.text = "按 [滑鼠左鍵] 按下按鈕";
+                    }
                     pickupPromptText.gameObject.SetActive(true);
                 }
                 return;
@@ -91,7 +108,15 @@ public class PlayerInteraction : MonoBehaviour
                 currentInteractable = interactable;
                 if (pickupPromptText != null)
                 {
-                    pickupPromptText.text = $"按 [滑鼠左鍵] 與 {interactable.objectName} 交互";
+                    // 如果是手把模式，更換UI文本提示
+                    if (InputDeviceManager.Instance.CurrentInputType == InputDeviceManager.InputType.Gamepad)
+                    {
+                        pickupPromptText.text = $"按 [叉] 與 {interactable.objectName} 交互";
+                    }
+                    else //鍵鼠
+                    {
+                        pickupPromptText.text = $"按 [滑鼠左鍵] 與 {interactable.objectName} 交互";
+                    }
                     pickupPromptText.gameObject.SetActive(true);
                 }
                 return;
@@ -101,7 +126,15 @@ public class PlayerInteraction : MonoBehaviour
                 //currentInteractable = interactable;
                 if (pickupPromptText != null)
                 {
-                    pickupPromptText.text = $"按 [滑鼠左鍵] 與 {voice.objectName} 交互";
+                    // 如果是手把模式，更換UI文本提示
+                    if (InputDeviceManager.Instance.CurrentInputType == InputDeviceManager.InputType.Gamepad)
+                    {
+                        pickupPromptText.text = $"按 [叉] 與 {voice.objectName} 交互";
+                    }
+                    else //鍵鼠
+                    {
+                        pickupPromptText.text = $"按 [滑鼠左鍵] 與 {voice.objectName} 交互";
+                    }
                     pickupPromptText.gameObject.SetActive(true);
                 }
                 return;
@@ -110,7 +143,32 @@ public class PlayerInteraction : MonoBehaviour
             {
                 if (pickupPromptText != null)
                 {
-                    pickupPromptText.text = $"按 [滑鼠左鍵] 與 {role.objectName} 交互";
+                    // 如果是手把模式，更換UI文本提示
+                    if (InputDeviceManager.Instance.CurrentInputType == InputDeviceManager.InputType.Gamepad)
+                    {
+                        pickupPromptText.text = $"按 [叉] 與 {role.objectName} 交互";
+                    }
+                    else //鍵鼠
+                    {
+                        pickupPromptText.text = $"按 [滑鼠左鍵] 與 {role.objectName} 交互";
+                    }
+                    pickupPromptText.gameObject.SetActive(true);
+                }
+                return;
+            }
+            else if (currentInteractableObject.TryGetComponent<CaseRecordBook>(out var book)) // 檢查是否是 案件紀錄簿，後續的功能才能啟用
+            {
+                if (pickupPromptText != null)
+                {
+                    // 如果是手把模式，更換UI文本提示
+                    if (InputDeviceManager.Instance.CurrentInputType == InputDeviceManager.InputType.Gamepad)
+                    {
+                        pickupPromptText.text = $"按 [叉] 拾取 {book.itemName}";
+                    }
+                    else //鍵鼠
+                    {
+                        pickupPromptText.text = $"按 [滑鼠左鍵] 拾取 {book.itemName}";
+                    }
                     pickupPromptText.gameObject.SetActive(true);
                 }
                 return;
@@ -153,6 +211,16 @@ public class PlayerInteraction : MonoBehaviour
                 button.OnPress();
                 HidePrompt();
             }
+            else if (hitObject.TryGetComponent<CaseRecordBook>(out var book)) //案件紀錄簿
+            {
+                Debug.Log($"拾取了關鍵物品: {book.itemName}！");
+
+                book.Collect();
+
+                // 銷毀物件並隱藏提示
+                Destroy(hitObject);
+                HidePrompt();
+            }
             else if (hitObject.TryGetComponent<InteractableObject>(out var interactable)) //使用物件
             {
                 Debug.Log($"Interacting with: {interactable.objectName}");
@@ -173,7 +241,7 @@ public class PlayerInteraction : MonoBehaviour
         }
     }
 
-    #region ===== 使用物品 =====
+    #region ===== 使用物品的方法 =====
     /// <summary>
     /// 從背包使用物品按鈕呼叫
     /// </summary>

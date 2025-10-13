@@ -8,7 +8,8 @@ public static class InputActionMaps
 {
     public const string _Player = "Player"; //Level1開始的默認模式
     public const string _UI = "UI"; //主介面開始的默認模式
-    public const string _Menu = "Menu"; // Player - Menu
     public const string _Dialogue = "Dialogue";
+    public const string _Setting = "Setting"; //遊戲開始後的遊戲設置，Player - Setting
+    public const string _Inventory = "Inventory"; //遊戲開始後的遊戲設置，Player - Setting
     // ... 在此處加入您所有的 Action Map 名稱
 }

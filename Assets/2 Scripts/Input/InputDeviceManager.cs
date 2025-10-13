@@ -12,15 +12,14 @@ public class InputDeviceManager : MonoBehaviour
     public static InputDeviceManager Instance { get; private set; }
     public enum InputType { KeyboardMouse, Gamepad }
     public InputType CurrentInputType { get; private set; } = InputType.KeyboardMouse;
-    public event Action<InputType> OnInputTypeChanged; //新增事件
 
-    private PlayerInput playerInput; // 用於事件驅動模式
+    // 當輸入設備類型改變時觸發的事件
+    public event Action<InputType> OnInputTypeChanged;
 
     // 防止頻繁切換的計時器
     private float lastSwitchTime;
     private const float switchCooldown = 0.5f;
 
-    #region --- 初始化與場景管理 ---
     private void Awake()
     {
         Debug.Log("InputDeviceManager Awake 被調用");
@@ -34,26 +33,30 @@ public class InputDeviceManager : MonoBehaviour
         Instance = this;
         DontDestroyOnLoad(gameObject);
 
-        // 始終以鍵鼠模式開始，即使連接了手柄
-        //SwitchInput(InputType.KeyboardMouse);
+        // 遊戲啟動時，強制設為鍵鼠模式
+        CurrentInputType = InputType.KeyboardMouse;
+        Debug.Log("InputDeviceManager 初始化，預設為鍵鼠模式。");
     }
 
-    private void OnEnable()
+    private void Update()
     {
-        SceneManager.sceneLoaded += OnSceneLoaded;
-    }
+        // 如果還在冷卻時間內，則不進行偵測，防止模式快速來回切換
+        if (Time.unscaledTime - lastSwitchTime < switchCooldown)
+            return;
 
-    private void OnDisable()
-    {
-        SceneManager.sceneLoaded -= OnSceneLoaded;
+        // 優先偵測鍵鼠輸入
+        if (HasKeyboardMouseInput())
+        {
+            // 如果當前不是鍵鼠模式，則切換過去
+            SetInputType(InputType.KeyboardMouse);
+        }
+        // 否則，偵測手把輸入
+        else if (HasGamepadInput())
+        {
+            // 如果當前不是手把模式，則切換過去
+            SetInputType(InputType.Gamepad);
+        }
     }
-
-    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
-    {
-        // 每次載入場景都嘗試尋找 PlayerInput
-        TryToFindAndSubscribePlayerInput();
-    }
-    #endregion
 
     private void OnDestroy()
     {
@@ -64,104 +67,52 @@ public class InputDeviceManager : MonoBehaviour
             Debug.Log("InputDeviceManager Instance 已清空");
         }
     }
-
-    #region --- 核心邏輯切換 ---
-    private void Update()
-    {
-        // ***** 核心切換邏輯 *****
-        // 如果 playerInput 不是 null，代表我們處於高效的事件模式，
-        // Update 函式不應該做任何事，直接返回。
-        if (playerInput != null)
-        {
-            return;
-        }
-
-        // --- 如果 playerInput 是 null，則執行下面的降級輪詢模式 ---
-        if (Time.unscaledTime - lastSwitchTime < switchCooldown)
-            return;
-
-        // 鍵盤滑鼠輸入偵測
-        if (Keyboard.current != null && (Keyboard.current.anyKey.wasPressedThisFrame))
-        {
-            SetInputType(InputType.KeyboardMouse);
-            return;
-        }
-        if (Mouse.current != null && (Mouse.current.delta.ReadValue().sqrMagnitude > 0.01f || Mouse.current.leftButton.wasPressedThisFrame || Mouse.current.rightButton.wasPressedThisFrame))
-        {
-            SetInputType(InputType.KeyboardMouse);
-            return;
-        }
-
-        // 手柄輸入偵測
-        if (HasGamepadInput())
-        {
-            SetInputType(InputType.Gamepad);
-        }
-    }
  
     private void SetInputType(InputType newType) // 統一的狀態設定方法，無論是事件還是輪詢都調用它
     {
+        // 只有在輸入類型真正改變時，才執行後續邏輯
         if (CurrentInputType != newType)
         {
             CurrentInputType = newType;
             lastSwitchTime = Time.unscaledTime;
-            Debug.Log($"輸入裝置切換為: {CurrentInputType} (模式: {(playerInput == null ? "輪詢" : "事件")})");
+            Debug.Log($"輸入裝置切換為: {CurrentInputType}");
+            // 觸發事件，通知所有訂閱者
             OnInputTypeChanged?.Invoke(newType);
         }
     }
-    #endregion
 
-    #region --- 事件驅動模式 (方法二) ---
-    private void TryToFindAndSubscribePlayerInput()
+    #region --- 輪詢模式輔助方法 ---
+    /// <summary>
+    /// 檢查是否有任何鍵盤或滑鼠的有效輸入。
+    /// </summary>
+    private bool HasKeyboardMouseInput()
     {
-        // 如果之前有綁定，先取消訂閱
-        if (playerInput != null)
+        // 檢查鍵盤是否有任何按鍵被按下
+        if (Keyboard.current != null && Keyboard.current.anyKey.wasPressedThisFrame)
         {
-            playerInput.onControlsChanged -= OnControlsChanged;
+            return true;
         }
 
-        playerInput = FindObjectOfType<PlayerInput>();
+        // 檢查滑鼠是否移動，或是否有按鍵被按下
+        if (Mouse.current != null &&
+            (Mouse.current.delta.ReadValue().sqrMagnitude > 0.1f || // 使用 sqrMagnitude 效率更高
+             Mouse.current.leftButton.wasPressedThisFrame ||
+             Mouse.current.rightButton.wasPressedThisFrame ||
+             Mouse.current.middleButton.wasPressedThisFrame ||
+             Mouse.current.scroll.ReadValue().sqrMagnitude > 0.1f))
+        {
+            return true;
+        }
 
-        if (playerInput != null)
-        {
-            Debug.Log("模式切換: 找到 PlayerInput，進入 [事件驅動] 模式。");
-            playerInput.onControlsChanged += OnControlsChanged;
-            OnControlsChanged(playerInput); // 立即同步一次初始狀態
-        }
-        else
-        {
-            Debug.Log("模式切換: 未找到 PlayerInput，進入 [輪詢] 模式。");
-        }
+        return false;
     }
 
-    private void OnControlsChanged(PlayerInput input)
-    {
-        string scheme = input.currentControlScheme;
-        if (scheme.Contains("Keyboard")) // 稍微泛化，避免名稱寫死
-        {
-            SetInputType(InputType.KeyboardMouse);
-        }
-        else if (scheme.Contains("Gamepad"))
-        {
-            SetInputType(InputType.Gamepad);
-        }
-    }
-
-    #endregion
-
-    #region --- 輪詢模式輔助方法 (來自您的原始腳本) ---
+    /// <summary>
+    /// 檢查是否有任何手把的有效輸入。
+    /// </summary>
     private bool HasGamepadInput()
     {
         if (Gamepad.current == null) return false;
-
-        // 遍歷所有按鈕，只要有任何一個被按下就返回 true
-        foreach (var control in Gamepad.current.allControls)
-        {
-            if (control is UnityEngine.InputSystem.Controls.ButtonControl button && button.wasPressedThisFrame)
-            {
-                return true;
-            }
-        }
 
         // 檢查搖桿和扳機鍵的閾值
         if (Gamepad.current.leftStick.ReadValue().magnitude > 0.2f ||
@@ -172,26 +123,22 @@ public class InputDeviceManager : MonoBehaviour
             return true;
         }
 
+        // 遍歷所有按鈕，只要有任何一個被按下就返回 true
+        foreach (var control in Gamepad.current.allControls)
+        {
+            // 我們只關心 ButtonControl 類型的控件
+            if (control is UnityEngine.InputSystem.Controls.ButtonControl button && button.wasPressedThisFrame)
+            {
+                // 有些手把的搖桿也被視為按鈕（按下時），但我們上面已經檢查過了，這裡可以忽略
+                // 為了避免重複偵測，我們可以加上一個簡單的判斷
+                if (control != Gamepad.current.leftStickButton && control != Gamepad.current.rightStickButton)
+                {
+                    return true;
+                }
+            }
+        }
+
         return false;
     }
     #endregion
-
-    //private void SwitchInput(InputType newType)
-    //{
-    //    // 恢復條件檢查，避免頻繁觸發
-    //    if (CurrentInputType != newType)
-    //    {
-    //        CurrentInputType = newType;
-    //        lastSwitchTime = Time.unscaledTime;
-    //        Debug.Log($"輸入裝置切換為: {CurrentInputType}");
-
-    //        // 觸發事件
-    //        OnInputTypeChanged?.Invoke(newType);
-    //    }
-    //    else
-    //    {
-    //        // 即使類型相同，也不觸發事件，避免頻繁觸發
-    //        Debug.Log($"輸入裝置保持為: {CurrentInputType}，不觸發事件");
-    //    }
-    //}
 }

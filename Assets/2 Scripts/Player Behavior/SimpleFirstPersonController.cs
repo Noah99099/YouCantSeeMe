@@ -59,14 +59,6 @@ public class SimpleFirstPersonController : MonoBehaviour
     private void Start()
     {
         _controller = GetComponent<CharacterController>();
-        //_inputHandler = GetComponent<Level1UIController>(); // 獲取 PlayerInputHandler
-        // 檢查是否成功獲取，如果沒有就報錯
-        //if (_inputHandler == null)
-        //{
-        //    Debug.LogError("PlayerInputHandler component not found on the GameObject.");
-        //}
-
-        // reset our fall timeout on start
         _fallTimeoutDelta = FallTimeout;
     }
 
