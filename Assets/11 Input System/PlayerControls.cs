@@ -648,9 +648,27 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""initialStateCheck"": false
                 },
                 {
-                    ""name"": ""LeftClick"",
+                    ""name"": ""Click"",
                     ""type"": ""Button"",
                     ""id"": ""2ffb8ccc-a5b4-4766-85cd-4e318138c707"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""ToGhostPanel"",
+                    ""type"": ""Button"",
+                    ""id"": ""260a9780-906e-4af7-9ede-4018e0574627"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""ToCluePanel"",
+                    ""type"": ""Button"",
+                    ""id"": ""800eb848-592e-4ca1-9a3d-7f4801f437fc"",
                     ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """",
@@ -874,7 +892,29 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": "";鍵鼠"",
-                    ""action"": ""LeftClick"",
+                    ""action"": ""Click"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""f20dd5ef-35b4-43f1-90d0-7d8b6ea338ed"",
+                    ""path"": ""<Gamepad>/rightShoulder"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Gamepad"",
+                    ""action"": ""ToGhostPanel"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""6e41d6aa-633b-4ca2-bb55-a2af7bb3dad3"",
+                    ""path"": ""<Gamepad>/leftShoulder"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Gamepad"",
+                    ""action"": ""ToCluePanel"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -1199,7 +1239,9 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         m_Inventory_OpenModelPreview = m_Inventory.FindAction("OpenModelPreview", throwIfNotFound: true);
         m_Inventory_CloseInventory = m_Inventory.FindAction("CloseInventory", throwIfNotFound: true);
         m_Inventory_Point = m_Inventory.FindAction("Point", throwIfNotFound: true);
-        m_Inventory_LeftClick = m_Inventory.FindAction("LeftClick", throwIfNotFound: true);
+        m_Inventory_Click = m_Inventory.FindAction("Click", throwIfNotFound: true);
+        m_Inventory_ToGhostPanel = m_Inventory.FindAction("ToGhostPanel", throwIfNotFound: true);
+        m_Inventory_ToCluePanel = m_Inventory.FindAction("ToCluePanel", throwIfNotFound: true);
         // Dialogue
         m_Dialogue = asset.FindActionMap("Dialogue", throwIfNotFound: true);
         m_Dialogue_Submit = m_Dialogue.FindAction("Submit", throwIfNotFound: true);
@@ -1595,7 +1637,9 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
     private readonly InputAction m_Inventory_OpenModelPreview;
     private readonly InputAction m_Inventory_CloseInventory;
     private readonly InputAction m_Inventory_Point;
-    private readonly InputAction m_Inventory_LeftClick;
+    private readonly InputAction m_Inventory_Click;
+    private readonly InputAction m_Inventory_ToGhostPanel;
+    private readonly InputAction m_Inventory_ToCluePanel;
     /// <summary>
     /// Provides access to input actions defined in input action map "Inventory".
     /// </summary>
@@ -1628,9 +1672,17 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         /// </summary>
         public InputAction @Point => m_Wrapper.m_Inventory_Point;
         /// <summary>
-        /// Provides access to the underlying input action "Inventory/LeftClick".
+        /// Provides access to the underlying input action "Inventory/Click".
         /// </summary>
-        public InputAction @LeftClick => m_Wrapper.m_Inventory_LeftClick;
+        public InputAction @Click => m_Wrapper.m_Inventory_Click;
+        /// <summary>
+        /// Provides access to the underlying input action "Inventory/ToGhostPanel".
+        /// </summary>
+        public InputAction @ToGhostPanel => m_Wrapper.m_Inventory_ToGhostPanel;
+        /// <summary>
+        /// Provides access to the underlying input action "Inventory/ToCluePanel".
+        /// </summary>
+        public InputAction @ToCluePanel => m_Wrapper.m_Inventory_ToCluePanel;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -1672,9 +1724,15 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @Point.started += instance.OnPoint;
             @Point.performed += instance.OnPoint;
             @Point.canceled += instance.OnPoint;
-            @LeftClick.started += instance.OnLeftClick;
-            @LeftClick.performed += instance.OnLeftClick;
-            @LeftClick.canceled += instance.OnLeftClick;
+            @Click.started += instance.OnClick;
+            @Click.performed += instance.OnClick;
+            @Click.canceled += instance.OnClick;
+            @ToGhostPanel.started += instance.OnToGhostPanel;
+            @ToGhostPanel.performed += instance.OnToGhostPanel;
+            @ToGhostPanel.canceled += instance.OnToGhostPanel;
+            @ToCluePanel.started += instance.OnToCluePanel;
+            @ToCluePanel.performed += instance.OnToCluePanel;
+            @ToCluePanel.canceled += instance.OnToCluePanel;
         }
 
         /// <summary>
@@ -1701,9 +1759,15 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @Point.started -= instance.OnPoint;
             @Point.performed -= instance.OnPoint;
             @Point.canceled -= instance.OnPoint;
-            @LeftClick.started -= instance.OnLeftClick;
-            @LeftClick.performed -= instance.OnLeftClick;
-            @LeftClick.canceled -= instance.OnLeftClick;
+            @Click.started -= instance.OnClick;
+            @Click.performed -= instance.OnClick;
+            @Click.canceled -= instance.OnClick;
+            @ToGhostPanel.started -= instance.OnToGhostPanel;
+            @ToGhostPanel.performed -= instance.OnToGhostPanel;
+            @ToGhostPanel.canceled -= instance.OnToGhostPanel;
+            @ToCluePanel.started -= instance.OnToCluePanel;
+            @ToCluePanel.performed -= instance.OnToCluePanel;
+            @ToCluePanel.canceled -= instance.OnToCluePanel;
         }
 
         /// <summary>
@@ -2242,12 +2306,26 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnPoint(InputAction.CallbackContext context);
         /// <summary>
-        /// Method invoked when associated input action "LeftClick" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// Method invoked when associated input action "Click" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
         /// </summary>
         /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-        void OnLeftClick(InputAction.CallbackContext context);
+        void OnClick(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "ToGhostPanel" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnToGhostPanel(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "ToCluePanel" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnToCluePanel(InputAction.CallbackContext context);
     }
     /// <summary>
     /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "Dialogue" which allows adding and removing callbacks.

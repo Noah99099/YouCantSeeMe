@@ -16,7 +16,11 @@ public class InputStackManager : MonoBehaviour
     /// </summary>
     public static InputStackManager Instance { get; private set; }
 
-    //private PlayerInput playerInput;
+    // +++ 新增 +++
+    [Header("滑鼠狀態管理")]
+    [Tooltip("請在此處填入所有「鍵鼠和手柄交替」的 Action Map 名稱")]
+    [SerializeField] private List<string> uiMapNames = new List<string>();
+
     private readonly Stack<string> mapStack = new Stack<string>();
     //private Stack<string> mapStack = new Stack<string>();
     private InputActionAsset inputActionAsset; // 使用通用的 InputActionAsset
@@ -66,6 +70,9 @@ public class InputStackManager : MonoBehaviour
         mapStack.Push(initialMap);
         SetMapEnabled(initialMap, true);
         Debug.Log($"輸入棧已初始化，當前 Action Map: {initialMap}");
+
+        // +++ 新增 +++
+        UpdateCursorStateBasedOnTopMap();
     }
 
     /// <summary>
@@ -97,6 +104,9 @@ public class InputStackManager : MonoBehaviour
         mapStack.Push(mapName);
         SetMapEnabled(mapName, true);
         Debug.Log($"Push Map: {mapName} (Overlay: {isOverlay})。當前棧: [{string.Join(", ", mapStack.Reverse())}]");
+
+        // +++ 新增 +++
+        UpdateCursorStateBasedOnTopMap();
     }
 
     /// <summary>
@@ -119,6 +129,35 @@ public class InputStackManager : MonoBehaviour
         SetMapEnabled(newTopMap, true);
 
         Debug.Log($"Pop Map: {poppedMap}。當前啟用的 Action Map: {newTopMap}。當前棧: [{string.Join(", ", mapStack.Reverse())}]");
+
+        // +++ 新增 +++
+        UpdateCursorStateBasedOnTopMap();
+    }
+
+    /// <summary>
+    /// 根據棧頂的 Action Map，自動更新滑鼠的鎖定和可見狀態。
+    /// </summary>
+    private void UpdateCursorStateBasedOnTopMap()
+    {
+        if (mapStack.Count == 0) return;
+
+        string currentTopMap = mapStack.Peek();
+
+        // 檢查當前的 Map 是否在我們定義的 UI Map 列表中
+        if (uiMapNames.Contains(currentTopMap))
+        {
+            // 如果是 UI Map，則顯示並解鎖滑鼠
+            Cursor.visible = true;
+            Cursor.lockState = CursorLockMode.None;
+            Debug.Log($"[InputStackManager] 進入 UI Map ({currentTopMap})，顯示滑鼠。");
+        }
+        else
+        {
+            // 如果不是 UI Map (即遊戲世界 Map)，則隱藏並鎖定滑鼠
+            Cursor.visible = false;
+            Cursor.lockState = CursorLockMode.Locked;
+            Debug.Log($"[InputStackManager] 進入 Gameplay Map ({currentTopMap})，隱藏滑鼠。");
+        }
     }
 
     /// <summary>

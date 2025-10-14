@@ -30,7 +30,7 @@ public class PlayerInteraction : MonoBehaviour
 
     private void Awake()
     {
-        // 實現單例模式
+        // 實現單例模式，但不跨場景
         if (Instance == null)
         {
             Instance = this;

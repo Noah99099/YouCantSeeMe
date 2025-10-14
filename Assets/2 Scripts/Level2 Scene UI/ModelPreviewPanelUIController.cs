@@ -1,20 +1,23 @@
+using System;
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 
-public class SettingPanelUIController : MonoBehaviour
+public class ModelPreviewPanelUIController : MonoBehaviour
 {
-    // PlayerControls 主要來源於InputStackManager -> InputProvider -> SettingPanelUIController
-    [Tooltip("遊戲設置")]
-    public GameObject settingPanel;
+    // PlayerControls 主要來源於InputStackManager -> InputProvider -> ModelPreviewPanelUIController
+    [Tooltip("預覽物品建模")]
+    public GameObject modelPreviewPanel;
+
     private void OnEnable()
     {
-        // *** 關鍵修改: 移除 playerControls.Setting.Enable(); ***
-        // *** 關鍵修改: 使用來自 Level1UIController 的共享實例 ***
         if (InputProvider.InputActions == null) return; // 防呆
-        InputProvider.InputActions.Setting.CloseSetting.performed += OnCloseSettingPanel;
 
-        // ***** 新增: 取消訂閱設備變更事件 *****
+        // --- 註冊關閉預覽物品建模面板 ---
+        InputProvider.InputActions.ModelPreview.CloseModelPreview.performed += OnCloseModelPreview;
+
         // **必要：隨時切換輸入模式
         if (InputDeviceManager.Instance != null)
         {
@@ -27,15 +30,28 @@ public class SettingPanelUIController : MonoBehaviour
 
     private void OnDisable()
     {
-        // *** 關鍵修改: 移除 playerControls.Setting.Disable(); ***
         if (InputProvider.InputActions == null) return; // 防呆
-        InputProvider.InputActions.Setting.CloseSetting.performed -= OnCloseSettingPanel;
+        // --- 取消註冊 ---
+        InputProvider.InputActions.ModelPreview.CloseModelPreview.performed -= OnCloseModelPreview;
 
-        // ***** 新增: 取消訂閱設備變更事件 *****
+        // ** 必要: 取消訂閱設備變更事件
         if (InputDeviceManager.Instance != null)
         {
             InputDeviceManager.Instance.OnInputTypeChanged -= HandleInputTypeChange;
         }
+    }
+
+    public void CloseModelPreviewPanel() // OnCloseModelPreview調用，因為按鈕事件所以重點寫這裡
+    {
+        // 1. *** PopMap 寫在這裡 ***
+        // 從棧中彈出 ModelPreview map，此時 Inventory map 會被自動重新啟用
+        InputStackManager.Instance.PopMap(); // PopMap() 現在會自動處理滑鼠狀態
+
+        // 2. 執行關閉 Panel 的邏輯
+        EventSystem.current.SetSelectedGameObject(null); //清除所有UI焦點避免出問題
+
+        modelPreviewPanel.SetActive(false);
+        Debug.Log($"[{this}] 預覽物品建模面板已關閉。");
     }
 
     /// <summary>
@@ -56,17 +72,9 @@ public class SettingPanelUIController : MonoBehaviour
         }
     }
 
-    private void OnCloseSettingPanel(InputAction.CallbackContext context)
+    private void OnCloseModelPreview(InputAction.CallbackContext context)
     {
-        // 1. *** PopMap 寫在這裡 ***
-        // 從棧中彈出 UI map，此時 Player map 會被自動重新啟用
-        InputStackManager.Instance.PopMap(); // PopMap() 現在會自動處理滑鼠狀態
-
-        // 2. 執行關閉 Panel 的邏輯
-        EventSystem.current.SetSelectedGameObject(null); //清除所有UI焦點避免出問題
-
-        settingPanel.SetActive(false);       
-        Debug.Log($"[{this}] 遊戲設置面板已關閉。");
+        CloseModelPreviewPanel();
     }
 
     /// <summary>

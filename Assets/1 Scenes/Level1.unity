@@ -3345,7 +3345,6 @@ GameObject:
   - component: {fileID: 138722810}
   - component: {fileID: 138722812}
   - component: {fileID: 138722811}
-  - component: {fileID: 138722813}
   m_Layer: 5
   m_Name: SettingPanel
   m_TagString: Untagged
@@ -3412,18 +3411,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 138722809}
   m_CullTransparentMesh: 1
---- !u!114 &138722813
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 138722809}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f9c84ec05ab17144d9687bb2f6e863d1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &146662487
 GameObject:
   m_ObjectHideFlags: 0
@@ -4874,9 +4861,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1530991767}
-        m_TargetAssemblyTypeName: ItemDetailUI, Assembly-CSharp
-        m_MethodName: ClosePreviewAndReturnToInventory
+      - m_Target: {fileID: 1640733876}
+        m_TargetAssemblyTypeName: ModelPreviewPanelUIController, Assembly-CSharp
+        m_MethodName: CloseModelPreviewPanel
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -5235,6 +5222,7 @@ RectTransform:
   - {fileID: 656544613}
   - {fileID: 1531182063}
   - {fileID: 678743033}
+  - {fileID: 2037748400}
   - {fileID: 1025089710}
   - {fileID: 1180894271}
   - {fileID: 1042569077}
@@ -15253,6 +15241,7 @@ GameObject:
   - component: {fileID: 888628242}
   - component: {fileID: 888628241}
   - component: {fileID: 888628240}
+  - component: {fileID: 888628244}
   m_Layer: 5
   m_Name: SettingCanvas
   m_TagString: Untagged
@@ -15343,6 +15332,18 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
+--- !u!114 &888628244
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 888628239}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9bb31470f5085584092d6c96f3c87920, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &893405059
 GameObject:
   m_ObjectHideFlags: 0
@@ -18211,7 +18212,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1530991768}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: SwitchInventoryPageButton, Assembly-CSharp
         m_MethodName: OnButtonClicked
         m_Mode: 3
@@ -18629,7 +18630,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1530991768}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: SwitchInventoryPageButton, Assembly-CSharp
         m_MethodName: OnButtonClicked
         m_Mode: 3
@@ -20967,7 +20968,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1530991768}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: SwitchInventoryPageButton, Assembly-CSharp
         m_MethodName: OnButtonClicked
         m_Mode: 3
@@ -26018,7 +26019,6 @@ GameObject:
   - component: {fileID: 1530991766}
   - component: {fileID: 1530991765}
   - component: {fileID: 1530991767}
-  - component: {fileID: 1530991768}
   m_Layer: 0
   m_Name: InventoryManager
   m_TagString: Untagged
@@ -26079,31 +26079,6 @@ MonoBehaviour:
   modelSpawnPoint: {fileID: 1021975863}
   previewCamera: {fileID: 53566301}
   previewController: {fileID: 273982282}
---- !u!114 &1530991768
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1530991764}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bbeb47e78d1c4634daa56c4737200fb5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  buttons:
-  - {fileID: 1025089711}
-  - {fileID: 1180894272}
-  - {fileID: 1042569078}
-  normalSprite: {fileID: 21300000, guid: 3fb22e5ede2767c4b93699b8f474861d, type: 3}
-  selectedSprites:
-  - {fileID: 21300000, guid: ec9e78496b3aca94b87d61ba96fab20a, type: 3}
-  - {fileID: 21300000, guid: ec9e78496b3aca94b87d61ba96fab20a, type: 3}
-  - {fileID: 21300000, guid: ec9e78496b3aca94b87d61ba96fab20a, type: 3}
-  panels:
-  - {fileID: 656544612}
-  - {fileID: 1531182062}
-  - {fileID: 678743032}
 --- !u!1 &1531182062
 GameObject:
   m_ObjectHideFlags: 0
@@ -27524,8 +27499,11 @@ GameObject:
   m_Component:
   - component: {fileID: 1640733869}
   - component: {fileID: 1640733871}
-  - component: {fileID: 1640733872}
   - component: {fileID: 1640733873}
+  - component: {fileID: 1640733872}
+  - component: {fileID: 1640733874}
+  - component: {fileID: 1640733875}
+  - component: {fileID: 1640733876}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -27545,7 +27523,8 @@ Transform:
   m_LocalPosition: {x: 1261.4666, y: 668.60016, z: -41.568806}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 1712093059}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1640733871
@@ -27590,6 +27569,46 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9bb31470f5085584092d6c96f3c87920, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &1640733874
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1640733867}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f9c84ec05ab17144d9687bb2f6e863d1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  settingPanel: {fileID: 138722809}
+--- !u!114 &1640733875
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1640733867}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9a222e07ecfa6ba4f93466228942c34c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  inventoryPanel: {fileID: 656544612}
+  modelPreviewPanel: {fileID: 2064508794}
+--- !u!114 &1640733876
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1640733867}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a093213985dca9740afcb65acd38aeb9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  modelPreviewPanel: {fileID: 2064508794}
 --- !u!1 &1641959064
 GameObject:
   m_ObjectHideFlags: 0
@@ -28985,6 +29004,63 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1706430458}
   m_CullTransparentMesh: 1
+--- !u!1 &1712093058
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1712093059}
+  - component: {fileID: 1712093060}
+  m_Layer: 0
+  m_Name: SwitchInventoryPage
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1712093059
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1712093058}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1640733869}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1712093060
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1712093058}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbeb47e78d1c4634daa56c4737200fb5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  buttons:
+  - {fileID: 1025089711}
+  - {fileID: 1180894272}
+  - {fileID: 1042569078}
+  normalSprite: {fileID: 21300000, guid: 3fb22e5ede2767c4b93699b8f474861d, type: 3}
+  selectedSprites:
+  - {fileID: 21300000, guid: ec9e78496b3aca94b87d61ba96fab20a, type: 3}
+  - {fileID: 21300000, guid: ec9e78496b3aca94b87d61ba96fab20a, type: 3}
+  - {fileID: 21300000, guid: ec9e78496b3aca94b87d61ba96fab20a, type: 3}
+  panels:
+  - {fileID: 656544612}
+  - {fileID: 1531182062}
+  - {fileID: 678743032}
 --- !u!1 &1716268440
 GameObject:
   m_ObjectHideFlags: 0
@@ -32594,9 +32670,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: InventoryUI, Assembly-CSharp
-        m_MethodName: OnItemPreviewButtonClicked
+      - m_Target: {fileID: 1640733875}
+        m_TargetAssemblyTypeName: InventoryPanelUIController, Assembly-CSharp
+        m_MethodName: OpenModelPreview
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -34909,6 +34985,81 @@ CanvasRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2023851635}
+  m_CullTransparentMesh: 1
+--- !u!1 &2037748399
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2037748400}
+  - component: {fileID: 2037748402}
+  - component: {fileID: 2037748401}
+  m_Layer: 5
+  m_Name: CluePanel
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!224 &2037748400
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2037748399}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 254457078}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &2037748401
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2037748399}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 0.392}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 10907, guid: 0000000000000000f000000000000000, type: 0}
+  m_Type: 1
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+--- !u!222 &2037748402
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2037748399}
   m_CullTransparentMesh: 1
 --- !u!1 &2038226708
 GameObject:

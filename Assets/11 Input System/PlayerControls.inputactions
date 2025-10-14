@@ -562,9 +562,27 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "LeftClick",
+                    "name": "Click",
                     "type": "Button",
                     "id": "2ffb8ccc-a5b4-4766-85cd-4e318138c707",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "ToGhostPanel",
+                    "type": "Button",
+                    "id": "260a9780-906e-4af7-9ede-4018e0574627",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "ToCluePanel",
+                    "type": "Button",
+                    "id": "800eb848-592e-4ca1-9a3d-7f4801f437fc",
                     "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
@@ -788,7 +806,29 @@
                     "interactions": "",
                     "processors": "",
                     "groups": ";鍵鼠",
-                    "action": "LeftClick",
+                    "action": "Click",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "f20dd5ef-35b4-43f1-90d0-7d8b6ea338ed",
+                    "path": "<Gamepad>/rightShoulder",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Gamepad",
+                    "action": "ToGhostPanel",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "6e41d6aa-633b-4ca2-bb55-a2af7bb3dad3",
+                    "path": "<Gamepad>/leftShoulder",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Gamepad",
+                    "action": "ToCluePanel",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

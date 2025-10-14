@@ -11,40 +11,49 @@ public class SwitchInventoryPageButton : MonoBehaviour
     [SerializeField] private GameObject[] panels; // 這裡放 A, B, C 面板
 
     private int currentPanelIndex = 0; // 0 = 物品, 1 = 鬼, 2 = 聲音
+    // ***** 新增: 用於存儲父級控制器的引用 *****
+    private InventoryPanelUIController _panelController;
 
-    //private void Start()
-    //{
-    //    // 一開始隱藏三個按鈕
-    //    SetButtonsActive(false);
-    //}
-
-    private void OnEnable() //要修改的部分，因為用了InventoryUI
+    private void Awake()
     {
-        // 訂閱事件
-        if (InventoryUI.Instance != null)
-        {
-            InventoryUI.Instance.OnInventoryOpened += HandleInventoryOpened;
-            InventoryUI.Instance.OnInventoryClosed += HandleInventoryClosed;
-        }
+        // 在 Awake 時，向上查找父物件中的控制器。
+        // 這樣做比單例模式更靈活，且不需要在 Inspector 中手動拖曳。
+        _panelController = GetComponentInParent<InventoryPanelUIController>();
 
-        // 也可以防呆：如果此時背包已經開啟，立即刷新狀態
-        if (InventoryUI.Instance != null && InventoryUI.Instance.isInventoryVisible)
+        if (_panelController == null)
         {
-            HandleInventoryOpened();
+            Debug.LogError("SwitchInventoryPageButton 找不到父級的 InventoryPanelUIController！", this.gameObject);
         }
-        else
+    }
+
+    private void Start()
+    {
+        
+    }
+
+    private void OnEnable()
+    {
+        // ***** 修改: 訂閱來自 _panelController 的新事件 *****
+        if (_panelController != null)
         {
-            SetButtonsActive(false);
+            _panelController.OnPanelOpened += HandleInventoryOpened;
+            _panelController.OnPanelClosed += HandleInventoryClosed;
+
+            // 防呆：如果啟用時，父面板已經是打開狀態，立即刷新按鈕
+            if (_panelController.IsInventoryPanelOpen)
+            {
+                HandleInventoryOpened();
+            }
         }
     }
 
     private void OnDisable()
     {
-        // 取消訂閱
-        if (InventoryUI.Instance != null)
+        // ***** 修改: 取消訂閱來自 _panelController 的事件 *****
+        if (_panelController != null)
         {
-            InventoryUI.Instance.OnInventoryOpened -= HandleInventoryOpened;
-            InventoryUI.Instance.OnInventoryClosed -= HandleInventoryClosed;
+            _panelController.OnPanelOpened -= HandleInventoryOpened;
+            _panelController.OnPanelClosed -= HandleInventoryClosed;
         }
     }
 
