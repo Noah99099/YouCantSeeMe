@@ -44,10 +44,10 @@ public class SimpleFirstPersonController : MonoBehaviour
 
     // --- 私有變數 ---
     private float _speed;
-    private float _rotationVelocity;
-    private float _cinemachineTargetPitch;
-    private float _verticalVelocity;
-    private float _terminalVelocity = 53.0f;
+    private float _rotationVelocity; //旋轉速度
+    private float _cinemachineTargetPitch; //攝影機目標俯仰
+    private float _verticalVelocity; //垂直速度
+    private float _terminalVelocity = 53.0f; //終端速度
 
     private float _fallTimeoutDelta;
     private const float _threshold = 0.01f;
@@ -64,14 +64,14 @@ public class SimpleFirstPersonController : MonoBehaviour
 
     private void Update()
     {
-        GroundedCheck();
-        ApplyGravity();
-        Move();
+        GroundedCheck(); // Player觸地方法
+        ApplyGravity(); // 應用重力方法
+        Move(); //移動方法
     }
 
     private void LateUpdate()
     {
-        CameraRotation();
+        CameraRotation(); // 第一人稱相機旋轉方法
     }
 
     private void GroundedCheck()
@@ -113,12 +113,23 @@ public class SimpleFirstPersonController : MonoBehaviour
         // 讀取 LookInput，而不是 _input.look
         if (_inputHandler.LookInput.sqrMagnitude >= _threshold)
         {
+            // 判斷輸入來源（滑鼠 or 手柄）
+            bool isMouse = _inputHandler.IsMouseDevice;
             // 判斷是否為滑鼠輸入，來決定是否乘以 Time.deltaTime
             float deltaTimeMultiplier = _inputHandler.IsMouseDevice ? 1.0f : Time.deltaTime;
 
-            // 使用 _inputHandler.LookInput 來計算
-            _cinemachineTargetPitch += _inputHandler.LookInput.y * RotationSpeed * deltaTimeMultiplier;
-            _rotationVelocity = _inputHandler.LookInput.x * RotationSpeed * deltaTimeMultiplier;
+            // 取得 SensitivityManager 靈敏度
+            float sensitivity = 1f;
+            if (SensitivityManager.Instance != null)
+            {
+                sensitivity = isMouse ?
+                    SensitivityManager.Instance.GetMouseSensitivity() :
+                    SensitivityManager.Instance.GetGamepadSensitivity();
+            }
+
+            // 用靈敏度控制旋轉速度
+            _cinemachineTargetPitch += _inputHandler.LookInput.y * sensitivity * RotationSpeed * deltaTimeMultiplier;
+            _rotationVelocity = _inputHandler.LookInput.x * sensitivity * RotationSpeed * deltaTimeMultiplier;
 
             _cinemachineTargetPitch = ClampAngle(_cinemachineTargetPitch, BottomClamp, TopClamp);
 

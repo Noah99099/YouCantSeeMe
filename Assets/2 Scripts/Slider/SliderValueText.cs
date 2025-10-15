@@ -20,7 +20,7 @@ public class SliderValueText : MonoBehaviour
     {
         if (valueText != null)
         {
-            valueText.text = value.ToString("F0");
+            valueText.text = value.ToString("F1");
         }
     }
 }

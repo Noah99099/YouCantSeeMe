@@ -5346,7 +5346,6 @@ GameObject:
   - component: {fileID: 7049070386834799050}
   - component: {fileID: 7049070386834799052}
   - component: {fileID: 7049070386834799051}
-  - component: {fileID: 7049070386834799053}
   m_Layer: 0
   m_Name: F1_Plate1
   m_TagString: Untagged
@@ -5783,31 +5782,6 @@ SphereCollider:
   serializedVersion: 3
   m_Radius: 0.120000005
   m_Center: {x: -0.00000011920929, y: 0.00000026822087, z: 0.009295433}
---- !u!114 &7049070386834799053
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3054531314421599635}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 778196790939939438401f4c7638ef89, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  objectID: type me
-  visibleInYang: 1
-  visibleInYin: 1
-  interactiveInYang: 0
-  interactiveInYin: 0
-  yangMesh: {fileID: -8000396292262300494, guid: e2507125d04bd1c459d1d046e2fc0c88,
-    type: 3}
-  yinMesh: {fileID: -8000396292262300494, guid: e2507125d04bd1c459d1d046e2fc0c88,
-    type: 3}
-  yangCollider: {fileID: 7049070386834799052}
-  yinCollider: {fileID: 7049070386834799051}
-  yangMaterial: {fileID: 2100000, guid: 01d78b95112dabe42bfeec237691f245, type: 2}
-  yinMaterial: {fileID: 2100000, guid: d198361109e70a84eacb46e427183dc8, type: 2}
 --- !u!4 &7275817857887711585 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 6807868474209544562, guid: 5536130aa06dba842a6af5bf47aa6ff3,

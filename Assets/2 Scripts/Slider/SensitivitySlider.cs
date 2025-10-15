@@ -23,30 +23,30 @@ public class SensitivitySlider : MonoBehaviour
 
     private IEnumerator InitAfterDelay()
     {
+        // 等待一幀確保 SensitivityManager 初始化完成
         yield return null;
 
         if (SensitivityManager.Instance != null && sensitivitySlider != null)
         {
-            sensitivitySlider.minValue = SensitivityManager.Instance.minSensitivity;
-            sensitivitySlider.maxValue = SensitivityManager.Instance.maxSensitivity;
+            // 將 Slider 範圍放大十倍（0~50）
+            sensitivitySlider.minValue = SensitivityManager.Instance.minSensitivity * 10f;
+            sensitivitySlider.maxValue = SensitivityManager.Instance.maxSensitivity * 10f;
+            sensitivitySlider.wholeNumbers = true; // 每格對應 0.1
 
-            // 設定初始值
+            // 將初始值也放大十倍
+            float initialValue = 0f;
             switch (sensitivityType)
             {
                 case SensitivityType.Mouse:
-                    sensitivitySlider.value = SensitivityManager.Instance.mouseSensitivity;
+                    initialValue = SensitivityManager.Instance.mouseSensitivity * 10f;
                     break;
                 case SensitivityType.Gamepad:
-                    sensitivitySlider.value = SensitivityManager.Instance.gamepadSensitivity;
+                    initialValue = SensitivityManager.Instance.gamepadSensitivity * 10f;
                     break;
             }
 
-            // 訂閱事件
+            sensitivitySlider.value = initialValue;
             sensitivitySlider.onValueChanged.AddListener(OnSensitivityChanged);
-        }
-        else
-        {
-            Debug.LogWarning("無法綁定 SensitivityManager 或 sensitivitySlider 為 null");
         }
     }
 
@@ -54,13 +54,17 @@ public class SensitivitySlider : MonoBehaviour
     {
         if (SensitivityManager.Instance == null) return;
 
+        // 將 slider.value 映射回原始範圍（除以 10）
+        float mappedValue = value / 10f;
+
+        // 直接把 Slider 值傳進 SensitivityManager（範圍已對齊）
         switch (sensitivityType)
         {
             case SensitivityType.Mouse:
-                SensitivityManager.Instance.mouseSensitivity = value;
+                SensitivityManager.Instance.SetMouseSensitivity(mappedValue);
                 break;
             case SensitivityType.Gamepad:
-                SensitivityManager.Instance.gamepadSensitivity = value;
+                SensitivityManager.Instance.SetGamepadSensitivity(mappedValue);
                 break;
         }
     }
