@@ -10,7 +10,11 @@ public static class InputActionMaps
     public const string _UI = "UI"; //主介面開始的默認模式
     public const string _Dialogue = "Dialogue";
     public const string _Setting = "Setting"; //遊戲開始後的遊戲設置，Player - Setting
-    public const string _Inventory = "Inventory"; //遊戲開始後的遊戲設置，Player - Setting
+    public const string _Inventory = "Inventory"; //Player - Inventory，案件紀錄簿-物品
     public const string _ModelPreview = "ModelPreview"; //遊戲開始後的遊戲設置，Player - Setting
+    public const string _Loading = "Loading"; //轉場使用，沒有任何 action
+    public const string _GhostPanel = "GhostPanel"; //Player - Inventory - GhostPanel，案件紀錄簿-鬼
+    public const string _VoicePanel = "VoicePanel"; //Player - Inventory - GhostPanel，案件紀錄簿-聲音
+    public const string _CluePanel = "CluePanel"; //Player - Inventory - GhostPanel，案件紀錄簿-組合線索
     // ... 在此處加入您所有的 Action Map 名稱
 }

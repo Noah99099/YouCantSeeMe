@@ -1,6 +1,5 @@
-using System.Collections;
+// PlayerRespawnManager.cs
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 public class PlayerRespawnManager : MonoBehaviour
 {
@@ -16,9 +15,6 @@ public class PlayerRespawnManager : MonoBehaviour
         {
             Instance = this;
             DontDestroyOnLoad(gameObject);
-
-            // 訂閱場景加載事件
-            SceneManager.sceneLoaded += OnSceneLoaded;
         }
         else
         {
@@ -26,23 +22,42 @@ public class PlayerRespawnManager : MonoBehaviour
         }
     }
 
-    void OnDestroy()
+    // ***** 新增: 在 Start 中訂閱 SceneLoader 的事件 *****
+    // 使用 Start 是為了確保 SceneLoader.Instance 已經在它的 Awake 中被賦值
+    private void Start()
     {
-        // 取消訂閱避免記憶體洩漏
-        if (Instance == this)
+        if (SceneLoader.Instance != null)
         {
-            SceneManager.sceneLoaded -= OnSceneLoaded;
+            SceneLoader.Instance.OnSceneLoadComplete += HandleSceneLoadComplete;
+        }
+        else
+        {
+            Debug.LogError("PlayerRespawnManager 找不到 SceneLoader 的實例！");
         }
     }
 
-    // 在 GameManager.cs 中添加這些方法
-    void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    void OnDestroy()
     {
-        Debug.Log($"場景加載完成: {scene.name}");
-        // 重要修正：每次加載新場景時，自動使用該場景的默認重生點
-        StartCoroutine(DelayedRespawn());
+        // ***** 修改: 取消訂閱我們自己的事件 *****
+        if (Instance == this)
+        {
+            // SceneManager.sceneLoaded -= OnSceneLoaded;
+            if (SceneLoader.Instance != null)
+            {
+                SceneLoader.Instance.OnSceneLoadComplete -= HandleSceneLoadComplete;
+            }
+        }
+    }
 
-        //ResetToSceneDefaultSpawnPoint();
+    // ***** 修改: 這是新的事件處理方法 *****
+    // 問題所在: 不知道(string sceneName)
+    void HandleSceneLoadComplete(string sceneName)
+    {
+        Debug.Log($"[PlayerRespawnManager] Received OnSceneLoadComplete event for scene: {sceneName}. Now respawning player.");
+
+        // 現在呼叫重生邏輯是 100% 安全的，因為轉場已結束
+        // 也不再需要延遲協程了
+        ResetToSceneDefaultSpawnPoint();
     }
 
     public void SetSpawnPoint(string newSpawnPointID)
@@ -51,14 +66,6 @@ public class PlayerRespawnManager : MonoBehaviour
         Debug.Log($"重生點設置為: {newSpawnPointID}");
     }
 
-    private IEnumerator DelayedRespawn()
-    {
-        // 延遲 1~2 幀，確保其他 Start() 腳本都執行完
-        yield return null;
-        yield return null;
-
-        ResetToSceneDefaultSpawnPoint();
-    }
 
     // 新增方法：自動尋找並使用場景的默認重生點
     void ResetToSceneDefaultSpawnPoint()

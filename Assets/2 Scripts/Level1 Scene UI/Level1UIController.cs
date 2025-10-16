@@ -20,6 +20,10 @@ public class Level1UIController : MonoBehaviour
     [Header("至高panel: 遊戲設定面板，目前只能在 Player Map 中打開該面板。")]
     public GameObject settingPanel;
 
+    [Header("右下角的提示視野圖標")]
+    public GameObject titleUI;
+
+
     public Vector2 MoveInput { get; private set; }  // 讀取移動的值
     //10/10新增
     public Vector2 LookInput { get; private set; } // 讀取相機的值
@@ -150,6 +154,7 @@ public class Level1UIController : MonoBehaviour
     private void OnOpenSettingAction(InputAction.CallbackContext context) //打開遊戲設定面板
     {
         settingPanel.SetActive(true);
+        titleUI.SetActive(false);
         Debug.Log($"[{this.name}] 遊戲設置已打開。");
 
         // 將 UI map 推入棧，此時 Player map 會被自動禁用

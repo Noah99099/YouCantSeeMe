@@ -7,6 +7,8 @@ public class SettingPanelUIController : MonoBehaviour
     // PlayerControls 主要來源於InputStackManager -> InputProvider -> SettingPanelUIController
     [Tooltip("遊戲設置")]
     public GameObject settingPanel;
+    [Tooltip("右下角的提示視野圖標")]
+    public GameObject titleUI;
     private void OnEnable()
     {
         // *** 關鍵修改: 移除 playerControls.Setting.Enable(); ***
@@ -64,8 +66,8 @@ public class SettingPanelUIController : MonoBehaviour
 
         // 2. 執行關閉 Panel 的邏輯
         EventSystem.current.SetSelectedGameObject(null); //清除所有UI焦點避免出問題
-
-        settingPanel.SetActive(false);       
+        settingPanel.SetActive(false);
+        titleUI.SetActive(true);
         Debug.Log($"[{this}] 遊戲設置面板已關閉。");
     }
 

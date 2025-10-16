@@ -1,3 +1,4 @@
+// ÀÉ®×¦WºÙ: TeleportTrigger.cs
 using UnityEngine;
 
 public class TeleportTrigger : MonoBehaviour

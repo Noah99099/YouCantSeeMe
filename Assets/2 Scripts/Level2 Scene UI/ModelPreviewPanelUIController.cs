@@ -41,7 +41,7 @@ public class ModelPreviewPanelUIController : MonoBehaviour
         }
     }
 
-    public void CloseModelPreviewPanel() // OnCloseModelPreview調用，因為按鈕事件所以重點寫這裡
+    public void CloseModelPreviewPanel() // OnCloseModelPreview調用，因為有按鈕事件所以重點寫這裡
     {
         // 1. *** PopMap 寫在這裡 ***
         // 從棧中彈出 ModelPreview map，此時 Inventory map 會被自動重新啟用

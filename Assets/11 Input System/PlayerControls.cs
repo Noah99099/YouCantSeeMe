@@ -921,6 +921,408 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             ]
         },
         {
+            ""name"": ""ModelPreview"",
+            ""id"": ""5e3d2d6a-caeb-414d-a30d-00df8aa7ea97"",
+            ""actions"": [
+                {
+                    ""name"": ""Zoom"",
+                    ""type"": ""PassThrough"",
+                    ""id"": ""f809d2c3-f402-4430-bdb1-30016b78bbc2"",
+                    ""expectedControlType"": ""Vector2"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""CloseModelPreview"",
+                    ""type"": ""Button"",
+                    ""id"": ""a642d3b4-4946-4a00-a6b1-9149d0eca582"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""db6ada27-cdd7-4c28-b625-8981fb68b59a"",
+                    ""path"": ""<Mouse>/scroll"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Zoom"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""271429eb-99ca-4b73-b39a-2c1c55e1d4f9"",
+                    ""path"": ""<Keyboard>/escape"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";鍵鼠"",
+                    ""action"": ""CloseModelPreview"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""0906e0be-3ab4-437d-9279-dbf582e30d09"",
+                    ""path"": ""<Gamepad>/buttonEast"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Gamepad"",
+                    ""action"": ""CloseModelPreview"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                }
+            ]
+        },
+        {
+            ""name"": ""GhostPanel"",
+            ""id"": ""fae83343-1e5d-46e0-9a2f-edcffb62faaa"",
+            ""actions"": [
+                {
+                    ""name"": ""ToVoicePanel"",
+                    ""type"": ""Button"",
+                    ""id"": ""3533da59-9a74-4e3c-a678-729299a44a2d"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""ToInventoryPanel"",
+                    ""type"": ""Button"",
+                    ""id"": ""c7904359-6d61-476e-80b0-d63a5f653aee"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""CloseInventory"",
+                    ""type"": ""Button"",
+                    ""id"": ""1c419333-2767-47fb-b10d-5d530088efa2"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""CarouselR"",
+                    ""type"": ""Button"",
+                    ""id"": ""67ab8120-6b37-4ae7-b2f6-aca9a4273094"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""CarouselL"",
+                    ""type"": ""Button"",
+                    ""id"": ""ef648f44-fc9d-4994-aae1-2b0cc13ea4a6"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""d14c97ef-0804-4f69-b658-c8c9b6bce917"",
+                    ""path"": ""<Gamepad>/leftShoulder"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Gamepad"",
+                    ""action"": ""ToInventoryPanel"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""ac2dc141-f968-4b16-8d0d-a363e82c9bf0"",
+                    ""path"": ""<Gamepad>/rightShoulder"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Gamepad"",
+                    ""action"": ""ToVoicePanel"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""e7df403a-cea4-46d9-ac0b-5f185b808062"",
+                    ""path"": ""<Gamepad>/buttonWest"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Gamepad"",
+                    ""action"": ""CloseInventory"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""35f45dd7-f734-4dde-b61f-1f5312392cf5"",
+                    ""path"": ""<Gamepad>/buttonEast"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Gamepad"",
+                    ""action"": ""CloseInventory"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""85ba3b9d-4bf6-4579-9d11-8b9df7b8bac8"",
+                    ""path"": ""<Keyboard>/b"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";鍵鼠"",
+                    ""action"": ""CloseInventory"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""613c4d46-01ac-4b1f-a0ad-8a84f7e0fd3f"",
+                    ""path"": ""<Keyboard>/escape"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";鍵鼠"",
+                    ""action"": ""CloseInventory"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""5d7a540d-3209-4691-8f7c-ba180723d6ad"",
+                    ""path"": ""<Gamepad>/rightTrigger"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Gamepad"",
+                    ""action"": ""CarouselR"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""72190352-4784-45d1-9378-20a1129f1b8e"",
+                    ""path"": ""<Gamepad>/leftTrigger"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Gamepad"",
+                    ""action"": ""CarouselL"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                }
+            ]
+        },
+        {
+            ""name"": ""VoicePanel"",
+            ""id"": ""d87ef878-3f60-438d-8833-5d4fa09a5ead"",
+            ""actions"": [
+                {
+                    ""name"": ""ToCluePanel"",
+                    ""type"": ""Button"",
+                    ""id"": ""c6d1c0d1-4669-4f84-aab8-6685224d31b2"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""ToGhostPanel"",
+                    ""type"": ""Button"",
+                    ""id"": ""7f4fec76-c3d0-422f-9924-6bfb0d0ef77a"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""CloseInventory"",
+                    ""type"": ""Button"",
+                    ""id"": ""ce9e631b-53fd-4189-8965-27dca85c626e"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""34b80ae9-7e2e-4dc2-a9cf-ba269a798395"",
+                    ""path"": ""<Gamepad>/rightShoulder"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Gamepad"",
+                    ""action"": ""ToCluePanel"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""84dafe9d-8ec7-462b-9195-8fc134d68b47"",
+                    ""path"": ""<Gamepad>/buttonWest"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Gamepad"",
+                    ""action"": ""CloseInventory"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""f2825ff8-fe27-4fd7-bee5-2389866050de"",
+                    ""path"": ""<Gamepad>/buttonEast"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Gamepad"",
+                    ""action"": ""CloseInventory"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""72570591-66a8-4190-886b-efb1aed5bbf2"",
+                    ""path"": ""<Keyboard>/b"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";鍵鼠"",
+                    ""action"": ""CloseInventory"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""382950c4-b1eb-434c-95fd-fb7a398502a4"",
+                    ""path"": ""<Keyboard>/escape"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";鍵鼠"",
+                    ""action"": ""CloseInventory"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""d329fcf4-83f6-4783-8080-bd82ff1f6600"",
+                    ""path"": ""<Gamepad>/leftShoulder"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Gamepad"",
+                    ""action"": ""ToGhostPanel"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                }
+            ]
+        },
+        {
+            ""name"": ""CluePanel"",
+            ""id"": ""f6e8f2a7-14c9-4261-b7ae-3d68a37166b2"",
+            ""actions"": [
+                {
+                    ""name"": ""ToInventoryPanel"",
+                    ""type"": ""Button"",
+                    ""id"": ""ab9bec9a-3974-46de-b37d-dfe4c689a0f3"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""ToVoicePanel"",
+                    ""type"": ""Button"",
+                    ""id"": ""d4b037b0-bd65-4960-8245-53f658d8ff23"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""CloseInventory"",
+                    ""type"": ""Button"",
+                    ""id"": ""ea717c4e-243c-4268-b011-7c80a3e6c9b3"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""b7c07132-83f7-4a5b-951b-bb5aeb170464"",
+                    ""path"": ""<Gamepad>/rightShoulder"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Gamepad"",
+                    ""action"": ""ToInventoryPanel"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""c47ef052-d678-4ad1-bcdd-7b57259047f2"",
+                    ""path"": ""<Gamepad>/buttonWest"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Gamepad"",
+                    ""action"": ""CloseInventory"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""88ed7608-811c-4b16-8bc9-b5c2e7f39069"",
+                    ""path"": ""<Gamepad>/buttonEast"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Gamepad"",
+                    ""action"": ""CloseInventory"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""6af78763-7c55-4e4d-83d5-e5eb76c7a860"",
+                    ""path"": ""<Keyboard>/b"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";鍵鼠"",
+                    ""action"": ""CloseInventory"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""bf8e960d-0d31-448a-921a-0ad7f505ce4e"",
+                    ""path"": ""<Keyboard>/escape"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";鍵鼠"",
+                    ""action"": ""CloseInventory"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""8a4ad9cc-bdee-400b-8be8-9263100b688d"",
+                    ""path"": ""<Gamepad>/leftShoulder"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Gamepad"",
+                    ""action"": ""ToVoicePanel"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                }
+            ]
+        },
+        {
             ""name"": ""Dialogue"",
             ""id"": ""5743ca70-f817-49f8-b2d1-9139833daa77"",
             ""actions"": [
@@ -1095,65 +1497,6 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             ]
         },
         {
-            ""name"": ""ModelPreview"",
-            ""id"": ""5e3d2d6a-caeb-414d-a30d-00df8aa7ea97"",
-            ""actions"": [
-                {
-                    ""name"": ""Zoom"",
-                    ""type"": ""PassThrough"",
-                    ""id"": ""f809d2c3-f402-4430-bdb1-30016b78bbc2"",
-                    ""expectedControlType"": ""Vector2"",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": false
-                },
-                {
-                    ""name"": ""CloseModelPreview"",
-                    ""type"": ""Button"",
-                    ""id"": ""a642d3b4-4946-4a00-a6b1-9149d0eca582"",
-                    ""expectedControlType"": """",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": false
-                }
-            ],
-            ""bindings"": [
-                {
-                    ""name"": """",
-                    ""id"": ""db6ada27-cdd7-4c28-b625-8981fb68b59a"",
-                    ""path"": ""<Mouse>/scroll"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Zoom"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""271429eb-99ca-4b73-b39a-2c1c55e1d4f9"",
-                    ""path"": ""<Keyboard>/escape"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": "";鍵鼠"",
-                    ""action"": ""CloseModelPreview"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""0906e0be-3ab4-437d-9279-dbf582e30d09"",
-                    ""path"": ""<Gamepad>/buttonEast"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": "";Gamepad"",
-                    ""action"": ""CloseModelPreview"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                }
-            ]
-        },
-        {
             ""name"": ""Setting"",
             ""id"": ""efadf0a6-9f3b-4220-be43-feda0cc603f6"",
             ""actions"": [
@@ -1202,6 +1545,12 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""isPartOfComposite"": false
                 }
             ]
+        },
+        {
+            ""name"": ""Loading"",
+            ""id"": ""5d0b6443-9cce-4fe4-8bfe-5e7256102e5e"",
+            ""actions"": [],
+            ""bindings"": []
         }
     ],
     ""controlSchemes"": [
@@ -1242,6 +1591,27 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         m_Inventory_Click = m_Inventory.FindAction("Click", throwIfNotFound: true);
         m_Inventory_ToGhostPanel = m_Inventory.FindAction("ToGhostPanel", throwIfNotFound: true);
         m_Inventory_ToCluePanel = m_Inventory.FindAction("ToCluePanel", throwIfNotFound: true);
+        // ModelPreview
+        m_ModelPreview = asset.FindActionMap("ModelPreview", throwIfNotFound: true);
+        m_ModelPreview_Zoom = m_ModelPreview.FindAction("Zoom", throwIfNotFound: true);
+        m_ModelPreview_CloseModelPreview = m_ModelPreview.FindAction("CloseModelPreview", throwIfNotFound: true);
+        // GhostPanel
+        m_GhostPanel = asset.FindActionMap("GhostPanel", throwIfNotFound: true);
+        m_GhostPanel_ToVoicePanel = m_GhostPanel.FindAction("ToVoicePanel", throwIfNotFound: true);
+        m_GhostPanel_ToInventoryPanel = m_GhostPanel.FindAction("ToInventoryPanel", throwIfNotFound: true);
+        m_GhostPanel_CloseInventory = m_GhostPanel.FindAction("CloseInventory", throwIfNotFound: true);
+        m_GhostPanel_CarouselR = m_GhostPanel.FindAction("CarouselR", throwIfNotFound: true);
+        m_GhostPanel_CarouselL = m_GhostPanel.FindAction("CarouselL", throwIfNotFound: true);
+        // VoicePanel
+        m_VoicePanel = asset.FindActionMap("VoicePanel", throwIfNotFound: true);
+        m_VoicePanel_ToCluePanel = m_VoicePanel.FindAction("ToCluePanel", throwIfNotFound: true);
+        m_VoicePanel_ToGhostPanel = m_VoicePanel.FindAction("ToGhostPanel", throwIfNotFound: true);
+        m_VoicePanel_CloseInventory = m_VoicePanel.FindAction("CloseInventory", throwIfNotFound: true);
+        // CluePanel
+        m_CluePanel = asset.FindActionMap("CluePanel", throwIfNotFound: true);
+        m_CluePanel_ToInventoryPanel = m_CluePanel.FindAction("ToInventoryPanel", throwIfNotFound: true);
+        m_CluePanel_ToVoicePanel = m_CluePanel.FindAction("ToVoicePanel", throwIfNotFound: true);
+        m_CluePanel_CloseInventory = m_CluePanel.FindAction("CloseInventory", throwIfNotFound: true);
         // Dialogue
         m_Dialogue = asset.FindActionMap("Dialogue", throwIfNotFound: true);
         m_Dialogue_Submit = m_Dialogue.FindAction("Submit", throwIfNotFound: true);
@@ -1249,13 +1619,11 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         m_Dialogue_Skip = m_Dialogue.FindAction("Skip", throwIfNotFound: true);
         m_Dialogue_Pause = m_Dialogue.FindAction("Pause", throwIfNotFound: true);
         m_Dialogue_AdvanceDialogue = m_Dialogue.FindAction("AdvanceDialogue", throwIfNotFound: true);
-        // ModelPreview
-        m_ModelPreview = asset.FindActionMap("ModelPreview", throwIfNotFound: true);
-        m_ModelPreview_Zoom = m_ModelPreview.FindAction("Zoom", throwIfNotFound: true);
-        m_ModelPreview_CloseModelPreview = m_ModelPreview.FindAction("CloseModelPreview", throwIfNotFound: true);
         // Setting
         m_Setting = asset.FindActionMap("Setting", throwIfNotFound: true);
         m_Setting_CloseSetting = m_Setting.FindAction("CloseSetting", throwIfNotFound: true);
+        // Loading
+        m_Loading = asset.FindActionMap("Loading", throwIfNotFound: true);
     }
 
     ~@PlayerControls()
@@ -1263,9 +1631,13 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         UnityEngine.Debug.Assert(!m_UI.enabled, "This will cause a leak and performance issues, PlayerControls.UI.Disable() has not been called.");
         UnityEngine.Debug.Assert(!m_Player.enabled, "This will cause a leak and performance issues, PlayerControls.Player.Disable() has not been called.");
         UnityEngine.Debug.Assert(!m_Inventory.enabled, "This will cause a leak and performance issues, PlayerControls.Inventory.Disable() has not been called.");
-        UnityEngine.Debug.Assert(!m_Dialogue.enabled, "This will cause a leak and performance issues, PlayerControls.Dialogue.Disable() has not been called.");
         UnityEngine.Debug.Assert(!m_ModelPreview.enabled, "This will cause a leak and performance issues, PlayerControls.ModelPreview.Disable() has not been called.");
+        UnityEngine.Debug.Assert(!m_GhostPanel.enabled, "This will cause a leak and performance issues, PlayerControls.GhostPanel.Disable() has not been called.");
+        UnityEngine.Debug.Assert(!m_VoicePanel.enabled, "This will cause a leak and performance issues, PlayerControls.VoicePanel.Disable() has not been called.");
+        UnityEngine.Debug.Assert(!m_CluePanel.enabled, "This will cause a leak and performance issues, PlayerControls.CluePanel.Disable() has not been called.");
+        UnityEngine.Debug.Assert(!m_Dialogue.enabled, "This will cause a leak and performance issues, PlayerControls.Dialogue.Disable() has not been called.");
         UnityEngine.Debug.Assert(!m_Setting.enabled, "This will cause a leak and performance issues, PlayerControls.Setting.Disable() has not been called.");
+        UnityEngine.Debug.Assert(!m_Loading.enabled, "This will cause a leak and performance issues, PlayerControls.Loading.Disable() has not been called.");
     }
 
     /// <summary>
@@ -1802,6 +2174,489 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
     /// </summary>
     public InventoryActions @Inventory => new InventoryActions(this);
 
+    // ModelPreview
+    private readonly InputActionMap m_ModelPreview;
+    private List<IModelPreviewActions> m_ModelPreviewActionsCallbackInterfaces = new List<IModelPreviewActions>();
+    private readonly InputAction m_ModelPreview_Zoom;
+    private readonly InputAction m_ModelPreview_CloseModelPreview;
+    /// <summary>
+    /// Provides access to input actions defined in input action map "ModelPreview".
+    /// </summary>
+    public struct ModelPreviewActions
+    {
+        private @PlayerControls m_Wrapper;
+
+        /// <summary>
+        /// Construct a new instance of the input action map wrapper class.
+        /// </summary>
+        public ModelPreviewActions(@PlayerControls wrapper) { m_Wrapper = wrapper; }
+        /// <summary>
+        /// Provides access to the underlying input action "ModelPreview/Zoom".
+        /// </summary>
+        public InputAction @Zoom => m_Wrapper.m_ModelPreview_Zoom;
+        /// <summary>
+        /// Provides access to the underlying input action "ModelPreview/CloseModelPreview".
+        /// </summary>
+        public InputAction @CloseModelPreview => m_Wrapper.m_ModelPreview_CloseModelPreview;
+        /// <summary>
+        /// Provides access to the underlying input action map instance.
+        /// </summary>
+        public InputActionMap Get() { return m_Wrapper.m_ModelPreview; }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Enable()" />
+        public void Enable() { Get().Enable(); }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Disable()" />
+        public void Disable() { Get().Disable(); }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.enabled" />
+        public bool enabled => Get().enabled;
+        /// <summary>
+        /// Implicitly converts an <see ref="ModelPreviewActions" /> to an <see ref="InputActionMap" /> instance.
+        /// </summary>
+        public static implicit operator InputActionMap(ModelPreviewActions set) { return set.Get(); }
+        /// <summary>
+        /// Adds <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
+        /// </summary>
+        /// <param name="instance">Callback instance.</param>
+        /// <remarks>
+        /// If <paramref name="instance" /> is <c>null</c> or <paramref name="instance"/> have already been added this method does nothing.
+        /// </remarks>
+        /// <seealso cref="ModelPreviewActions" />
+        public void AddCallbacks(IModelPreviewActions instance)
+        {
+            if (instance == null || m_Wrapper.m_ModelPreviewActionsCallbackInterfaces.Contains(instance)) return;
+            m_Wrapper.m_ModelPreviewActionsCallbackInterfaces.Add(instance);
+            @Zoom.started += instance.OnZoom;
+            @Zoom.performed += instance.OnZoom;
+            @Zoom.canceled += instance.OnZoom;
+            @CloseModelPreview.started += instance.OnCloseModelPreview;
+            @CloseModelPreview.performed += instance.OnCloseModelPreview;
+            @CloseModelPreview.canceled += instance.OnCloseModelPreview;
+        }
+
+        /// <summary>
+        /// Removes <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
+        /// </summary>
+        /// <remarks>
+        /// Calling this method when <paramref name="instance" /> have not previously been registered has no side-effects.
+        /// </remarks>
+        /// <seealso cref="ModelPreviewActions" />
+        private void UnregisterCallbacks(IModelPreviewActions instance)
+        {
+            @Zoom.started -= instance.OnZoom;
+            @Zoom.performed -= instance.OnZoom;
+            @Zoom.canceled -= instance.OnZoom;
+            @CloseModelPreview.started -= instance.OnCloseModelPreview;
+            @CloseModelPreview.performed -= instance.OnCloseModelPreview;
+            @CloseModelPreview.canceled -= instance.OnCloseModelPreview;
+        }
+
+        /// <summary>
+        /// Unregisters <param cref="instance" /> and unregisters all input action callbacks via <see cref="ModelPreviewActions.UnregisterCallbacks(IModelPreviewActions)" />.
+        /// </summary>
+        /// <seealso cref="ModelPreviewActions.UnregisterCallbacks(IModelPreviewActions)" />
+        public void RemoveCallbacks(IModelPreviewActions instance)
+        {
+            if (m_Wrapper.m_ModelPreviewActionsCallbackInterfaces.Remove(instance))
+                UnregisterCallbacks(instance);
+        }
+
+        /// <summary>
+        /// Replaces all existing callback instances and previously registered input action callbacks associated with them with callbacks provided via <param cref="instance" />.
+        /// </summary>
+        /// <remarks>
+        /// If <paramref name="instance" /> is <c>null</c>, calling this method will only unregister all existing callbacks but not register any new callbacks.
+        /// </remarks>
+        /// <seealso cref="ModelPreviewActions.AddCallbacks(IModelPreviewActions)" />
+        /// <seealso cref="ModelPreviewActions.RemoveCallbacks(IModelPreviewActions)" />
+        /// <seealso cref="ModelPreviewActions.UnregisterCallbacks(IModelPreviewActions)" />
+        public void SetCallbacks(IModelPreviewActions instance)
+        {
+            foreach (var item in m_Wrapper.m_ModelPreviewActionsCallbackInterfaces)
+                UnregisterCallbacks(item);
+            m_Wrapper.m_ModelPreviewActionsCallbackInterfaces.Clear();
+            AddCallbacks(instance);
+        }
+    }
+    /// <summary>
+    /// Provides a new <see cref="ModelPreviewActions" /> instance referencing this action map.
+    /// </summary>
+    public ModelPreviewActions @ModelPreview => new ModelPreviewActions(this);
+
+    // GhostPanel
+    private readonly InputActionMap m_GhostPanel;
+    private List<IGhostPanelActions> m_GhostPanelActionsCallbackInterfaces = new List<IGhostPanelActions>();
+    private readonly InputAction m_GhostPanel_ToVoicePanel;
+    private readonly InputAction m_GhostPanel_ToInventoryPanel;
+    private readonly InputAction m_GhostPanel_CloseInventory;
+    private readonly InputAction m_GhostPanel_CarouselR;
+    private readonly InputAction m_GhostPanel_CarouselL;
+    /// <summary>
+    /// Provides access to input actions defined in input action map "GhostPanel".
+    /// </summary>
+    public struct GhostPanelActions
+    {
+        private @PlayerControls m_Wrapper;
+
+        /// <summary>
+        /// Construct a new instance of the input action map wrapper class.
+        /// </summary>
+        public GhostPanelActions(@PlayerControls wrapper) { m_Wrapper = wrapper; }
+        /// <summary>
+        /// Provides access to the underlying input action "GhostPanel/ToVoicePanel".
+        /// </summary>
+        public InputAction @ToVoicePanel => m_Wrapper.m_GhostPanel_ToVoicePanel;
+        /// <summary>
+        /// Provides access to the underlying input action "GhostPanel/ToInventoryPanel".
+        /// </summary>
+        public InputAction @ToInventoryPanel => m_Wrapper.m_GhostPanel_ToInventoryPanel;
+        /// <summary>
+        /// Provides access to the underlying input action "GhostPanel/CloseInventory".
+        /// </summary>
+        public InputAction @CloseInventory => m_Wrapper.m_GhostPanel_CloseInventory;
+        /// <summary>
+        /// Provides access to the underlying input action "GhostPanel/CarouselR".
+        /// </summary>
+        public InputAction @CarouselR => m_Wrapper.m_GhostPanel_CarouselR;
+        /// <summary>
+        /// Provides access to the underlying input action "GhostPanel/CarouselL".
+        /// </summary>
+        public InputAction @CarouselL => m_Wrapper.m_GhostPanel_CarouselL;
+        /// <summary>
+        /// Provides access to the underlying input action map instance.
+        /// </summary>
+        public InputActionMap Get() { return m_Wrapper.m_GhostPanel; }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Enable()" />
+        public void Enable() { Get().Enable(); }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Disable()" />
+        public void Disable() { Get().Disable(); }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.enabled" />
+        public bool enabled => Get().enabled;
+        /// <summary>
+        /// Implicitly converts an <see ref="GhostPanelActions" /> to an <see ref="InputActionMap" /> instance.
+        /// </summary>
+        public static implicit operator InputActionMap(GhostPanelActions set) { return set.Get(); }
+        /// <summary>
+        /// Adds <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
+        /// </summary>
+        /// <param name="instance">Callback instance.</param>
+        /// <remarks>
+        /// If <paramref name="instance" /> is <c>null</c> or <paramref name="instance"/> have already been added this method does nothing.
+        /// </remarks>
+        /// <seealso cref="GhostPanelActions" />
+        public void AddCallbacks(IGhostPanelActions instance)
+        {
+            if (instance == null || m_Wrapper.m_GhostPanelActionsCallbackInterfaces.Contains(instance)) return;
+            m_Wrapper.m_GhostPanelActionsCallbackInterfaces.Add(instance);
+            @ToVoicePanel.started += instance.OnToVoicePanel;
+            @ToVoicePanel.performed += instance.OnToVoicePanel;
+            @ToVoicePanel.canceled += instance.OnToVoicePanel;
+            @ToInventoryPanel.started += instance.OnToInventoryPanel;
+            @ToInventoryPanel.performed += instance.OnToInventoryPanel;
+            @ToInventoryPanel.canceled += instance.OnToInventoryPanel;
+            @CloseInventory.started += instance.OnCloseInventory;
+            @CloseInventory.performed += instance.OnCloseInventory;
+            @CloseInventory.canceled += instance.OnCloseInventory;
+            @CarouselR.started += instance.OnCarouselR;
+            @CarouselR.performed += instance.OnCarouselR;
+            @CarouselR.canceled += instance.OnCarouselR;
+            @CarouselL.started += instance.OnCarouselL;
+            @CarouselL.performed += instance.OnCarouselL;
+            @CarouselL.canceled += instance.OnCarouselL;
+        }
+
+        /// <summary>
+        /// Removes <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
+        /// </summary>
+        /// <remarks>
+        /// Calling this method when <paramref name="instance" /> have not previously been registered has no side-effects.
+        /// </remarks>
+        /// <seealso cref="GhostPanelActions" />
+        private void UnregisterCallbacks(IGhostPanelActions instance)
+        {
+            @ToVoicePanel.started -= instance.OnToVoicePanel;
+            @ToVoicePanel.performed -= instance.OnToVoicePanel;
+            @ToVoicePanel.canceled -= instance.OnToVoicePanel;
+            @ToInventoryPanel.started -= instance.OnToInventoryPanel;
+            @ToInventoryPanel.performed -= instance.OnToInventoryPanel;
+            @ToInventoryPanel.canceled -= instance.OnToInventoryPanel;
+            @CloseInventory.started -= instance.OnCloseInventory;
+            @CloseInventory.performed -= instance.OnCloseInventory;
+            @CloseInventory.canceled -= instance.OnCloseInventory;
+            @CarouselR.started -= instance.OnCarouselR;
+            @CarouselR.performed -= instance.OnCarouselR;
+            @CarouselR.canceled -= instance.OnCarouselR;
+            @CarouselL.started -= instance.OnCarouselL;
+            @CarouselL.performed -= instance.OnCarouselL;
+            @CarouselL.canceled -= instance.OnCarouselL;
+        }
+
+        /// <summary>
+        /// Unregisters <param cref="instance" /> and unregisters all input action callbacks via <see cref="GhostPanelActions.UnregisterCallbacks(IGhostPanelActions)" />.
+        /// </summary>
+        /// <seealso cref="GhostPanelActions.UnregisterCallbacks(IGhostPanelActions)" />
+        public void RemoveCallbacks(IGhostPanelActions instance)
+        {
+            if (m_Wrapper.m_GhostPanelActionsCallbackInterfaces.Remove(instance))
+                UnregisterCallbacks(instance);
+        }
+
+        /// <summary>
+        /// Replaces all existing callback instances and previously registered input action callbacks associated with them with callbacks provided via <param cref="instance" />.
+        /// </summary>
+        /// <remarks>
+        /// If <paramref name="instance" /> is <c>null</c>, calling this method will only unregister all existing callbacks but not register any new callbacks.
+        /// </remarks>
+        /// <seealso cref="GhostPanelActions.AddCallbacks(IGhostPanelActions)" />
+        /// <seealso cref="GhostPanelActions.RemoveCallbacks(IGhostPanelActions)" />
+        /// <seealso cref="GhostPanelActions.UnregisterCallbacks(IGhostPanelActions)" />
+        public void SetCallbacks(IGhostPanelActions instance)
+        {
+            foreach (var item in m_Wrapper.m_GhostPanelActionsCallbackInterfaces)
+                UnregisterCallbacks(item);
+            m_Wrapper.m_GhostPanelActionsCallbackInterfaces.Clear();
+            AddCallbacks(instance);
+        }
+    }
+    /// <summary>
+    /// Provides a new <see cref="GhostPanelActions" /> instance referencing this action map.
+    /// </summary>
+    public GhostPanelActions @GhostPanel => new GhostPanelActions(this);
+
+    // VoicePanel
+    private readonly InputActionMap m_VoicePanel;
+    private List<IVoicePanelActions> m_VoicePanelActionsCallbackInterfaces = new List<IVoicePanelActions>();
+    private readonly InputAction m_VoicePanel_ToCluePanel;
+    private readonly InputAction m_VoicePanel_ToGhostPanel;
+    private readonly InputAction m_VoicePanel_CloseInventory;
+    /// <summary>
+    /// Provides access to input actions defined in input action map "VoicePanel".
+    /// </summary>
+    public struct VoicePanelActions
+    {
+        private @PlayerControls m_Wrapper;
+
+        /// <summary>
+        /// Construct a new instance of the input action map wrapper class.
+        /// </summary>
+        public VoicePanelActions(@PlayerControls wrapper) { m_Wrapper = wrapper; }
+        /// <summary>
+        /// Provides access to the underlying input action "VoicePanel/ToCluePanel".
+        /// </summary>
+        public InputAction @ToCluePanel => m_Wrapper.m_VoicePanel_ToCluePanel;
+        /// <summary>
+        /// Provides access to the underlying input action "VoicePanel/ToGhostPanel".
+        /// </summary>
+        public InputAction @ToGhostPanel => m_Wrapper.m_VoicePanel_ToGhostPanel;
+        /// <summary>
+        /// Provides access to the underlying input action "VoicePanel/CloseInventory".
+        /// </summary>
+        public InputAction @CloseInventory => m_Wrapper.m_VoicePanel_CloseInventory;
+        /// <summary>
+        /// Provides access to the underlying input action map instance.
+        /// </summary>
+        public InputActionMap Get() { return m_Wrapper.m_VoicePanel; }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Enable()" />
+        public void Enable() { Get().Enable(); }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Disable()" />
+        public void Disable() { Get().Disable(); }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.enabled" />
+        public bool enabled => Get().enabled;
+        /// <summary>
+        /// Implicitly converts an <see ref="VoicePanelActions" /> to an <see ref="InputActionMap" /> instance.
+        /// </summary>
+        public static implicit operator InputActionMap(VoicePanelActions set) { return set.Get(); }
+        /// <summary>
+        /// Adds <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
+        /// </summary>
+        /// <param name="instance">Callback instance.</param>
+        /// <remarks>
+        /// If <paramref name="instance" /> is <c>null</c> or <paramref name="instance"/> have already been added this method does nothing.
+        /// </remarks>
+        /// <seealso cref="VoicePanelActions" />
+        public void AddCallbacks(IVoicePanelActions instance)
+        {
+            if (instance == null || m_Wrapper.m_VoicePanelActionsCallbackInterfaces.Contains(instance)) return;
+            m_Wrapper.m_VoicePanelActionsCallbackInterfaces.Add(instance);
+            @ToCluePanel.started += instance.OnToCluePanel;
+            @ToCluePanel.performed += instance.OnToCluePanel;
+            @ToCluePanel.canceled += instance.OnToCluePanel;
+            @ToGhostPanel.started += instance.OnToGhostPanel;
+            @ToGhostPanel.performed += instance.OnToGhostPanel;
+            @ToGhostPanel.canceled += instance.OnToGhostPanel;
+            @CloseInventory.started += instance.OnCloseInventory;
+            @CloseInventory.performed += instance.OnCloseInventory;
+            @CloseInventory.canceled += instance.OnCloseInventory;
+        }
+
+        /// <summary>
+        /// Removes <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
+        /// </summary>
+        /// <remarks>
+        /// Calling this method when <paramref name="instance" /> have not previously been registered has no side-effects.
+        /// </remarks>
+        /// <seealso cref="VoicePanelActions" />
+        private void UnregisterCallbacks(IVoicePanelActions instance)
+        {
+            @ToCluePanel.started -= instance.OnToCluePanel;
+            @ToCluePanel.performed -= instance.OnToCluePanel;
+            @ToCluePanel.canceled -= instance.OnToCluePanel;
+            @ToGhostPanel.started -= instance.OnToGhostPanel;
+            @ToGhostPanel.performed -= instance.OnToGhostPanel;
+            @ToGhostPanel.canceled -= instance.OnToGhostPanel;
+            @CloseInventory.started -= instance.OnCloseInventory;
+            @CloseInventory.performed -= instance.OnCloseInventory;
+            @CloseInventory.canceled -= instance.OnCloseInventory;
+        }
+
+        /// <summary>
+        /// Unregisters <param cref="instance" /> and unregisters all input action callbacks via <see cref="VoicePanelActions.UnregisterCallbacks(IVoicePanelActions)" />.
+        /// </summary>
+        /// <seealso cref="VoicePanelActions.UnregisterCallbacks(IVoicePanelActions)" />
+        public void RemoveCallbacks(IVoicePanelActions instance)
+        {
+            if (m_Wrapper.m_VoicePanelActionsCallbackInterfaces.Remove(instance))
+                UnregisterCallbacks(instance);
+        }
+
+        /// <summary>
+        /// Replaces all existing callback instances and previously registered input action callbacks associated with them with callbacks provided via <param cref="instance" />.
+        /// </summary>
+        /// <remarks>
+        /// If <paramref name="instance" /> is <c>null</c>, calling this method will only unregister all existing callbacks but not register any new callbacks.
+        /// </remarks>
+        /// <seealso cref="VoicePanelActions.AddCallbacks(IVoicePanelActions)" />
+        /// <seealso cref="VoicePanelActions.RemoveCallbacks(IVoicePanelActions)" />
+        /// <seealso cref="VoicePanelActions.UnregisterCallbacks(IVoicePanelActions)" />
+        public void SetCallbacks(IVoicePanelActions instance)
+        {
+            foreach (var item in m_Wrapper.m_VoicePanelActionsCallbackInterfaces)
+                UnregisterCallbacks(item);
+            m_Wrapper.m_VoicePanelActionsCallbackInterfaces.Clear();
+            AddCallbacks(instance);
+        }
+    }
+    /// <summary>
+    /// Provides a new <see cref="VoicePanelActions" /> instance referencing this action map.
+    /// </summary>
+    public VoicePanelActions @VoicePanel => new VoicePanelActions(this);
+
+    // CluePanel
+    private readonly InputActionMap m_CluePanel;
+    private List<ICluePanelActions> m_CluePanelActionsCallbackInterfaces = new List<ICluePanelActions>();
+    private readonly InputAction m_CluePanel_ToInventoryPanel;
+    private readonly InputAction m_CluePanel_ToVoicePanel;
+    private readonly InputAction m_CluePanel_CloseInventory;
+    /// <summary>
+    /// Provides access to input actions defined in input action map "CluePanel".
+    /// </summary>
+    public struct CluePanelActions
+    {
+        private @PlayerControls m_Wrapper;
+
+        /// <summary>
+        /// Construct a new instance of the input action map wrapper class.
+        /// </summary>
+        public CluePanelActions(@PlayerControls wrapper) { m_Wrapper = wrapper; }
+        /// <summary>
+        /// Provides access to the underlying input action "CluePanel/ToInventoryPanel".
+        /// </summary>
+        public InputAction @ToInventoryPanel => m_Wrapper.m_CluePanel_ToInventoryPanel;
+        /// <summary>
+        /// Provides access to the underlying input action "CluePanel/ToVoicePanel".
+        /// </summary>
+        public InputAction @ToVoicePanel => m_Wrapper.m_CluePanel_ToVoicePanel;
+        /// <summary>
+        /// Provides access to the underlying input action "CluePanel/CloseInventory".
+        /// </summary>
+        public InputAction @CloseInventory => m_Wrapper.m_CluePanel_CloseInventory;
+        /// <summary>
+        /// Provides access to the underlying input action map instance.
+        /// </summary>
+        public InputActionMap Get() { return m_Wrapper.m_CluePanel; }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Enable()" />
+        public void Enable() { Get().Enable(); }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Disable()" />
+        public void Disable() { Get().Disable(); }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.enabled" />
+        public bool enabled => Get().enabled;
+        /// <summary>
+        /// Implicitly converts an <see ref="CluePanelActions" /> to an <see ref="InputActionMap" /> instance.
+        /// </summary>
+        public static implicit operator InputActionMap(CluePanelActions set) { return set.Get(); }
+        /// <summary>
+        /// Adds <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
+        /// </summary>
+        /// <param name="instance">Callback instance.</param>
+        /// <remarks>
+        /// If <paramref name="instance" /> is <c>null</c> or <paramref name="instance"/> have already been added this method does nothing.
+        /// </remarks>
+        /// <seealso cref="CluePanelActions" />
+        public void AddCallbacks(ICluePanelActions instance)
+        {
+            if (instance == null || m_Wrapper.m_CluePanelActionsCallbackInterfaces.Contains(instance)) return;
+            m_Wrapper.m_CluePanelActionsCallbackInterfaces.Add(instance);
+            @ToInventoryPanel.started += instance.OnToInventoryPanel;
+            @ToInventoryPanel.performed += instance.OnToInventoryPanel;
+            @ToInventoryPanel.canceled += instance.OnToInventoryPanel;
+            @ToVoicePanel.started += instance.OnToVoicePanel;
+            @ToVoicePanel.performed += instance.OnToVoicePanel;
+            @ToVoicePanel.canceled += instance.OnToVoicePanel;
+            @CloseInventory.started += instance.OnCloseInventory;
+            @CloseInventory.performed += instance.OnCloseInventory;
+            @CloseInventory.canceled += instance.OnCloseInventory;
+        }
+
+        /// <summary>
+        /// Removes <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
+        /// </summary>
+        /// <remarks>
+        /// Calling this method when <paramref name="instance" /> have not previously been registered has no side-effects.
+        /// </remarks>
+        /// <seealso cref="CluePanelActions" />
+        private void UnregisterCallbacks(ICluePanelActions instance)
+        {
+            @ToInventoryPanel.started -= instance.OnToInventoryPanel;
+            @ToInventoryPanel.performed -= instance.OnToInventoryPanel;
+            @ToInventoryPanel.canceled -= instance.OnToInventoryPanel;
+            @ToVoicePanel.started -= instance.OnToVoicePanel;
+            @ToVoicePanel.performed -= instance.OnToVoicePanel;
+            @ToVoicePanel.canceled -= instance.OnToVoicePanel;
+            @CloseInventory.started -= instance.OnCloseInventory;
+            @CloseInventory.performed -= instance.OnCloseInventory;
+            @CloseInventory.canceled -= instance.OnCloseInventory;
+        }
+
+        /// <summary>
+        /// Unregisters <param cref="instance" /> and unregisters all input action callbacks via <see cref="CluePanelActions.UnregisterCallbacks(ICluePanelActions)" />.
+        /// </summary>
+        /// <seealso cref="CluePanelActions.UnregisterCallbacks(ICluePanelActions)" />
+        public void RemoveCallbacks(ICluePanelActions instance)
+        {
+            if (m_Wrapper.m_CluePanelActionsCallbackInterfaces.Remove(instance))
+                UnregisterCallbacks(instance);
+        }
+
+        /// <summary>
+        /// Replaces all existing callback instances and previously registered input action callbacks associated with them with callbacks provided via <param cref="instance" />.
+        /// </summary>
+        /// <remarks>
+        /// If <paramref name="instance" /> is <c>null</c>, calling this method will only unregister all existing callbacks but not register any new callbacks.
+        /// </remarks>
+        /// <seealso cref="CluePanelActions.AddCallbacks(ICluePanelActions)" />
+        /// <seealso cref="CluePanelActions.RemoveCallbacks(ICluePanelActions)" />
+        /// <seealso cref="CluePanelActions.UnregisterCallbacks(ICluePanelActions)" />
+        public void SetCallbacks(ICluePanelActions instance)
+        {
+            foreach (var item in m_Wrapper.m_CluePanelActionsCallbackInterfaces)
+                UnregisterCallbacks(item);
+            m_Wrapper.m_CluePanelActionsCallbackInterfaces.Clear();
+            AddCallbacks(instance);
+        }
+    }
+    /// <summary>
+    /// Provides a new <see cref="CluePanelActions" /> instance referencing this action map.
+    /// </summary>
+    public CluePanelActions @CluePanel => new CluePanelActions(this);
+
     // Dialogue
     private readonly InputActionMap m_Dialogue;
     private List<IDialogueActions> m_DialogueActionsCallbackInterfaces = new List<IDialogueActions>();
@@ -1942,113 +2797,6 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
     /// </summary>
     public DialogueActions @Dialogue => new DialogueActions(this);
 
-    // ModelPreview
-    private readonly InputActionMap m_ModelPreview;
-    private List<IModelPreviewActions> m_ModelPreviewActionsCallbackInterfaces = new List<IModelPreviewActions>();
-    private readonly InputAction m_ModelPreview_Zoom;
-    private readonly InputAction m_ModelPreview_CloseModelPreview;
-    /// <summary>
-    /// Provides access to input actions defined in input action map "ModelPreview".
-    /// </summary>
-    public struct ModelPreviewActions
-    {
-        private @PlayerControls m_Wrapper;
-
-        /// <summary>
-        /// Construct a new instance of the input action map wrapper class.
-        /// </summary>
-        public ModelPreviewActions(@PlayerControls wrapper) { m_Wrapper = wrapper; }
-        /// <summary>
-        /// Provides access to the underlying input action "ModelPreview/Zoom".
-        /// </summary>
-        public InputAction @Zoom => m_Wrapper.m_ModelPreview_Zoom;
-        /// <summary>
-        /// Provides access to the underlying input action "ModelPreview/CloseModelPreview".
-        /// </summary>
-        public InputAction @CloseModelPreview => m_Wrapper.m_ModelPreview_CloseModelPreview;
-        /// <summary>
-        /// Provides access to the underlying input action map instance.
-        /// </summary>
-        public InputActionMap Get() { return m_Wrapper.m_ModelPreview; }
-        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Enable()" />
-        public void Enable() { Get().Enable(); }
-        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Disable()" />
-        public void Disable() { Get().Disable(); }
-        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.enabled" />
-        public bool enabled => Get().enabled;
-        /// <summary>
-        /// Implicitly converts an <see ref="ModelPreviewActions" /> to an <see ref="InputActionMap" /> instance.
-        /// </summary>
-        public static implicit operator InputActionMap(ModelPreviewActions set) { return set.Get(); }
-        /// <summary>
-        /// Adds <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
-        /// </summary>
-        /// <param name="instance">Callback instance.</param>
-        /// <remarks>
-        /// If <paramref name="instance" /> is <c>null</c> or <paramref name="instance"/> have already been added this method does nothing.
-        /// </remarks>
-        /// <seealso cref="ModelPreviewActions" />
-        public void AddCallbacks(IModelPreviewActions instance)
-        {
-            if (instance == null || m_Wrapper.m_ModelPreviewActionsCallbackInterfaces.Contains(instance)) return;
-            m_Wrapper.m_ModelPreviewActionsCallbackInterfaces.Add(instance);
-            @Zoom.started += instance.OnZoom;
-            @Zoom.performed += instance.OnZoom;
-            @Zoom.canceled += instance.OnZoom;
-            @CloseModelPreview.started += instance.OnCloseModelPreview;
-            @CloseModelPreview.performed += instance.OnCloseModelPreview;
-            @CloseModelPreview.canceled += instance.OnCloseModelPreview;
-        }
-
-        /// <summary>
-        /// Removes <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
-        /// </summary>
-        /// <remarks>
-        /// Calling this method when <paramref name="instance" /> have not previously been registered has no side-effects.
-        /// </remarks>
-        /// <seealso cref="ModelPreviewActions" />
-        private void UnregisterCallbacks(IModelPreviewActions instance)
-        {
-            @Zoom.started -= instance.OnZoom;
-            @Zoom.performed -= instance.OnZoom;
-            @Zoom.canceled -= instance.OnZoom;
-            @CloseModelPreview.started -= instance.OnCloseModelPreview;
-            @CloseModelPreview.performed -= instance.OnCloseModelPreview;
-            @CloseModelPreview.canceled -= instance.OnCloseModelPreview;
-        }
-
-        /// <summary>
-        /// Unregisters <param cref="instance" /> and unregisters all input action callbacks via <see cref="ModelPreviewActions.UnregisterCallbacks(IModelPreviewActions)" />.
-        /// </summary>
-        /// <seealso cref="ModelPreviewActions.UnregisterCallbacks(IModelPreviewActions)" />
-        public void RemoveCallbacks(IModelPreviewActions instance)
-        {
-            if (m_Wrapper.m_ModelPreviewActionsCallbackInterfaces.Remove(instance))
-                UnregisterCallbacks(instance);
-        }
-
-        /// <summary>
-        /// Replaces all existing callback instances and previously registered input action callbacks associated with them with callbacks provided via <param cref="instance" />.
-        /// </summary>
-        /// <remarks>
-        /// If <paramref name="instance" /> is <c>null</c>, calling this method will only unregister all existing callbacks but not register any new callbacks.
-        /// </remarks>
-        /// <seealso cref="ModelPreviewActions.AddCallbacks(IModelPreviewActions)" />
-        /// <seealso cref="ModelPreviewActions.RemoveCallbacks(IModelPreviewActions)" />
-        /// <seealso cref="ModelPreviewActions.UnregisterCallbacks(IModelPreviewActions)" />
-        public void SetCallbacks(IModelPreviewActions instance)
-        {
-            foreach (var item in m_Wrapper.m_ModelPreviewActionsCallbackInterfaces)
-                UnregisterCallbacks(item);
-            m_Wrapper.m_ModelPreviewActionsCallbackInterfaces.Clear();
-            AddCallbacks(instance);
-        }
-    }
-    /// <summary>
-    /// Provides a new <see cref="ModelPreviewActions" /> instance referencing this action map.
-    /// </summary>
-    public ModelPreviewActions @ModelPreview => new ModelPreviewActions(this);
-
     // Setting
     private readonly InputActionMap m_Setting;
     private List<ISettingActions> m_SettingActionsCallbackInterfaces = new List<ISettingActions>();
@@ -2144,6 +2892,91 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
     /// Provides a new <see cref="SettingActions" /> instance referencing this action map.
     /// </summary>
     public SettingActions @Setting => new SettingActions(this);
+
+    // Loading
+    private readonly InputActionMap m_Loading;
+    private List<ILoadingActions> m_LoadingActionsCallbackInterfaces = new List<ILoadingActions>();
+    /// <summary>
+    /// Provides access to input actions defined in input action map "Loading".
+    /// </summary>
+    public struct LoadingActions
+    {
+        private @PlayerControls m_Wrapper;
+
+        /// <summary>
+        /// Construct a new instance of the input action map wrapper class.
+        /// </summary>
+        public LoadingActions(@PlayerControls wrapper) { m_Wrapper = wrapper; }
+        /// <summary>
+        /// Provides access to the underlying input action map instance.
+        /// </summary>
+        public InputActionMap Get() { return m_Wrapper.m_Loading; }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Enable()" />
+        public void Enable() { Get().Enable(); }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Disable()" />
+        public void Disable() { Get().Disable(); }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.enabled" />
+        public bool enabled => Get().enabled;
+        /// <summary>
+        /// Implicitly converts an <see ref="LoadingActions" /> to an <see ref="InputActionMap" /> instance.
+        /// </summary>
+        public static implicit operator InputActionMap(LoadingActions set) { return set.Get(); }
+        /// <summary>
+        /// Adds <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
+        /// </summary>
+        /// <param name="instance">Callback instance.</param>
+        /// <remarks>
+        /// If <paramref name="instance" /> is <c>null</c> or <paramref name="instance"/> have already been added this method does nothing.
+        /// </remarks>
+        /// <seealso cref="LoadingActions" />
+        public void AddCallbacks(ILoadingActions instance)
+        {
+            if (instance == null || m_Wrapper.m_LoadingActionsCallbackInterfaces.Contains(instance)) return;
+            m_Wrapper.m_LoadingActionsCallbackInterfaces.Add(instance);
+        }
+
+        /// <summary>
+        /// Removes <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
+        /// </summary>
+        /// <remarks>
+        /// Calling this method when <paramref name="instance" /> have not previously been registered has no side-effects.
+        /// </remarks>
+        /// <seealso cref="LoadingActions" />
+        private void UnregisterCallbacks(ILoadingActions instance)
+        {
+        }
+
+        /// <summary>
+        /// Unregisters <param cref="instance" /> and unregisters all input action callbacks via <see cref="LoadingActions.UnregisterCallbacks(ILoadingActions)" />.
+        /// </summary>
+        /// <seealso cref="LoadingActions.UnregisterCallbacks(ILoadingActions)" />
+        public void RemoveCallbacks(ILoadingActions instance)
+        {
+            if (m_Wrapper.m_LoadingActionsCallbackInterfaces.Remove(instance))
+                UnregisterCallbacks(instance);
+        }
+
+        /// <summary>
+        /// Replaces all existing callback instances and previously registered input action callbacks associated with them with callbacks provided via <param cref="instance" />.
+        /// </summary>
+        /// <remarks>
+        /// If <paramref name="instance" /> is <c>null</c>, calling this method will only unregister all existing callbacks but not register any new callbacks.
+        /// </remarks>
+        /// <seealso cref="LoadingActions.AddCallbacks(ILoadingActions)" />
+        /// <seealso cref="LoadingActions.RemoveCallbacks(ILoadingActions)" />
+        /// <seealso cref="LoadingActions.UnregisterCallbacks(ILoadingActions)" />
+        public void SetCallbacks(ILoadingActions instance)
+        {
+            foreach (var item in m_Wrapper.m_LoadingActionsCallbackInterfaces)
+                UnregisterCallbacks(item);
+            m_Wrapper.m_LoadingActionsCallbackInterfaces.Clear();
+            AddCallbacks(instance);
+        }
+    }
+    /// <summary>
+    /// Provides a new <see cref="LoadingActions" /> instance referencing this action map.
+    /// </summary>
+    public LoadingActions @Loading => new LoadingActions(this);
     private int m_鍵鼠SchemeIndex = -1;
     /// <summary>
     /// Provides access to the input control scheme.
@@ -2328,6 +3161,129 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         void OnToCluePanel(InputAction.CallbackContext context);
     }
     /// <summary>
+    /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "ModelPreview" which allows adding and removing callbacks.
+    /// </summary>
+    /// <seealso cref="ModelPreviewActions.AddCallbacks(IModelPreviewActions)" />
+    /// <seealso cref="ModelPreviewActions.RemoveCallbacks(IModelPreviewActions)" />
+    public interface IModelPreviewActions
+    {
+        /// <summary>
+        /// Method invoked when associated input action "Zoom" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnZoom(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "CloseModelPreview" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnCloseModelPreview(InputAction.CallbackContext context);
+    }
+    /// <summary>
+    /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "GhostPanel" which allows adding and removing callbacks.
+    /// </summary>
+    /// <seealso cref="GhostPanelActions.AddCallbacks(IGhostPanelActions)" />
+    /// <seealso cref="GhostPanelActions.RemoveCallbacks(IGhostPanelActions)" />
+    public interface IGhostPanelActions
+    {
+        /// <summary>
+        /// Method invoked when associated input action "ToVoicePanel" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnToVoicePanel(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "ToInventoryPanel" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnToInventoryPanel(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "CloseInventory" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnCloseInventory(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "CarouselR" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnCarouselR(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "CarouselL" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnCarouselL(InputAction.CallbackContext context);
+    }
+    /// <summary>
+    /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "VoicePanel" which allows adding and removing callbacks.
+    /// </summary>
+    /// <seealso cref="VoicePanelActions.AddCallbacks(IVoicePanelActions)" />
+    /// <seealso cref="VoicePanelActions.RemoveCallbacks(IVoicePanelActions)" />
+    public interface IVoicePanelActions
+    {
+        /// <summary>
+        /// Method invoked when associated input action "ToCluePanel" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnToCluePanel(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "ToGhostPanel" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnToGhostPanel(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "CloseInventory" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnCloseInventory(InputAction.CallbackContext context);
+    }
+    /// <summary>
+    /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "CluePanel" which allows adding and removing callbacks.
+    /// </summary>
+    /// <seealso cref="CluePanelActions.AddCallbacks(ICluePanelActions)" />
+    /// <seealso cref="CluePanelActions.RemoveCallbacks(ICluePanelActions)" />
+    public interface ICluePanelActions
+    {
+        /// <summary>
+        /// Method invoked when associated input action "ToInventoryPanel" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnToInventoryPanel(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "ToVoicePanel" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnToVoicePanel(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "CloseInventory" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnCloseInventory(InputAction.CallbackContext context);
+    }
+    /// <summary>
     /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "Dialogue" which allows adding and removing callbacks.
     /// </summary>
     /// <seealso cref="DialogueActions.AddCallbacks(IDialogueActions)" />
@@ -2371,28 +3327,6 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         void OnAdvanceDialogue(InputAction.CallbackContext context);
     }
     /// <summary>
-    /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "ModelPreview" which allows adding and removing callbacks.
-    /// </summary>
-    /// <seealso cref="ModelPreviewActions.AddCallbacks(IModelPreviewActions)" />
-    /// <seealso cref="ModelPreviewActions.RemoveCallbacks(IModelPreviewActions)" />
-    public interface IModelPreviewActions
-    {
-        /// <summary>
-        /// Method invoked when associated input action "Zoom" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
-        /// </summary>
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-        void OnZoom(InputAction.CallbackContext context);
-        /// <summary>
-        /// Method invoked when associated input action "CloseModelPreview" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
-        /// </summary>
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-        void OnCloseModelPreview(InputAction.CallbackContext context);
-    }
-    /// <summary>
     /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "Setting" which allows adding and removing callbacks.
     /// </summary>
     /// <seealso cref="SettingActions.AddCallbacks(ISettingActions)" />
@@ -2406,5 +3340,13 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnCloseSetting(InputAction.CallbackContext context);
+    }
+    /// <summary>
+    /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "Loading" which allows adding and removing callbacks.
+    /// </summary>
+    /// <seealso cref="LoadingActions.AddCallbacks(ILoadingActions)" />
+    /// <seealso cref="LoadingActions.RemoveCallbacks(ILoadingActions)" />
+    public interface ILoadingActions
+    {
     }
 }

@@ -5,12 +5,12 @@ using UnityEngine.UI;
 
 public class SwitchInventoryPageButton : MonoBehaviour
 {
-    [SerializeField] private Button[] buttons; // 三個按鈕
+    [SerializeField] private Button[] buttons; // 四個按鈕
     [SerializeField] private Sprite normalSprite;
     [SerializeField] private Sprite[] selectedSprites;    // 每個按鈕的選中顏色
-    [SerializeField] private GameObject[] panels; // 這裡放 A, B, C 面板
+    [SerializeField] private GameObject[] panels; // 這裡放 案件紀錄簿的所有面板
 
-    private int currentPanelIndex = 0; // 0 = 物品, 1 = 鬼, 2 = 聲音
+    private int currentPanelIndex = 0; // 0 = 物品, 1 = 鬼, 2 = 聲音, 3 = 組合線索
     // ***** 新增: 用於存儲父級控制器的引用 *****
     private InventoryPanelUIController _panelController;
 
@@ -24,11 +24,6 @@ public class SwitchInventoryPageButton : MonoBehaviour
         {
             Debug.LogError("SwitchInventoryPageButton 找不到父級的 InventoryPanelUIController！", this.gameObject);
         }
-    }
-
-    private void Start()
-    {
-        
     }
 
     private void OnEnable()
@@ -77,7 +72,7 @@ public class SwitchInventoryPageButton : MonoBehaviour
 
         if (isActive)
         {
-            // 預設顯示 index 0
+            // 預設顯示 index 0，也就是物品
             ShowPanel(0);
         }
     }
