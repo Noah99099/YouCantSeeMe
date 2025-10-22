@@ -12,6 +12,7 @@ public class PlateUseEffect : MonoBehaviour
 
     [Header("盤子配置")]
     public PlateData[] plates = new PlateData[7];
+    public GameObject magicCircle;
 
     private int usedPlateCount = 0;
     private int totalPlates => plates.Length;
@@ -44,7 +45,8 @@ public class PlateUseEffect : MonoBehaviour
     {
         if (usedPlateCount >= totalPlates)
         {
-            Debug.Log("所有盤子收集完成！");
+            Debug.Log("所有盤子收集完成！打開魔法陣");
+            magicCircle.SetActive(true);
             Destroy(gameObject);
         }
     }

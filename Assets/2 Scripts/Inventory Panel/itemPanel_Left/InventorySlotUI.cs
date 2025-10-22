@@ -122,7 +122,17 @@ public class InventorySlotUI : MonoBehaviour, ISelectHandler, IDeselectHandler, 
         if (InputDeviceManager.Instance != null &&
             InputDeviceManager.Instance.CurrentInputType == InputDeviceManager.InputType.KeyboardMouse)
         {
-            _onSlotSelectedCallback?.Invoke(this);
+            // ***** 修改 *****
+            // 移除 _onSlotSelectedCallback?.Invoke(this);
+            // 我們不再希望懸停時觸發右側面板更新。
+
+            // (可選) 我們仍然可以讓滑鼠懸停時選中該按鈕，這樣鍵盤就可以接管
+            // 但這可能會導致手把和鍵鼠的焦點衝突
+            // 為了實現您「僅點擊」的需求，最好的方式是讓這個方法保持空白
+
+            // 為了實現 "懸停時按鈕高亮"，我們可以使用 Button 內建的高亮功能
+            // 如果您需要 "懸停時選中" (以便鍵盤可以接管)，請取消註解下面這行
+            // buttonComponent.Select();
         }
     }
 }

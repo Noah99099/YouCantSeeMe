@@ -221,20 +221,33 @@ public class InventoryPanelUIController : MonoBehaviour
     /// </summary>
     private void HandleInputTypeChange(InputDeviceManager.InputType newType)
     {
-        //if (newType == InputDeviceManager.InputType.Gamepad) // 手柄
-        //{
-        //    // 切換到手把模式：
-        //    // 設定UI焦點
-        //    SetFocusForCurrentPanel();
-        //}
-        //else // 鍵鼠
-        //{
-        //    // 1. 清除UI焦點，讓滑鼠可以自由點擊
-        //    EventSystem.current.SetSelectedGameObject(null);
-        //}
+        if (newType == InputDeviceManager.InputType.Gamepad) // 手柄
+        {
+            // 1. 隱藏並鎖定滑鼠，防止它干擾 EventSystem
+            Cursor.visible = false;
+            Cursor.lockState = CursorLockMode.Locked;
 
-        // 重新執行一次開啟時的狀態設定
-        UpdatePanelStateOnOpen();
+            // 2. 設定UI焦點
+            // 檢查 currentSelectedSlot 是否為 null（例如剛從鍵鼠切換過來），就選中第一個。
+            if (currentSelectedSlot == null && itemSlots.Count > 0)
+            {
+                EventSystem.current.SetSelectedGameObject(itemSlots[0].gameObject);
+            }
+            else if (currentSelectedSlot != null)
+            {
+                // 否則，重新選中當前的格子（確保焦點不會丟失）
+                EventSystem.current.SetSelectedGameObject(currentSelectedSlot.gameObject);
+            }
+        }
+        else // 鍵鼠
+        {
+            // 1. 顯示並解鎖滑鼠
+            Cursor.visible = true;
+            Cursor.lockState = CursorLockMode.None;
+
+            // 2. 清除手把的UI焦點，讓滑鼠可以自由點擊
+            EventSystem.current.SetSelectedGameObject(null);
+        }
     }
 
     #region ----- 核心 UI 邏輯 -----
@@ -269,14 +282,19 @@ public class InventoryPanelUIController : MonoBehaviour
     private void HandleSlotSelected(InventorySlotUI slot)
     {
         currentSelectedSlot = slot;
-        // 1. 更新右側面板
-        UpdateRightPanel(slot.CurrentItemData);
+        UpdateRightPanel(slot.CurrentItemData); // 更新右側面板
 
         // 2. 如果是手把模式，自動滾動
         if (InputDeviceManager.Instance != null &&
             InputDeviceManager.Instance.CurrentInputType == InputDeviceManager.InputType.Gamepad)
         {
-            ScrollToSlot(slot);
+            // ***** 修改: 呼叫新的滾動方法 *****
+            // 找到當前選中格子的索引
+            int index = itemSlots.IndexOf(slot);
+            if (index != -1) // 確保找到了索引
+            {
+                ScrollToIndex(index);
+            }
         }
     }
 
@@ -319,19 +337,34 @@ public class InventoryPanelUIController : MonoBehaviour
     /// </summary>
     private void UpdatePanelStateOnOpen()
     {
+        // ***** 新增: 初始化 Scrollbar 位置 *****
+        if (scrollRect != null)
+        {
+            scrollRect.verticalNormalizedPosition = 1f; // 1f = 最頂部
+        }
+
         // 預設選中第一個格子
         InventorySlotUI firstSlot = (itemSlots.Count > 0) ? itemSlots[0] : null;
         if (firstSlot == null) return;
 
         if (InputDeviceManager.Instance.CurrentInputType == InputDeviceManager.InputType.Gamepad)
         {
-            // 手把：自動選中第一個格子
+            // 手把：隱藏滑鼠，並自動選中第一個格子
+            Cursor.visible = false;
+            Cursor.lockState = CursorLockMode.Locked;
             EventSystem.current.SetSelectedGameObject(firstSlot.gameObject);
+
+            // 手把模式也需要立即顯示第一格的內容
+            HandleSlotSelected(firstSlot);
         }
         else
         {
-            // 鍵鼠：清除選中，但手動更新右側面板以顯示第一個格子的內容
+            // 鍵鼠：顯示滑鼠，清除選中，並手動更新右側面板以顯示第一個格子的內容
+            Cursor.visible = true;
+            Cursor.lockState = CursorLockMode.None;
             EventSystem.current.SetSelectedGameObject(null);
+
+            // 這會滿足您的需求：「默認顯示第一格內容無論有無點擊」
             HandleSlotSelected(firstSlot);
         }
     }
@@ -339,39 +372,37 @@ public class InventoryPanelUIController : MonoBehaviour
     #endregion
 
     #region ----- 自動滾動 (手把導航) -----
-    private void ScrollToSlot(InventorySlotUI slot)
+    // ***** 新增: 使用索引和區間來滾動 *****
+    /// <summary>
+    /// 根據選中格子的索引，將 Scrollbar 滾動到預設位置。
+    /// </summary>
+    /// <param name="index">選中格子的索引 (0-39)</param>
+    private void ScrollToIndex(int index)
     {
-        // 確保畫布更新佈局
-        Canvas.ForceUpdateCanvases();
+        if (scrollRect == null || itemSlots.Count == 0) return;
 
-        RectTransform contentPanel = scrollRect.content;
-        RectTransform slotRect = slot.GetComponent<RectTransform>();
-        RectTransform viewportRect = scrollRect.viewport;
+        float targetValue;
 
-        // 計算 Y 軸位置 (在 ScrollRect 中，Y 軸是向下的)
-        float slotY_bottom = -slotRect.anchoredPosition.y; // 格子頂部
-        float slotY_top = slotY_bottom - slotRect.rect.height; // 格子底部
-
-        float viewportY_bottom = contentPanel.anchoredPosition.y; // 可視區域頂部
-        float viewportY_top = viewportY_bottom + viewportRect.rect.height; // 可視區域底部
-
-        // 滾動演算法
-        float newY;
-        if (slotY_top < viewportY_bottom) // 格子在可視區域上方
+        // 根據您定義的區間設定 value
+        if (index >= 0 && index <= 15) // 第 1-16 格 (前 4 行)
         {
-            newY = -slotY_top; // 將內容向下滾動，使格子頂部與可視區頂部對齊
+            targetValue = 1f; // 保持在頂部
         }
-        else if (slotY_bottom > viewportY_top) // 格子在可視區域下方
+        else if (index >= 16 && index <= 31) // 第 17-32 格 (中間 4 行)
         {
-            newY = -slotY_bottom + viewportRect.rect.height; // 將內容向上滾動，使格子底部與可視區底部對齊
+            targetValue = 0.34f; // 滾動到中間 (根據您的值)
         }
-        else // 格子已在可視範圍內
+        else // 第 33-40 格 (後 2 行)
         {
-            return; // 不需要滾動
+            targetValue = 0f; // 滾動到底部
         }
 
-        // 更新 contentPanel 的位置
-        contentPanel.anchoredPosition = new Vector2(contentPanel.anchoredPosition.x, newY);
+        // 設置 Scrollbar 的垂直位置
+        // 使用 Mathf.Approximately 避免因浮點數精度問題導致不必要的滾動
+        if (!Mathf.Approximately(scrollRect.verticalNormalizedPosition, targetValue))
+        {
+            scrollRect.verticalNormalizedPosition = targetValue;
+        }
     }
     #endregion
 
