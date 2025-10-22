@@ -23,6 +23,9 @@ public class PlayerInteraction : MonoBehaviour
     [Header("Debug")]
     [SerializeField] private bool showDebugRay = true;
 
+    [Header("案件紀錄簿-物品 腳本引用")]
+    [SerializeField] private InventoryPanelUIController _inventoryPanelController;
+
     private Camera playerCamera;
     
     private GameObject currentInteractableObject = null;
@@ -223,14 +226,19 @@ public class PlayerInteraction : MonoBehaviour
             }
             else if (hitObject.TryGetComponent<InteractableObject>(out var interactable)) //使用物件
             {
-                Debug.Log($"Interacting with: {interactable.objectName}");
+                Debug.Log($"Interacting with: {interactable.objectName}"); //這裡沒有打開案件紀錄簿
                 // 設定交互目標
                 CurrentTarget = interactable;
                 // 打開背包（交互模式）
-                if (InventoryUI.Instance != null)
+                if (_inventoryPanelController != null)
                 {
-                    InventoryUI.Instance.ToggleInventory(true);
-                    InventoryUI.Instance.isInteractionMode = true;
+                    // true 代表是交互模式
+                    _inventoryPanelController.OpenPanel(true);
+
+                    // 推入 Map 的邏輯最好也由 Level1UIController 或 Panel Controller 統一處理
+                    // 這裡暫時假設 OpenPanel 內部還沒有 PushMap
+                    // ***** 移除：將這個呼叫移到 OpenPanel() 內部 *****
+                    //InputStackManager.Instance.PushMap(InputActionMaps._Inventory);
                 }
                 HidePrompt();
             }

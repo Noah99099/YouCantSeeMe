@@ -3,6 +3,9 @@ using UnityEngine.UI;
 using System.Collections;
 using System;
 
+/// <summary>
+/// 淘汰
+/// </summary>
 public class InventoryUI : MonoBehaviour
 {
     public static InventoryUI Instance { get; private set; }
@@ -121,7 +124,7 @@ public class InventoryUI : MonoBehaviour
 
         if (isInventoryVisible)
         {
-            if (InventoryManager.Instance?.ItemDetailUI?.modelPreviewPanel.activeSelf == true) return; // 模型面板開啟中不關閉
+            //if (InventoryManager.Instance?.ItemDetailUI?.modelPreviewPanel.activeSelf == true) return; // 模型面板開啟中不關閉
             CloseInventory();
         }
         else
@@ -171,12 +174,12 @@ public class InventoryUI : MonoBehaviour
 
         InventorySlotUI firstSlot = null;
         if (restorePreviousSlot)
-            firstSlot = slotManager.GetFirstSlot();
+            //firstSlot = slotManager.GetFirstSlot();
 
         if (firstSlot != null)
         {
             //InventorySelection.Instance.SetSelected(firstSlot.gameObject);
-            SetCurrentSelectedItem(firstSlot.BoundItem);
+            //SetCurrentSelectedItem(firstSlot.BoundItem);
         }
     }
 
@@ -234,12 +237,12 @@ public class InventoryUI : MonoBehaviour
         // 手柄模式選中格子
         if (InputDeviceManager.Instance?.CurrentInputType == InputDeviceManager.InputType.Gamepad)
         {
-            var slotUI = slotManager?.GetSlotByItem(currentSelectedItem);
+            //var slotUI = slotManager?.GetSlotByItem(currentSelectedItem);
             //if (slotUI != null) InventorySelection.Instance?.SetSelected(slotUI.gameObject);
         }
 
         // 更新右側詳情面板文字（InventoryManager）
-        InventoryManager.Instance?.UpdateInformationPanel(currentSelectedItem);
+        //InventoryManager.Instance?.UpdateInformationPanel(currentSelectedItem);
 
         // 更新模型預覽文字，但不生成模型（ItemDetailUI）
         itemDetailUI?.ShowItemDetail(currentSelectedItem);
@@ -256,7 +259,7 @@ public class InventoryUI : MonoBehaviour
     {
         if (item == null) return;
 
-        InventoryManager.Instance?.UpdateInformationPanel(item); // 更新右側詳情面板文字（InventoryManager）
+        //InventoryManager.Instance?.UpdateInformationPanel(item); // 更新右側詳情面板文字（InventoryManager）
         itemDetailUI?.ShowItemDetail(item);
 
         if (autoPreview) itemDetailUI?.ShowModelPreview(item);
@@ -268,7 +271,7 @@ public class InventoryUI : MonoBehaviour
     private void ShowItemDetail(ItemData item, bool triggeredByPlayer = false)
     {
         Debug.Log($"[InventoryUI] ShowItemDetail called. isInventoryVisible={isInventoryVisible}, currentSelectedItem={(currentSelectedItem != null ? currentSelectedItem.itemName : "null")}");
-        if (InventoryManager.Instance?.ItemDetailUI == null) return;
+        //if (InventoryManager.Instance?.ItemDetailUI == null) return;
         // 如果背包不可見，不顯示 ModelPreview
         if (!InventoryUI.Instance.isInventoryVisible)
         {
@@ -276,7 +279,7 @@ public class InventoryUI : MonoBehaviour
             return;
         }
 
-        InventoryManager.Instance?.UpdateInformationPanel(item);
+        //InventoryManager.Instance?.UpdateInformationPanel(item);
         itemDetailUI?.ShowItemDetail(item);
     }
 
@@ -287,7 +290,7 @@ public class InventoryUI : MonoBehaviour
     {
         //應該是調錯方法導致Player還能ModelPreview
         //InventoryManager.Instance?.ItemDetailUI?.HideItemDetail();
-        InventoryManager.Instance?.ItemDetailUI?.ClosePreviewAndReturnToInventory();
+        //InventoryManager.Instance?.ItemDetailUI?.ClosePreviewAndReturnToInventory();
     }
     #endregion
 
@@ -388,25 +391,19 @@ public class InventoryUI : MonoBehaviour
 
         InventorySlotUI selectedSlot = null;
         if (currentSelectedItem != null)
-            selectedSlot = slotManager.GetSlotByItem(currentSelectedItem);
+            //selectedSlot = slotManager.GetSlotByItem(currentSelectedItem);
 
         if (selectedSlot == null)
         {
-            selectedSlot = slotManager.GetFirstSlot();
-            if (selectedSlot != null) SetCurrentSelectedItem(selectedSlot.BoundItem);
+            //selectedSlot = slotManager.GetFirstSlot();
+            //if (selectedSlot != null) SetCurrentSelectedItem(selectedSlot.BoundItem);
         }
-        else SetCurrentSelectedItem(selectedSlot.BoundItem);
+        //else SetCurrentSelectedItem(selectedSlot.BoundItem);
     }
 
     public void OnSlotClicked(ItemData item) //新增
     {
         SetCurrentSelectedItem(item);
-    }
-
-    public GameObject GetFirstSelectableSlot()
-    {
-        var firstSlotUI = slotManager.GetFirstSlot();
-        return firstSlotUI != null ? firstSlotUI.gameObject : null;
     }
     #endregion
 

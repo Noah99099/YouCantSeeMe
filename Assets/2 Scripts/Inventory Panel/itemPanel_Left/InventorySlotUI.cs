@@ -1,94 +1,128 @@
+// 檔案名稱: InventorySlotUI.cs
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using System;
+using System.Collections;
 
 /// <summary>
 /// 負責單一背包格子的 UI 行為：
 /// - 綁定資料
-/// - 處理選中（鍵盤 / 手柄）
+/// - 處理選中（手柄）
 /// - 處理點擊（滑鼠）
 /// </summary>
 
-public class InventorySlotUI : MonoBehaviour, ISelectHandler, IPointerClickHandler
+// 必須掛載在有 Button 的物件上
+[RequireComponent(typeof(Button))]
+public class InventorySlotUI : MonoBehaviour, ISelectHandler, IDeselectHandler, IPointerEnterHandler
 {
-    private ItemData boundItem;
-    private Button button;
-    private Image itemIcon;
+    [Header("UI 引用 (在 Prefab 中設定)")]
+    public Image iconImage; // 格子中的物品圖示
+    public Button buttonComponent;
+    //[SerializeField] private GameObject selectedIndicator; // (可選) 一個用於手把選中的外框
 
-    /// <summary>
-    /// 提供外部讀取當前綁定的 ItemData
-    /// </summary>
-    public ItemData BoundItem => boundItem; // ← 新增公開屬性。新增 getter，供外部查詢
+    //public Button ButtonComponent { get; private set; }
+    public ItemData CurrentItemData { get; private set; }
+
+    // 回調：當此格子被選中時，通知總管 (InventoryPanelUIController)
+    private Action<InventorySlotUI> _onSlotSelectedCallback;
 
     private void Awake()
     {
-        button = GetComponent<Button>();
-        itemIcon = transform.Find("ItemIcon")?.GetComponent<Image>();
+        // 若未手動指定，嘗試自動取得（保險機制）
+        if (buttonComponent == null)
+            buttonComponent = GetComponent<Button>();
+
+        if (buttonComponent == null)
+        {
+            Debug.LogError($"[InventorySlotUI] 錯誤：在 '{gameObject.name}' 上的 Button 是 null！請在 Inspector 手動指定。", this.gameObject);
+            return;
+        }
+        buttonComponent.onClick.AddListener(OnSlotClicked);
+        //ButtonComponent = GetComponent<Button>();
+        //ButtonComponent.onClick.AddListener(OnSlotClicked);
+        //if (selectedIndicator != null)
+        //    selectedIndicator.SetActive(false);
     }
 
     /// <summary>
-    /// 綁定物品，並設定點擊回調
+    /// 由總管呼叫，用來設定這個格子的內容
     /// </summary>
-    public void SetItem(ItemData item, Action<ItemData> onClick)
+    public void Setup(ItemData data, ItemData defaultItem, Action<InventorySlotUI> onSelectCallback)
     {
-        boundItem = item;
+        _onSlotSelectedCallback = onSelectCallback;
 
-        // 顯示圖標
-        if (itemIcon != null)
+        // 決定要顯示的資料 (如果 data 為 null，就使用 defaultItem)
+        ItemData dataToShow = data ?? defaultItem;
+        CurrentItemData = dataToShow;
+
+        // ----- 防彈檢查 -----
+        if (iconImage == null)
         {
-            itemIcon.sprite = item?.icon;
-            itemIcon.enabled = item != null;
+            Debug.LogError($"[InventorySlotUI] 錯誤：在 '{gameObject.name}' 上的 iconImage 欄位是 null！請檢查 Prefab 和場景中的實例。", this.gameObject);
+            if (buttonComponent != null) buttonComponent.interactable = false;
+            return; // 直接返回，防止崩潰
         }
 
-        // 設定按鈕點擊
-        if (button != null)
+        if (buttonComponent == null)
         {
-            button.onClick.RemoveAllListeners();
-            if (item != null && onClick != null)
-                button.onClick.AddListener(() => onClick(boundItem));
-            button.interactable = item != null;
+            Debug.LogError($"[InventorySlotUI] 錯誤：在 '{gameObject.name}' 上的 ButtonComponent 是 null！", this.gameObject);
+            return; // 直接返回，防止崩潰
+        }
+        // ----- 檢查結束 -----
+
+        if (dataToShow != null)
+        {
+            iconImage.sprite = dataToShow.icon;
+            iconImage.enabled = (dataToShow.icon != null);
+            buttonComponent.interactable = true; // 讓格子可以被點擊/選中
+        }
+        else
+        {
+            // 如果連 defaultItem 都沒有，就徹底禁用
+            iconImage.sprite = null; // 1022新加
+            iconImage.enabled = false;
+            buttonComponent.interactable = true; // 即使是空格子，也應該可以被選中（根據您的需求）
         }
     }
 
     /// <summary>
-    /// 清空格子
+    /// 鍵鼠：當格子被「點擊」時
     /// </summary>
-    public void ClearSlot()
+    private void OnSlotClicked()
     {
-        boundItem = null;
-        if (itemIcon != null)
-        {
-            itemIcon.sprite = null;
-            itemIcon.enabled = false;
-        }
-        if (button != null)
-        {
-            button.onClick.RemoveAllListeners();
-            button.interactable = false;
-        }
-    }
-    public void Bind(ItemData item) 
-    {
-        boundItem = item;
+        _onSlotSelectedCallback?.Invoke(this);
     }
 
-    // 手柄 / 鍵盤選中 → 更新右側資訊 (selected 行為)
+    /// <summary>
+    /// 手把：當格子被「導航選中」時
+    /// </summary>
     public void OnSelect(BaseEventData eventData)
     {
-        // 只更新面板和 currentSelectedItem，不再重複呼叫 SetSelectedGameObject
-        // 更新 InventoryUI → 通知「目前選中的 item」
-        InventoryManager.Instance?.SelectSlot(gameObject, boundItem);
-        InventoryUI.Instance?.SetCurrentSelectedItem(boundItem);
-
-        // 手柄模式下，不自動開啟 ModelPreview
-        // 只更新右側文字面板
-        InventoryUI.Instance?.UpdateItemDetail(boundItem, false);
+        _onSlotSelectedCallback?.Invoke(this);
+        //if (selectedIndicator != null)
+        //    selectedIndicator.SetActive(true);
     }
 
-    // 滑鼠點擊 → 視為「選中 / 點擊格子」(但不直接開模型面板)
-    public void OnPointerClick(PointerEventData eventData)
+    /// <summary>
+    /// 手把：當格子「失去選中」時
+    /// </summary>
+    public void OnDeselect(BaseEventData eventData)
     {
-        InventoryUI.Instance?.OnSlotClicked(boundItem);
+        //if (selectedIndicator != null)
+        //    selectedIndicator.SetActive(false);
+    }
+
+    /// <summary>
+    /// 鍵鼠：當滑鼠「懸停」在格子上時 (實現懸停預覽)
+    /// </summary>
+    public void OnPointerEnter(PointerEventData eventData)
+    {
+        // 只有在鍵鼠模式下，懸停才觸發選中
+        if (InputDeviceManager.Instance != null &&
+            InputDeviceManager.Instance.CurrentInputType == InputDeviceManager.InputType.KeyboardMouse)
+        {
+            _onSlotSelectedCallback?.Invoke(this);
+        }
     }
 }

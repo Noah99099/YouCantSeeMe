@@ -1,8 +1,11 @@
+// 檔案名稱: InventoryPanelUIController.cs
 using System;
-using Unity.VisualScripting;
+using System.Collections.Generic; // 引用 List
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
+using UnityEngine.UI; // 引用 UI
+using TMPro; // 引用 TextMeshPro
 
 public class InventoryPanelUIController : MonoBehaviour
 {
@@ -10,21 +13,100 @@ public class InventoryPanelUIController : MonoBehaviour
     // **一律呼叫 InventoryPanelUIController.cs 的 ClosePanel() 來關閉案件紀錄簿
     // **切案件紀錄簿的其他頁用 SwitchInventoryPageButton.cs 的 OnButtonClicked(int index)
 
-    [Tooltip("案件紀錄簿-物品、預覽物品建模、鬼、聲音、組合線索")]
+    [Header("案件紀錄簿-物品、預覽物品建模、鬼、聲音、組合線索")]
     public GameObject inventoryPanel;
     public GameObject modelPreviewPanel;
     public GameObject ghostPanel;
     public GameObject voicePanel;
     public GameObject cluePanel;
-    [Tooltip("右下角的提示視野圖標")]
+    [Header("右下角的提示視野圖標")]
     public GameObject titleUI;
+    [Header("準心")]
+    public GameObject crossHair;
+    [Header("案件紀錄簿下方4個按鈕")]
+    public SwitchInventoryPageButton _switchInventoryPage;
 
-    public SwitchInventoryPageButton _switchInventoryPage; // 案件紀錄簿下方4個按鈕
+    [Header("物品面板 (左側)")]
+    [SerializeField] private ScrollRect scrollRect; // 將您的 ScrollRect 拖曳到此
+    [SerializeField] private Transform slotsContainer; // 掛載 ItemSlot prefab 的那個 Content 物件
+
+    [Header("物品面板 (右側)")]
+    [SerializeField] private Image itemImage;
+    [SerializeField] private TMP_Text itemNameText;
+    [SerializeField] private TMP_Text itemDescriptionText;
+    [SerializeField] private Button useItemButton;
+    [SerializeField] private Button previewItemButton;
+
+    // ----- 狀態管理 -----
     public bool IsInventoryPanelOpen { get; private set; } // 用來判斷案件紀錄簿-物品面板是否打開
+    private bool isInteractionMode; // 追蹤是否為交互模式
+    private List<InventorySlotUI> itemSlots = new List<InventorySlotUI>(); // 緩存所有格子腳本
+    private InventorySlotUI currentSelectedSlot; // 追蹤當前選中的格子
 
     // ***** 新增: 供其他腳本訂閱的事件 *****
     public event Action OnPanelOpened;
     public event Action OnPanelClosed;
+
+    private void Awake()
+    {
+        // 1. 診斷 slotsContainer
+        if (slotsContainer == null)
+        {
+            Debug.LogError($"[InventoryPanelUIController] FATAL ERROR: 'Slots Container' 欄位是空的！請在 Inspector 中拖曳 'Content' 物件！", this.gameObject);
+            return;
+        }
+
+        Debug.Log($"[InventoryPanelUIController] 正在從 '{slotsContainer.name}' 物件中尋找所有 InventorySlotUI...", this.gameObject);
+        slotsContainer.GetComponentsInChildren<InventorySlotUI>(true, itemSlots);
+        Debug.Log($"[InventoryPanelUIController] 總共找到了 {itemSlots.Count} 個格子。");
+
+        // 2. 診斷找到的格子
+        if (itemSlots.Count > 0)
+        {
+            bool allSlotsOk = true;
+            foreach (var slot in itemSlots)
+            {
+                if (slot.iconImage == null)
+                {
+                    Debug.LogError($"[InventoryPanelUIController] 診斷失敗：找到的格子 '{slot.gameObject.name}' 的 iconImage 欄位是 null！這就是崩潰的原因。", slot.gameObject);
+                    allSlotsOk = false;
+                }
+            }
+            if (allSlotsOk)
+            {
+                Debug.Log("[InventoryPanelUIController] 診斷成功：所有 {itemSlots.Count} 個格子的 iconImage 都已被正確引用。");
+            }
+        }
+        else
+        {
+            Debug.LogWarning("[InventoryPanelUIController] 警告：在 'Slots Container' 底下沒有找到任何 InventorySlotUI 腳本！", this.gameObject);
+        }
+
+        // 3. 訂閱數據層 (InventoryManager) 的變化
+        if (InventoryManager.Instance != null)
+        {
+            InventoryManager.Instance.OnInventoryChanged += RefreshInventorySlots;
+        }
+
+        // 4. 綁定右側按鈕的點擊事件
+        if (useItemButton != null) useItemButton.onClick.AddListener(OnUseItemClicked);
+        if (previewItemButton != null) previewItemButton.onClick.AddListener(OnPreviewItemClicked);
+    }
+
+    private void Start()
+    {
+        // 遊戲開始時，先用預設值刷新一次所有格子
+        RefreshInventorySlots();
+    }
+
+    private void OnDestroy()
+    {
+        // 務必取消訂閱
+        if (InventoryManager.Instance != null)
+        {
+            InventoryManager.Instance.OnInventoryChanged -= RefreshInventorySlots;
+        }
+    }
 
     public void OpenModelPreview() // OnOpenModelPreview註冊事件調用，因為按鈕事件所以重點寫這裡
     {
@@ -42,45 +124,54 @@ public class InventoryPanelUIController : MonoBehaviour
     /// <summary>
     /// 從外部呼叫此方法來打開庫存面板。
     /// </summary>
-    public void OpenPanel() // 打開案件紀錄簿，默認為物品面板
-    {
-        // 防止重複打開
-        if (IsInventoryPanelOpen) return;
+    /// <param name="inInteractionMode">是否是因交互而打開的</param>
+    public void OpenPanel(bool inInteractionMode = false) // 打開案件紀錄簿，默認為物品面板
+    {  
+        if (IsInventoryPanelOpen) return; // 防止重複打開
 
-        // 1. 打開案件紀錄簿-物品，關掉右下提示
-        inventoryPanel.SetActive(true);
-        titleUI.SetActive(false);
+        isInteractionMode = inInteractionMode; // 儲存打開模式
+        inventoryPanel.SetActive(true); // 打開案件紀錄簿-物品
+        titleUI.SetActive(false); // 關掉右下提示
+        crossHair.SetActive(false); // 關掉準心
 
-        // 2. 更新狀態並觸發事件
+        // ***** 新增：在這裡集中呼叫 PushMap *****
+        // 這確保了只要這個面板被打開，它就一定會正確地 Push Map
+        InputStackManager.Instance.PushMap(InputActionMaps._Inventory);
+
+        // 更新狀態並觸發事件
         IsInventoryPanelOpen = true;
         OnPanelOpened?.Invoke();
         Debug.Log("InventoryPanelUIController: OpenPanel() 執行，OnPanelOpened 事件已觸發。");
+
+        // 刷新一次所有格子的內容
+        RefreshInventorySlots();
+        // 打開面板後，立即更新UI狀態（設定焦點、更新右側面板）
+        UpdatePanelStateOnOpen();
     }
 
     /// <summary>
     /// 從外部或內部呼叫此方法來關閉庫存面板。
     /// </summary>
     public void ClosePanel()
-    {
-        // 防止重複關閉
-        if (!IsInventoryPanelOpen) return;
+    {       
+        if (!IsInventoryPanelOpen) return; // 防止重複關閉
 
-        // 1. 不使用Pop Map，因為無法得知玩家在案件紀錄簿中切換多少次。只有 modelPreviewPanel 可以 Pop Map
-        InputStackManager.Instance.Init(InputActionMaps._Player);
+        // 不使用Pop Map，因為無法得知玩家在案件紀錄簿中切換多少次。只有 modelPreviewPanel 可以 Pop Map
+        InputStackManager.Instance.Init(InputActionMaps._Player); 
+        EventSystem.current.SetSelectedGameObject(null); // 清除UI焦點
 
-        // 2. 清除UI焦點
-        EventSystem.current.SetSelectedGameObject(null);
-
-        // 3. 關閉案件紀錄簿的所有面板 - 物品、預覽物品建模、鬼、聲音、組合線索
+        // 關閉案件紀錄簿的所有面板 - 物品、預覽物品建模、鬼、聲音、組合線索
         inventoryPanel.SetActive(false);
         modelPreviewPanel.SetActive(false);
         ghostPanel.SetActive(false);
         voicePanel.SetActive(false);
         cluePanel.SetActive(false);
         titleUI.SetActive(true); // 右下提示打開
+        crossHair.SetActive(true); // 打開準心
 
         // 4. 更新狀態並觸發事件 (注意：這會在 OnDisable 之後發生，但邏輯上更清晰)
         IsInventoryPanelOpen = false;
+        isInteractionMode = false; // 關閉時重置模式
         OnPanelClosed?.Invoke();
         Debug.Log("InventoryPanelUIController: ClosePanel() 執行，OnPanelClosed 事件已觸發。");
     }
@@ -102,12 +193,11 @@ public class InventoryPanelUIController : MonoBehaviour
         if (InputDeviceManager.Instance != null)
         {
             InputDeviceManager.Instance.OnInputTypeChanged += HandleInputTypeChange;
-
+            // 注意：這裡不再需要立即呼叫 HandleInputTypeChange，
+            // 因為 OpenPanel() 中的 UpdatePanelStateOnOpen() 會處理
             // 立即根據當前的設備類型，初始化一次面板狀態
-            HandleInputTypeChange(InputDeviceManager.Instance.CurrentInputType);
+            //HandleInputTypeChange(InputDeviceManager.Instance.CurrentInputType);
         }
-
-        //***設定該面板的UI焦點
     }
 
     private void OnDisable()
@@ -117,6 +207,7 @@ public class InventoryPanelUIController : MonoBehaviour
         InputProvider.InputActions.Inventory.CloseInventory.performed -= OnCloseInventory;
         InputProvider.InputActions.Inventory.OpenModelPreview.performed -= OnOpenModelPreview;
         InputProvider.InputActions.Inventory.ToGhostPanel.performed -= OnToGhostPanel;
+        InputProvider.InputActions.Inventory.ToCluePanel.performed -= OnToCluePanel;
 
         // ***** 新增: 取消訂閱設備變更事件 *****
         if (InputDeviceManager.Instance != null)
@@ -130,18 +221,159 @@ public class InventoryPanelUIController : MonoBehaviour
     /// </summary>
     private void HandleInputTypeChange(InputDeviceManager.InputType newType)
     {
-        if (newType == InputDeviceManager.InputType.Gamepad) // 手柄
+        //if (newType == InputDeviceManager.InputType.Gamepad) // 手柄
+        //{
+        //    // 切換到手把模式：
+        //    // 設定UI焦點
+        //    SetFocusForCurrentPanel();
+        //}
+        //else // 鍵鼠
+        //{
+        //    // 1. 清除UI焦點，讓滑鼠可以自由點擊
+        //    EventSystem.current.SetSelectedGameObject(null);
+        //}
+
+        // 重新執行一次開啟時的狀態設定
+        UpdatePanelStateOnOpen();
+    }
+
+    #region ----- 核心 UI 邏輯 -----
+    /// <summary>
+    /// 當背包數據改變時 (OnInventoryChanged)，刷新所有格子
+    /// </summary>
+    private void RefreshInventorySlots()
+    {
+        if (itemSlots.Count == 0 || InventoryManager.Instance == null) return;
+
+        List<ItemData> currentItems = InventoryManager.Instance.items;
+        ItemData defaultItem = InventoryManager.Instance.defaultItem;
+
+        for (int i = 0; i < itemSlots.Count; i++)
         {
-            // 切換到手把模式：
-            // 設定UI焦點
-            SetFocusForCurrentPanel();
-        }
-        else // 鍵鼠
-        {
-            // 1. 清除UI焦點，讓滑鼠可以自由點擊
-            EventSystem.current.SetSelectedGameObject(null);
+            if (i < currentItems.Count)
+            {
+                // 列表
+                itemSlots[i].Setup(currentItems[i], defaultItem, HandleSlotSelected);
+            }
+            else
+            {
+                // 超出列表範圍的格子，使用 defaultItem 填充
+                itemSlots[i].Setup(null, defaultItem, HandleSlotSelected);
+            }
         }
     }
+
+    /// <summary>
+    /// 這是所有格子 (InventorySlotUI) 的中央回調
+    /// </summary>
+    private void HandleSlotSelected(InventorySlotUI slot)
+    {
+        currentSelectedSlot = slot;
+        // 1. 更新右側面板
+        UpdateRightPanel(slot.CurrentItemData);
+
+        // 2. 如果是手把模式，自動滾動
+        if (InputDeviceManager.Instance != null &&
+            InputDeviceManager.Instance.CurrentInputType == InputDeviceManager.InputType.Gamepad)
+        {
+            ScrollToSlot(slot);
+        }
+    }
+
+    /// <summary>
+    /// 根據選中的物品，更新右側 UI
+    /// </summary>
+    private void UpdateRightPanel(ItemData data)
+    {
+        // 檢查 data 是否為 null 或 defaultItem
+        bool isDefault = (data == null || data == InventoryManager.Instance.defaultItem);
+
+        if (isDefault)
+        {
+            // 顯示預設資訊
+            itemImage.enabled = false;
+            itemNameText.text = InventoryManager.Instance.defaultItem ? InventoryManager.Instance.defaultItem.itemName : "---";
+            itemDescriptionText.text = InventoryManager.Instance.defaultItem ? InventoryManager.Instance.defaultItem.description : "空格子。";
+
+            useItemButton.gameObject.SetActive(false);
+            previewItemButton.gameObject.SetActive(false);
+        }
+        else
+        {
+            // 顯示真實物品資訊
+            itemImage.sprite = data.itemImage;
+            itemImage.enabled = (data.itemImage != null);
+            itemNameText.text = data.itemName;
+            itemDescriptionText.text = data.description;
+
+            // 根據您的需求設定按鈕可見性
+            useItemButton.gameObject.SetActive(isInteractionMode); // 僅在交互模式下顯示
+
+            bool hasModel = (data.modelPrefab != null);
+            previewItemButton.gameObject.SetActive(hasModel); // 僅在有模型時顯示
+        }
+    }
+
+    /// <summary>
+    /// 打開面板時，設定初始焦點
+    /// </summary>
+    private void UpdatePanelStateOnOpen()
+    {
+        // 預設選中第一個格子
+        InventorySlotUI firstSlot = (itemSlots.Count > 0) ? itemSlots[0] : null;
+        if (firstSlot == null) return;
+
+        if (InputDeviceManager.Instance.CurrentInputType == InputDeviceManager.InputType.Gamepad)
+        {
+            // 手把：自動選中第一個格子
+            EventSystem.current.SetSelectedGameObject(firstSlot.gameObject);
+        }
+        else
+        {
+            // 鍵鼠：清除選中，但手動更新右側面板以顯示第一個格子的內容
+            EventSystem.current.SetSelectedGameObject(null);
+            HandleSlotSelected(firstSlot);
+        }
+    }
+
+    #endregion
+
+    #region ----- 自動滾動 (手把導航) -----
+    private void ScrollToSlot(InventorySlotUI slot)
+    {
+        // 確保畫布更新佈局
+        Canvas.ForceUpdateCanvases();
+
+        RectTransform contentPanel = scrollRect.content;
+        RectTransform slotRect = slot.GetComponent<RectTransform>();
+        RectTransform viewportRect = scrollRect.viewport;
+
+        // 計算 Y 軸位置 (在 ScrollRect 中，Y 軸是向下的)
+        float slotY_bottom = -slotRect.anchoredPosition.y; // 格子頂部
+        float slotY_top = slotY_bottom - slotRect.rect.height; // 格子底部
+
+        float viewportY_bottom = contentPanel.anchoredPosition.y; // 可視區域頂部
+        float viewportY_top = viewportY_bottom + viewportRect.rect.height; // 可視區域底部
+
+        // 滾動演算法
+        float newY;
+        if (slotY_top < viewportY_bottom) // 格子在可視區域上方
+        {
+            newY = -slotY_top; // 將內容向下滾動，使格子頂部與可視區頂部對齊
+        }
+        else if (slotY_bottom > viewportY_top) // 格子在可視區域下方
+        {
+            newY = -slotY_bottom + viewportRect.rect.height; // 將內容向上滾動，使格子底部與可視區底部對齊
+        }
+        else // 格子已在可視範圍內
+        {
+            return; // 不需要滾動
+        }
+
+        // 更新 contentPanel 的位置
+        contentPanel.anchoredPosition = new Vector2(contentPanel.anchoredPosition.x, newY);
+    }
+    #endregion
 
     #region --- 所有 Inventory map 註冊方法 ---
     private void OnCloseInventory(InputAction.CallbackContext context) //關
@@ -172,20 +404,25 @@ public class InventoryPanelUIController : MonoBehaviour
     }
     #endregion
 
-    /// <summary>
-    /// 根據當前開啟的遊戲設定面板，設定手把的UI焦點
-    /// </summary>
-    private void SetFocusForCurrentPanel()
-    {
-        // 確保我們清除了之前的焦點，以防萬一
-        EventSystem.current.SetSelectedGameObject(null);
+    // ----- 按鈕與不是map的輸入事件 -----
 
-        //// 檢查是否有設定預設按鈕，避免報錯
-        //if (鎖定的UI != null)
-        //{
-        //    // 將 EventSystem 的焦點設定到您指定的那個按鈕上
-        //    EventSystem.current.SetSelectedGameObject(鎖定的UI);
-        //    Debug.Log($"已將UI焦點設定到: {鎖定的UI.name}");
-        //}
+    private void OnUseItemClicked()
+    {
+        if (currentSelectedSlot != null && currentSelectedSlot.CurrentItemData != InventoryManager.Instance.defaultItem)
+        {
+            Debug.Log($"使用物品: {currentSelectedSlot.CurrentItemData.itemName}");
+            // 呼叫 PlayerInteraction 的使用物品方法
+            PlayerInteraction.Instance?.OnItemUsed(currentSelectedSlot.CurrentItemData);
+            // PlayerInteraction 的 OnItemUsed 應該會負責關閉面板
+        }
+    }
+
+    private void OnPreviewItemClicked()
+    {
+        if (currentSelectedSlot != null && currentSelectedSlot.CurrentItemData.modelPrefab != null)
+        {
+            // 您的原有邏輯
+            OpenModelPreview();
+        }
     }
 }

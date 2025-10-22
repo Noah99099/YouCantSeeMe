@@ -1,3 +1,4 @@
+// Level1UIController.cs
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
@@ -11,7 +12,7 @@ public class Level1UIController : MonoBehaviour
 {
     // ***** 新增 *****
     [Header("案件紀錄簿-物品 控制器引用")]
-    [SerializeField] private InventoryPanelUIController inventoryPanelController;
+    [SerializeField] private InventoryPanelUIController _inventoryPanelController;
 
     [Header("背包panel: 背包-物品/死者/聲音/線索組合。目前共4個")]
     public GameObject[] mainPanels;
@@ -182,13 +183,14 @@ public class Level1UIController : MonoBehaviour
     {
         // 如果沒有獲得紀錄簿，就不能打開該面板
         // 改成用呼叫 InventoryPanelUIController腳本 裡的方法
-        if (inventoryPanelController != null)
+        if (_inventoryPanelController != null)
         {
-            inventoryPanelController.OpenPanel();
+            _inventoryPanelController.OpenPanel(false); // false = 非使用物品模式
             Debug.Log($"[{this.name}] 已請求打開案件紀錄簿。");
 
             // 將 Inventory map 推入棧，此時 Player map 會被自動禁用
-            InputStackManager.Instance.PushMap(InputActionMaps._Inventory);
+            // ***** 移除：將這個呼叫移到 OpenPanel() 內部 *****
+            //InputStackManager.Instance.PushMap(InputActionMaps._Inventory);
         }
         else
         {

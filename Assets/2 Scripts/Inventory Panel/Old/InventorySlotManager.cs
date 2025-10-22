@@ -1,3 +1,4 @@
+// InventorySlotManager.cs
 using Spine;
 using System.Collections.Generic;
 using UnityEngine;
@@ -29,7 +30,7 @@ public class InventorySlotManager : MonoBehaviour
             InventorySlotUI slotUI = child.GetComponent<InventorySlotUI>();
             if (slotUI != null)
             {
-                slotUI.ClearSlot(); // 初始清空
+                //slotUI.ClearSlot(); // 初始清空
                 slotUIs.Add(slotUI);
             }
         }
@@ -59,7 +60,7 @@ public class InventorySlotManager : MonoBehaviour
 
             // 即使是 defaultItem 也要呼叫 SetItem 來保持按鈕可點
             ItemData item = i < items.Count ? items[i] : InventoryManager.Instance.defaultItem;
-            slotUI.SetItem(item, onClickAction);
+            //slotUI.SetItem(item, onClickAction);
         }
     }
 
@@ -71,10 +72,10 @@ public class InventorySlotManager : MonoBehaviour
         if (slotUI == null) return;
 
         // 綁定資料
-        slotUI.Bind(item);
+        //slotUI.Bind(item);
 
         // 設定顯示與按鈕事件
-        slotUI.SetItem(item, onClickAction);
+        //slotUI.SetItem(item, onClickAction);
     }
 
     /// <summary>
@@ -104,19 +105,11 @@ public class InventorySlotManager : MonoBehaviour
         foreach (Transform child in itemsContainer)
         {
             var slotUI = child.GetComponent<InventorySlotUI>();
-            if (slotUI != null && slotUI.BoundItem == item)
+            //if (slotUI != null && slotUI.BoundItem == item)
                 return child.gameObject;
         }
 
         return null;
-    }
-
-    /// <summary>
-    /// 取得第一個可選 Slot，用於手柄模式自動選中
-    /// </summary>
-    public InventorySlotUI GetFirstSlot()
-    {
-        return slotUIs.Find(slot => slot.BoundItem != null && slot.BoundItem != InventoryManager.Instance.defaultItem);
     }
 
     /// <summary>
@@ -127,15 +120,6 @@ public class InventorySlotManager : MonoBehaviour
         if (index >= 0 && index < slotUIs.Count)
             return slotUIs[index];
         return null;
-    }
-
-    /// <summary>
-    /// 根據 ItemData 找到對應 SlotUI
-    /// </summary>
-    public InventorySlotUI GetSlotByItem(ItemData item)
-    {
-        if (item == null) return null;
-        return slotUIs.Find(slot => slot.BoundItem == item);
     }
 
     // 用來明確取 slot_0(第一個格子)

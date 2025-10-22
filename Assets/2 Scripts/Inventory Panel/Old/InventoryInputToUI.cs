@@ -67,11 +67,11 @@ public class InventoryInputToUI : MonoBehaviour
         if (InputDeviceManager.Instance != null &&
             InputDeviceManager.Instance.CurrentInputType == InputDeviceManager.InputType.Gamepad)
         {
-            var firstSlot = slotManager?.GetFirstSlot();
-            if (firstSlot != null && InventorySelection.Instance != null)
-            {
-                //InventorySelection.Instance.SetSelected(firstSlot.gameObject);
-            }
+            //var firstSlot = slotManager?.GetFirstSlot();
+            //if (firstSlot != null && InventorySelection.Instance != null)
+            //{
+            //    //InventorySelection.Instance.SetSelected(firstSlot.gameObject);
+            //}
         }
         else
         {
@@ -224,7 +224,7 @@ public class InventoryInputToUI : MonoBehaviour
         //var slotUI = slotManager.GetSlotByItem(item); //0924 這一句是讓預覽面板跳出的兇手
         //if (slotUI == null) return;
 
-        InventoryManager.Instance.ItemDetailUI.ShowModelPreview(item);
+        //InventoryManager.Instance.ItemDetailUI.ShowModelPreview(item);
         UIInputManager.Instance?.EnterModelPreviewMode();
     }
 
@@ -302,8 +302,8 @@ public class InventoryInputToUI : MonoBehaviour
             var slotUI = selectableButtons[currentSelectedIndex].GetComponent<InventorySlotUI>();
             if (slotUI != null)
             {
-                inventoryUI.SetCurrentSelectedItem(slotUI.BoundItem);
-                inventoryUI.UpdateItemDetail(slotUI.BoundItem, true);
+                //inventoryUI.SetCurrentSelectedItem(slotUI.BoundItem);
+                //inventoryUI.UpdateItemDetail(slotUI.BoundItem, true);
             }
 
             inventoryUI.EnsureSlotVisible(selectableButtons[currentSelectedIndex].transform);
@@ -373,8 +373,8 @@ public class InventoryInputToUI : MonoBehaviour
         var slotUI = slotGO.GetComponent<InventorySlotUI>();
         if (slotUI != null)
         {
-            inventoryUI.SetCurrentSelectedItem(slotUI.BoundItem);
-            inventoryUI.UpdateItemDetail(slotUI.BoundItem, true);
+            //inventoryUI.SetCurrentSelectedItem(slotUI.BoundItem);
+            //inventoryUI.UpdateItemDetail(slotUI.BoundItem, true);
         }
 
         inventoryUI.EnsureSlotVisible(slotGO.transform);
