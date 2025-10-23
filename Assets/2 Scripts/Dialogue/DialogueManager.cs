@@ -12,6 +12,11 @@ public class DialogueManager : MonoBehaviour
     [SerializeField] private DialogueUI dialogueUI;
     [SerializeField] private float typeWriterSpeed = 0.05f;
     [SerializeField] private float autoPlayDelay = 2.0f;
+    [Header("遊戲 UI 控制")]
+    [Tooltip("將您場景中代表準心的 UI GameObject 拖曳到這裡")]
+    [SerializeField] private GameObject crosshairUI;
+    [Tooltip("將您場景中其他需要隱藏的 UI GameObject 拖曳到這裡")]
+    [SerializeField] private GameObject otherUI;
 
     private bool isDialogueActive = false;
     private bool isTyping = false;
@@ -54,7 +59,7 @@ public class DialogueManager : MonoBehaviour
     {
         playerControls.Dialogue.Disable();
         playerControls.Dialogue.Submit.performed -= OnSubmit;
-        //playerControls.Dialogue.Skip.performed -= OnSkip;
+       // playerControls.Dialogue.Skip.performed -= OnSkip;
         //playerControls.Dialogue.ToggleAutoPlay.performed -= OnToggleAutoPlay;
     }
 
@@ -82,6 +87,16 @@ public class DialogueManager : MonoBehaviour
     public void StartConversation(DialogueGraph graph)
     {
         if (isDialogueActive) return;
+
+        if (crosshairUI != null)
+        {
+            crosshairUI.SetActive(false);
+        }
+
+        if (otherUI != null)
+        {
+            otherUI.SetActive(false);
+        }
 
         currentGraph = graph;
         isDialogueActive = true;
@@ -229,7 +244,7 @@ public class DialogueManager : MonoBehaviour
                 ProcessCurrentNode();
             }
         }
-         else if (currentNode is InvokeEventNode eventNode)
+        else if (currentNode is InvokeEventNode eventNode)
         {
             if (!string.IsNullOrEmpty(eventNode.eventID))
             {
@@ -238,7 +253,7 @@ public class DialogueManager : MonoBehaviour
 
                 string trimmedID = eventNode.eventID.Trim();
                 Debug.Log($"[DialogueManager] 正在廣播事件，嘗試查找 ID: \"{trimmedID}\"");
-                
+
                 if (eventListeners.ContainsKey(trimmedID))
                 {
                     eventListeners[trimmedID].TriggerEvent();
@@ -248,8 +263,43 @@ public class DialogueManager : MonoBehaviour
                     Debug.LogWarning($"[DialogueManager] 在場景中找不到監聽事件 ID '{trimmedID}' 的監聽器！");
                 }
             }
-            
+
             currentNode = eventNode.GetNextNode();
+            ProcessCurrentNode();
+        }
+        else if (currentNode is CheckSpecificItemsNode checkSpecificItemsNode)
+        {
+            bool allItemsFound = true; // 先假設所有物品都找到了
+
+            // 確保 InventoryManager 存在
+            if (InventoryManager.Instance != null && checkSpecificItemsNode.requiredItems != null)
+            {
+                // 遍歷節點中設定的每一個必要物品
+                foreach (ItemData requiredItem in checkSpecificItemsNode.requiredItems)
+                {
+                    // --- 核心修正：傳遞 ItemData 中的 itemID (或 itemName) 字串 ---
+                    // 假設您的 ItemData.cs 中有 public string itemID;
+                    if (requiredItem != null && !InventoryManager.Instance.HasItem(requiredItem.itemID))
+                    {
+                        allItemsFound = false;
+                        Debug.Log($"[Dialogue CheckSpecificItems] 檢查失敗：缺少物品 ID '{requiredItem.itemID}'"); // 建議 Log ID
+                        break;
+                    }
+                }
+            }
+            else
+            {
+                Debug.LogWarning("場景中找不到 InventoryManager 或 CheckSpecificItemsNode 未指定 Required Items！");
+                allItemsFound = false; // 如果有問題，也視為失敗
+            }
+
+            if (allItemsFound)
+            {
+                Debug.Log($"[Dialogue CheckSpecificItems] 檢查通過：所有必需物品都已找到。");
+            }
+
+            // 根據最終檢查結果，前進到 Pass 或 Fail 的出口
+            currentNode = checkSpecificItemsNode.GetNextNode(allItemsFound);
             ProcessCurrentNode();
         }
     }
@@ -434,6 +484,15 @@ public class DialogueManager : MonoBehaviour
         dialogueUI.HideDialogueBox();
         Debug.Log("對話結束");
 
+        if (crosshairUI != null)
+        {
+            crosshairUI.SetActive(true);
+        }
+        if (otherUI != null)
+        {
+            otherUI.SetActive(true);
+        }
+
         // --- 新增：如果攝影機被移動過，就觸發歸位 ---
         if (cameraHasBeenMoved)
         {
@@ -442,15 +501,15 @@ public class DialogueManager : MonoBehaviour
     }
 
     // Skip 和 AutoPlay 功能需要用新的圖形邏輯重寫，暫時保留或移除
-    public void OnSkip()
+    public void Skip()
     {
-        if (!isDialogueActive || isTyping) return;
+        Debug.Log("<color=cyan>[Debug] Skip() method called!</color>");
+        // 增加 isDialogueActive 判斷
+        if (!isDialogueActive || isTyping || isWaitingForChoice) return;
 
-        // 停止所有正在進行的協程，例如打字效果
         StopAllCoroutines();
         isTyping = false;
-        dialogueUI.ClearChoices(); // 如果剛好在選項處，也清除選項
-                                   // --- 在跳過之前，停止當前語音 ---
+        dialogueUI.ClearChoices();
         if (DialogueAudioManager.Instance != null) DialogueAudioManager.Instance.StopVoiceOver();
 
         Debug.Log("開始尋找下一個重要節點...");
@@ -468,68 +527,23 @@ public class DialogueManager : MonoBehaviour
             EndConversation();
         }
     }
-    /*
-    private void OnSkip(InputAction.CallbackContext context)
+    public void ToggleAutoPlay()
     {
-        if (!isDialogueActive || isTyping) return;
-
-        // 停止所有正在進行的協程，例如打字效果
-        StopAllCoroutines();
-        isTyping = false;
-        dialogueUI.ClearChoices(); // 如果剛好在選項處，也清除選項
-                                   // --- 在跳過之前，停止當前語音 ---
-        if (DialogueAudioManager.Instance != null) DialogueAudioManager.Instance.StopVoiceOver();
-
-        Debug.Log("開始尋找下一個重要節點...");
-        BaseNode nextImportantNode = FindNextImportantNode();
-
-        if (nextImportantNode != null)
-        {
-            Debug.Log("找到重要節點: " + nextImportantNode.name);
-            currentNode = nextImportantNode;
-            ProcessCurrentNode();
-        }
-        else
-        {
-            Debug.Log("找不到更多重要節點，對話結束。");
-            EndConversation();
-        }
-    }
-    */
-    public void OnToggleAutoPlay()
-    {
+        Debug.Log("<color=yellow>[Debug] ToggleAutoPlay() method called!</color>");
         if (!isDialogueActive) return;
 
         isAutoPlay = !isAutoPlay;
         Debug.Log("自動播放: " + (isAutoPlay ? "開啟" : "關閉"));
 
-        // 如果剛開啟自動播放，且當前對話處於靜止狀態（不在打字，也不在等選項）
-        // 我們就主動觸發一次前進，讓對話繼續下去
+        // 如果剛開啟自動播放，且當前對話處於靜止狀態
         if (isAutoPlay && !isTyping && !isWaitingForChoice)
         {
-            // 移動到下一個節點
+            // 自動前進到下一個節點
             currentNode = currentNode.GetNextNode();
             ProcessCurrentNode();
         }
     }
-    /*
-    private void OnToggleAutoPlay(InputAction.CallbackContext context)
-    {
-        if (!isDialogueActive) return;
 
-        isAutoPlay = !isAutoPlay;
-        Debug.Log("自動播放: " + (isAutoPlay ? "開啟" : "關閉"));
-
-        // 如果剛開啟自動播放，且當前對話處於靜止狀態（不在打字，也不在等選項）
-        // 我們就主動觸發一次前進，讓對話繼續下去
-        if (isAutoPlay && !isTyping && !isWaitingForChoice)
-        {
-            // 移動到下一個節點
-            currentNode = currentNode.GetNextNode();
-            ProcessCurrentNode();
-        }
-    }
-    */
     private BaseNode FindNextImportantNode()
     {
         // 使用佇列 (Queue) 進行廣度優先搜索

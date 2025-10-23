@@ -5,6 +5,8 @@ using UnityEngine.UI;
 [CreateAssetMenu(fileName = "New Item", menuName = "Inventory/Item")]
 public class ItemData : ScriptableObject
 {
+    [Header("基本資訊")]
+    public string itemID; // 物品的唯一識別 ID
     [Header("物品資訊：UI元件")]
     public Sprite itemImage; //物件圖片
     public Sprite icon; //物件圖標
