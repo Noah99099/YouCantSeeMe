@@ -286,21 +286,22 @@ public class PlayerInteraction : MonoBehaviour
     /// </summary>
     private void CloseInventoryAndExitInteraction()
     {
-        Debug.Log($"[PlayerInteraction] CloseInventoryAndExitInteraction start. CurrentTarget={(CurrentTarget != null ? CurrentTarget.name : "null")}, isInventoryVisible={InventoryUI.Instance.isInventoryVisible}");
+        Debug.Log($"[PlayerInteraction] CloseInventoryAndExitInteraction start. CurrentTarget={(CurrentTarget != null ? CurrentTarget.name : "null")}");
 
-        InventoryUI.Instance.CloseInventory();
-        InventoryUI.Instance.isInteractionMode = false;
+        // 呼叫新的 InventoryPanelUIController 來關閉面板
+        if (_inventoryPanelController != null)
+        {
+            _inventoryPanelController.ClosePanel(); // <--- 正確的關閉指令
+        }
+        else
+        {
+            Debug.LogError("[PlayerInteraction] _inventoryPanelController 的引用是 null！無法關閉面板。", this.gameObject);
+        }
 
-        // 清空選中物品
-        InventoryUI.Instance.SetCurrentSelectedItem(null);
-
-        // 清空交互目標
+        // 清空交互目標仍然是 PlayerInteraction 的職責
         CurrentTarget = null;
 
-        // 最後再刷新 UI（此時面板已關閉，就不會觸發 modelPreview）
-        InventoryUI.Instance.UpdateUI();
-
-        Debug.Log($"[PlayerInteraction] CloseInventoryAndExitInteraction end. isInventoryVisible={InventoryUI.Instance.isInventoryVisible}, currentSelectedItem={(InventoryUI.Instance.CurrentSelectedItem != null ? InventoryUI.Instance.CurrentSelectedItem.itemName : "null")}");
+        Debug.Log($"[PlayerInteraction] CloseInventoryAndExitInteraction end. CurrentTarget={(CurrentTarget != null ? CurrentTarget.name : "null")}");
     }
 
     #endregion

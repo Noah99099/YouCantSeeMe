@@ -427,6 +427,7 @@ MonoBehaviour:
     m_Bits: 8
   pickupPromptText: {fileID: 0}
   showDebugRay: 1
+  _inventoryPanelController: {fileID: 0}
 --- !u!114 &97978656
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -439,11 +440,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d35742438aaefc241b56c5302ecf447b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerBody: {fileID: 97978662}
-  rb: {fileID: 97978659}
-  moveSpeed: 5
-  moveAction: {fileID: -5312878864135478336, guid: 0c67ffdfc88b05643a7007cd03d06742,
-    type: 3}
 --- !u!114 &97978657
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -462,8 +458,6 @@ MonoBehaviour:
   highAngle: 30
   lowAngle: -45
   upper: 0.7
-  lookAction: {fileID: 9044937682501473256, guid: 0c67ffdfc88b05643a7007cd03d06742,
-    type: 3}
 --- !u!136 &97978658
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -1186,6 +1180,52 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 276001532}
   m_CullTransparentMesh: 1
+--- !u!1 &283644089
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 283644090}
+  - component: {fileID: 283644091}
+  m_Layer: 0
+  m_Name: DialogueAudioManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &283644090
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 283644089}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &283644091
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 283644089}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d6e31142e248e8a4d8b3099db8c03e65, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  voiceSource: {fileID: 0}
+  sfxSource: {fileID: 0}
 --- !u!1 &328834937
 GameObject:
   m_ObjectHideFlags: 0
@@ -1882,6 +1922,7 @@ MonoBehaviour:
   sensitivitySlider: {fileID: 560605596}
   sensitivityManagerPrefab: {fileID: 239026835516045829, guid: e6eef4317235d32429d943723995d980,
     type: 3}
+  sensitivityType: 0
 --- !u!114 &560605596
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2252,7 +2293,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6c3fc3f6cff34ba4e9eff076232cb889, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _zoneCollider: {fileID: 0}
 --- !u!1 &736879571
 GameObject:
   m_ObjectHideFlags: 0
@@ -5435,6 +5475,7 @@ SceneRoots:
   - {fileID: 802814290}
   - {fileID: 1392003439}
   - {fileID: 850149773}
+  - {fileID: 283644090}
   - {fileID: 1239976209}
   - {fileID: 695128862}
   - {fileID: 1586338723}
