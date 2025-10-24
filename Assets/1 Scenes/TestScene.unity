@@ -184,6 +184,9 @@ MonoBehaviour:
   fadeDuration: 0.5
   shakeDuration: 0.3
   shakeIntensity: 10
+  waveSpeed: 5
+  waveAmplitude: 10
+  textShakeIntensity: 2
   choiceContainer: {fileID: 1913256423}
   choiceButtonPrefab: {fileID: 9016445450453712601, guid: ae1ed23ce740155418787e4f6d31f133,
     type: 3}
@@ -191,6 +194,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 677dce47326e7474a8dbfd647c5b0ddc, type: 2}
   - {fileID: 11400000, guid: 2125923e56465d743a873b741ee95402, type: 2}
   - {fileID: 11400000, guid: c53db88d0ca99be47b214d4194133d22, type: 2}
+  timerSlider: {fileID: 0}
 --- !u!1 &36041594
 GameObject:
   m_ObjectHideFlags: 0
@@ -936,7 +940,6 @@ GameObject:
   - component: {fileID: 313286694}
   - component: {fileID: 313286693}
   - component: {fileID: 313286692}
-  - component: {fileID: 313286691}
   m_Layer: 3
   m_Name: Interact
   m_TagString: Untagged
@@ -944,19 +947,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &313286691
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 313286690}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5a71ed2073facf743ade064b62af10be, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  dialogueGraph: {fileID: 0}
 --- !u!65 &313286692
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -1152,6 +1142,16 @@ MonoBehaviour:
   autoPlayDelay: 2
   crosshairUI: {fileID: 1344262446}
   otherUI: {fileID: 1659597442}
+  isDialogueActive: 0
+  isTyping: 0
+  isAutoPlay: 0
+  isWaitingForChoice: 0
+  currentGraph: {fileID: 0}
+  currentNode: {fileID: 0}
+  mainCamera: {fileID: 0}
+  originalCameraPos: {x: 0, y: 0, z: 0}
+  originalCameraRot: {x: 0, y: 0, z: 0, w: 0}
+  cameraHasBeenMoved: 0
   cameraReturnDuration: 1
 --- !u!4 &401272031
 Transform:
@@ -4617,7 +4617,6 @@ GameObject:
   - component: {fileID: 1515582224}
   - component: {fileID: 1515582223}
   - component: {fileID: 1515582222}
-  - component: {fileID: 1515582221}
   m_Layer: 0
   m_Name: NPC
   m_TagString: Untagged
@@ -4625,19 +4624,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1515582221
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1515582220}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5a71ed2073facf743ade064b62af10be, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  dialogueGraph: {fileID: 0}
 --- !u!136 &1515582222
 CapsuleCollider:
   m_ObjectHideFlags: 0

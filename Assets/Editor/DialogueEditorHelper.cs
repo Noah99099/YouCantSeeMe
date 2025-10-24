@@ -9,13 +9,13 @@ public static class DialogueEditorHelper
     public static string DrawVariablePopup(DialogueGraph graph, string currentVariable)
     {
         // 如果 graph 為空，或裡面沒有任何變數，就顯示一個普通的文字輸入框
-        if (graph == null || graph.variables.Count == 0)
+        if (graph == null || graph.initialVariables.Count == 0)
         {
             return EditorGUILayout.TextField("Variable Name", currentVariable);
         }
 
         // 獲取 graph 中所有變數的名稱
-        string[] variableNames = graph.variables.Select(v => v.name).ToArray();
+        string[] variableNames = graph.initialVariables.Select(v => v.name).ToArray();
 
         // 找到當前變數名稱在陣列中的索引
         int currentIndex = ArrayUtility.IndexOf(variableNames, currentVariable);

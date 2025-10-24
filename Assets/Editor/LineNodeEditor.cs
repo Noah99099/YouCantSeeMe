@@ -15,7 +15,7 @@ public class LineNodeEditor : NodeEditor
 
         // 繪製輸入輸出埠
         NodeEditorGUILayout.PropertyField(serializedObject.FindProperty("entry"), GUIContent.none);
-        
+
         // --- 繪製角色和表情的下拉選單 ---
         lineNode = target as LineNode;
 
@@ -60,6 +60,11 @@ public class LineNodeEditor : NodeEditor
         NodeEditorGUILayout.PropertyField(serializedObject.FindProperty("exit"), GUIContent.none);
 
         serializedObject.ApplyModifiedProperties();
+    }
+
+    public override int GetWidth()
+    {
+        return 300; // 可以稍微調回窄一點的寬度
     }
 
     private CharacterProfile[] GetAllCharacterProfilesInProject()

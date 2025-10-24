@@ -5,9 +5,17 @@ using System.Collections;
 using System.Collections.Generic;
 using System;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 public class DialogueUI : MonoBehaviour
 {
+    private enum TextEffectType { None, Shake, Wave }
+    private class TextEffectInfo
+    {
+        public TextEffectType type;
+        public int startIndex;
+        public int length;
+    }
     [Header("對話 UI 元件")]
     [SerializeField] private GameObject dialogueBox;
     [SerializeField] private TextMeshProUGUI nameText;
@@ -24,6 +32,11 @@ public class DialogueUI : MonoBehaviour
     [SerializeField] private float shakeDuration = 0.3f;
     [SerializeField] private float shakeIntensity = 10f;
 
+    [Header("文字特效參數")]
+    [SerializeField] private float waveSpeed = 5f;
+    [SerializeField] private float waveAmplitude = 10f;
+    [SerializeField] private float textShakeIntensity = 2f;
+
     [Header("選項 UI")]
     [SerializeField] private GameObject choiceContainer;
     [SerializeField] private Button choiceButtonPrefab;
@@ -31,17 +44,29 @@ public class DialogueUI : MonoBehaviour
     [Header("角色資料庫")]
     [SerializeField] private CharacterProfile[] characters;  // 在 Inspector 中預先載入所有角色 Profile
 
+    [Header("計時器 UI")]
+    [SerializeField] private Slider timerSlider;
     // 內部變數
     private Coroutine typeWriterCoroutine;
     private List<Button> spawnedButtons = new List<Button>();
     private Dictionary<string, Coroutine> runningAnimations = new Dictionary<string, Coroutine>();
+    private Coroutine timerCoroutine;
+    private List<TextEffectInfo> textEffects = new List<TextEffectInfo>();
+    private bool isAnimatingText = false;
 
     // 角色資料庫
     private Dictionary<string, CharacterProfile> characterDatabase = new Dictionary<string, CharacterProfile>();
     private string currentLeftCharacterID = "";
     private string currentRightCharacterID = "";
 
-
+    // Update 方法是我們新的動畫心跳
+    void Update()
+    {
+        if (isAnimatingText)
+        {
+            AnimateText();
+        }
+    }
     private void Awake()
     {
         // 將所有角色 Profile 載入到字典中，方便快速查找
@@ -56,7 +81,8 @@ public class DialogueUI : MonoBehaviour
         // 預設隱藏所有立繪
         characterSpriteLeft.gameObject.SetActive(false);
         characterSpriteRight.gameObject.SetActive(false);
-        if(dialogueBox != null) dialogueBox.SetActive(false);
+        if (dialogueBox != null) dialogueBox.SetActive(false);
+        if (timerSlider != null) timerSlider.gameObject.SetActive(false);
     }
 
     void Start()
@@ -82,11 +108,12 @@ public class DialogueUI : MonoBehaviour
             nameText.gameObject.SetActive(false);
             characterSpriteLeft.gameObject.SetActive(false);
             characterSpriteRight.gameObject.SetActive(false);
-            
+            ProcessTextForEffects(line.content, typeSpeed);
+
             // 直接開始打字效果
             StartTypewriter(line.content, typeSpeed);
             // 提前結束方法，不執行後面的角色邏輯
-            return; 
+            return;
         }
         string localizedContent = LocalizationManager.Instance.GetLocalizedText(line.contentKey);
         nameText.gameObject.SetActive(true);
@@ -104,6 +131,39 @@ public class DialogueUI : MonoBehaviour
         UpdateCharacterSprite(line.characterID, line.expression, line.position, line.animation);
         HighlightSpeaker(line.position);
         StartTypewriter(localizedContent, typeSpeed);
+        ProcessTextForEffects(line.content, typeSpeed);
+    }
+
+    private void ProcessTextForEffects(string fullText, float typeSpeed)
+    {
+        textEffects.Clear();
+        string cleanText = fullText;
+        string pattern = @"<(\w+)>(.*?)<\/\1>";
+        MatchCollection matches = Regex.Matches(fullText, pattern, RegexOptions.IgnoreCase);
+
+        foreach (Match match in matches.Cast<Match>().Reverse())
+        {
+            string tag = match.Groups[1].Value;
+            string content = match.Groups[2].Value;
+            TextEffectType type;
+            if (Enum.TryParse<TextEffectType>(tag, true, out type))
+            {
+                textEffects.Add(new TextEffectInfo
+                {
+                    type = type,
+                    startIndex = match.Groups[2].Index,
+                    length = content.Length
+                });
+            }
+            cleanText = cleanText.Remove(match.Index, match.Length).Insert(match.Index, content);
+        }
+
+        contentText.text = cleanText;
+        contentText.maxVisibleCharacters = 0;
+        isAnimatingText = true;
+
+        if (typeWriterCoroutine != null) StopCoroutine(typeWriterCoroutine);
+        typeWriterCoroutine = StartCoroutine(TypeWriterEffect(cleanText.Length, typeSpeed));
     }
 
     private void UpdateCharacterSprite(string charID, string expression, CharacterPosition position, CharacterAnimationType animation)
@@ -115,7 +175,7 @@ public class DialogueUI : MonoBehaviour
 
         // 更新立繪圖片
         targetImage.sprite = sprite;
-        
+
         // 播放動畫
         PlayCharacterAnimation(targetImage, animation);
 
@@ -175,7 +235,8 @@ public class DialogueUI : MonoBehaviour
         {
             StopCoroutine(typeWriterCoroutine);
         }
-        typeWriterCoroutine = StartCoroutine(TypeWriterEffect(content, speed));
+        // Fix: Pass content.Length instead of content string
+        typeWriterCoroutine = StartCoroutine(TypeWriterEffect(content.Length, speed));
     }
 
     public Coroutine GetTypeWriterCoroutine()
@@ -184,49 +245,87 @@ public class DialogueUI : MonoBehaviour
     }
 
     // 需求 #6: RPG Maker 的文本延遲效果
-    private IEnumerator TypeWriterEffect(string content, float speed)
+    private IEnumerator TypeWriterEffect(int totalChars, float speed)
+{
+    // 如果速度設定為 0 或負數，我們將其視為立即顯示
+    if (speed <= 0)
     {
-        contentText.text = "";
-        // 為了處理富文本標籤，我們需要一個更聰明的方法，但這裡先用基礎版
-        bool isTag = false;
-        string currentTag = "";
+        contentText.maxVisibleCharacters = totalChars;
+        typeWriterCoroutine = null;
+        yield break; // 結束協程
+    }
 
-        foreach (char c in content)
+    // 正常速度的打字機效果
+    for (int i = 0; i <= totalChars; i++)
+    {
+        contentText.maxVisibleCharacters = i;
+        yield return new WaitForSeconds(1f / speed);
+    }
+    typeWriterCoroutine = null;
+}
+    
+    private void AnimateText()
+    {
+        contentText.ForceMeshUpdate();
+        var textInfo = contentText.textInfo;
+        if (textInfo.characterCount == 0) return;
+
+        for (int i = 0; i < textInfo.characterCount; i++)
         {
-            if (c == '<')
+            var charInfo = textInfo.characterInfo[i];
+            if (!charInfo.isVisible) continue;
+
+            Vector3[] vertices = textInfo.meshInfo[charInfo.materialReferenceIndex].vertices;
+            Vector3 offset = Vector3.zero;
+
+            foreach (var effect in textEffects)
             {
-                isTag = true;
-                currentTag += c;
+                if (i >= effect.startIndex && i < effect.startIndex + effect.length)
+                {
+                    if (effect.type == TextEffectType.Shake)
+                    {
+                        offset += new Vector3(UnityEngine.Random.Range(-textShakeIntensity, textShakeIntensity), UnityEngine.Random.Range(-textShakeIntensity, textShakeIntensity), 0);
+                    }
+                    else if (effect.type == TextEffectType.Wave)
+                    {
+                        offset += new Vector3(0, Mathf.Sin(Time.time * waveSpeed + i * 0.5f) * waveAmplitude, 0);
+                    }
+                }
             }
-            else if (c == '>')
+
+            for (int j = 0; j < 4; j++)
             {
-                isTag = false;
-                currentTag += c;
-                contentText.text += currentTag;
-                currentTag = "";
-            }
-            else if (isTag)
-            {
-                currentTag += c;
-            }
-            else
-            {
-                contentText.text += c;
-                yield return new WaitForSeconds(speed);
+                vertices[charInfo.vertexIndex + j] += offset;
             }
         }
-        typeWriterCoroutine = null;
+
+        for (int i = 0; i < textInfo.meshInfo.Length; i++)
+        {
+            var meshInfo = textInfo.meshInfo[i];
+            meshInfo.mesh.vertices = meshInfo.vertices;
+            contentText.UpdateGeometry(meshInfo.mesh, i);
+        }
     }
 
     // 強制完成打字效果
-    public void CompleteText(string fullContent)
+    public void CompleteText(string fullText)
     {
+        // 1. 停止任何正在運行的打字機協程
         if (typeWriterCoroutine != null)
         {
             StopCoroutine(typeWriterCoroutine);
             typeWriterCoroutine = null;
         }
-        contentText.text = fullContent;
+
+        // 2. 處理文字中的特效標籤
+        ProcessTextForEffects(fullText, 99999f); 
+        
+        // 3. 立即顯示所有字元
+        contentText.maxVisibleCharacters = contentText.text.Length;
+
+        // 4. 確保文字動畫可以從靜態的第一幀開始
+        isAnimatingText = true;
+        AnimateText(); 
     }
 
     public void ShowChoices(List<string> choiceKeys, Action<int> onChoiceSelected)
@@ -237,15 +336,15 @@ public class DialogueUI : MonoBehaviour
         for (int i = 0; i < choiceKeys.Count; i++)
         {
             Button newButton = Instantiate(choiceButtonPrefab, choiceContainer.transform);
-        
-        // 直接將選項文字設定到按鈕上
-        string localizedChoice = LocalizationManager.Instance.GetLocalizedText(choiceKeys[i]);
-        newButton.GetComponentInChildren<TextMeshProUGUI>().text = localizedChoice;
 
-        int choiceIndex = i;
-        newButton.onClick.AddListener(() => onChoiceSelected(choiceIndex));
-        
-        spawnedButtons.Add(newButton);
+            // 直接將選項文字設定到按鈕上
+            string localizedChoice = LocalizationManager.Instance.GetLocalizedText(choiceKeys[i]);
+            newButton.GetComponentInChildren<TextMeshProUGUI>().text = localizedChoice;
+
+            int choiceIndex = i;
+            newButton.onClick.AddListener(() => onChoiceSelected(choiceIndex));
+
+            spawnedButtons.Add(newButton);
         }
     }
 
@@ -258,6 +357,7 @@ public class DialogueUI : MonoBehaviour
         }
         spawnedButtons.Clear();
     }
+    
     //搖晃效果
     private IEnumerator ShakeEffect(Image targetImage)
     {
@@ -276,12 +376,13 @@ public class DialogueUI : MonoBehaviour
         targetImage.rectTransform.anchoredPosition = originalPos;
         runningAnimations[targetImage.name] = null;
     }
+    
     //漸入效果
     private IEnumerator FadeInEffect(Image targetImage)
     {
         float timer = 0f;
         Color originalColor = targetImage.color;
-        
+
         // 如果物件是新出現的，從完全透明開始
         if (!targetImage.gameObject.activeInHierarchy)
         {
@@ -297,5 +398,40 @@ public class DialogueUI : MonoBehaviour
         }
         targetImage.color = new Color(originalColor.r, originalColor.g, originalColor.b, 1);
         runningAnimations[targetImage.name] = null;
+    }
+
+    // --- 新增的計時器方法 ---
+    public void StartTimer(float duration, Action onTimeout)
+    {
+        if (timerSlider == null) return;
+
+        StopTimer(); // 先停止任何可能在執行的計時器
+        timerCoroutine = StartCoroutine(TimerCoroutine(duration, onTimeout));
+    }
+
+    public void StopTimer()
+    {
+        if (timerCoroutine != null)
+        {
+            StopCoroutine(timerCoroutine);
+            timerCoroutine = null;
+        }
+        if (timerSlider != null) timerSlider.gameObject.SetActive(false);
+    }
+
+    private IEnumerator TimerCoroutine(float duration, Action onTimeout)
+    {
+        timerSlider.gameObject.SetActive(true);
+        float timer = duration;
+
+        while (timer > 0)
+        {
+            timer -= Time.deltaTime;
+            timerSlider.value = timer / duration; // 更新 Slider 的進度
+            yield return null;
+        }
+
+        timerSlider.gameObject.SetActive(false);
+        onTimeout?.Invoke(); // 時間到，觸發超時事件
     }
 }

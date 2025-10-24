@@ -8,10 +8,9 @@ public class InteractionTrigger : MonoBehaviour
     public DialogueGraph dialogueGraph;
 
     // OnMouseDown 是 Unity 內建的方法，當滑鼠點擊到物件的 Collider 時會被呼叫
-    private void OnMouseDown()
+    public void Interact()
     {
-        // 確保有指定對話圖形，並且當前沒有其他對話正在進行
-        if (dialogueGraph != null && !DialogueManager.Instance.IsDialogueActive())
+        if (dialogueGraph != null && DialogueManager.Instance != null && !DialogueManager.Instance.IsDialogueActive())
         {
             DialogueManager.Instance.StartConversation(dialogueGraph);
         }

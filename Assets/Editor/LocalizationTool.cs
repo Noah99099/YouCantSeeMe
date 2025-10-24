@@ -77,10 +77,21 @@ public class LocalizationTool : EditorWindow
                     {
                         if (!string.IsNullOrEmpty(choice) && !extractedData.ContainsValue(choice))
                         {
-                             string key = $"choice_{graph.name}_{keyCounter++}";
-                             extractedData[key] = choice;
+                            string key = $"choice_{graph.name}_{keyCounter++}";
+                            extractedData[key] = choice;
                         }
-                       
+
+                    }
+                }
+                else if (node is TimedChoiceNode timedChoiceNode)
+                {
+                    foreach (string choice in timedChoiceNode.choices)
+                    {
+                        if (!string.IsNullOrEmpty(choice) && !extractedData.ContainsValue(choice))
+                        {
+                            string key = $"choice_{graph.name}_{keyCounter++}";
+                            extractedData[key] = choice;
+                        }
                     }
                 }
             }
@@ -139,6 +150,16 @@ public class LocalizationTool : EditorWindow
                     {
                         var pair = extractedData.FirstOrDefault(x => x.Value == choice);
                         choiceNode.choiceKeys.Add(string.IsNullOrEmpty(pair.Key) ? "" : pair.Key);
+                        assetModified = true;
+                    }
+                }
+                else if (node is TimedChoiceNode timedChoiceNode)
+                {
+                    timedChoiceNode.choiceKeys.Clear(); // 先清空
+                    foreach (string choice in timedChoiceNode.choices)
+                    {
+                        var pair = extractedData.FirstOrDefault(x => x.Value == choice);
+                        timedChoiceNode.choiceKeys.Add(string.IsNullOrEmpty(pair.Key) ? "" : pair.Key);
                         assetModified = true;
                     }
                 }

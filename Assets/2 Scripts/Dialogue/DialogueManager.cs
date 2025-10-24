@@ -9,48 +9,60 @@ public class DialogueManager : MonoBehaviour
 {
     public static DialogueManager Instance { get; private set; }
 
+    [Header("核心元件")]
     [SerializeField] private DialogueUI dialogueUI;
+
+    [Header("對話設定")]
     [SerializeField] private float typeWriterSpeed = 0.05f;
     [SerializeField] private float autoPlayDelay = 2.0f;
+    [SerializeField] private float cameraReturnDuration = 1.0f;
     [Header("遊戲 UI 控制")]
     [Tooltip("將您場景中代表準心的 UI GameObject 拖曳到這裡")]
     [SerializeField] private GameObject crosshairUI;
     [Tooltip("將您場景中其他需要隱藏的 UI GameObject 拖曳到這裡")]
     [SerializeField] private GameObject otherUI;
 
+
+    // 內部狀態變數
     private bool isDialogueActive = false;
     private bool isTyping = false;
     private bool isAutoPlay = false;
     private bool isWaitingForChoice = false;
 
+    // 系統與工具
     private PlayerControls playerControls;
-
-    private DialogueGraph currentGraph;
-    private BaseNode currentNode;
     private Camera mainCamera;
-    private Vector3 originalCameraPos;
-    private Quaternion originalCameraRot;
-    private bool cameraHasBeenMoved = false; // 旗標，用來追蹤攝影機是否被移動過
-    [SerializeField] private float cameraReturnDuration = 1.0f; // 攝影機歸位的時間
+
+    // 事件系統
     private Dictionary<string, DialogueEventListener> eventListeners = new Dictionary<string, DialogueEventListener>();
 
+    // 攝影機還原
+    private Vector3 originalCameraPos;
+    private Quaternion originalCameraRot;
+    private bool cameraHasBeenMoved = false;
+    private DialogueGraph currentGraph;
+    private BaseNode currentNode;
+
+    #region Unity生命週期與輸入
     private void Awake()
     {
-        if (Instance == null) { Instance = this; DontDestroyOnLoad(gameObject); }
-        else { Destroy(gameObject); }
+        if (Instance == null)
+        {
+            Instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
         playerControls = new PlayerControls();
         mainCamera = Camera.main;
-        if (mainCamera == null)
-        {
-            Debug.LogError("場景中找不到主攝影機 (Main Camera)！");
-        }
     }
 
     private void OnEnable()
     {
         playerControls.Dialogue.Enable();
         playerControls.Dialogue.Submit.performed += OnSubmit;
-        // OnSkip 和 OnToggleAutoPlay 的邏輯需要基於圖形重寫，暫時禁用
         //playerControls.Dialogue.Skip.performed += OnSkip;
         //playerControls.Dialogue.ToggleAutoPlay.performed += OnToggleAutoPlay;
     }
@@ -59,31 +71,13 @@ public class DialogueManager : MonoBehaviour
     {
         playerControls.Dialogue.Disable();
         playerControls.Dialogue.Submit.performed -= OnSubmit;
-       // playerControls.Dialogue.Skip.performed -= OnSkip;
+        //playerControls.Dialogue.Skip.performed -= OnSkip;
         //playerControls.Dialogue.ToggleAutoPlay.performed -= OnToggleAutoPlay;
     }
 
-    public void RegisterListener(DialogueEventListener listener)
-    {
-        string trimmedID = listener.eventID.Trim();
-        if (eventListeners.ContainsKey(trimmedID))
-        {
-            Debug.LogWarning($"[DialogueManager] 事件 ID '{trimmedID}' 已被 '{eventListeners[trimmedID].gameObject.name}' 註冊，新的監聽器 '{listener.gameObject.name}' 將會覆蓋它。請確保 ID 的唯一性。");
-        }
-        eventListeners[trimmedID] = listener;
-        // --- 新增日誌 ---
-        Debug.Log($"[DialogueManager] 成功註冊監聽器. ID: \"{trimmedID}\", 物件: {listener.gameObject.name}");
-    }
+    #endregion
 
-    public void UnregisterListener(DialogueEventListener listener)
-    {
-        string trimmedID = listener.eventID.Trim();
-        if (eventListeners.ContainsKey(trimmedID))
-        {
-            eventListeners.Remove(trimmedID);
-        }
-    }
-
+    #region 公開方法 (啟動/註冊)
     public void StartConversation(DialogueGraph graph)
     {
         if (isDialogueActive) return;
@@ -98,24 +92,15 @@ public class DialogueManager : MonoBehaviour
             otherUI.SetActive(false);
         }
 
-        currentGraph = graph;
         isDialogueActive = true;
         isAutoPlay = false;
         cameraHasBeenMoved = false;
+        currentGraph = graph;
 
-        StartNode startNode = null;
-        foreach (Node node in currentGraph.nodes)
-        {
-            if (node is StartNode)
-            {
-                startNode = node as StartNode;
-                break;
-            }
-        }
-
+        StartNode startNode = graph.nodes.OfType<StartNode>().FirstOrDefault();
         if (startNode == null)
         {
-            Debug.LogError("對話圖形中找不到 StartNode！");
+            Debug.LogError($"錯誤：在對話圖形 '{graph.name}' 中找不到 StartNode！");
             EndConversation();
             return;
         }
@@ -123,6 +108,7 @@ public class DialogueManager : MonoBehaviour
         currentNode = startNode.GetNextNode();
         if (currentNode == null)
         {
+            Debug.LogError($"錯誤：StartNode 的 exit 出口沒有連接到任何節點！");
             EndConversation();
             return;
         }
@@ -130,6 +116,25 @@ public class DialogueManager : MonoBehaviour
         dialogueUI.ShowDialogueBox();
         ProcessCurrentNode();
     }
+    public void RegisterListener(DialogueEventListener listener)
+    {
+        string trimmedID = listener.eventID.Trim();
+        if (eventListeners.ContainsKey(trimmedID))
+        {
+            Debug.LogWarning($"事件ID '{trimmedID}' 已被註冊，將被覆蓋。");
+        }
+        eventListeners[trimmedID] = listener;
+    }
+
+    public void UnregisterListener(DialogueEventListener listener)
+    {
+        string trimmedID = listener.eventID.Trim();
+        if (eventListeners.ContainsKey(trimmedID))
+        {
+            eventListeners.Remove(trimmedID);
+        }
+    }
+    #endregion
 
     private void ProcessCurrentNode()
     {
@@ -267,6 +272,69 @@ public class DialogueManager : MonoBehaviour
             currentNode = eventNode.GetNextNode();
             ProcessCurrentNode();
         }
+        else if (currentNode is TimedChoiceNode timedChoiceNode)
+        {
+            isWaitingForChoice = true;
+            dialogueUI.ShowChoices(timedChoiceNode.choiceKeys, OnChoiceMade);
+            // 同時啟動計時器，並將 OnTimerTimeout 方法作為回呼
+            dialogueUI.StartTimer(timedChoiceNode.timeLimit, OnTimerTimeout);
+        }
+        else if (currentNode is SetGlobalVariableNode setGlobalNode)
+        {
+            if (setGlobalNode.database != null)
+            {
+                setGlobalNode.database.SetVariable(setGlobalNode.globalVariableName, setGlobalNode.valueToSet);
+            }
+            // 邏輯節點，立即前進
+            currentNode = setGlobalNode.GetNextNode();
+            ProcessCurrentNode();
+        }
+        else if (currentNode is GetGlobalVariableNode getGlobalNode)
+        {
+            if (getGlobalNode.database != null && currentGraph != null)
+            {
+                float globalValue = getGlobalNode.database.GetVariable(getGlobalNode.globalVariableName);
+                (currentGraph as DialogueGraph).SetVariable(getGlobalNode.localVariableName, globalValue);
+            }
+            // 邏輯節點，立即前進
+            currentNode = getGlobalNode.GetNextNode();
+            ProcessCurrentNode();
+        }
+        else if (currentNode is UpdateQuestNode questNode)
+        {
+            // 確保 QuestManager 存在
+            if (QuestManager.Instance != null)
+            {
+                QuestManager.Instance.UpdateQuestStatus(questNode.questID, questNode.newStatus);
+            }
+            else
+            {
+                Debug.LogWarning("場景中找不到 QuestManager！無法更新任務狀態。");
+            }
+
+            // 立即前進到下一個節點
+            currentNode = questNode.GetNextNode();
+            ProcessCurrentNode();
+        }
+        else if (currentNode is CheckQuestNode checkQuestNode)
+        {
+            bool conditionResult = false;
+            // 確保 QuestManager 存在
+            if (QuestManager.Instance != null)
+            {
+                // 獲取當前任務狀態，並與節點中設定的狀態進行比較
+                QuestStatus currentStatus = QuestManager.Instance.GetQuestStatus(checkQuestNode.questID);
+                conditionResult = (currentStatus == checkQuestNode.statusToCheck);
+            }
+            else
+            {
+                Debug.LogWarning("場景中找不到 QuestManager！無法檢查任務狀態。");
+            }
+
+            // 根據比較結果，前進到 Pass 或 Fail 的出口
+            currentNode = checkQuestNode.GetNextNode(conditionResult);
+            ProcessCurrentNode();
+        }
         else if (currentNode is CheckSpecificItemsNode checkSpecificItemsNode)
         {
             bool allItemsFound = true; // 先假設所有物品都找到了
@@ -361,7 +429,16 @@ public class DialogueManager : MonoBehaviour
 
     private IEnumerator HandleCameraControl(CameraControlNode camNode)
     {
-        if (mainCamera == null) yield break;
+        if (mainCamera == null)
+        {
+            // 如果需要等待，則必須確保流程能繼續
+            if (camNode.waitForTransition)
+            {
+                currentNode = camNode.GetNextNode();
+                ProcessCurrentNode();
+            }
+            yield break;
+        }
 
         if (!cameraHasBeenMoved)
         {
@@ -370,43 +447,34 @@ public class DialogueManager : MonoBehaviour
             cameraHasBeenMoved = true;
         }
 
-        GameObject target = GameObject.Find(camNode.targetTransformName);
-        if (target == null)
-        {
-            Debug.LogWarning($"CameraControlNode: 在場景中找不到名為 {camNode.targetTransformName} 的物件！");
-            yield break;
-        }
-
-        Transform targetTransform = target.transform;
         Transform cameraTransform = mainCamera.transform;
 
-        float timer = 0f;
-        Vector3 startPos = cameraTransform.position;
-        Quaternion startRot = cameraTransform.rotation;
-
-        // 如果移動時間為 0 或更少，則瞬間移動
-        if (camNode.transitionDuration <= 0)
+        // --- 根據模式執行不同邏輯 ---
+        if (camNode.moveMode == CameraMoveMode.Simple)
         {
-            cameraTransform.position = targetTransform.position;
-            cameraTransform.rotation = targetTransform.rotation;
-        }
-        else
-        {
-            // 否則，進行平滑移動 (Lerp/Slerp)
-            while (timer < camNode.transitionDuration)
+            // --- 執行簡易模式 (舊邏輯) ---
+            GameObject target = GameObject.Find(camNode.targetTransformName);
+            if (target != null)
             {
-                timer += Time.deltaTime;
-                float t = Mathf.Clamp01(timer / camNode.transitionDuration);
-                cameraTransform.position = Vector3.Lerp(startPos, targetTransform.position, t);
-                cameraTransform.rotation = Quaternion.Slerp(startRot, targetTransform.rotation, t);
-                yield return null;
+                yield return StartCoroutine(MoveCameraToTarget(target.transform, camNode.transitionDuration));
             }
-            // 確保最終位置和旋轉完全準確
-            cameraTransform.position = targetTransform.position;
-            cameraTransform.rotation = targetTransform.rotation;
+        }
+        else if (camNode.moveMode == CameraMoveMode.Sequence)
+        {
+            // --- 執行序列模式 ---
+            foreach (var instruction in camNode.sequence)
+            {
+                GameObject target = GameObject.Find(instruction.targetTransformName);
+                if (target != null)
+                {
+                    // 1. 移動到目標點
+                    yield return StartCoroutine(MoveCameraToTarget(target.transform, instruction.transitionDuration));
+                    // 2. 在目標點停留
+                    yield return new WaitForSeconds(instruction.holdDuration);
+                }
+            }
         }
 
-        // 如果需要等待，則在運鏡結束後才繼續對話
         if (camNode.waitForTransition)
         {
             currentNode = camNode.GetNextNode();
@@ -414,10 +482,37 @@ public class DialogueManager : MonoBehaviour
         }
     }
 
+    private IEnumerator MoveCameraToTarget(Transform targetTransform, float duration)
+    {
+        Transform cameraTransform = mainCamera.transform;
+        float timer = 0f;
+        Vector3 startPos = cameraTransform.position;
+        Quaternion startRot = cameraTransform.rotation;
+
+        if (duration <= 0)
+        {
+            cameraTransform.position = targetTransform.position;
+            cameraTransform.rotation = targetTransform.rotation;
+        }
+        else
+        {
+            while (timer < duration)
+            {
+                timer += Time.deltaTime;
+                float t = Mathf.Clamp01(timer / duration);
+                cameraTransform.position = Vector3.Lerp(startPos, targetTransform.position, t);
+                cameraTransform.rotation = Quaternion.Slerp(startRot, targetTransform.rotation, t);
+                yield return null;
+            }
+            cameraTransform.position = targetTransform.position;
+            cameraTransform.rotation = targetTransform.rotation;
+        }
+    }
+
     private IEnumerator ReturnCameraToOriginalPosition()
     {
         if (mainCamera == null) yield break;
-        
+
         Transform cameraTransform = mainCamera.transform;
         float timer = 0f;
         Vector3 startPos = cameraTransform.position;
@@ -433,7 +528,7 @@ public class DialogueManager : MonoBehaviour
             cameraTransform.rotation = Quaternion.Slerp(startRot, originalCameraRot, t);
             yield return null;
         }
-        
+
         // 確保最終位置和旋轉完全準確
         cameraTransform.position = originalCameraPos;
         cameraTransform.rotation = originalCameraRot;
@@ -450,11 +545,6 @@ public class DialogueManager : MonoBehaviour
 
         if (isTyping)
         {
-            if (currentNode is LineNode lineNode)
-            {
-                string fullContent = LocalizationManager.Instance.GetLocalizedText(lineNode.line.contentKey);
-                dialogueUI.CompleteText(fullContent);
-            }
             isTyping = false;
             StopAllCoroutines();
         }
@@ -463,16 +553,41 @@ public class DialogueManager : MonoBehaviour
             currentNode = currentNode.GetNextNode();
             ProcessCurrentNode();
         }
+
     }
 
     private void OnChoiceMade(int choiceIndex)
     {
+        // --- 核心修改：在做出選擇時，停止計時器 ---
+        dialogueUI.StopTimer();
         isWaitingForChoice = false;
         dialogueUI.ClearChoices();
 
+        BaseNode nextNode = null;
         if (currentNode is ChoiceNode choiceNode)
         {
-            currentNode = choiceNode.GetNextNodeForChoice(choiceIndex);
+            nextNode = choiceNode.GetNextNodeForChoice(choiceIndex);
+        }
+        // 也處理 TimedChoiceNode 的情況
+        else if (currentNode is TimedChoiceNode timedChoiceNode)
+        {
+            nextNode = timedChoiceNode.GetNextNodeForChoice(choiceIndex);
+        }
+
+        currentNode = nextNode;
+        ProcessCurrentNode();
+    }
+
+    private void OnTimerTimeout()
+    {
+        Debug.Log("選擇超時！");
+        isWaitingForChoice = false;
+        dialogueUI.ClearChoices(); // 清除畫面上的選項
+
+        if (currentNode is TimedChoiceNode timedChoiceNode)
+        {
+            // 獲取超時出口連接的節點
+            currentNode = timedChoiceNode.GetNextNodeOnTimeout();
             ProcessCurrentNode();
         }
     }
@@ -483,7 +598,6 @@ public class DialogueManager : MonoBehaviour
         isDialogueActive = false;
         dialogueUI.HideDialogueBox();
         Debug.Log("對話結束");
-
         if (crosshairUI != null)
         {
             crosshairUI.SetActive(true);
@@ -492,8 +606,6 @@ public class DialogueManager : MonoBehaviour
         {
             otherUI.SetActive(true);
         }
-
-        // --- 新增：如果攝影機被移動過，就觸發歸位 ---
         if (cameraHasBeenMoved)
         {
             StartCoroutine(ReturnCameraToOriginalPosition());
@@ -501,15 +613,15 @@ public class DialogueManager : MonoBehaviour
     }
 
     // Skip 和 AutoPlay 功能需要用新的圖形邏輯重寫，暫時保留或移除
-    public void Skip()
+    public void OnSkip()
     {
-        Debug.Log("<color=cyan>[Debug] Skip() method called!</color>");
-        // 增加 isDialogueActive 判斷
-        if (!isDialogueActive || isTyping || isWaitingForChoice) return;
+        if (!isDialogueActive || isTyping) return;
 
+        // 停止所有正在進行的協程，例如打字效果
         StopAllCoroutines();
         isTyping = false;
-        dialogueUI.ClearChoices();
+        dialogueUI.ClearChoices(); // 如果剛好在選項處，也清除選項
+                                   // --- 在跳過之前，停止當前語音 ---
         if (DialogueAudioManager.Instance != null) DialogueAudioManager.Instance.StopVoiceOver();
 
         Debug.Log("開始尋找下一個重要節點...");
@@ -527,22 +639,68 @@ public class DialogueManager : MonoBehaviour
             EndConversation();
         }
     }
-    public void ToggleAutoPlay()
+    /*
+    private void OnSkip(InputAction.CallbackContext context)
     {
-        Debug.Log("<color=yellow>[Debug] ToggleAutoPlay() method called!</color>");
+        if (!isDialogueActive || isTyping) return;
+
+        // 停止所有正在進行的協程，例如打字效果
+        StopAllCoroutines();
+        isTyping = false;
+        dialogueUI.ClearChoices(); // 如果剛好在選項處，也清除選項
+                                   // --- 在跳過之前，停止當前語音 ---
+        if (DialogueAudioManager.Instance != null) DialogueAudioManager.Instance.StopVoiceOver();
+
+        Debug.Log("開始尋找下一個重要節點...");
+        BaseNode nextImportantNode = FindNextImportantNode();
+
+        if (nextImportantNode != null)
+        {
+            Debug.Log("找到重要節點: " + nextImportantNode.name);
+            currentNode = nextImportantNode;
+            ProcessCurrentNode();
+        }
+        else
+        {
+            Debug.Log("找不到更多重要節點，對話結束。");
+            EndConversation();
+        }
+    }
+    */
+    public void OnToggleAutoPlay()
+    {
         if (!isDialogueActive) return;
 
         isAutoPlay = !isAutoPlay;
         Debug.Log("自動播放: " + (isAutoPlay ? "開啟" : "關閉"));
 
-        // 如果剛開啟自動播放，且當前對話處於靜止狀態
+        // 如果剛開啟自動播放，且當前對話處於靜止狀態（不在打字，也不在等選項）
+        // 我們就主動觸發一次前進，讓對話繼續下去
         if (isAutoPlay && !isTyping && !isWaitingForChoice)
         {
-            // 自動前進到下一個節點
+            // 移動到下一個節點
             currentNode = currentNode.GetNextNode();
             ProcessCurrentNode();
         }
     }
+    /*
+    private void OnToggleAutoPlay(InputAction.CallbackContext context)
+    {
+        if (!isDialogueActive) return;
+
+        isAutoPlay = !isAutoPlay;
+        Debug.Log("自動播放: " + (isAutoPlay ? "開啟" : "關閉"));
+
+        // 如果剛開啟自動播放，且當前對話處於靜止狀態（不在打字，也不在等選項）
+        // 我們就主動觸發一次前進，讓對話繼續下去
+        if (isAutoPlay && !isTyping && !isWaitingForChoice)
+        {
+            // 移動到下一個節點
+            currentNode = currentNode.GetNextNode();
+            ProcessCurrentNode();
+        }
+    }
+    */
 
     private BaseNode FindNextImportantNode()
     {
@@ -607,5 +765,15 @@ public class DialogueManager : MonoBehaviour
     {
         return isDialogueActive;
     }
-    
+
+    // 讓外部可以獲取當前對話圖形的變數列表
+    public List<Variable> GetCurrentGraphVariables()
+    {
+        if (isDialogueActive && currentGraph != null)
+        {
+            // --- 核心修正：將 variables 改為 runtimeVariables ---
+            return (currentGraph as DialogueGraph).runtimeVariables;
+        }
+        return null;
+    }
 }
