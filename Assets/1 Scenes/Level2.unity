@@ -1312,6 +1312,131 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   interactiveInYang: 1
   interactiveInYin: 1
+--- !u!1 &685365240
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 685365241}
+  - component: {fileID: 685365242}
+  - component: {fileID: 685365244}
+  - component: {fileID: 685365243}
+  - component: {fileID: 685365245}
+  m_Layer: 0
+  m_Name: PlayLiChunMeisStory
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &685365241
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 685365240}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!328 &685365242
+VideoPlayer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 685365240}
+  m_Enabled: 1
+  m_VideoClip: {fileID: 32900000, guid: 5b4695c8fac2caa408c4d18a18609adc, type: 3}
+  m_TargetCameraAlpha: 1
+  m_TargetCamera3DLayout: 0
+  m_TargetCamera: {fileID: 0}
+  m_TargetTexture: {fileID: 0}
+  m_TimeReference: 0
+  m_TargetMaterialRenderer: {fileID: 0}
+  m_TargetMaterialProperty: <noninit>
+  m_RenderMode: 2
+  m_AspectRatio: 2
+  m_DataSource: 0
+  m_TimeUpdateMode: 2
+  m_PlaybackSpeed: 1
+  m_AudioOutputMode: 2
+  m_TargetAudioSources:
+  - {fileID: 0}
+  m_DirectAudioVolumes:
+  - 1
+  m_Url: 
+  m_EnabledAudioTracks: 01
+  m_DirectAudioMutes: 00
+  m_ControlledAudioTrackCount: 1
+  m_PlayOnAwake: 0
+  m_SkipOnDrop: 1
+  m_Looping: 0
+  m_WaitForFirstFrame: 1
+  m_FrameReadyEventEnabled: 0
+  m_VideoShaders: []
+--- !u!114 &685365243
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 685365240}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8ec1c7b34301ec74a801612db1b14ea6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &685365244
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 685365240}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b174f91f7ecea8549ab7cf0034de549d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  videoController: {fileID: 685365243}
+  clip: {fileID: 32900000, guid: 5b4695c8fac2caa408c4d18a18609adc, type: 3}
+--- !u!114 &685365245
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 685365240}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0d9023071c337a5458eaf17eb23abc6c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  eventID: LiChunMei
+  onEventTriggered:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 685365244}
+        m_TargetAssemblyTypeName: PlayVideo, Assembly-CSharp
+        m_MethodName: PlayForDeceased
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &719558543
 GameObject:
   m_ObjectHideFlags: 0
@@ -2466,6 +2591,7 @@ GameObject:
   - component: {fileID: 1140861591}
   - component: {fileID: 1140861594}
   - component: {fileID: 1140861593}
+  - component: {fileID: 1140861595}
   m_Layer: 3
   m_Name: MagicCircle
   m_TagString: Untagged
@@ -7384,6 +7510,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mode: 1
+--- !u!114 &1140861595
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1140861585}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5a71ed2073facf743ade064b62af10be, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  dialogueGraph: {fileID: 11400000, guid: e35f22fb092d1c046aa9af73188e7979, type: 2}
 --- !u!1 &1184651469
 GameObject:
   m_ObjectHideFlags: 0
@@ -7723,6 +7862,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1282623198}
   - component: {fileID: 1282623199}
+  - component: {fileID: 1282623200}
   m_Layer: 0
   m_Name: PlateEventManager
   m_TagString: Untagged
@@ -7773,6 +7913,26 @@ MonoBehaviour:
   - plateObject: {fileID: 6995915468140686803}
     plateScript: {fileID: 0}
   magicCircle: {fileID: 1140861585}
+--- !u!114 &1282623200
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1282623197}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 898bc8e3bb2a55141b44f3dc3e72db35, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetObjects:
+  - {fileID: 1850411916}
+  - {fileID: 1074715738}
+  - {fileID: 846435634}
+  - {fileID: 1590520796}
+  - {fileID: 1242340600}
+  - {fileID: 889778407}
+  - {fileID: 954894101}
 --- !u!1001 &1288262468
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -9819,7 +9979,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2029279584}
   m_Layer: 0
-  m_Name: "------ \u6E2C\u8A66\u7372\u5F97\u6848\u4EF6\u7D00\u9304\u7C3F -----"
+  m_Name: "------ \u7372\u5F97\u6848\u4EF6\u7D00\u9304\u7C3F -----"
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -10831,3 +10991,4 @@ SceneRoots:
   - {fileID: 859333284}
   - {fileID: 1378114332}
   - {fileID: 1140861589}
+  - {fileID: 685365241}

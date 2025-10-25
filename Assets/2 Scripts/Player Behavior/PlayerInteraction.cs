@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using TMPro;
 using UnityEngine.EventSystems;
+using System.Linq;
 
 /// <summary>
 /// UIInputManager 相關的內容不用
@@ -184,10 +185,17 @@ public class PlayerInteraction : MonoBehaviour
     public void HandleInteraction()
     {
         Ray ray = new Ray(playerCamera.transform.position, playerCamera.transform.forward);
+        Debug.Log($"[HandleInteraction] Raycasting from {ray.origin} toward {ray.direction}, Range={interactionRange}");
 
         if (Physics.Raycast(ray, out RaycastHit hit, interactionRange, interactionLayer))
         {
             GameObject hitObject = hit.collider.gameObject;
+            Debug.Log($"[HandleInteraction] Ray hit object: {hitObject.name}, Layer: {LayerMask.LayerToName(hitObject.layer)}");
+
+            // 檢查物件的所有交互腳本狀態
+            var comps = hitObject.GetComponents<MonoBehaviour>();
+            Debug.Log($"[HandleInteraction] Components on {hitObject.name}: {string.Join(", ", comps.Select(c => c.GetType().Name))}");
+
 
             if (hitObject.TryGetComponent<InteractableItem>(out var itemToPickUp)) //獲得物件，進物品背包
             {
@@ -242,6 +250,29 @@ public class PlayerInteraction : MonoBehaviour
                 }
                 HidePrompt();
             }
+            else if (hitObject.TryGetComponent<InteractionTrigger>(out var trigger)) // 交互後執行對話
+            {
+                Debug.Log($"[HandleInteraction] InteractionTrigger detected on {hitObject.name}");
+                if (trigger.dialogueGraph == null)
+                    Debug.LogWarning($"[HandleInteraction] InteractionTrigger on {hitObject.name} has NO DialogueGraph assigned!");
+                else
+                    Debug.Log($"[HandleInteraction] DialogueGraph assigned: {trigger.dialogueGraph.name}");
+
+                if (DialogueManager.Instance == null)
+                {
+                    Debug.LogError("[HandleInteraction] DialogueManager.Instance is NULL — cannot start dialogue!");
+                }
+                else
+                {
+                    Debug.Log("[HandleInteraction] Calling DialogueManager.Instance.StartConversation()");
+                    trigger.Interact();
+                }
+                HidePrompt();
+                return;
+            }
+
+            // ------------------ 未命中任何類型 ------------------
+            Debug.LogWarning($"[HandleInteraction] Hit {hitObject.name}, but it has no recognized Interactable component!");
         }
         else
         {

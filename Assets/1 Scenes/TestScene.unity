@@ -193,7 +193,6 @@ MonoBehaviour:
   characters:
   - {fileID: 11400000, guid: 677dce47326e7474a8dbfd647c5b0ddc, type: 2}
   - {fileID: 11400000, guid: 2125923e56465d743a873b741ee95402, type: 2}
-  - {fileID: 11400000, guid: c53db88d0ca99be47b214d4194133d22, type: 2}
   timerSlider: {fileID: 0}
 --- !u!1 &36041594
 GameObject:
@@ -1140,19 +1139,9 @@ MonoBehaviour:
   dialogueUI: {fileID: 8464869}
   typeWriterSpeed: 0.05
   autoPlayDelay: 2
+  cameraReturnDuration: 1
   crosshairUI: {fileID: 1344262446}
   otherUI: {fileID: 1659597442}
-  isDialogueActive: 0
-  isTyping: 0
-  isAutoPlay: 0
-  isWaitingForChoice: 0
-  currentGraph: {fileID: 0}
-  currentNode: {fileID: 0}
-  mainCamera: {fileID: 0}
-  originalCameraPos: {x: 0, y: 0, z: 0}
-  originalCameraRot: {x: 0, y: 0, z: 0, w: 0}
-  cameraHasBeenMoved: 0
-  cameraReturnDuration: 1
 --- !u!4 &401272031
 Transform:
   m_ObjectHideFlags: 0

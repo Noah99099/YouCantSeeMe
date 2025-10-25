@@ -17,6 +17,16 @@ public class ViewInteractionHandler : MonoBehaviour, IViewInteractable
         interactableItem = GetComponent<InteractableItem>();
     }
 
+    private void Start()
+    {
+        if (ViewManager.Instance != null)
+        {
+            ViewManager.OnViewChanged += OnViewChanged;
+            OnViewChanged(ViewManager.Instance.CurrentView);
+        }
+    }
+
+
     public bool IsVisibleIn(ViewType view) => true; // 外觀由 ViewMeshHandler 控制
 
     public bool IsInteractiveIn(ViewType view)
@@ -34,5 +44,11 @@ public class ViewInteractionHandler : MonoBehaviour, IViewInteractable
             // 核心：根據視野開關交互功能
             interactableItem.SetInteractionEnabled(canInteract);
         }
+    }
+
+    private void OnDestroy()
+    {
+        if (ViewManager.Instance != null)
+            ViewManager.OnViewChanged -= OnViewChanged;
     }
 }

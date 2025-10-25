@@ -10,10 +10,11 @@ public class StartSceneUIController : MonoBehaviour
 {
     [Header("主菜單按鈕")]
     public Button[] buttons_mainMenuPanel;
-    [Header("2個面板和遊戲設定slider")]
+    [Header("2個面板、遊戲設定slider、標示圖片")]
     public GameObject settingPanel;
     public GameObject memberPanel;
     public Slider[] sliders_settingPanel;
+    public Image[] images_hint;
     [Header("退出按鈕")]
     public Button exitSettingPanel;
     public Button exitMemberPanel;
@@ -77,6 +78,10 @@ public class StartSceneUIController : MonoBehaviour
         {
             SetFocusForCurrentPanel();
         }
+
+        // --- 【新增功能】 ---
+        // 根據當前選擇的 Slider 顯示對應的提示圖片
+        HandleSliderHintImages();
     }
 
     /// <summary>
@@ -200,5 +205,44 @@ public class StartSceneUIController : MonoBehaviour
     public void QuitGame() //buttons_mainMenuPanel[4]
     {
         Application.Quit();
+    }
+
+    // --- 新增功能對應的函式 ---
+    /// <summary>
+    /// 根據當前 EventSystem 選擇的物件，更新 Setting Panel 中的提示圖片。
+    /// </summary>
+    private void HandleSliderHintImages()
+    {
+        // 1. 只在 settingPanel 開啟時才執行此邏輯
+        if (!settingPanel.activeSelf)
+        {
+            // 確保面板關閉時，所有提示都隱藏
+            for (int i = 0; i < images_hint.Length; i++)
+            {
+                if (images_hint[i] != null)
+                {
+                    images_hint[i].gameObject.SetActive(false);
+                }
+            }
+            return;
+        }
+
+        // 2. 獲取當前選擇的物件
+        GameObject currentSelected = EventSystem.current.currentSelectedGameObject;
+
+        // 3. 遍歷所有 slider，更新對應 hint image 的可見性
+        // 假設 sliders_settingPanel 和 images_hint 數量一致
+        for (int i = 0; i < sliders_settingPanel.Length; i++)
+        {
+            // 進行安全檢查，防止陣列未設定或長度不匹配
+            if (i < images_hint.Length && sliders_settingPanel[i] != null && images_hint[i] != null)
+            {
+                // 檢查當前選擇的物件是否為第 i 個 slider
+                bool isSelected = (currentSelected == sliders_settingPanel[i].gameObject);
+
+                // 根據是否被選中來設置對應 hint image 的 Active 狀態
+                images_hint[i].gameObject.SetActive(isSelected);
+            }
+        }
     }
 }

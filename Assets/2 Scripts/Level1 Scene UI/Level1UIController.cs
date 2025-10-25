@@ -1,6 +1,5 @@
 // Level1UIController.cs
 using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 
 /// <summary>
@@ -23,6 +22,8 @@ public class Level1UIController : MonoBehaviour
 
     [Header("右下角的提示視野圖標")]
     public GameObject titleUI;
+    [Header("準心")]
+    public GameObject crossHair;
 
 
     public Vector2 MoveInput { get; private set; }  // 讀取移動的值
@@ -65,7 +66,6 @@ public class Level1UIController : MonoBehaviour
         // --- 註冊 Move 事件 ---
         InputProvider.InputActions.Player.Move.performed += OnMovePerformed;
         InputProvider.InputActions.Player.Move.canceled += OnMoveCanceled;
-
         // --- 註冊 Look 事件 ---
         InputProvider.InputActions.Player.Look.performed += OnLookPerformed;
         InputProvider.InputActions.Player.Look.canceled += OnLookCanceled;
@@ -156,6 +156,7 @@ public class Level1UIController : MonoBehaviour
     {
         settingPanel.SetActive(true);
         titleUI.SetActive(false);
+        crossHair.SetActive(false);
         Debug.Log($"[{this.name}] 遊戲設置已打開。");
 
         // 將 UI map 推入棧，此時 Player map 會被自動禁用
