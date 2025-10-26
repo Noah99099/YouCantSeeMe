@@ -18,8 +18,12 @@ public class SceneLoader : MonoBehaviour
     [Header("下一場景名稱")]
     public string sceneToLoad = "type me";
 
-    // ***** 新增: 自訂的場景加載完成事件 *****
+    // ***** 自訂的場景加載完成事件 *****
+    // ***** 保持這個事件: 用於在螢幕全黑時定位玩家 *****
     public event Action<string> OnSceneLoadComplete;
+
+    // ***** 新增: 用於通知場景「轉場已100%完成」的事件 *****
+    public event Action OnSceneTransitionComplete;
 
     private void Awake()
     {
@@ -129,6 +133,9 @@ public class SceneLoader : MonoBehaviour
             // Init 會清空舊棧並設置 Player 為基礎，讓新場景的控制器接管
             InputStackManager.Instance.Init("Player");
         }
+
+        // 在所有步驟都完成後，廣播「轉場已徹底完成」事件
+        OnSceneTransitionComplete?.Invoke();
     }
 
     private IEnumerator FadeIn()

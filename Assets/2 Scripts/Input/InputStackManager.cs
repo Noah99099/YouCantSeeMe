@@ -103,7 +103,7 @@ public class InputStackManager : MonoBehaviour
 
         mapStack.Push(mapName);
         SetMapEnabled(mapName, true);
-        Debug.Log($"Push Map: {mapName} (Overlay: {isOverlay})。當前棧: [{string.Join(", ", mapStack.Reverse())}]");
+        Debug.Log($"[InputStackManager] Push Map: {mapName} (Overlay: {isOverlay})。當前棧: [{string.Join(", ", mapStack.Reverse())}]");
 
         // +++ 新增 +++
         UpdateCursorStateBasedOnTopMap();

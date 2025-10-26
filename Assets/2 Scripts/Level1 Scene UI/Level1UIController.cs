@@ -1,6 +1,5 @@
 // Level1UIController.cs
 using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 
 /// <summary>
@@ -8,6 +7,7 @@ using UnityEngine.InputSystem;
 /// 其他map還不確定，之前是寫分開管理。
 /// 如果沒記錯，eating希望用esc搞定一切關面板，那麼遊戲設定面板不能放在 Player 以外的 Map，否則會功能衝突。
 /// </summary>
+[DefaultExecutionOrder(50)]
 public class Level1UIController : MonoBehaviour
 {
     // ***** 新增 *****

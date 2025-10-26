@@ -3,7 +3,6 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using System;
-using System.Collections;
 
 /// <summary>
 /// 負責單一背包格子的 UI 行為：

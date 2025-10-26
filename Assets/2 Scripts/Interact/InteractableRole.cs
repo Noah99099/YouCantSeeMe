@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class InteractableRole : MonoBehaviour
@@ -9,8 +10,9 @@ public class InteractableRole : MonoBehaviour
     public CarouselData unlockCarousel;
     [Header("RolePastManager腳本")]
     public RolePastManager rolePastManager;
-
     public string objectName = "神秘物品"; // 提示顯示用(PromptText)
+    [Header("解鎖後要刪掉的物件")]
+    public GameObject[] objects;
 
     /// <summary>
     /// 執行交互（由 PlayerInteraction 呼叫）
@@ -22,6 +24,10 @@ public class InteractableRole : MonoBehaviour
             rolePastManager.AddCarouselToRole(targetRole, unlockCarousel);
             Debug.Log($"已解鎖 {targetRole.roleName} 的 Carousel: {unlockCarousel.name}");
         }
-        Destroy(gameObject); // 解鎖後物體消失
+
+        for (int i = 0; i < objects.Length; i++)
+        {
+            Destroy(objects[i]); // 解鎖後刪掉的物件
+        }
     }
 }

@@ -177,6 +177,23 @@ public class PlayerInteraction : MonoBehaviour
                 }
                 return;
             }
+            else if (currentInteractableObject.TryGetComponent<Map>(out var map)) // 檢查是否是 平面圖
+            {
+                if (pickupPromptText != null)
+                {
+                    // 如果是手把模式，更換UI文本提示
+                    if (InputDeviceManager.Instance.CurrentInputType == InputDeviceManager.InputType.Gamepad)
+                    {
+                        pickupPromptText.text = $"按 [叉] 拾取 {map.itemName}";
+                    }
+                    else //鍵鼠
+                    {
+                        pickupPromptText.text = $"按 [滑鼠左鍵] 拾取 {map.itemName}";
+                    }
+                    pickupPromptText.gameObject.SetActive(true);
+                }
+                return;
+            }
         }
 
         HidePrompt();
@@ -232,6 +249,16 @@ public class PlayerInteraction : MonoBehaviour
                 Destroy(hitObject);
                 HidePrompt();
             }
+            else if (hitObject.TryGetComponent<Map>(out var map)) //平面圖
+            {
+                Debug.Log($"拾取了關鍵物品: {map.itemName}！");
+
+                map.Collect();
+
+                // 銷毀物件並隱藏提示
+                Destroy(hitObject);
+                HidePrompt();
+            }
             else if (hitObject.TryGetComponent<InteractableObject>(out var interactable)) //使用物件
             {
                 Debug.Log($"Interacting with: {interactable.objectName}"); //這裡沒有打開案件紀錄簿
@@ -250,7 +277,7 @@ public class PlayerInteraction : MonoBehaviour
                 }
                 HidePrompt();
             }
-            else if (hitObject.TryGetComponent<InteractionTrigger>(out var trigger)) // 交互後執行對話
+            else if (hitObject.TryGetComponent<InteractionTrigger>(out var trigger)) // 交互後執行對話(單視野)
             {
                 Debug.Log($"[HandleInteraction] InteractionTrigger detected on {hitObject.name}");
                 if (trigger.dialogueGraph == null)
@@ -266,6 +293,22 @@ public class PlayerInteraction : MonoBehaviour
                 {
                     Debug.Log("[HandleInteraction] Calling DialogueManager.Instance.StartConversation()");
                     trigger.Interact();
+                }
+                HidePrompt();
+                return;
+            }
+            else if (hitObject.TryGetComponent<BothViewInteractionTrigger>(out var bothTrigger)) // 交互後執行對話(雙視野)
+            {
+                Debug.Log($"[HandleInteraction] InteractionTrigger detected on {hitObject.name}");
+
+                if (DialogueManager.Instance == null)
+                {
+                    Debug.LogError("[HandleInteraction] DialogueManager.Instance is NULL — cannot start dialogue!");
+                }
+                else
+                {
+                    Debug.Log("[HandleInteraction] Calling DialogueManager.Instance.StartConversation()");
+                    bothTrigger.Interact();
                 }
                 HidePrompt();
                 return;

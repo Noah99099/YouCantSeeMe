@@ -20,6 +20,9 @@ public class PasswordLockManager : MonoBehaviour
     [SerializeField, Range(0f, 1f)] private float pressSEVolume = 1f;
     private AudioSource audioSource;
 
+    [Header("完成後的對話")]
+    public GameObject finishLock_DiaPos;
+
     [Header("Debug")]
     [SerializeField] private bool logButtonPresses = true;
 
@@ -92,6 +95,8 @@ public class PasswordLockManager : MonoBehaviour
             {
                 doorToOpen.OpenDoor();
             }
+
+            finishLock_DiaPos.SetActive(true);
         }
         else
         {

@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &-2747221821348372174
+--- !u!114 &-8830546987881313669
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -9,30 +9,30 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c7ce8e7e764e4054f87ae863bec30614, type: 3}
-  m_Name: Invoke Event
+  m_Script: {fileID: 11500000, guid: 5437ad9eab10596448e309fe06cda6bc, type: 3}
+  m_Name: Line
   m_EditorClassIdentifier: 
   graph: {fileID: 11400000}
-  position: {x: -200, y: -104}
+  position: {x: -104, y: -184}
   ports:
     keys:
     - entry
     - exit
     values:
     - _fieldName: entry
-      _node: {fileID: -2747221821348372174}
+      _node: {fileID: -8830546987881313669}
       _typeQualifiedName: BaseNode, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
         PublicKeyToken=null
       connections:
       - fieldName: exit
-        node: {fileID: -2530052586937690115}
+        node: {fileID: -7219090762254778014}
         reroutePoints: []
       _direction: 0
       _connectionType: 1
       _typeConstraint: 0
       _dynamic: 0
     - _fieldName: exit
-      _node: {fileID: -2747221821348372174}
+      _node: {fileID: -8830546987881313669}
       _typeQualifiedName: BaseNode, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
         PublicKeyToken=null
       connections: []
@@ -43,8 +43,22 @@ MonoBehaviour:
   isImportant: 0
   entry: {fileID: 0}
   exit: {fileID: 0}
-  eventID: LiChunMei
---- !u!114 &-2530052586937690115
+  line:
+    characterID: Mr. White
+    expression: '"happy"'
+    position: 1
+    animation: 0
+    overrideName: 0
+    speakerName: 
+    isNarration: 0
+    content: "\u9577\u5F97\u4E0D\u592A\u4E00\u6A23\uFF0C\u9019\u662F\u5BC6\u78BC?"
+    contentKey: 
+    voiceClip: {fileID: 0}
+    soundEffect: {fileID: 0}
+    onShowLine:
+      m_PersistentCalls:
+        m_Calls: []
+--- !u!114 &-7219090762254778014
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -57,18 +71,18 @@ MonoBehaviour:
   m_Name: Start
   m_EditorClassIdentifier: 
   graph: {fileID: 11400000}
-  position: {x: -632, y: -88}
+  position: {x: -392, y: -184}
   ports:
     keys:
     - exit
     values:
     - _fieldName: exit
-      _node: {fileID: -2530052586937690115}
+      _node: {fileID: -7219090762254778014}
       _typeQualifiedName: BaseNode, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
         PublicKeyToken=null
       connections:
       - fieldName: entry
-        node: {fileID: -2747221821348372174}
+        node: {fileID: -8830546987881313669}
         reroutePoints: []
       _direction: 1
       _connectionType: 1
@@ -86,15 +100,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6f06bfe50d942a64aaa8b08b2dd4c147, type: 3}
-  m_Name: MagicCircle
+  m_Name: Level1_HNum_Yin
   m_EditorClassIdentifier: 
   nodes:
-  - {fileID: -2530052586937690115}
-  - {fileID: -2747221821348372174}
+  - {fileID: -7219090762254778014}
+  - {fileID: -8830546987881313669}
   triggerType: 1
-  initialVariables:
-  - name: HasActive
-    value: 0
-  runtimeVariables:
-  - name: HasActive
-    value: 1
+  initialVariables: []
+  runtimeVariables: []

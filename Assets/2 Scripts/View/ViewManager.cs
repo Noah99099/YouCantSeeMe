@@ -1,7 +1,7 @@
+// ViewManager.cs
 using System;
 using System.Collections;
 using UnityEngine;
-using UnityEngine.InputSystem;
 using Spine.Unity;
 
 /// <summary>
