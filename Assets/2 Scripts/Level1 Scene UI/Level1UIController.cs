@@ -1,95 +1,95 @@
 // Level1UIController.cs
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 
 /// <summary>
-/// ºŞ²z Level1 ªº Action Map¡GPlayer¡C
-/// ¨ä¥LmapÁÙ¤£½T©w¡A¤§«e¬O¼g¤À¶}ºŞ²z¡C
-/// ¦pªG¨S°O¿ù¡Aeating§Æ±æ¥Îesc·d©w¤@¤ÁÃö­±ªO¡A¨º»ò¹CÀ¸³]©w­±ªO¤£¯à©ñ¦b Player ¥H¥~ªº Map¡A§_«h·|¥\¯à½Ä¬ğ¡C
+/// ç®¡ç† Level1 çš„ Action Mapï¼šPlayerã€‚
+/// å…¶ä»–mapé‚„ä¸ç¢ºå®šï¼Œä¹‹å‰æ˜¯å¯«åˆ†é–‹ç®¡ç†ã€‚
+/// å¦‚æœæ²’è¨˜éŒ¯ï¼Œeatingå¸Œæœ›ç”¨escæå®šä¸€åˆ‡é—œé¢æ¿ï¼Œé‚£éº¼éŠæˆ²è¨­å®šé¢æ¿ä¸èƒ½æ”¾åœ¨ Player ä»¥å¤–çš„ Mapï¼Œå¦å‰‡æœƒåŠŸèƒ½è¡çªã€‚
 /// </summary>
 public class Level1UIController : MonoBehaviour
 {
-    // ***** ·s¼W *****
-    [Header("®×¥ó¬ö¿ıÃ¯-ª««~ ±±¨î¾¹¤Ş¥Î")]
+    // ***** æ–°å¢ *****
+    [Header("æ¡ˆä»¶ç´€éŒ„ç°¿-ç‰©å“ æ§åˆ¶å™¨å¼•ç”¨")]
     [SerializeField] private InventoryPanelUIController _inventoryPanelController;
 
-    [Header("­I¥]panel: ­I¥]-ª««~/¦ºªÌ/Án­µ/½u¯Á²Õ¦X¡C¥Ø«e¦@4­Ó")]
+    [Header("èƒŒåŒ…panel: èƒŒåŒ…-ç‰©å“/æ­»è€…/è²éŸ³/ç·šç´¢çµ„åˆã€‚ç›®å‰å…±4å€‹")]
     public GameObject[] mainPanels;
-    [Header("²Ä¤G¼hpanel: ­I¥]-ª««~ -> ª««~¼Ò«¬¹wÄı¡C")]
+    [Header("ç¬¬äºŒå±¤panel: èƒŒåŒ…-ç‰©å“ -> ç‰©å“æ¨¡å‹é è¦½ã€‚")]
     public GameObject modelPreviewPanel;
-    [Header("¦Ü°ªpanel: ¹CÀ¸³]©w­±ªO¡A¥Ø«e¥u¯à¦b Player Map ¤¤¥´¶}¸Ó­±ªO¡C")]
+    [Header("è‡³é«˜panel: éŠæˆ²è¨­å®šé¢æ¿ï¼Œç›®å‰åªèƒ½åœ¨ Player Map ä¸­æ‰“é–‹è©²é¢æ¿ã€‚")]
     public GameObject settingPanel;
 
-    [Header("¥k¤U¨¤ªº´£¥Üµø³¥¹Ï¼Ğ")]
+    [Header("å³ä¸‹è§’çš„æç¤ºè¦–é‡åœ–æ¨™")]
     public GameObject titleUI;
-    [Header("·Ç¤ß")]
-    public GameObject crossHair;
 
 
-    public Vector2 MoveInput { get; private set; }  // Åª¨ú²¾°Êªº­È
-    //10/10·s¼W
-    public Vector2 LookInput { get; private set; } // Åª¨ú¬Û¾÷ªº­È
-    public bool IsMouseDevice { get; private set; } // ¥Î¨Ó§PÂ_Look¿é¤J¬O§_¨Ó¦Û·Æ¹«
+    public Vector2 MoveInput { get; private set; }  // è®€å–ç§»å‹•çš„å€¼
+    //10/10æ–°å¢
+    public Vector2 LookInput { get; private set; } // è®€å–ç›¸æ©Ÿçš„å€¼
+    public bool IsMouseDevice { get; private set; } // ç”¨ä¾†åˆ¤æ–·Lookè¼¸å…¥æ˜¯å¦ä¾†è‡ªæ»‘é¼ 
 
     void Start()
     {
-        // ¹CÀ¸¶}©l¡Aªì©l¤Æ¬°Player Map
+        // éŠæˆ²é–‹å§‹ï¼Œåˆå§‹åŒ–ç‚ºPlayer Map
         InputStackManager.Instance.Init(InputActionMaps._Player);
 
-        //Àq»{©Ò¦³­±ªOÃö³¬
-        for (int i=0 ; i < mainPanels.Length; i++) //­I¥]panel
+        //é»˜èªæ‰€æœ‰é¢æ¿é—œé–‰
+        for (int i=0 ; i < mainPanels.Length; i++) //èƒŒåŒ…panel
         {
             mainPanels[i].SetActive(false); 
         }
-        modelPreviewPanel.SetActive(false); //ª««~¼Ò«¬¹wÄıpanel
-        settingPanel.SetActive(false); //¹CÀ¸³]©wpanel
+        modelPreviewPanel.SetActive(false); //ç‰©å“æ¨¡å‹é è¦½panel
+        settingPanel.SetActive(false); //éŠæˆ²è¨­å®španel
 
-        // ***** ·s¼W *****
-        // ¦b¹CÀ¸¶}©l®É¡A­q¾\¡§Àò±o®×¥ó¬ö¿ıÃ¯¡¨¨Æ¥ó
+        // ***** æ–°å¢ *****
+        // åœ¨éŠæˆ²é–‹å§‹æ™‚ï¼Œè¨‚é–±â€œç²å¾—æ¡ˆä»¶ç´€éŒ„ç°¿â€äº‹ä»¶
         CaseRecordBook.OnCollected += EnableInventoryOpening;
 
-        Debug.Log("ªì©l¤Æ [Level1UIController] ¦¨¥\");
+        Debug.Log("åˆå§‹åŒ– [Level1UIController] æˆåŠŸ");
     }
 
     private void OnEnable()
     {
-        // *** ÃöÁä­×§ï: ²¾°£ inputActions.Player.Enable(); ***
-        // *** InputStackManager ·|À°§Ú­Ì³B²z¡I§Ú­Ì¥uºŞµù¥U¨Æ¥ó¡C***
+        // *** é—œéµä¿®æ”¹: ç§»é™¤ inputActions.Player.Enable(); ***
+        // *** InputStackManager æœƒå¹«æˆ‘å€‘è™•ç†ï¼æˆ‘å€‘åªç®¡è¨»å†Šäº‹ä»¶ã€‚***
 
-        // ½T«O InputActions ¤w¸g³Q PlayerInputRegistrar ªì©l¤Æ
+        // ç¢ºä¿ InputActions å·²ç¶“è¢« PlayerInputRegistrar åˆå§‹åŒ–
         if (InputProvider.InputActions == null)
         {
-            Debug.LogError("Level1UIController: InputProvider.InputActions ©|¥¼ªì©l¤Æ¡I½ĞÀË¬d Script Execution Order¡C");
+            Debug.LogError("Level1UIController: InputProvider.InputActions å°šæœªåˆå§‹åŒ–ï¼è«‹æª¢æŸ¥ Script Execution Orderã€‚");
             return;
         }
 
-        // --- µù¥U Move ¨Æ¥ó ---
+        // --- è¨»å†Š Move äº‹ä»¶ ---
         InputProvider.InputActions.Player.Move.performed += OnMovePerformed;
         InputProvider.InputActions.Player.Move.canceled += OnMoveCanceled;
-        // --- µù¥U Look ¨Æ¥ó ---
+
+        // --- è¨»å†Š Look äº‹ä»¶ ---
         InputProvider.InputActions.Player.Look.performed += OnLookPerformed;
         InputProvider.InputActions.Player.Look.canceled += OnLookCanceled;
-        // --- µù¥U ¥æ¤¬ ¨Æ¥ó ---
+        // --- è¨»å†Š äº¤äº’ äº‹ä»¶ ---
         InputProvider.InputActions.Player.Interaction.performed += OnInteractionAction;
-        // --- µù¥U ¤Á´«³±¶§µø³¥ ¨Æ¥ó ---
+        // --- è¨»å†Š åˆ‡æ›é™°é™½è¦–é‡ äº‹ä»¶ ---
         InputProvider.InputActions.Player.View.performed += OnViewAction;
-        // --- µù¥U ¥´¶}¹CÀ¸³]¸m ¨Æ¥ó ---
+        // --- è¨»å†Š æ‰“é–‹éŠæˆ²è¨­ç½® äº‹ä»¶ ---
         InputProvider.InputActions.Player.OpenSetting.performed += OnOpenSettingAction;
     }
 
     private void OnDisable()
     {
-        // *** ÃöÁä­×§ï: ²¾°£ inputActions.Player.Disable(); ***
+        // *** é—œéµä¿®æ”¹: ç§»é™¤ inputActions.Player.Disable(); ***
 
-        // ¦pªG InputActions ¬° null (¨Ò¦p¦b¹CÀ¸Ãö³¬®É)¡A´N¤£°õ¦æ¨ú®øµù¥U
+        // å¦‚æœ InputActions ç‚º null (ä¾‹å¦‚åœ¨éŠæˆ²é—œé–‰æ™‚)ï¼Œå°±ä¸åŸ·è¡Œå–æ¶ˆè¨»å†Š
         if (InputProvider.InputActions == null) return;
 
-        // Ãö³¬ Player Action Map
-        // --- ¨ú®øµù¥U Move ¨Æ¥ó ---
+        // é—œé–‰ Player Action Map
+        // --- å–æ¶ˆè¨»å†Š Move äº‹ä»¶ ---
         InputProvider.InputActions.Player.Move.performed -= OnMovePerformed;
         InputProvider.InputActions.Player.Move.canceled -= OnMoveCanceled;
 
-        // --- ¨ú®øµù¥U Look ¨Æ¥ó ---
+        // --- å–æ¶ˆè¨»å†Š Look äº‹ä»¶ ---
         InputProvider.InputActions.Player.Look.performed -= OnLookPerformed;
         InputProvider.InputActions.Player.Look.canceled -= OnLookCanceled;
 
@@ -101,8 +101,8 @@ public class Level1UIController : MonoBehaviour
 
     private void OnDestroy()
     {
-        // ***** ·s¼W *****
-        // ¦bª«¥ó¾P·´®É¡A¨ú®ø­q¾\¨Æ¥ó¥H¨¾¤î°O¾ĞÅé¬ªº|
+        // ***** æ–°å¢ *****
+        // åœ¨ç‰©ä»¶éŠ·æ¯€æ™‚ï¼Œå–æ¶ˆè¨‚é–±äº‹ä»¶ä»¥é˜²æ­¢è¨˜æ†¶é«”æ´©æ¼
         CaseRecordBook.OnCollected -= EnableInventoryOpening;
     }
 
@@ -119,7 +119,7 @@ public class Level1UIController : MonoBehaviour
     private void OnLookPerformed(InputAction.CallbackContext context)
     {
         LookInput = context.ReadValue<Vector2>();
-        // ÀË¬d¿é¤Jªº¸Ë¸m¬O§_¬°·Æ¹«
+        // æª¢æŸ¥è¼¸å…¥çš„è£ç½®æ˜¯å¦ç‚ºæ»‘é¼ 
         IsMouseDevice = context.control.device is Mouse;
     }
 
@@ -128,74 +128,73 @@ public class Level1UIController : MonoBehaviour
         LookInput = Vector2.zero;
     }
     
-    private void OnInteractionAction(InputAction.CallbackContext context) //©M³õ´ºª«¥ó¡B¥æ¤¬ÂI¡B¤Hª«¥æ¤¬
+    private void OnInteractionAction(InputAction.CallbackContext context) //å’Œå ´æ™¯ç‰©ä»¶ã€äº¤äº’é»ã€äººç‰©äº¤äº’
     {
-        // ©I¥s PlayerInteraction ªº¤èªk
+        // å‘¼å« PlayerInteraction çš„æ–¹æ³•
         if (PlayerInteraction.Instance != null)
         {
             PlayerInteraction.Instance.HandleInteraction();
         }
         else
         {
-            Debug.LogWarning("[Level1UIController] PlayerInteraction.Instance ©|¥¼ªì©l¤Æ¡I");
+            Debug.LogWarning("[Level1UIController] PlayerInteraction.Instance å°šæœªåˆå§‹åŒ–ï¼");
         }
     }
-    private void OnViewAction(InputAction.CallbackContext context) //¥i¥H¤Á´«³±¶§µø³¥
+    private void OnViewAction(InputAction.CallbackContext context) //å¯ä»¥åˆ‡æ›é™°é™½è¦–é‡
     {
-        // ©I¥s ViewManager ªº¤èªk
+        // å‘¼å« ViewManager çš„æ–¹æ³•
         if (ViewManager.Instance != null)
         {
             ViewManager.Instance.ToggleView();
         }
         else
         {
-            Debug.LogWarning("[Level1UIController] ViewManager.Instance ©|¥¼ªì©l¤Æ¡I");
+            Debug.LogWarning("[Level1UIController] ViewManager.Instance å°šæœªåˆå§‹åŒ–ï¼");
         }
     }
-    private void OnOpenSettingAction(InputAction.CallbackContext context) //¥´¶}¹CÀ¸³]©w­±ªO
+    private void OnOpenSettingAction(InputAction.CallbackContext context) //æ‰“é–‹éŠæˆ²è¨­å®šé¢æ¿
     {
         settingPanel.SetActive(true);
         titleUI.SetActive(false);
-        crossHair.SetActive(false);
-        Debug.Log($"[{this.name}] ¹CÀ¸³]¸m¤w¥´¶}¡C");
+        Debug.Log($"[{this.name}] éŠæˆ²è¨­ç½®å·²æ‰“é–‹ã€‚");
 
-        // ±N UI map ±À¤J´Ì¡A¦¹®É Player map ·|³Q¦Û°Ê¸T¥Î
+        // å°‡ UI map æ¨å…¥æ£§ï¼Œæ­¤æ™‚ Player map æœƒè¢«è‡ªå‹•ç¦ç”¨
         InputStackManager.Instance.PushMap(InputActionMaps._Setting);
     }
 
     /// <summary>
-    /// ·í CaseRecordBook Ä²µo OnCaseRecordBookCollected ¨Æ¥ó®É¡A¦¹¤èªk·|³Q©I¥s¡C
+    /// ç•¶ CaseRecordBook è§¸ç™¼ OnCaseRecordBookCollected äº‹ä»¶æ™‚ï¼Œæ­¤æ–¹æ³•æœƒè¢«å‘¼å«ã€‚
     /// </summary>
     private void EnableInventoryOpening()
     {
-        Debug.Log("[Level1UIController] ¦¬¨ì³qª¾¡A±Ò¥Î­I¥]¥\¯à¡I");
+        Debug.Log("[Level1UIController] æ”¶åˆ°é€šçŸ¥ï¼Œå•Ÿç”¨èƒŒåŒ…åŠŸèƒ½ï¼");
 
-        // ¦b³o¸Ì¤~µù¥U OpenInventory Action
+        // åœ¨é€™è£¡æ‰è¨»å†Š OpenInventory Action
         if (InputProvider.InputActions != null)
         {
             InputProvider.InputActions.Player.OpenInventory.performed += OnOpenInventoryAction;
         }
 
-        // ¦]¬°³o­Ó¨Æ¥ó¥u·|Ä²µo¤@¦¸¡A§Ú­Ì¥i¥H¦bµù¥U«á¥ß§Y¨ú®ø­q¾\¡A«O«ùµ{¦¡½X°®²b
+        // å› ç‚ºé€™å€‹äº‹ä»¶åªæœƒè§¸ç™¼ä¸€æ¬¡ï¼Œæˆ‘å€‘å¯ä»¥åœ¨è¨»å†Šå¾Œç«‹å³å–æ¶ˆè¨‚é–±ï¼Œä¿æŒç¨‹å¼ç¢¼ä¹¾æ·¨
         CaseRecordBook.OnCollected -= EnableInventoryOpening;
     }
 
     private void OnOpenInventoryAction(InputAction.CallbackContext context) 
     {
-        // ¦pªG¨S¦³Àò±o¬ö¿ıÃ¯¡A´N¤£¯à¥´¶}¸Ó­±ªO
-        // §ï¦¨¥Î©I¥s InventoryPanelUIController¸}¥» ¸Ìªº¤èªk
+        // å¦‚æœæ²’æœ‰ç²å¾—ç´€éŒ„ç°¿ï¼Œå°±ä¸èƒ½æ‰“é–‹è©²é¢æ¿
+        // æ”¹æˆç”¨å‘¼å« InventoryPanelUIControllerè…³æœ¬ è£¡çš„æ–¹æ³•
         if (_inventoryPanelController != null)
         {
-            _inventoryPanelController.OpenPanel(false); // false = «D¨Ï¥Îª««~¼Ò¦¡
-            Debug.Log($"[{this.name}] ¤w½Ğ¨D¥´¶}®×¥ó¬ö¿ıÃ¯¡C");
+            _inventoryPanelController.OpenPanel(false); // false = éä½¿ç”¨ç‰©å“æ¨¡å¼
+            Debug.Log($"[{this.name}] å·²è«‹æ±‚æ‰“é–‹æ¡ˆä»¶ç´€éŒ„ç°¿ã€‚");
 
-            // ±N Inventory map ±À¤J´Ì¡A¦¹®É Player map ·|³Q¦Û°Ê¸T¥Î
-            // ***** ²¾°£¡G±N³o­Ó©I¥s²¾¨ì OpenPanel() ¤º³¡ *****
+            // å°‡ Inventory map æ¨å…¥æ£§ï¼Œæ­¤æ™‚ Player map æœƒè¢«è‡ªå‹•ç¦ç”¨
+            // ***** ç§»é™¤ï¼šå°‡é€™å€‹å‘¼å«ç§»åˆ° OpenPanel() å…§éƒ¨ *****
             //InputStackManager.Instance.PushMap(InputActionMaps._Inventory);
         }
         else
         {
-            Debug.LogError("InventoryPanelController ªº¤Ş¥Î©|¥¼³]©w¡I");
+            Debug.LogError("InventoryPanelController çš„å¼•ç”¨å°šæœªè¨­å®šï¼");
         }
     }
 }

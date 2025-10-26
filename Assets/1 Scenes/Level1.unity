@@ -12382,9 +12382,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
+      - m_Target: {fileID: 1807143287}
         m_TargetAssemblyTypeName: DialogueManager, Assembly-CSharp
-        m_MethodName: ToggleAutoPlay
+        m_MethodName: OnToggleAutoPlay
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -23121,9 +23121,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
+      - m_Target: {fileID: 1807143287}
         m_TargetAssemblyTypeName: DialogueManager, Assembly-CSharp
-        m_MethodName: Skip
+        m_MethodName: OnSkip
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -29118,7 +29118,6 @@ MonoBehaviour:
   modelPreviewPanel: {fileID: 2064508794}
   settingPanel: {fileID: 138722809}
   titleUI: {fileID: 494571056}
-  crossHair: {fileID: 1028121333}
 --- !u!114 &1640733873
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -31369,6 +31368,7 @@ MonoBehaviour:
   cameraReturnDuration: 1
   crosshairUI: {fileID: 1028121333}
   otherUI: {fileID: 606221569}
+  dialogueActionMapName: Dialogue
 --- !u!1 &1807193446
 GameObject:
   m_ObjectHideFlags: 0

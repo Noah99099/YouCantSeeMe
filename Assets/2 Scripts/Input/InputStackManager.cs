@@ -1,36 +1,36 @@
-// ÀÉ®×¦WºÙ: InputStackManager.cs
+// æª”æ¡ˆåç¨±: InputStackManager.cs
 using System.Collections.Generic;
-using System.Linq; // ¥Î©ó PeekOrDefault µ¥ÂX¥R
+using System.Linq; // ç”¨æ–¼ PeekOrDefault ç­‰æ“´å……
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 /// <summary>
-/// ºŞ²z Unity Input System ªº InputActionMap ±Ò¥Îª¬ºAªº°ïÅ|¦¡ºŞ²z¾¹¡C
-/// ½T«O¦b¥ô¦ó®É­Ô¥u¦³³Ì¤W¼hªº©Î«ü©wªº Map ³B©ó¬¡ÅDª¬ºA¡C
-/// ¨Ï¥Î³æ¨Ò¼Ò¦¡¡A¤è«K¥ş§½¦s¨ú¡C
+/// ç®¡ç† Unity Input System çš„ InputActionMap å•Ÿç”¨ç‹€æ…‹çš„å †ç–Šå¼ç®¡ç†å™¨ã€‚
+/// ç¢ºä¿åœ¨ä»»ä½•æ™‚å€™åªæœ‰æœ€ä¸Šå±¤çš„æˆ–æŒ‡å®šçš„ Map è™•æ–¼æ´»èºç‹€æ…‹ã€‚
+/// ä½¿ç”¨å–®ä¾‹æ¨¡å¼ï¼Œæ–¹ä¾¿å…¨å±€å­˜å–ã€‚
 /// </summary>
 public class InputStackManager : MonoBehaviour
 {
     /// <summary>
-    /// ¥ş§½ÀRºA¹ê¨Ò
+    /// å…¨å±€éœæ…‹å¯¦ä¾‹
     /// </summary>
     public static InputStackManager Instance { get; private set; }
 
-    // +++ ·s¼W +++
-    [Header("·Æ¹«ª¬ºAºŞ²z")]
-    [Tooltip("½Ğ¦b¦¹³B¶ñ¤J©Ò¦³¡uÁä¹«©M¤â¬`¥æ´À¡vªº Action Map ¦WºÙ")]
+    // +++ æ–°å¢ +++
+    [Header("æ»‘é¼ ç‹€æ…‹ç®¡ç†")]
+    [Tooltip("è«‹åœ¨æ­¤è™•å¡«å…¥æ‰€æœ‰ã€Œéµé¼ å’Œæ‰‹æŸ„äº¤æ›¿ã€çš„ Action Map åç¨±")]
     [SerializeField] private List<string> uiMapNames = new List<string>();
 
     private readonly Stack<string> mapStack = new Stack<string>();
     //private Stack<string> mapStack = new Stack<string>();
-    private InputActionAsset inputActionAsset; // ¨Ï¥Î³q¥Îªº InputActionAsset
+    private InputActionAsset inputActionAsset; // ä½¿ç”¨é€šç”¨çš„ InputActionAsset
 
     private void Awake()
     {
         // --- Singleton Pattern ---
         if (Instance != null && Instance != this)
         {
-            Debug.LogWarning("µo²{­«½Æªº InputStackManager ¹ê¨Ò¡A±N¾P·´¦¹ª«¥ó¡C");
+            Debug.LogWarning("ç™¼ç¾é‡è¤‡çš„ InputStackManager å¯¦ä¾‹ï¼Œå°‡éŠ·æ¯€æ­¤ç‰©ä»¶ã€‚");
             Destroy(gameObject);
             return;
         }
@@ -38,18 +38,18 @@ public class InputStackManager : MonoBehaviour
         DontDestroyOnLoad(gameObject);
     }
 
-    // +++ ·s¼W +++
+    // +++ æ–°å¢ +++
     /// <summary>
-    /// (µù¥U) ¦VºŞ²z¾¹µù¥U¤@­Ó PlayerControls ¹ê¨Ò¡C
+    /// (è¨»å†Š) å‘ç®¡ç†å™¨è¨»å†Šä¸€å€‹ PlayerControls å¯¦ä¾‹ã€‚
     /// </summary>
     public void RegisterControls(PlayerControls controls)
     {
-        // ±q PlayerControls ¹ê¨Ò¤¤Àò¨ú©³¼hªº asset
+        // å¾ PlayerControls å¯¦ä¾‹ä¸­ç²å–åº•å±¤çš„ asset
         this.inputActionAsset = controls.asset;
-        Debug.Log("InputStackManager: ¦¨¥\µù¥U¤F PlayerControls ¸ê·½¡C");
+        Debug.Log("InputStackManager: æˆåŠŸè¨»å†Šäº† PlayerControls è³‡æºã€‚");
     }
 
-    // +++ ·s¼W +++
+    // +++ æ–°å¢ +++
     public void UnregisterControls()
     {
         this.inputActionAsset = null;
@@ -57,85 +57,85 @@ public class InputStackManager : MonoBehaviour
     }
 
     /// <summary>
-    /// ªì©l¤Æ¿é¤J´Ì¡A²MªÅ²{¦³ª¬ºA¨Ã³]¸m¤@­Óªì©lªº Action Map¡C
-    /// ³q±`¦b¹CÀ¸©Î³õ´º¶}©l®É©I¥s¡C
+    /// åˆå§‹åŒ–è¼¸å…¥æ£§ï¼Œæ¸…ç©ºç¾æœ‰ç‹€æ…‹ä¸¦è¨­ç½®ä¸€å€‹åˆå§‹çš„ Action Mapã€‚
+    /// é€šå¸¸åœ¨éŠæˆ²æˆ–å ´æ™¯é–‹å§‹æ™‚å‘¼å«ã€‚
     /// </summary>
-    /// <param name="initialMap">­n³]©w¬°´Ì©³ªº Action Map ¦WºÙ¡C</param>
+    /// <param name="initialMap">è¦è¨­å®šç‚ºæ£§åº•çš„ Action Map åç¨±ã€‚</param>
     public void Init(string initialMap)
     {
-        if (inputActionAsset == null) return; // ¦pªG¨S¦³ inputActionAsset¡A¤£°µ¥ô¦ó¨Æ
+        if (inputActionAsset == null) return; // å¦‚æœæ²’æœ‰ inputActionAssetï¼Œä¸åšä»»ä½•äº‹
         mapStack.Clear();
-        SwitchToExclusive(null); // °±¥Î©Ò¦³ Map
+        SwitchToExclusive(null); // åœç”¨æ‰€æœ‰ Map
 
         mapStack.Push(initialMap);
         SetMapEnabled(initialMap, true);
-        Debug.Log($"¿é¤J´Ì¤wªì©l¤Æ¡A·í«e Action Map: {initialMap}");
+        Debug.Log($"è¼¸å…¥æ£§å·²åˆå§‹åŒ–ï¼Œç•¶å‰ Action Map: {initialMap}");
 
-        // +++ ·s¼W +++
+        // +++ æ–°å¢ +++
         UpdateCursorStateBasedOnTopMap();
     }
 
     /// <summary>
-    /// ±N¤@­Ó·sªº Action Map ±À¤J´Ì³»¨Ã±Ò¥Î¥¦¡C
+    /// å°‡ä¸€å€‹æ–°çš„ Action Map æ¨å…¥æ£§é ‚ä¸¦å•Ÿç”¨å®ƒã€‚
     /// </summary>
-    /// <param name="mapName">­n±Ò¥Îªº Action Map ¦WºÙ¡C</param>
+    /// <param name="mapName">è¦å•Ÿç”¨çš„ Action Map åç¨±ã€‚</param>
     /// <param name="isOverlay">
-    /// ¬O§_¬°Å|¥[¼Ò¦¡¡H
-    /// false (¹w³]): ¿W¦û¼Ò¦¡¡A·|°±¥Î´Ì¤¤«e¤@­Ó Map¡C¾A¥Î©ó¼È°±¿ï³æ¡B¥ş¿Ã¹õ UI¡C
-    /// true: Å|¥[¼Ò¦¡¡A¤£·|°±¥Î«e¤@­Ó Map¡C¾A¥Î©ó¹CÀ¸¤ºªº°T®§´£¥Ü¡B¤£¤¤Â_¾Ş§@ªº§Ö±¶¿ï³æ¡C
+    /// æ˜¯å¦ç‚ºç–ŠåŠ æ¨¡å¼ï¼Ÿ
+    /// false (é è¨­): ç¨ä½”æ¨¡å¼ï¼Œæœƒåœç”¨æ£§ä¸­å‰ä¸€å€‹ Mapã€‚é©ç”¨æ–¼æš«åœé¸å–®ã€å…¨è¢å¹• UIã€‚
+    /// true: ç–ŠåŠ æ¨¡å¼ï¼Œä¸æœƒåœç”¨å‰ä¸€å€‹ Mapã€‚é©ç”¨æ–¼éŠæˆ²å…§çš„è¨Šæ¯æç¤ºã€ä¸ä¸­æ–·æ“ä½œçš„å¿«æ·é¸å–®ã€‚
     /// </param>
     public void PushMap(string mapName, bool isOverlay = false)
     {
-        if (inputActionAsset == null) return; // ¦pªG¨S¦³ inputActionAsset¡A¤£°µ¥ô¦ó¨Æ
+        if (inputActionAsset == null) return; // å¦‚æœæ²’æœ‰ inputActionAssetï¼Œä¸åšä»»ä½•äº‹
 
         if (inputActionAsset.FindActionMap(mapName) == null)
         {
-            Debug.LogError($"¹Á¸Õ Push ¤@­Ó¤£¦s¦bªº Action Map: {mapName}");
+            Debug.LogError($"å˜—è©¦ Push ä¸€å€‹ä¸å­˜åœ¨çš„ Action Map: {mapName}");
             return;
         }
 
         if (mapStack.Count > 0 && !isOverlay)
         {
-            // ¦b¿W¦û¼Ò¦¡¤U¡A°±¥Î«e¤@­Ó Map
+            // åœ¨ç¨ä½”æ¨¡å¼ä¸‹ï¼Œåœç”¨å‰ä¸€å€‹ Map
             string previousMap = mapStack.Peek();
             SetMapEnabled(previousMap, false);
         }
 
         mapStack.Push(mapName);
         SetMapEnabled(mapName, true);
-        Debug.Log($"Push Map: {mapName} (Overlay: {isOverlay})¡C·í«e´Ì: [{string.Join(", ", mapStack.Reverse())}]");
+        Debug.Log($"Push Map: {mapName} (Overlay: {isOverlay})ã€‚ç•¶å‰æ£§: [{string.Join(", ", mapStack.Reverse())}]");
 
-        // +++ ·s¼W +++
+        // +++ æ–°å¢ +++
         UpdateCursorStateBasedOnTopMap();
     }
 
     /// <summary>
-    /// ±q´Ì³»¼u¥X·í«eªº Action Map¡A¨Ã­«·s±Ò¥Î´Ì¤¤·sªº³»¼h Map¡C
+    /// å¾æ£§é ‚å½ˆå‡ºç•¶å‰çš„ Action Mapï¼Œä¸¦é‡æ–°å•Ÿç”¨æ£§ä¸­æ–°çš„é ‚å±¤ Mapã€‚
     /// </summary>
     public void PopMap()
     {
-        if (inputActionAsset == null) return; // ¦pªG¨S¦³ PlayerInput¡A¤£°µ¥ô¦ó¨Æ
+        if (inputActionAsset == null) return; // å¦‚æœæ²’æœ‰ PlayerInputï¼Œä¸åšä»»ä½•äº‹
         if (mapStack.Count <= 1)
         {
-            Debug.LogWarning("¹Á¸Õ PopMap ¦ı´Ì¤¤¥u³Ñ¤U³Ì«á¤@­Ó Map¡A¾Ş§@¤w¨ú®ø¡C");
+            Debug.LogWarning("å˜—è©¦ PopMap ä½†æ£§ä¸­åªå‰©ä¸‹æœ€å¾Œä¸€å€‹ Mapï¼Œæ“ä½œå·²å–æ¶ˆã€‚");
             return;
         }
 
         string poppedMap = mapStack.Pop();
         SetMapEnabled(poppedMap, false);
 
-        // ­«·s±Ò¥Î·sªº´Ì³» Map
+        // é‡æ–°å•Ÿç”¨æ–°çš„æ£§é ‚ Map
         string newTopMap = mapStack.Peek();
         SetMapEnabled(newTopMap, true);
 
-        Debug.Log($"Pop Map: {poppedMap}¡C·í«e±Ò¥Îªº Action Map: {newTopMap}¡C·í«e´Ì: [{string.Join(", ", mapStack.Reverse())}]");
+        Debug.Log($"Pop Map: {poppedMap}ã€‚ç•¶å‰å•Ÿç”¨çš„ Action Map: {newTopMap}ã€‚ç•¶å‰æ£§: [{string.Join(", ", mapStack.Reverse())}]");
 
-        // +++ ·s¼W +++
+        // +++ æ–°å¢ +++
         UpdateCursorStateBasedOnTopMap();
     }
 
     /// <summary>
-    /// ®Ú¾Ú´Ì³»ªº Action Map¡A¦Û°Ê§ó·s·Æ¹«ªºÂê©w©M¥i¨£ª¬ºA¡C
+    /// æ ¹æ“šæ£§é ‚çš„ Action Mapï¼Œè‡ªå‹•æ›´æ–°æ»‘é¼ çš„é–å®šå’Œå¯è¦‹ç‹€æ…‹ã€‚
     /// </summary>
     private void UpdateCursorStateBasedOnTopMap()
     {
@@ -143,28 +143,28 @@ public class InputStackManager : MonoBehaviour
 
         string currentTopMap = mapStack.Peek();
 
-        // ÀË¬d·í«eªº Map ¬O§_¦b§Ú­Ì©w¸qªº UI Map ¦Cªí¤¤
+        // æª¢æŸ¥ç•¶å‰çš„ Map æ˜¯å¦åœ¨æˆ‘å€‘å®šç¾©çš„ UI Map åˆ—è¡¨ä¸­
         if (uiMapNames.Contains(currentTopMap))
         {
-            // ¦pªG¬O UI Map¡A«hÅã¥Ü¨Ã¸ÑÂê·Æ¹«
+            // å¦‚æœæ˜¯ UI Mapï¼Œå‰‡é¡¯ç¤ºä¸¦è§£é–æ»‘é¼ 
             Cursor.visible = true;
             Cursor.lockState = CursorLockMode.None;
-            Debug.Log($"[InputStackManager] ¶i¤J UI Map ({currentTopMap})¡AÅã¥Ü·Æ¹«¡C");
+            Debug.Log($"[InputStackManager] é€²å…¥ UI Map ({currentTopMap})ï¼Œé¡¯ç¤ºæ»‘é¼ ã€‚");
         }
         else
         {
-            // ¦pªG¤£¬O UI Map (§Y¹CÀ¸¥@¬É Map)¡A«hÁôÂÃ¨ÃÂê©w·Æ¹«
+            // å¦‚æœä¸æ˜¯ UI Map (å³éŠæˆ²ä¸–ç•Œ Map)ï¼Œå‰‡éš±è—ä¸¦é–å®šæ»‘é¼ 
             Cursor.visible = false;
             Cursor.lockState = CursorLockMode.Locked;
-            Debug.Log($"[InputStackManager] ¶i¤J Gameplay Map ({currentTopMap})¡AÁôÂÃ·Æ¹«¡C");
+            Debug.Log($"[InputStackManager] é€²å…¥ Gameplay Map ({currentTopMap})ï¼Œéš±è—æ»‘é¼ ã€‚");
         }
     }
 
     /// <summary>
-    /// ´À´«´Ì©³ªº Action Map¡C±`¥Î©ó³õ´º¤Á´«¡A§ïÅÜ°òÂ¦±±¨î¼Ò¦¡¡C
-    /// ¦¹¨ç¦¡¤w­×¥¿ÅŞ¿è¡A·|½T«O´Ì³»ªº Map «O«ù±Ò¥Îª¬ºA¡C
+    /// æ›¿æ›æ£§åº•çš„ Action Mapã€‚å¸¸ç”¨æ–¼å ´æ™¯åˆ‡æ›ï¼Œæ”¹è®ŠåŸºç¤æ§åˆ¶æ¨¡å¼ã€‚
+    /// æ­¤å‡½å¼å·²ä¿®æ­£é‚è¼¯ï¼Œæœƒç¢ºä¿æ£§é ‚çš„ Map ä¿æŒå•Ÿç”¨ç‹€æ…‹ã€‚
     /// </summary>
-    /// <param name="newBottomMap">·sªº´Ì©³ Action Map ¦WºÙ¡C</param>
+    /// <param name="newBottomMap">æ–°çš„æ£§åº• Action Map åç¨±ã€‚</param>
     public void ReplaceBottom(string newBottomMap)
     {
         if (mapStack.Count == 0)
@@ -173,7 +173,7 @@ public class InputStackManager : MonoBehaviour
             return;
         }
 
-        // ¶i¦æ´À´«
+        // é€²è¡Œæ›¿æ›
         string[] maps = mapStack.ToArray();
         mapStack.Clear();
         mapStack.Push(newBottomMap);
@@ -182,37 +182,37 @@ public class InputStackManager : MonoBehaviour
             mapStack.Push(maps[i]);
         }
 
-        // ­×¥¿ÅŞ¿è¡G¥Ã»·¥u±Ò¥Î´Ì³»ªº Map
+        // ä¿®æ­£é‚è¼¯ï¼šæ°¸é åªå•Ÿç”¨æ£§é ‚çš„ Map
         string currentTopMap = mapStack.Peek();
         SwitchToExclusive(currentTopMap);
 
-        Debug.Log($"´Ì©³¤w´À´«¬° {newBottomMap}¡A·í«e±Ò¥Îªº Map ¬°: {currentTopMap}¡C·í«e´Ì: [{string.Join(", ", mapStack.Reverse())}]");
+        Debug.Log($"æ£§åº•å·²æ›¿æ›ç‚º {newBottomMap}ï¼Œç•¶å‰å•Ÿç”¨çš„ Map ç‚º: {currentTopMap}ã€‚ç•¶å‰æ£§: [{string.Join(", ", mapStack.Reverse())}]");
     }
 
     /// <summary>
-    /// ²MªÅ¾ã­Ó¿é¤J´Ì¡A¨Ã°±¥Î©Ò¦³ Action Map¡C
-    /// ¦b³õ´ºÂà´«©Î»İ­n­«¸m¿é¤Jª¬ºA®É«D±`¦³¥Î¡C
+    /// æ¸…ç©ºæ•´å€‹è¼¸å…¥æ£§ï¼Œä¸¦åœç”¨æ‰€æœ‰ Action Mapã€‚
+    /// åœ¨å ´æ™¯è½‰æ›æˆ–éœ€è¦é‡ç½®è¼¸å…¥ç‹€æ…‹æ™‚éå¸¸æœ‰ç”¨ã€‚
     /// </summary>
     public void ClearStack()
     {
         SwitchToExclusive(null);
         mapStack.Clear();
-        Debug.Log("¿é¤J´Ì¤w²MªÅ¡C");
+        Debug.Log("è¼¸å…¥æ£§å·²æ¸…ç©ºã€‚");
     }
 
     /// <summary>
-    /// Àò¨ú·í«e¦b´Ì³»ªº Action Map ¦WºÙ¡C
+    /// ç²å–ç•¶å‰åœ¨æ£§é ‚çš„ Action Map åç¨±ã€‚
     /// </summary>
-    /// <returns>´Ì³» Map ¦WºÙ¡A¦pªG´Ì¬°ªÅ«hªğ¦^ null¡C</returns>
+    /// <returns>æ£§é ‚ Map åç¨±ï¼Œå¦‚æœæ£§ç‚ºç©ºå‰‡è¿”å› nullã€‚</returns>
     public string GetCurrentMapName()
     {
         return mapStack.Count > 0 ? mapStack.Peek() : null;
     }
 
     /// <summary>
-    /// Àò¨ú·í«e¦b´Ì³»ªº InputActionMap ª«¥ó¹ê¨Ò¡C
+    /// ç²å–ç•¶å‰åœ¨æ£§é ‚çš„ InputActionMap ç‰©ä»¶å¯¦ä¾‹ã€‚
     /// </summary>
-    /// <returns>InputActionMap ª«¥ó¡A¦pªG§ä¤£¨ì©Î´Ì¬°ªÅ«hªğ¦^ null¡C</returns>
+    /// <returns>InputActionMap ç‰©ä»¶ï¼Œå¦‚æœæ‰¾ä¸åˆ°æˆ–æ£§ç‚ºç©ºå‰‡è¿”å› nullã€‚</returns>
     public InputActionMap GetCurrentActionMap()
     {
         if (mapStack.Count == 0) return null;
@@ -220,8 +220,8 @@ public class InputStackManager : MonoBehaviour
     }
 
     /// <summary>
-    /// ±j¨î¤Á´«¨ì¬Y­Ó Map¡A¨Ã°±¥Î©Ò¦³¨ä¥Lªº Map¡C
-    /// ³o¬O¤@­Ó¸û¬°©³¼hªº¿W¦û¾Ş§@¡C
+    /// å¼·åˆ¶åˆ‡æ›åˆ°æŸå€‹ Mapï¼Œä¸¦åœç”¨æ‰€æœ‰å…¶ä»–çš„ Mapã€‚
+    /// é€™æ˜¯ä¸€å€‹è¼ƒç‚ºåº•å±¤çš„ç¨ä½”æ“ä½œã€‚
     /// </summary>
     private void SwitchToExclusive(string mapName)
     {
@@ -241,7 +241,7 @@ public class InputStackManager : MonoBehaviour
     }
 
     /// <summary>
-    /// ±Ò¥Î©Î°±¥Î«ü©wªº Action Map¡C
+    /// å•Ÿç”¨æˆ–åœç”¨æŒ‡å®šçš„ Action Mapã€‚
     /// </summary>
     private void SetMapEnabled(string mapName, bool enabled)
     {
@@ -254,7 +254,7 @@ public class InputStackManager : MonoBehaviour
         }
         else
         {
-            Debug.LogError($"§ä¤£¨ì¦W¬° '{mapName}' ªº Action Map¡C");
+            Debug.LogError($"æ‰¾ä¸åˆ°åç‚º '{mapName}' çš„ Action Mapã€‚");
         }
     }
 }

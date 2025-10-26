@@ -30,7 +30,8 @@ public class DialogueManager : MonoBehaviour
     private bool isWaitingForChoice = false;
 
     // 系統與工具
-    private PlayerControls playerControls;
+    [Header("輸入設定")]
+    [SerializeField] private string dialogueActionMapName = "Dialogue"; // 用於 InputStackManager
     private Camera mainCamera;
 
     // 事件系統
@@ -55,24 +56,17 @@ public class DialogueManager : MonoBehaviour
         {
             Destroy(gameObject);
         }
-        playerControls = new PlayerControls();
         mainCamera = Camera.main;
     }
 
     private void OnEnable()
     {
-        playerControls.Dialogue.Enable();
-        playerControls.Dialogue.Submit.performed += OnSubmit;
-        //playerControls.Dialogue.Skip.performed += OnSkip;
-        //playerControls.Dialogue.ToggleAutoPlay.performed += OnToggleAutoPlay;
+
     }
 
     private void OnDisable()
     {
-        playerControls.Dialogue.Disable();
-        playerControls.Dialogue.Submit.performed -= OnSubmit;
-        //playerControls.Dialogue.Skip.performed -= OnSkip;
-        //playerControls.Dialogue.ToggleAutoPlay.performed -= OnToggleAutoPlay;
+
     }
 
     #endregion
@@ -81,6 +75,25 @@ public class DialogueManager : MonoBehaviour
     public void StartConversation(DialogueGraph graph)
     {
         if (isDialogueActive) return;
+
+        if (InputStackManager.Instance != null)
+        {
+            InputStackManager.Instance.PushMap(dialogueActionMapName); //
+            Debug.Log($"[DialogueManager] Pushed '{dialogueActionMapName}' map to Input Stack."); //
+        }
+        else Debug.LogError("[DialogueManager] InputStackManager Instance not found!");
+
+        // +++ 在這裡加入事件訂閱 +++
+        if (InputProvider.InputActions != null)
+        {
+            InputProvider.InputActions.Dialogue.Submit.performed += SubmitDialogue;
+            InputProvider.InputActions.Dialogue.ToggleAutoPlay.performed += OnToggleAutoPlay;
+            InputProvider.InputActions.Dialogue.Skip.performed += OnSkip;
+        }
+        else
+        {
+            Debug.LogError("DialogueManager: 在 StartConversation 時 InputProvider.InputActions 仍為 null！");
+        }
 
         if (crosshairUI != null)
         {
@@ -113,7 +126,7 @@ public class DialogueManager : MonoBehaviour
             return;
         }
 
-        dialogueUI.ShowDialogueBox();
+        dialogueUI.gameObject.SetActive(true); // <--- 啟用 DialogueUI 主物件
         ProcessCurrentNode();
     }
     public void RegisterListener(DialogueEventListener listener)
@@ -596,7 +609,7 @@ public class DialogueManager : MonoBehaviour
     {
         if (DialogueAudioManager.Instance != null) DialogueAudioManager.Instance.StopVoiceOver();
         isDialogueActive = false;
-        dialogueUI.HideDialogueBox();
+        dialogueUI.gameObject.SetActive(false); // <--- 停用 DialogueUI 主物件
         Debug.Log("對話結束");
         if (crosshairUI != null)
         {
@@ -610,10 +623,22 @@ public class DialogueManager : MonoBehaviour
         {
             StartCoroutine(ReturnCameraToOriginalPosition());
         }
+        if (InputStackManager.Instance != null)
+        {
+            InputStackManager.Instance.PopMap(); //
+            Debug.Log($"[DialogueManager] Popped '{dialogueActionMapName}' map from Input Stack."); //
+        }
+        
+        if (InputProvider.InputActions != null)
+        {
+            InputProvider.InputActions.Dialogue.Submit.performed -= SubmitDialogue;
+            InputProvider.InputActions.Dialogue.ToggleAutoPlay.performed -= OnToggleAutoPlay;
+            InputProvider.InputActions.Dialogue.Skip.performed -= OnSkip;
+        }
     }
 
     // Skip 和 AutoPlay 功能需要用新的圖形邏輯重寫，暫時保留或移除
-    public void OnSkip()
+    public void OnSkip(InputAction.CallbackContext context)
     {
         if (!isDialogueActive || isTyping) return;
 
@@ -639,35 +664,45 @@ public class DialogueManager : MonoBehaviour
             EndConversation();
         }
     }
-    /*
-    private void OnSkip(InputAction.CallbackContext context)
+    
+    public void SubmitDialogue(InputAction.CallbackContext context)
     {
-        if (!isDialogueActive || isTyping) return;
+        // 如果對話未激活、正在自動播放、或等待選項，則不執行任何操作
+        if (!isDialogueActive || isAutoPlay || isWaitingForChoice) return; //
 
-        // 停止所有正在進行的協程，例如打字效果
-        StopAllCoroutines();
-        isTyping = false;
-        dialogueUI.ClearChoices(); // 如果剛好在選項處，也清除選項
-                                   // --- 在跳過之前，停止當前語音 ---
-        if (DialogueAudioManager.Instance != null) DialogueAudioManager.Instance.StopVoiceOver();
+        // 停止當前語音
+        if (DialogueAudioManager.Instance != null) DialogueAudioManager.Instance.StopVoiceOver(); //
 
-        Debug.Log("開始尋找下一個重要節點...");
-        BaseNode nextImportantNode = FindNextImportantNode();
-
-        if (nextImportantNode != null)
+        if (isTyping) //
         {
-            Debug.Log("找到重要節點: " + nextImportantNode.name);
-            currentNode = nextImportantNode;
-            ProcessCurrentNode();
+            // --- 情況 1：玩家想要「跳過打字」 ---
+
+            // 1. 停止 "WaitForTypingToEnd" 協程 (因為我們手動完成了)
+            //    StopAllCoroutines() 會停止此腳本上的所有協程
+            StopAllCoroutines(); //
+            
+            // 2. 更新狀態
+            isTyping = false; //
+
+            // 3. 告訴 UI 立即顯示完整文字
+            if (currentNode is LineNode lineNode) //
+            {
+                dialogueUI.CompleteText(lineNode.line.content); //
+            }
         }
         else
         {
-            Debug.Log("找不到更多重要節點，對話結束。");
-            EndConversation();
+            // --- 情況 2：玩家想要「進入下一句」 ---
+            
+            // 1. 獲取下一個節點
+            currentNode = currentNode.GetNextNode(); //
+            
+            // 2. 處理下一個節點 (顯示文字、選項...)
+            ProcessCurrentNode(); //
         }
     }
-    */
-    public void OnToggleAutoPlay()
+
+    public void OnToggleAutoPlay(InputAction.CallbackContext context)
     {
         if (!isDialogueActive) return;
 

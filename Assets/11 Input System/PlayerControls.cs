@@ -1352,24 +1352,6 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
-                },
-                {
-                    ""name"": ""Pause"",
-                    ""type"": ""Button"",
-                    ""id"": ""b783be2c-70e8-4367-bd71-72c865054baf"",
-                    ""expectedControlType"": """",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": false
-                },
-                {
-                    ""name"": ""AdvanceDialogue"",
-                    ""type"": ""Button"",
-                    ""id"": ""48f5cd11-854e-4225-a99c-4213b00d6aad"",
-                    ""expectedControlType"": """",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -1419,63 +1401,19 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
-                    ""id"": ""a2f9aad8-2a67-45ec-a2a0-95240fa61017"",
-                    ""path"": ""<Keyboard>/escape"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": "";鍵鼠"",
-                    ""action"": ""Pause"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""cd8b023d-1f34-4de4-8e78-8bbeaf32706c"",
-                    ""path"": ""<Gamepad>/buttonWest"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": "";Gamepad"",
-                    ""action"": ""Pause"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""3bb35ef1-3a9c-48f8-9425-883146f20516"",
-                    ""path"": ""<Mouse>/leftButton"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": "";鍵鼠"",
-                    ""action"": ""AdvanceDialogue"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""d1f0e02a-525e-4243-a579-815dedab34dd"",
-                    ""path"": ""<Keyboard>/space"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": "";鍵鼠"",
-                    ""action"": ""AdvanceDialogue"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""ffc49452-1dc7-4b6e-948c-2f445f5d2ba0"",
-                    ""path"": ""<Gamepad>/buttonSouth"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": "";Gamepad"",
-                    ""action"": ""AdvanceDialogue"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
                     ""id"": ""f42a3ff6-3769-4707-852c-1e7c1b4c58a6"",
                     ""path"": ""<Keyboard>/space"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";鍵鼠"",
+                    ""action"": ""Submit"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""315b6580-30ad-4c3d-be7e-0e9d6a71807b"",
+                    ""path"": ""<Mouse>/leftButton"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": "";鍵鼠"",
@@ -1838,8 +1776,6 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         m_Dialogue_Submit = m_Dialogue.FindAction("Submit", throwIfNotFound: true);
         m_Dialogue_ToggleAutoPlay = m_Dialogue.FindAction("ToggleAutoPlay", throwIfNotFound: true);
         m_Dialogue_Skip = m_Dialogue.FindAction("Skip", throwIfNotFound: true);
-        m_Dialogue_Pause = m_Dialogue.FindAction("Pause", throwIfNotFound: true);
-        m_Dialogue_AdvanceDialogue = m_Dialogue.FindAction("AdvanceDialogue", throwIfNotFound: true);
         // Setting
         m_Setting = asset.FindActionMap("Setting", throwIfNotFound: true);
         m_Setting_CloseSetting = m_Setting.FindAction("CloseSetting", throwIfNotFound: true);
@@ -2889,8 +2825,6 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
     private readonly InputAction m_Dialogue_Submit;
     private readonly InputAction m_Dialogue_ToggleAutoPlay;
     private readonly InputAction m_Dialogue_Skip;
-    private readonly InputAction m_Dialogue_Pause;
-    private readonly InputAction m_Dialogue_AdvanceDialogue;
     /// <summary>
     /// Provides access to input actions defined in input action map "Dialogue".
     /// </summary>
@@ -2914,14 +2848,6 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "Dialogue/Skip".
         /// </summary>
         public InputAction @Skip => m_Wrapper.m_Dialogue_Skip;
-        /// <summary>
-        /// Provides access to the underlying input action "Dialogue/Pause".
-        /// </summary>
-        public InputAction @Pause => m_Wrapper.m_Dialogue_Pause;
-        /// <summary>
-        /// Provides access to the underlying input action "Dialogue/AdvanceDialogue".
-        /// </summary>
-        public InputAction @AdvanceDialogue => m_Wrapper.m_Dialogue_AdvanceDialogue;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -2957,12 +2883,6 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @Skip.started += instance.OnSkip;
             @Skip.performed += instance.OnSkip;
             @Skip.canceled += instance.OnSkip;
-            @Pause.started += instance.OnPause;
-            @Pause.performed += instance.OnPause;
-            @Pause.canceled += instance.OnPause;
-            @AdvanceDialogue.started += instance.OnAdvanceDialogue;
-            @AdvanceDialogue.performed += instance.OnAdvanceDialogue;
-            @AdvanceDialogue.canceled += instance.OnAdvanceDialogue;
         }
 
         /// <summary>
@@ -2983,12 +2903,6 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @Skip.started -= instance.OnSkip;
             @Skip.performed -= instance.OnSkip;
             @Skip.canceled -= instance.OnSkip;
-            @Pause.started -= instance.OnPause;
-            @Pause.performed -= instance.OnPause;
-            @Pause.canceled -= instance.OnPause;
-            @AdvanceDialogue.started -= instance.OnAdvanceDialogue;
-            @AdvanceDialogue.performed -= instance.OnAdvanceDialogue;
-            @AdvanceDialogue.canceled -= instance.OnAdvanceDialogue;
         }
 
         /// <summary>
@@ -3592,20 +3506,6 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnSkip(InputAction.CallbackContext context);
-        /// <summary>
-        /// Method invoked when associated input action "Pause" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
-        /// </summary>
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-        void OnPause(InputAction.CallbackContext context);
-        /// <summary>
-        /// Method invoked when associated input action "AdvanceDialogue" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
-        /// </summary>
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-        void OnAdvanceDialogue(InputAction.CallbackContext context);
     }
     /// <summary>
     /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "Setting" which allows adding and removing callbacks.

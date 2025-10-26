@@ -85,53 +85,87 @@ public class DialogueUI : MonoBehaviour
         if (timerSlider != null) timerSlider.gameObject.SetActive(false);
     }
 
-    void Start()
+    private void OnEnable()
     {
-        dialogueBox.SetActive(false);
+        // 當這個物件被啟用時，自動顯示 dialogueBox
+        if (dialogueBox != null)
+        {
+            dialogueBox.SetActive(true);
+        }
     }
 
-    public void ShowDialogueBox()
+    private void OnDisable()
     {
-        dialogueBox.SetActive(true);
-    }
+        // 當這個物件被停用時，自動隱藏/清理
+        if (dialogueBox != null)
+        {
+            dialogueBox.SetActive(false);
+        }
 
-    public void HideDialogueBox()
-    {
-        dialogueBox.SetActive(false);
+        // --- 搬移 HideDialogueBox 的所有清理邏輯 ---
+        if (characterSpriteLeft != null) characterSpriteLeft.gameObject.SetActive(false);
+        if (characterSpriteRight != null) characterSpriteRight.gameObject.SetActive(false);
+
+        currentLeftCharacterID = "";
+        currentRightCharacterID = "";
+        StopTimer();
+        ClearChoices();
     }
 
     public void SetDialogue(DialogueLine line, float typeSpeed)
     {
+        // --- 核心修正：無論如何，先確保 Name 和 Content 物件都啟用 ---
+        // (除非它們是 null)
+        if (contentText != null) contentText.gameObject.SetActive(true);
+        if (nameText != null) nameText.gameObject.SetActive(true);
+
+
         if (line.isNarration)
         {
             // 如果是旁白，隱藏名字和所有立繪
-            nameText.gameObject.SetActive(false);
-            characterSpriteLeft.gameObject.SetActive(false);
-            characterSpriteRight.gameObject.SetActive(false);
-            ProcessTextForEffects(line.content, typeSpeed);
+            if (nameText != null) nameText.gameObject.SetActive(false); //
+            if (characterSpriteLeft != null) characterSpriteLeft.gameObject.SetActive(false); //
+            if (characterSpriteRight != null) characterSpriteRight.gameObject.SetActive(false); //
 
-            // 直接開始打字效果
-            StartTypewriter(line.content, typeSpeed);
+            ProcessTextForEffects(line.content, typeSpeed); //
+
+            // ----- 修正：刪除多餘的 StartTypewriter -----
+            //StartTypewriter(line.content, typeSpeed); //
+            
             // 提前結束方法，不執行後面的角色邏輯
-            return;
+            return; //
         }
-        string localizedContent = LocalizationManager.Instance.GetLocalizedText(line.contentKey);
-        nameText.gameObject.SetActive(true);
+
+        // --- 這是非旁白情況 ---
+        string localizedContent = line.content; // 暫時繞過 LocalizationManager，使用原始文本
+        //等到要做本地化再打開
+        //string localizedContent = LocalizationManager.Instance.GetLocalizedText(line.contentKey);
+        
+        // (這行已在最上面做過，可選)
+        // nameText.gameObject.SetActive(true); 
+
         CharacterProfile speakerProfile;
         if (!characterDatabase.TryGetValue(line.characterID, out speakerProfile))
         {
+            // 找不到角色 Profile 的備用邏輯
             nameText.text = line.speakerName;
-            characterSpriteLeft.gameObject.SetActive(false);
-            characterSpriteRight.gameObject.SetActive(false);
-            StartTypewriter(localizedContent, typeSpeed);
+            if (characterSpriteLeft != null) characterSpriteLeft.gameObject.SetActive(false);
+            if (characterSpriteRight != null) characterSpriteRight.gameObject.SetActive(false);
+            
+            ProcessTextForEffects(localizedContent, typeSpeed); // <-- 使用這個
+            // ----- 修正：刪除多餘的 StartTypewriter -----
+            // StartTypewriter(localizedContent, typeSpeed);
             return;
         }
 
-        nameText.text = line.overrideName ? line.speakerName : speakerProfile.characterName;
-        UpdateCharacterSprite(line.characterID, line.expression, line.position, line.animation);
-        HighlightSpeaker(line.position);
-        StartTypewriter(localizedContent, typeSpeed);
-        ProcessTextForEffects(line.content, typeSpeed);
+        nameText.text = line.overrideName ? line.speakerName : speakerProfile.characterName; //
+        UpdateCharacterSprite(line.characterID, line.expression, line.position, line.animation); //
+        HighlightSpeaker(line.position); //
+        
+        ProcessTextForEffects(localizedContent, typeSpeed); //
+        
+        // ----- 修正：刪除多餘的 StartTypewriter -----
+        // StartTypewriter(localizedContent, typeSpeed); //
     }
 
     private void ProcessTextForEffects(string fullText, float typeSpeed)
@@ -259,7 +293,7 @@ public class DialogueUI : MonoBehaviour
     for (int i = 0; i <= totalChars; i++)
     {
         contentText.maxVisibleCharacters = i;
-        yield return new WaitForSeconds(1f / speed);
+        yield return new WaitForSeconds(speed);
     }
     typeWriterCoroutine = null;
 }
