@@ -154,7 +154,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a71ed2073facf743ade064b62af10be, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  dialogueGraph: {fileID: 11400000, guid: 34baf3843ccd9dd448aef1f6b876c928, type: 2}
+  dialogueGraph: {fileID: 11400000, guid: 433c64c0450570e42853af1bddf5e7d3, type: 2}
 --- !u!135 &8372479
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -5548,6 +5548,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8ec1c7b34301ec74a801612db1b14ea6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  renderTexture: {fileID: 0}
+  targetImage: {fileID: 0}
 --- !u!114 &1731736137
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5562,6 +5564,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   videoController: {fileID: 1731736136}
   clip: {fileID: 32900000, guid: 5b4695c8fac2caa408c4d18a18609adc, type: 3}
+  targetRole: {fileID: 0}
 --- !u!328 &1731736138
 VideoPlayer:
   m_ObjectHideFlags: 0
