@@ -13,6 +13,8 @@ public class Level1UIController : MonoBehaviour
     // ***** 新增 *****
     [Header("案件紀錄簿-物品 控制器引用")]
     [SerializeField] private InventoryPanelUIController _inventoryPanelController;
+    [Header("平面圖 控制器引用")]
+    [SerializeField] private MapPanelUIController _mapPanelUIController;
 
     [Header("背包panel: 背包-物品/死者/聲音/線索組合。目前共4個")]
     public GameObject[] mainPanels;
@@ -24,11 +26,12 @@ public class Level1UIController : MonoBehaviour
     [Header("右下角的提示視野圖標")]
     public GameObject titleUI;
 
-
     public Vector2 MoveInput { get; private set; }  // 讀取移動的值
-    //10/10新增
     public Vector2 LookInput { get; private set; } // 讀取相機的值
     public bool IsMouseDevice { get; private set; } // 用來判斷Look輸入是否來自滑鼠
+
+    // 新增：一開始不能使用切換視野
+    private bool canUseViewAction = false;
 
     void Start()
     {
@@ -46,6 +49,10 @@ public class Level1UIController : MonoBehaviour
         // ***** 新增 *****
         // 在遊戲開始時，訂閱“獲得案件紀錄簿”事件
         CaseRecordBook.OnCollected += EnableInventoryOpening;
+        // 在遊戲開始時，訂閱“獲得平面圖”事件
+        Map.GetMap += EnableMapOpening;
+
+        PrepareToYinView.CanChangeView += EnableViewAction; // 新增：接收允許切換視野事件
 
         Debug.Log("初始化 [Level1UIController] 成功");
     }
@@ -69,6 +76,7 @@ public class Level1UIController : MonoBehaviour
         // --- 註冊 Look 事件 ---
         InputProvider.InputActions.Player.Look.performed += OnLookPerformed;
         InputProvider.InputActions.Player.Look.canceled += OnLookCanceled;
+
         // --- 註冊 交互 事件 ---
         InputProvider.InputActions.Player.Interaction.performed += OnInteractionAction;
         // --- 註冊 切換陰陽視野 事件 ---
@@ -97,6 +105,7 @@ public class Level1UIController : MonoBehaviour
         InputProvider.InputActions.Player.View.performed -= OnViewAction;
         InputProvider.InputActions.Player.OpenSetting.performed -= OnOpenSettingAction;
         InputProvider.InputActions.Player.OpenInventory.performed -= OnOpenInventoryAction;
+        InputProvider.InputActions.Player.OpenMap.performed -= OnOpenMapAction;
     }
 
     private void OnDestroy()
@@ -104,6 +113,8 @@ public class Level1UIController : MonoBehaviour
         // ***** 新增 *****
         // 在物件銷毀時，取消訂閱事件以防止記憶體洩漏
         CaseRecordBook.OnCollected -= EnableInventoryOpening;
+        Map.GetMap -= EnableMapOpening;
+        PrepareToYinView.CanChangeView -= EnableViewAction;
     }
 
     private void OnMovePerformed(InputAction.CallbackContext context)
@@ -142,6 +153,13 @@ public class Level1UIController : MonoBehaviour
     }
     private void OnViewAction(InputAction.CallbackContext context) //可以切換陰陽視野
     {
+        // 新增：一開始禁止使用
+        if (!canUseViewAction)
+        {
+            Debug.Log("[Level1UIController] 尚未解鎖切換視野功能！");
+            return;
+        }
+
         // 呼叫 ViewManager 的方法
         if (ViewManager.Instance != null)
         {
@@ -162,6 +180,7 @@ public class Level1UIController : MonoBehaviour
         InputStackManager.Instance.PushMap(InputActionMaps._Setting);
     }
 
+    #region === 案件紀錄簿和平面圖 ===
     /// <summary>
     /// 當 CaseRecordBook 觸發 OnCaseRecordBookCollected 事件時，此方法會被呼叫。
     /// </summary>
@@ -196,5 +215,46 @@ public class Level1UIController : MonoBehaviour
         {
             Debug.LogError("InventoryPanelController 的引用尚未設定！");
         }
+    }
+
+    /// <summary>
+    /// 當 Map 觸發事件時，此方法會被呼叫。
+    /// </summary>
+    private void EnableMapOpening()
+    {
+        Debug.Log("[Level1UIController] 收到通知，啟用平面圖功能！");
+
+        // 在這裡才註冊 OpenInventory Action
+        if (InputProvider.InputActions != null)
+        {
+            InputProvider.InputActions.Player.OpenMap.performed += OnOpenMapAction;
+        }
+
+        // 因為這個事件只會觸發一次，我們可以在註冊後立即取消訂閱，保持程式碼乾淨
+        Map.GetMap -= EnableMapOpening;
+    }
+
+    private void OnOpenMapAction(InputAction.CallbackContext context)
+    {
+        // 如果沒有獲得平面圖，就不能打開該面板
+        // 改成用呼叫 MapPanelUIController 裡的方法
+        if (_mapPanelUIController != null && _mapPanelUIController.gameObject != null)
+        {
+            _mapPanelUIController.OpenMap(); // 打開平面圖
+            Debug.Log($"[{this.name}] 已請求打開平面圖。");
+        }
+        else
+        {
+            Debug.LogError("MapPanelUIController 的引用尚未設定！");
+        }
+    }
+    #endregion
+
+    // 新增：啟用切換視野功能的方法
+    private void EnableViewAction()
+    {
+        Debug.Log("[Level1UIController] 收到通知，可以使用切換視野功能！");
+        canUseViewAction = true;
+        PrepareToYinView.CanChangeView -= EnableViewAction; // 僅需觸發一次
     }
 }

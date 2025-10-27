@@ -6,7 +6,8 @@ public class AreaTrigger : MonoBehaviour
     [Tooltip("要觸發的對話圖形 (請確保其 Trigger Type 已設為 OnAreaEnter)")]
     public DialogueGraph dialogueGraph;
 
-    private bool hasTriggered = false; // 確保只觸發一次
+    //private bool hasTriggered = false; // 確保只觸發一次
+    // 不需要，我來手動掛腳本刪掉
 
     private void Awake()
     {
@@ -18,12 +19,12 @@ public class AreaTrigger : MonoBehaviour
     private void OnTriggerEnter(Collider other)
     {
         // 如果已經觸發過，或進入的不是玩家，就直接返回
-        if (hasTriggered || !other.CompareTag("Player")) return;
+        if (!other.CompareTag("Player")) return;
         
         if (dialogueGraph != null && !DialogueManager.Instance.IsDialogueActive())
         {
             Debug.Log("玩家進入觸發區，開始對話。");
-            hasTriggered = true;
+            //hasTriggered = true;
             DialogueManager.Instance.StartConversation(dialogueGraph);
         }
     }

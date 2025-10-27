@@ -16,5 +16,6 @@ public static class InputActionMaps
     public const string _GhostPanel = "GhostPanel"; //Player - Inventory - GhostPanel，案件紀錄簿-鬼
     public const string _VoicePanel = "VoicePanel"; //Player - Inventory - GhostPanel，案件紀錄簿-聲音
     public const string _CluePanel = "CluePanel"; //Player - Inventory - GhostPanel，案件紀錄簿-組合線索
+    public const string _Map = "Map"; //Player - Map，平面圖
     // ... 在此處加入您所有的 Action Map 名稱
 }

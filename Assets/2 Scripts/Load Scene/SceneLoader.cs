@@ -136,6 +136,7 @@ public class SceneLoader : MonoBehaviour
 
         // 在所有步驟都完成後，廣播「轉場已徹底完成」事件
         OnSceneTransitionComplete?.Invoke();
+        Debug.Log($"[SceneLoader] 淡出結束");
     }
 
     private IEnumerator FadeIn()
