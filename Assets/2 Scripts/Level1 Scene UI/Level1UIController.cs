@@ -25,6 +25,8 @@ public class Level1UIController : MonoBehaviour
 
     [Header("右下角的提示視野圖標")]
     public GameObject titleUI;
+    [Header("準心")]
+    public GameObject crossHair;
 
     public Vector2 MoveInput { get; private set; }  // 讀取移動的值
     public Vector2 LookInput { get; private set; } // 讀取相機的值
@@ -32,11 +34,16 @@ public class Level1UIController : MonoBehaviour
 
     // 新增：一開始不能使用切換視野
     private bool canUseViewAction = false;
+    // ***** 需求修改: 新增 *****
+    private bool _sceneTransitionFinished = false;
+    private bool _playerMapInitialized = false; // 確保 Init 只執行一次
 
     void Start()
     {
-        // 遊戲開始，初始化為Player Map
-        InputStackManager.Instance.Init(InputActionMaps._Player);
+        // ***** 需求修改: 移除 *****
+        // 遊戲開始，不再強行初始化為Player Map
+        // InputStackManager.Instance.Init(InputActionMaps._Player); 
+        // ***** 需求修改: 結束 *****
 
         //默認所有面板關閉
         for (int i=0 ; i < mainPanels.Length; i++) //背包panel
@@ -55,39 +62,73 @@ public class Level1UIController : MonoBehaviour
         PrepareToYinView.CanChangeView += EnableViewAction; // 新增：接收允許切換視野事件
 
         Debug.Log("初始化 [Level1UIController] 成功");
+
+        // ***** 需求修改: 新增 *****
+        // 檢查是否是從編輯器直接啟動 (沒有 SceneLoader)
+        if (SceneLoader.Instance == null)
+        {
+            // 如果沒有 SceneLoader (例如在編輯器中啟動)
+            Debug.LogWarning("[Level1UIController] 未偵測到 SceneLoader，視為轉場已完成。");
+            _sceneTransitionFinished = true;
+            // 立即嘗試初始化
+            TryInitializePlayerMap();
+        }
     }
 
     private void OnEnable()
     {
-        // *** 關鍵修改: 移除 inputActions.Player.Enable(); ***
-        // *** InputStackManager 會幫我們處理！我們只管註冊事件。***
+        // ***** 解決方案: 先移除，再添加 *****
+        if (SceneLoader.Instance != null)
+        {
+            SceneLoader.Instance.OnSceneTransitionComplete -= HandleSceneTransitionComplete; // 先移除
+            SceneLoader.Instance.OnSceneTransitionComplete += HandleSceneTransitionComplete; // 再添加
 
-        // 確保 InputActions 已經被 PlayerInputRegistrar 初始化
+            // ***** 新增 *****
+            SceneLoader.Instance.OnSceneTransitionStart -= HandleSceneTransitionStart; // 先移除
+            SceneLoader.Instance.OnSceneTransitionStart += HandleSceneTransitionStart; // 再添加
+        }
+
         if (InputProvider.InputActions == null)
         {
-            Debug.LogError("Level1UIController: InputProvider.InputActions 尚未初始化！請檢查 Script Execution Order。");
+            Debug.LogError("Level1UIController: InputProvider.InputActions 尚未初始化！");
             return;
         }
 
+        // ***** 解決方案: 對所有 Input Actions 應用 "先移除再添加" 模式 *****
+
         // --- 註冊 Move 事件 ---
+        InputProvider.InputActions.Player.Move.performed -= OnMovePerformed;
         InputProvider.InputActions.Player.Move.performed += OnMovePerformed;
+        InputProvider.InputActions.Player.Move.canceled -= OnMoveCanceled;
         InputProvider.InputActions.Player.Move.canceled += OnMoveCanceled;
 
         // --- 註冊 Look 事件 ---
+        InputProvider.InputActions.Player.Look.performed -= OnLookPerformed;
         InputProvider.InputActions.Player.Look.performed += OnLookPerformed;
+        InputProvider.InputActions.Player.Look.canceled -= OnLookCanceled;
         InputProvider.InputActions.Player.Look.canceled += OnLookCanceled;
 
         // --- 註冊 交互 事件 ---
+        InputProvider.InputActions.Player.Interaction.performed -= OnInteractionAction;
         InputProvider.InputActions.Player.Interaction.performed += OnInteractionAction;
         // --- 註冊 切換陰陽視野 事件 ---
+        InputProvider.InputActions.Player.View.performed -= OnViewAction;
         InputProvider.InputActions.Player.View.performed += OnViewAction;
         // --- 註冊 打開遊戲設置 事件 ---
+        InputProvider.InputActions.Player.OpenSetting.performed -= OnOpenSettingAction;
         InputProvider.InputActions.Player.OpenSetting.performed += OnOpenSettingAction;
     }
 
     private void OnDisable()
     {
-        // *** 關鍵修改: 移除 inputActions.Player.Disable(); ***
+        // ***** 需求修改: 新增 *****
+        // 取消訂閱 SceneLoader 事件
+        if (SceneLoader.Instance != null)
+        {
+            SceneLoader.Instance.OnSceneTransitionComplete -= HandleSceneTransitionComplete;
+            SceneLoader.Instance.OnSceneTransitionStart -= HandleSceneTransitionStart; // <--- 新增
+        }
+        // ***** 需求修改: 結束 *****
 
         // 如果 InputActions 為 null (例如在遊戲關閉時)，就不執行取消註冊
         if (InputProvider.InputActions == null) return;
@@ -115,6 +156,12 @@ public class Level1UIController : MonoBehaviour
         CaseRecordBook.OnCollected -= EnableInventoryOpening;
         Map.GetMap -= EnableMapOpening;
         PrepareToYinView.CanChangeView -= EnableViewAction;
+
+        // ***** 需求修改: 新增 (雖然 OnDisable 應該已經處理了，但多一層保險) *****
+        if (SceneLoader.Instance != null)
+        {
+            SceneLoader.Instance.OnSceneTransitionComplete -= HandleSceneTransitionComplete;
+        }
     }
 
     private void OnMovePerformed(InputAction.CallbackContext context)
@@ -173,6 +220,7 @@ public class Level1UIController : MonoBehaviour
     private void OnOpenSettingAction(InputAction.CallbackContext context) //打開遊戲設定面板
     {
         settingPanel.SetActive(true);
+        crossHair.SetActive(false);
         titleUI.SetActive(false);
         Debug.Log($"[{this.name}] 遊戲設置已打開。");
 
@@ -256,5 +304,73 @@ public class Level1UIController : MonoBehaviour
         Debug.Log("[Level1UIController] 收到通知，可以使用切換視野功能！");
         canUseViewAction = true;
         PrepareToYinView.CanChangeView -= EnableViewAction; // 僅需觸發一次
+    }
+
+    // ***** 需求修改: 以下為新增的完整邏輯 *****
+    /// <summary>
+    /// 處理來自 SceneLoader 的場景轉場「開始」事件
+    /// </summary>
+    private void HandleSceneTransitionStart()
+    {
+        // 重置這兩個標記，以便為下一次「轉場完成」做準備
+        _sceneTransitionFinished = false;
+        _playerMapInitialized = false;
+    }
+
+    /// <summary>
+    /// 處理來自 SceneLoader 的場景轉場完成事件。
+    /// </summary>
+    private void HandleSceneTransitionComplete()
+    {
+        _sceneTransitionFinished = true;
+        TryInitializePlayerMap();
+    }
+
+    /// <summary>
+    /// 嘗試初始化 Player Map (會被 Start() 或 HandleSceneTransitionComplete() 呼叫)
+    /// </summary>
+    private void TryInitializePlayerMap()
+    {
+        // 必須轉場完成，且尚未初始化過
+        if (!_sceneTransitionFinished || _playerMapInitialized)
+        {
+            return;
+        }
+        _playerMapInitialized = true; // 標記為已初始化，防止重複執行
+
+        // 我們使用 Coroutine 並等待一幀 (yield return null)
+        // 這是為了確保 SceneDialogueController (ExecutionOrder 10)
+        // 的 Start() 或 HandleSceneTransitionComplete() 已經被執行，
+        // 並且有機會 Push "Dialogue" Map (如果有的話)。
+        StartCoroutine(InitializePlayerMapAfterDelay());
+    }
+
+    /// <summary>
+    /// 延遲一幀後檢查並初始化 Player Map
+    /// </summary>
+    private System.Collections.IEnumerator InitializePlayerMapAfterDelay()
+    {
+        // 等待一幀，讓其他 [DefaultExecutionOrder(10)] 的腳本 (SceneDialogueController) 先執行完畢
+        yield return null;
+
+        if (InputStackManager.Instance == null)
+        {
+            Debug.LogError("[Level1UIController] InputStackManager.Instance 為 null，無法初始化 Player Map！");
+            yield break;
+        }
+
+        // ***** 需求修改: 檢查靜態標記 *****
+        if (SceneDialogueController.IsSceneDialoguePlaying)
+        {
+            // 棧是 [Loading, Dialogue]。我們什麼都不做。
+            // SceneDialogueController 會在對話結束後呼叫 Init(Player)
+            Debug.Log("[Level1UIController] 偵測到場景對話正在播放。Player Map 將在對話結束後初始化。");
+        }
+        else
+        {
+            // 棧是 [Loading]。我們必須手動切換到 Player
+            Debug.Log("[Level1UIController] 未偵測到場景對話。立即初始化 Player Map。");
+            InputStackManager.Instance.Init(InputActionMaps._Player);
+        }
     }
 }

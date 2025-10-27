@@ -1,73 +1,138 @@
-using System;
+ï»¿using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
+using TMPro; // å¼•ç”¨ TextMeshPro
 
 public class ModelPreviewPanelUIController : MonoBehaviour
 {
-    // PlayerControls ¥D­n¨Ó·½©óInputStackManager -> InputProvider -> ModelPreviewPanelUIController
-    [Tooltip("¹wÄıª««~«Ø¼Ò")]
+    // PlayerControls ä¸»è¦ä¾†æºæ–¼InputStackManager -> InputProvider -> ModelPreviewPanelUIController
+    [Tooltip("é è¦½ç‰©å“å»ºæ¨¡é¢æ¿")]
     public GameObject modelPreviewPanel;
+    //[Tooltip("é è¦½ç‰©å“å»ºæ¨¡ç‡ˆå…‰")]
+    //public GameObject modelPreviewLight;
+
+    [Header("æ¨¡å‹é è¦½åŠŸèƒ½")]
+    [Tooltip("ç”¨æ–¼æ§åˆ¶ 3D æ¨¡å‹æ—‹è½‰ã€ç¸®æ”¾çš„è…³æœ¬")]
+    public ItemPreviewController previewController; // *** æ–°å¢å¼•ç”¨ ItemPreviewController ***
+    [Tooltip("é¡¯ç¤ºç‰©å“åç¨±çš„ TextMeshPro çµ„ä»¶")]
+    public TMP_Text itemNameText; // *** æ–°å¢å¼•ç”¨ TMP_Text ç”¨æ–¼é¡¯ç¤ºåç¨± ***
 
     private void OnEnable()
     {
-        if (InputProvider.InputActions == null) return; // ¨¾§b
+        if (InputProvider.InputActions == null) return; // é˜²å‘†
 
-        // --- µù¥UÃö³¬¹wÄıª««~«Ø¼Ò­±ªO ---
+        // --- è¨»å†Šé—œé–‰é è¦½ç‰©å“å»ºæ¨¡é¢æ¿ ---
         InputProvider.InputActions.ModelPreview.CloseModelPreview.performed += OnCloseModelPreview;
 
-        // **¥²­n¡GÀH®É¤Á´«¿é¤J¼Ò¦¡
+        // **å¿…è¦ï¼šéš¨æ™‚åˆ‡æ›è¼¸å…¥æ¨¡å¼
         if (InputDeviceManager.Instance != null)
         {
             InputDeviceManager.Instance.OnInputTypeChanged += HandleInputTypeChange;
 
-            // ¥ß§Y®Ú¾Ú·í«eªº³]³ÆÃş«¬¡Aªì©l¤Æ¤@¦¸­±ªOª¬ºA
+            // ç«‹å³æ ¹æ“šç•¶å‰çš„è¨­å‚™é¡å‹ï¼Œåˆå§‹åŒ–ä¸€æ¬¡é¢æ¿ç‹€æ…‹
             HandleInputTypeChange(InputDeviceManager.Instance.CurrentInputType);
         }
     }
 
     private void OnDisable()
     {
-        if (InputProvider.InputActions == null) return; // ¨¾§b
-        // --- ¨ú®øµù¥U ---
+        if (InputProvider.InputActions == null) return; // é˜²å‘†
+        // --- å–æ¶ˆè¨»å†Š ---
         InputProvider.InputActions.ModelPreview.CloseModelPreview.performed -= OnCloseModelPreview;
 
-        // ** ¥²­n: ¨ú®ø­q¾\³]³ÆÅÜ§ó¨Æ¥ó
+        // ** å¿…è¦: å–æ¶ˆè¨‚é–±è¨­å‚™è®Šæ›´äº‹ä»¶
         if (InputDeviceManager.Instance != null)
         {
             InputDeviceManager.Instance.OnInputTypeChanged -= HandleInputTypeChange;
         }
     }
 
-    public void CloseModelPreviewPanel() // OnCloseModelPreview½Õ¥Î¡A¦]¬°¦³«ö¶s¨Æ¥ó©Ò¥H­«ÂI¼g³o¸Ì
+    /// <summary>
+    /// *** æ–°å¢ï¼šç”± InventoryPanelUIController èª¿ç”¨ï¼Œç”¨æ–¼é¡¯ç¤ºç‰¹å®šç‰©å“çš„æ¨¡å‹å’Œåç¨±ã€‚***
+    /// </summary>
+    public void ShowModelPreview(ItemData item)
     {
-        // 1. *** PopMap ¼g¦b³o¸Ì ***
-        // ±q´Ì¤¤¼u¥X ModelPreview map¡A¦¹®É Inventory map ·|³Q¦Û°Ê­«·s±Ò¥Î
-        InputStackManager.Instance.PopMap(); // PopMap() ²{¦b·|¦Û°Ê³B²z·Æ¹«ª¬ºA
+        if (item == null || item.modelPrefab == null)
+        {
+            Debug.LogWarning("[ModelPreviewPanelUIController] å˜—è©¦é è¦½ç©ºç‰©å“æˆ–ç„¡æ¨¡å‹ç‰©å“ã€‚");
+            return;
+        }
 
-        // 2. °õ¦æÃö³¬ Panel ªºÅŞ¿è
-        EventSystem.current.SetSelectedGameObject(null); //²M°£©Ò¦³UIµJÂIÁ×§K¥X°İÃD
+        // 1. é¡¯ç¤ºç‰©å“åç¨±
+        if (itemNameText != null)
+        {
+            itemNameText.text = item.itemName;
+        }
+
+        // 2. ç”Ÿæˆä¸¦é¡¯ç¤ºæ¨¡å‹ (ItemPreviewController çš„æ ¸å¿ƒå·¥ä½œ)
+        if (previewController != null)
+        {
+            previewController.ResetPreview(item.modelPrefab);
+        }
+        else
+        {
+            Debug.LogError("[ModelPreviewPanelUIController] previewController æœªç¶å®šï¼ç„¡æ³•é¡¯ç¤ºæ¨¡å‹ï¼");
+        }
+
+        // 3. æ¿€æ´»é¢æ¿ã€ç‡ˆå…‰
+        modelPreviewPanel.SetActive(true);
+        //modelPreviewLight.SetActive(true);
+
+  }
+
+    public void CloseModelPreviewPanel() // OnCloseModelPreviewèª¿ç”¨ï¼Œå› ç‚ºæœ‰æŒ‰éˆ•äº‹ä»¶æ‰€ä»¥é‡é»å¯«é€™è£¡
+    {
+        // 1. *** PopMap å¯«åœ¨é€™è£¡ ***
+        // å¾æ£§ä¸­å½ˆå‡º ModelPreview mapï¼Œæ­¤æ™‚ Inventory map æœƒè¢«è‡ªå‹•é‡æ–°å•Ÿç”¨
+        InputStackManager.Instance.PopMap(); // PopMap() ç¾åœ¨æœƒè‡ªå‹•è™•ç†æ»‘é¼ ç‹€æ…‹
+
+        ClearPreview();
+
+        // 2. åŸ·è¡Œé—œé–‰ Panel çš„é‚è¼¯
+        EventSystem.current.SetSelectedGameObject(null); //æ¸…é™¤æ‰€æœ‰UIç„¦é»é¿å…å‡ºå•é¡Œ
 
         modelPreviewPanel.SetActive(false);
-        Debug.Log($"[{this}] ¹wÄıª««~«Ø¼Ò­±ªO¤wÃö³¬¡C");
+        //modelPreviewLight.SetActive(false);
+        Debug.Log($"[{this}] é è¦½ç‰©å“å»ºæ¨¡é¢æ¿å·²é—œé–‰ã€‚");
     }
 
     /// <summary>
-    /// ·í¿é¤J³]³Æ§ïÅÜ®É¡A¦¹¤èªk·|³Q InputDeviceManager ¦Û°Ê©I¥s¡C
+Â  Â  /// æ¸…ç©ºç•¶å‰æ¨¡å‹é è¦½ï¼ˆåˆªé™¤æ‰€æœ‰å¸¶ PreviewModelTag çš„å­ç‰©ä»¶ï¼Œå¾ ItemDetailUI è½‰ç§»éä¾†ï¼‰
+Â  Â  /// </summary>
+Â  Â  public void ClearPreview()
+    {
+        if (previewController?.modelRoot == null) return;
+
+Â  Â  Â  Â  // å‘¼å« ItemPreviewController çš„å…§éƒ¨æ–¹æ³•ä¾†åŸ·è¡Œæ¸…ç†é‚è¼¯
+        previewController.ClearCurrentPreview();
+
+        // ä¹Ÿå¯ä»¥ç›´æ¥è¤‡è£½ ItemDetailUI åŸå§‹é‚è¼¯ï¼š
+        /*
+        foreach (Transform child in previewController.modelRoot)
+Â  Â  Â  Â  {
+Â  Â  Â  Â  Â  Â  if (child.GetComponent<PreviewModelTag>() != null)
+Â  Â  Â  Â  Â  Â  Â  Â  Destroy(child.gameObject);
+Â  Â  Â  Â  }
+        */
+    }
+
+    /// <summary>
+    /// ç•¶è¼¸å…¥è¨­å‚™æ”¹è®Šæ™‚ï¼Œæ­¤æ–¹æ³•æœƒè¢« InputDeviceManager è‡ªå‹•å‘¼å«ã€‚
     /// </summary>
     private void HandleInputTypeChange(InputDeviceManager.InputType newType)
     {
-        if (newType == InputDeviceManager.InputType.Gamepad) // ¤â¬`
+        if (newType == InputDeviceManager.InputType.Gamepad) // æ‰‹æŸ„
         {
-            // ¤Á´«¨ì¤â§â¼Ò¦¡¡G
-            // ³]©wUIµJÂI
+            // åˆ‡æ›åˆ°æ‰‹æŠŠæ¨¡å¼ï¼š
+            // è¨­å®šUIç„¦é»
             SetFocusForCurrentPanel();
         }
-        else // Áä¹«
+        else // éµé¼ 
         {
-            // 1. ²M°£UIµJÂI¡AÅı·Æ¹«¥i¥H¦Û¥ÑÂIÀ»
+            // 1. æ¸…é™¤UIç„¦é»ï¼Œè®“æ»‘é¼ å¯ä»¥è‡ªç”±é»æ“Š
             EventSystem.current.SetSelectedGameObject(null);
         }
     }
@@ -78,19 +143,19 @@ public class ModelPreviewPanelUIController : MonoBehaviour
     }
 
     /// <summary>
-    /// ®Ú¾Ú·í«e¶}±Òªº¹CÀ¸³]©w­±ªO¡A³]©w¤â§âªºUIµJÂI
+    /// æ ¹æ“šç•¶å‰é–‹å•Ÿçš„éŠæˆ²è¨­å®šé¢æ¿ï¼Œè¨­å®šæ‰‹æŠŠçš„UIç„¦é»
     /// </summary>
     private void SetFocusForCurrentPanel()
     {
-        // ½T«O§Ú­Ì²M°£¤F¤§«eªºµJÂI¡A¥H¨¾¸U¤@
+        // ç¢ºä¿æˆ‘å€‘æ¸…é™¤äº†ä¹‹å‰çš„ç„¦é»ï¼Œä»¥é˜²è¬ä¸€
         EventSystem.current.SetSelectedGameObject(null);
 
-        //// ÀË¬d¬O§_¦³³]©w¹w³]«ö¶s¡AÁ×§K³ø¿ù
-        //if (Âê©wªºUI != null)
+        //// æª¢æŸ¥æ˜¯å¦æœ‰è¨­å®šé è¨­æŒ‰éˆ•ï¼Œé¿å…å ±éŒ¯
+        //if (é–å®šçš„UI != null)
         //{
-        //    // ±N EventSystem ªºµJÂI³]©w¨ì±z«ü©wªº¨º­Ó«ö¶s¤W
-        //    EventSystem.current.SetSelectedGameObject(Âê©wªºUI);
-        //    Debug.Log($"¤w±NUIµJÂI³]©w¨ì: {Âê©wªºUI.name}");
+        //    // å°‡ EventSystem çš„ç„¦é»è¨­å®šåˆ°æ‚¨æŒ‡å®šçš„é‚£å€‹æŒ‰éˆ•ä¸Š
+        //    EventSystem.current.SetSelectedGameObject(é–å®šçš„UI);
+        //    Debug.Log($"å·²å°‡UIç„¦é»è¨­å®šåˆ°: {é–å®šçš„UI.name}");
         //}
     }
 }

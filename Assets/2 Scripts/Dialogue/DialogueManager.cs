@@ -4,10 +4,18 @@ using System.Collections;
 using XNode;
 using System.Collections.Generic;
 using System.Linq;
+using System; // ***** 需求修改: 1. 添加 using System; *****
 
 public class DialogueManager : MonoBehaviour
 {
     public static DialogueManager Instance { get; private set; }
+
+    // ***** 需求修改: 2. 在此定義 OnConversationEnd 事件 *****
+    /// <summary>
+    /// 當對話結束時 (在 PopMap() 並完成所有清理之後) 觸發的事件
+    /// </summary>
+    public event Action OnConversationEnd;
+    // ***** 需求修改: 結束 *****
 
     [Header("核心元件")]
     [SerializeField] private DialogueUI dialogueUI;
@@ -635,6 +643,9 @@ public class DialogueManager : MonoBehaviour
             InputProvider.InputActions.Dialogue.ToggleAutoPlay.performed -= OnToggleAutoPlay;
             InputProvider.InputActions.Dialogue.Skip.performed -= OnSkip;
         }
+
+        // ***** 需求修改: 3. 在 PopMap() 和所有清理工作完成後，觸發事件 *****
+        OnConversationEnd?.Invoke();
     }
 
     // Skip 和 AutoPlay 功能需要用新的圖形邏輯重寫，暫時保留或移除

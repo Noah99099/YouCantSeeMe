@@ -6,7 +6,6 @@ using System;
 
 public class SceneLoader : MonoBehaviour
 {
-    //public static SceneLoader Instance;
     public static SceneLoader Instance { get; private set; } 
 
     [Header("轉場物件")]
@@ -21,9 +20,13 @@ public class SceneLoader : MonoBehaviour
     // ***** 自訂的場景加載完成事件 *****
     // ***** 保持這個事件: 用於在螢幕全黑時定位玩家 *****
     public event Action<string> OnSceneLoadComplete;
+    public event Action OnSceneTransitionStart; // <--- 新增事件
 
     // ***** 新增: 用於通知場景「轉場已100%完成」的事件 *****
     public event Action OnSceneTransitionComplete;
+
+    // ***** 新增: 防止重複加載 *****
+    private bool _isLoading = false;
 
     private void Awake()
     {
@@ -34,30 +37,51 @@ public class SceneLoader : MonoBehaviour
 
             if (loadingPanel != null)
                 loadingPanel.SetActive(false);
+
+            // ***** 解決方案 1: 將訂閱移至 Awake (僅在 Singleton 創建時) *****
+            SceneManager.sceneLoaded += OnSceneLoaded;
         }
         else
         {
             Destroy(gameObject);
+            // ***** 解決方案 2: 增加 return *****
+            // 確保這個即將被銷毀的物件不會執行後續的 OnEnable/Start
+            return;
         }
     }
 
     private void OnEnable()
     {
-        SceneManager.sceneLoaded += OnSceneLoaded;
+        // ***** 解決方案 1: 移除這裡的訂閱 *****
+        // SceneManager.sceneLoaded += OnSceneLoaded;
     }
 
     private void OnDisable()
     {
-        SceneManager.sceneLoaded -= OnSceneLoaded;
+        // ***** 解決方案 1: 移除這裡的取消訂閱 *****
+        // SceneManager.sceneLoaded -= OnSceneLoaded;
     }
 
     private void OnDestroy()
     {
-        SceneManager.sceneLoaded -= OnSceneLoaded;
+        // ***** 解決方案 1: 在 OnDestroy 中取消訂閱 *****
+        // 確保 Instance 存在時才移除 (雖然理論上 OnDestroy 時 Instance 應該是 self)
+        if (Instance == this)
+        {
+            SceneManager.sceneLoaded -= OnSceneLoaded;
+        }
     }
 
     public void LoadScene(string sceneName) 
     {
+        // ***** 新增: 檢查是否已在加載中 *****
+        if (_isLoading)
+        {
+            Debug.LogWarning($"[SceneLoader] 正在加載中，忽略重複的 '{sceneName}' 加載請求。");
+            return;
+        }
+        // ***** 結束 *****
+
         if (Instance != null)
         {
             Instance.StartCoroutine(Instance.LoadSceneRoutine(sceneName));
@@ -85,6 +109,10 @@ public class SceneLoader : MonoBehaviour
 
     private IEnumerator LoadSceneRoutine(string sceneName)
     {
+        // ***** 新增: 在協程開始時立即設置旗標 *****
+        _isLoading = true;
+        OnSceneTransitionStart?.Invoke(); // <--- 在協程開始時廣播
+
         // ***** 新增: 轉場開始，鎖定所有遊戲輸入 *****
         if (InputStackManager.Instance != null)
         {
@@ -125,18 +153,25 @@ public class SceneLoader : MonoBehaviour
         yield return StartCoroutine(FadeOut());
         loadingPanel.SetActive(false);
 
-        // ***** 關鍵 *****
-        // 在淡出後，廣播場景加載完成事件 (我們下一步會添加)
-        // 並且重置輸入棧
-        if (InputStackManager.Instance != null)
-        {
-            // Init 會清空舊棧並設置 Player 為基礎，讓新場景的控制器接管
-            InputStackManager.Instance.Init("Player");
-        }
+        // ==因為還是修不好，所以嘗試直接拔掉Init看看==
+        // ***** 新的 (正確的) 順序 *****
+        // 1. 先重置輸入棧
+        //if (InputStackManager.Instance != null)
+        //{
+        //    InputStackManager.Instance.Init("Loading");
+        //}
+        // ====
+        // 好像修好了，反正目前測下來沒有bug
 
-        // 在所有步驟都完成後，廣播「轉場已徹底完成」事件
+        // 2. 再廣播「轉場完成」事件，讓 SDC 和 L1UI 執行
         OnSceneTransitionComplete?.Invoke();
-        Debug.Log($"[SceneLoader] 淡出結束");
+
+        // 3. 最後才印出日誌
+        // (日誌訊息現在有點誤導，因為 SDC 可能已經 PUSH 了 "Dialogue"，但沒關係)
+        Debug.Log($"[SceneLoader] 淡出結束，已廣播 OnSceneTransitionComplete。輸入棧在廣播前已 Init 為 'Loading'。");
+
+        // ***** 新Do: 在協程的最後重置旗標 *****
+        _isLoading = false;
     }
 
     private IEnumerator FadeIn()
@@ -176,26 +211,6 @@ public class SceneLoader : MonoBehaviour
 
     public void RestartGame(string startSceneName)
     {
-        StartCoroutine(RestartGameRoutine(startSceneName));
-    }
-
-    private IEnumerator RestartGameRoutine(string startSceneName)
-    {
-        loadingPanel.SetActive(true);
-        yield return StartCoroutine(FadeIn());
-
-        float timer = 0f;
-        while (timer < minLoadingTime)
-        {
-            timer += Time.deltaTime;
-            yield return null;
-        }
-
-        yield return StartCoroutine(FadeOut());
-        loadingPanel.SetActive(false); //新加
-
-        SceneManager.LoadScene(startSceneName);
-
-        yield return null;
+        LoadScene(startSceneName);
     }
 }

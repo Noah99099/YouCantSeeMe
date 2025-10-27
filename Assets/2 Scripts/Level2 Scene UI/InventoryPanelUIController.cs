@@ -1,66 +1,68 @@
-// ÀÉ®×¦WºÙ: InventoryPanelUIController.cs
+ï»¿// æª”æ¡ˆåç¨±: InventoryPanelUIController.cs
 using System;
-using System.Collections.Generic; // ¤Ş¥Î List
+using System.Collections.Generic; // å¼•ç”¨ List
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
-using UnityEngine.UI; // ¤Ş¥Î UI
-using TMPro; // ¤Ş¥Î TextMeshPro
+using UnityEngine.UI; // å¼•ç”¨ UI
+using TMPro; // å¼•ç”¨ TextMeshPro
 
 public class InventoryPanelUIController : MonoBehaviour
 {
-    // PlayerControls ¥D­n¨Ó·½©óInputStackManager -> InputProvider -> SettingPanelUIController
-    // **¤@«ß©I¥s InventoryPanelUIController.cs ªº ClosePanel() ¨ÓÃö³¬®×¥ó¬ö¿ıÃ¯
-    // **¤Á®×¥ó¬ö¿ıÃ¯ªº¨ä¥L­¶¥Î SwitchInventoryPageButton.cs ªº OnButtonClicked(int index)
+    // PlayerControls ä¸»è¦ä¾†æºæ–¼InputStackManager -> InputProvider -> SettingPanelUIController
+    // **ä¸€å¾‹å‘¼å« InventoryPanelUIController.cs çš„ ClosePanel() ä¾†é—œé–‰æ¡ˆä»¶ç´€éŒ„ç°¿
+    // **åˆ‡æ¡ˆä»¶ç´€éŒ„ç°¿çš„å…¶ä»–é ç”¨ SwitchInventoryPageButton.cs çš„ OnButtonClicked(int index)
 
-    [Header("®×¥ó¬ö¿ıÃ¯-ª««~¡B¹wÄıª««~«Ø¼Ò¡B°­¡BÁn­µ¡B²Õ¦X½u¯Á")]
+    [Header("æ¡ˆä»¶ç´€éŒ„ç°¿-ç‰©å“ã€é è¦½ç‰©å“å»ºæ¨¡ã€é¬¼ã€è²éŸ³ã€çµ„åˆç·šç´¢")]
     public GameObject inventoryPanel;
     public GameObject modelPreviewPanel;
     public GameObject ghostPanel;
     public GameObject voicePanel;
     public GameObject cluePanel;
-    [Header("¥k¤U¨¤ªº´£¥Üµø³¥¹Ï¼Ğ")]
+    [Header("å³ä¸‹è§’çš„æç¤ºè¦–é‡åœ–æ¨™")]
     public GameObject titleUI;
-    [Header("·Ç¤ß")]
+    [Header("æº–å¿ƒ")]
     public GameObject crossHair;
-    [Header("®×¥ó¬ö¿ıÃ¯¤U¤è4­Ó«ö¶s")]
+    [Header("æ¡ˆä»¶ç´€éŒ„ç°¿ä¸‹æ–¹4å€‹æŒ‰éˆ•")]
     public SwitchInventoryPageButton _switchInventoryPage;
+    [Header("é è¦½ç‰©å“è…³æœ¬")] // *** æ–°å¢åˆ†é¡ï¼Œæ–¹ä¾¿ç®¡ç†åŠŸèƒ½è…³æœ¬ ***
+    public ModelPreviewPanelUIController modelPreviewController; // *** æ–°å¢å¼•ç”¨ ***
 
-    [Header("ª««~­±ªO (¥ª°¼)")]
-    [SerializeField] private ScrollRect scrollRect; // ±N±zªº ScrollRect ©ì¦²¨ì¦¹
-    [SerializeField] private Transform slotsContainer; // ±¾¸ü ItemSlot prefab ªº¨º­Ó Content ª«¥ó
+    [Header("ç‰©å“é¢æ¿ (å·¦å´)")]
+    [SerializeField] private ScrollRect scrollRect; // å°‡æ‚¨çš„ ScrollRect æ‹–æ›³åˆ°æ­¤
+    [SerializeField] private Transform slotsContainer; // æ›è¼‰ ItemSlot prefab çš„é‚£å€‹ Content ç‰©ä»¶
 
-    [Header("ª««~­±ªO (¥k°¼)")]
+    [Header("ç‰©å“é¢æ¿ (å³å´)")]
     [SerializeField] private Image itemImage;
     [SerializeField] private TMP_Text itemNameText;
     [SerializeField] private TMP_Text itemDescriptionText;
     [SerializeField] private Button useItemButton;
     [SerializeField] private Button previewItemButton;
 
-    // ----- ª¬ºAºŞ²z -----
-    public bool IsInventoryPanelOpen { get; private set; } // ¥Î¨Ó§PÂ_®×¥ó¬ö¿ıÃ¯-ª««~­±ªO¬O§_¥´¶}
-    private bool isInteractionMode; // °lÂÜ¬O§_¬°¥æ¤¬¼Ò¦¡
-    private List<InventorySlotUI> itemSlots = new List<InventorySlotUI>(); // ½w¦s©Ò¦³®æ¤l¸}¥»
-    private InventorySlotUI currentSelectedSlot; // °lÂÜ·í«e¿ï¤¤ªº®æ¤l
+    // ----- ç‹€æ…‹ç®¡ç† -----
+    public bool IsInventoryPanelOpen { get; private set; } // ç”¨ä¾†åˆ¤æ–·æ¡ˆä»¶ç´€éŒ„ç°¿-ç‰©å“é¢æ¿æ˜¯å¦æ‰“é–‹
+    private bool isInteractionMode; // è¿½è¹¤æ˜¯å¦ç‚ºäº¤äº’æ¨¡å¼
+    private List<InventorySlotUI> itemSlots = new List<InventorySlotUI>(); // ç·©å­˜æ‰€æœ‰æ ¼å­è…³æœ¬
+    private InventorySlotUI currentSelectedSlot; // è¿½è¹¤ç•¶å‰é¸ä¸­çš„æ ¼å­
 
-    // ***** ·s¼W: ¨Ñ¨ä¥L¸}¥»­q¾\ªº¨Æ¥ó *****
+    // ***** æ–°å¢: ä¾›å…¶ä»–è…³æœ¬è¨‚é–±çš„äº‹ä»¶ *****
     public event Action OnPanelOpened;
     public event Action OnPanelClosed;
 
     private void Awake()
     {
-        // 1. ¶EÂ_ slotsContainer
+        // 1. è¨ºæ–· slotsContainer
         if (slotsContainer == null)
         {
-            Debug.LogError($"[InventoryPanelUIController] FATAL ERROR: 'Slots Container' Äæ¦ì¬OªÅªº¡I½Ğ¦b Inspector ¤¤©ì¦² 'Content' ª«¥ó¡I", this.gameObject);
+            Debug.LogError($"[InventoryPanelUIController] FATAL ERROR: 'Slots Container' æ¬„ä½æ˜¯ç©ºçš„ï¼è«‹åœ¨ Inspector ä¸­æ‹–æ›³ 'Content' ç‰©ä»¶ï¼", this.gameObject);
             return;
         }
 
-        Debug.Log($"[InventoryPanelUIController] ¥¿¦b±q '{slotsContainer.name}' ª«¥ó¤¤´M§ä©Ò¦³ InventorySlotUI...", this.gameObject);
+        Debug.Log($"[InventoryPanelUIController] æ­£åœ¨å¾ '{slotsContainer.name}' ç‰©ä»¶ä¸­å°‹æ‰¾æ‰€æœ‰ InventorySlotUI...", this.gameObject);
         slotsContainer.GetComponentsInChildren<InventorySlotUI>(true, itemSlots);
-        Debug.Log($"[InventoryPanelUIController] Á`¦@§ä¨ì¤F {itemSlots.Count} ­Ó®æ¤l¡C");
+        Debug.Log($"[InventoryPanelUIController] ç¸½å…±æ‰¾åˆ°äº† {itemSlots.Count} å€‹æ ¼å­ã€‚");
 
-        // 2. ¶EÂ_§ä¨ìªº®æ¤l
+        // 2. è¨ºæ–·æ‰¾åˆ°çš„æ ¼å­
         if (itemSlots.Count > 0)
         {
             bool allSlotsOk = true;
@@ -68,148 +70,153 @@ public class InventoryPanelUIController : MonoBehaviour
             {
                 if (slot.iconImage == null)
                 {
-                    Debug.LogError($"[InventoryPanelUIController] ¶EÂ_¥¢±Ñ¡G§ä¨ìªº®æ¤l '{slot.gameObject.name}' ªº iconImage Äæ¦ì¬O null¡I³o´N¬O±Y¼ìªº­ì¦]¡C", slot.gameObject);
+                    Debug.LogError($"[InventoryPanelUIController] è¨ºæ–·å¤±æ•—ï¼šæ‰¾åˆ°çš„æ ¼å­ '{slot.gameObject.name}' çš„ iconImage æ¬„ä½æ˜¯ nullï¼é€™å°±æ˜¯å´©æ½°çš„åŸå› ã€‚", slot.gameObject);
                     allSlotsOk = false;
                 }
             }
             if (allSlotsOk)
             {
-                Debug.Log("[InventoryPanelUIController] ¶EÂ_¦¨¥\¡G©Ò¦³ {itemSlots.Count} ­Ó®æ¤lªº iconImage ³£¤w³Q¥¿½T¤Ş¥Î¡C");
+                Debug.Log("[InventoryPanelUIController] è¨ºæ–·æˆåŠŸï¼šæ‰€æœ‰ {itemSlots.Count} å€‹æ ¼å­çš„ iconImage éƒ½å·²è¢«æ­£ç¢ºå¼•ç”¨ã€‚");
             }
         }
         else
         {
-            Debug.LogWarning("[InventoryPanelUIController] Äµ§i¡G¦b 'Slots Container' ©³¤U¨S¦³§ä¨ì¥ô¦ó InventorySlotUI ¸}¥»¡I", this.gameObject);
+            Debug.LogWarning("[InventoryPanelUIController] è­¦å‘Šï¼šåœ¨ 'Slots Container' åº•ä¸‹æ²’æœ‰æ‰¾åˆ°ä»»ä½• InventorySlotUI è…³æœ¬ï¼", this.gameObject);
         }
 
-        // 3. ­q¾\¼Æ¾Ú¼h (InventoryManager) ªºÅÜ¤Æ
+        // 3. è¨‚é–±æ•¸æ“šå±¤ (InventoryManager) çš„è®ŠåŒ–
         if (InventoryManager.Instance != null)
         {
             InventoryManager.Instance.OnInventoryChanged += RefreshInventorySlots;
         }
 
-        // 4. ¸j©w¥k°¼«ö¶sªºÂIÀ»¨Æ¥ó
+        // 4. ç¶å®šå³å´æŒ‰éˆ•çš„é»æ“Šäº‹ä»¶
         if (useItemButton != null) useItemButton.onClick.AddListener(OnUseItemClicked);
         if (previewItemButton != null) previewItemButton.onClick.AddListener(OnPreviewItemClicked);
     }
 
     private void Start()
     {
-        // ¹CÀ¸¶}©l®É¡A¥ı¥Î¹w³]­È¨ê·s¤@¦¸©Ò¦³®æ¤l
+        // éŠæˆ²é–‹å§‹æ™‚ï¼Œå…ˆç”¨é è¨­å€¼åˆ·æ–°ä¸€æ¬¡æ‰€æœ‰æ ¼å­
         RefreshInventorySlots();
     }
 
     private void OnDestroy()
     {
-        // °È¥²¨ú®ø­q¾\
+        // å‹™å¿…å–æ¶ˆè¨‚é–±
         if (InventoryManager.Instance != null)
         {
             InventoryManager.Instance.OnInventoryChanged -= RefreshInventorySlots;
         }
     }
 
-    public void OpenModelPreview() // OnOpenModelPreviewµù¥U¨Æ¥ó½Õ¥Î¡A¦]¬°«ö¶s¨Æ¥ó©Ò¥H­«ÂI¼g³o¸Ì
+    public void OpenModelPreview() // OnOpenModelPreviewè¨»å†Šäº‹ä»¶èª¿ç”¨ï¼Œå› ç‚ºæŒ‰éˆ•äº‹ä»¶æ‰€ä»¥é‡é»å¯«é€™è£¡
     {
-        EventSystem.current.SetSelectedGameObject(null); //²M°£©Ò¦³UIµJÂIÁ×§K¥X°İÃD
+        // *** ç§»é™¤ï¼šmodelPreviewPanel.SetActive(true) å’Œ Debug.Logï¼Œå› ç‚ºå°‡è½‰ç§»åˆ° ModelPreviewPanelUIController çš„ ShowModelPreview ä¸­ ***
+Â  Â  Â  Â  EventSystem.current.SetSelectedGameObject(null); //æ¸…é™¤æ‰€æœ‰UIç„¦é»é¿å…å‡ºå•é¡Œ
 
-        modelPreviewPanel.SetActive(true);
-        Debug.Log($"[{this.name}] ¹wÄıª««~«Ø¼Ò¤w¥´¶}¡C");
+        if (currentSelectedSlot == null || currentSelectedSlot.CurrentItemData?.modelPrefab == null) return;
 
-        // ±N ModelPreview map ±À¤J´Ì¡A¦¹®É Inventory map ·|³Q¦Û°Ê¸T¥Î
+        // 1. å°‡ ModelPreview map æ¨å…¥æ£§
         InputStackManager.Instance.PushMap(InputActionMaps._ModelPreview);
+
+        // 2. *** å‘¼å« ModelPreviewPanelUIController ä¾†åŸ·è¡Œé¡¯ç¤ºå’Œæ¿€æ´»é¢æ¿çš„å·¥ä½œ ***
+        modelPreviewController.ShowModelPreview(currentSelectedSlot.CurrentItemData);
+
+        Debug.Log($"[{this.name}] é è¦½ç‰©å“å»ºæ¨¡å·²æ‰“é–‹ã€‚");
     }
 
-    // ----- ·s¼Wªº®Ö¤ß¤èªk -----
+    // ----- æ–°å¢çš„æ ¸å¿ƒæ–¹æ³• -----
 
     /// <summary>
-    /// ±q¥~³¡©I¥s¦¹¤èªk¨Ó¥´¶}®w¦s­±ªO¡C
+    /// å¾å¤–éƒ¨å‘¼å«æ­¤æ–¹æ³•ä¾†æ‰“é–‹åº«å­˜é¢æ¿ã€‚
     /// </summary>
-    /// <param name="inInteractionMode">¬O§_¬O¦]¥æ¤¬¦Ó¥´¶}ªº</param>
-    public void OpenPanel(bool inInteractionMode = false) // ¥´¶}®×¥ó¬ö¿ıÃ¯¡AÀq»{¬°ª««~­±ªO
+    /// <param name="inInteractionMode">æ˜¯å¦æ˜¯å› äº¤äº’è€Œæ‰“é–‹çš„</param>
+    public void OpenPanel(bool inInteractionMode = false) // æ‰“é–‹æ¡ˆä»¶ç´€éŒ„ç°¿ï¼Œé»˜èªç‚ºç‰©å“é¢æ¿
     {  
-        if (IsInventoryPanelOpen) return; // ¨¾¤î­«½Æ¥´¶}
+        if (IsInventoryPanelOpen) return; // é˜²æ­¢é‡è¤‡æ‰“é–‹
 
-        isInteractionMode = inInteractionMode; // Àx¦s¥´¶}¼Ò¦¡
-        inventoryPanel.SetActive(true); // ¥´¶}®×¥ó¬ö¿ıÃ¯-ª««~
-        titleUI.SetActive(false); // Ãö±¼¥k¤U´£¥Ü
-        crossHair.SetActive(false); // Ãö±¼·Ç¤ß
+        isInteractionMode = inInteractionMode; // å„²å­˜æ‰“é–‹æ¨¡å¼
+        inventoryPanel.SetActive(true); // æ‰“é–‹æ¡ˆä»¶ç´€éŒ„ç°¿-ç‰©å“
+        titleUI.SetActive(false); // é—œæ‰å³ä¸‹æç¤º
+        crossHair.SetActive(false); // é—œæ‰æº–å¿ƒ
 
-        // ***** ·s¼W¡G¦b³o¸Ì¶°¤¤©I¥s PushMap *****
-        // ³o½T«O¤F¥u­n³o­Ó­±ªO³Q¥´¶}¡A¥¦´N¤@©w·|¥¿½T¦a Push Map
+        // ***** æ–°å¢ï¼šåœ¨é€™è£¡é›†ä¸­å‘¼å« PushMap *****
+        // é€™ç¢ºä¿äº†åªè¦é€™å€‹é¢æ¿è¢«æ‰“é–‹ï¼Œå®ƒå°±ä¸€å®šæœƒæ­£ç¢ºåœ° Push Map
         InputStackManager.Instance.PushMap(InputActionMaps._Inventory);
 
-        // §ó·sª¬ºA¨ÃÄ²µo¨Æ¥ó
+        // æ›´æ–°ç‹€æ…‹ä¸¦è§¸ç™¼äº‹ä»¶
         IsInventoryPanelOpen = true;
         OnPanelOpened?.Invoke();
-        Debug.Log("InventoryPanelUIController: OpenPanel() °õ¦æ¡AOnPanelOpened ¨Æ¥ó¤wÄ²µo¡C");
+        Debug.Log("InventoryPanelUIController: OpenPanel() åŸ·è¡Œï¼ŒOnPanelOpened äº‹ä»¶å·²è§¸ç™¼ã€‚");
 
-        // ¨ê·s¤@¦¸©Ò¦³®æ¤lªº¤º®e
+        // åˆ·æ–°ä¸€æ¬¡æ‰€æœ‰æ ¼å­çš„å…§å®¹
         RefreshInventorySlots();
-        // ¥´¶}­±ªO«á¡A¥ß§Y§ó·sUIª¬ºA¡]³]©wµJÂI¡B§ó·s¥k°¼­±ªO¡^
+        // æ‰“é–‹é¢æ¿å¾Œï¼Œç«‹å³æ›´æ–°UIç‹€æ…‹ï¼ˆè¨­å®šç„¦é»ã€æ›´æ–°å³å´é¢æ¿ï¼‰
         UpdatePanelStateOnOpen();
     }
 
     /// <summary>
-    /// ±q¥~³¡©Î¤º³¡©I¥s¦¹¤èªk¨ÓÃö³¬®w¦s­±ªO¡C
+    /// å¾å¤–éƒ¨æˆ–å…§éƒ¨å‘¼å«æ­¤æ–¹æ³•ä¾†é—œé–‰åº«å­˜é¢æ¿ã€‚
     /// </summary>
     public void ClosePanel()
     {       
-        if (!IsInventoryPanelOpen) return; // ¨¾¤î­«½ÆÃö³¬
+        if (!IsInventoryPanelOpen) return; // é˜²æ­¢é‡è¤‡é—œé–‰
 
-        // ¤£¨Ï¥ÎPop Map¡A¦]¬°µLªk±oª¾ª±®a¦b®×¥ó¬ö¿ıÃ¯¤¤¤Á´«¦h¤Ö¦¸¡C¥u¦³ modelPreviewPanel ¥i¥H Pop Map
+        // ä¸ä½¿ç”¨Pop Mapï¼Œå› ç‚ºç„¡æ³•å¾—çŸ¥ç©å®¶åœ¨æ¡ˆä»¶ç´€éŒ„ç°¿ä¸­åˆ‡æ›å¤šå°‘æ¬¡ã€‚åªæœ‰ modelPreviewPanel å¯ä»¥ Pop Map
         InputStackManager.Instance.Init(InputActionMaps._Player); 
-        EventSystem.current.SetSelectedGameObject(null); // ²M°£UIµJÂI
+        EventSystem.current.SetSelectedGameObject(null); // æ¸…é™¤UIç„¦é»
 
-        // Ãö³¬®×¥ó¬ö¿ıÃ¯ªº©Ò¦³­±ªO - ª««~¡B¹wÄıª««~«Ø¼Ò¡B°­¡BÁn­µ¡B²Õ¦X½u¯Á
+        // é—œé–‰æ¡ˆä»¶ç´€éŒ„ç°¿çš„æ‰€æœ‰é¢æ¿ - ç‰©å“ã€é è¦½ç‰©å“å»ºæ¨¡ã€é¬¼ã€è²éŸ³ã€çµ„åˆç·šç´¢
         inventoryPanel.SetActive(false);
         modelPreviewPanel.SetActive(false);
         ghostPanel.SetActive(false);
         voicePanel.SetActive(false);
         cluePanel.SetActive(false);
-        titleUI.SetActive(true); // ¥k¤U´£¥Ü¥´¶}
-        crossHair.SetActive(true); // ¥´¶}·Ç¤ß
+        titleUI.SetActive(true); // å³ä¸‹æç¤ºæ‰“é–‹
+        crossHair.SetActive(true); // æ‰“é–‹æº–å¿ƒ
 
-        // 4. §ó·sª¬ºA¨ÃÄ²µo¨Æ¥ó (ª`·N¡G³o·|¦b OnDisable ¤§«áµo¥Í¡A¦ıÅŞ¿è¤W§ó²M´·)
+        // 4. æ›´æ–°ç‹€æ…‹ä¸¦è§¸ç™¼äº‹ä»¶ (æ³¨æ„ï¼šé€™æœƒåœ¨ OnDisable ä¹‹å¾Œç™¼ç”Ÿï¼Œä½†é‚è¼¯ä¸Šæ›´æ¸…æ™°)
         IsInventoryPanelOpen = false;
-        isInteractionMode = false; // Ãö³¬®É­«¸m¼Ò¦¡
+        isInteractionMode = false; // é—œé–‰æ™‚é‡ç½®æ¨¡å¼
         OnPanelClosed?.Invoke();
-        Debug.Log("InventoryPanelUIController: ClosePanel() °õ¦æ¡AOnPanelClosed ¨Æ¥ó¤wÄ²µo¡C");
+        Debug.Log("InventoryPanelUIController: ClosePanel() åŸ·è¡Œï¼ŒOnPanelClosed äº‹ä»¶å·²è§¸ç™¼ã€‚");
     }
 
     private void OnEnable()
     {
-        if (InputProvider.InputActions == null) return; // ¨¾§b
+        if (InputProvider.InputActions == null) return; // é˜²å‘†
 
-        // --- µù¥UÃö³¬®×¥ó¬ö¿ıÃ¯ ---
+        // --- è¨»å†Šé—œé–‰æ¡ˆä»¶ç´€éŒ„ç°¿ ---
         InputProvider.InputActions.Inventory.CloseInventory.performed += OnCloseInventory;
-        // --- µù¥U¥´¶}¹wÄıª««~­±ªO ---
+        // --- è¨»å†Šæ‰“é–‹é è¦½ç‰©å“é¢æ¿ ---
         InputProvider.InputActions.Inventory.OpenModelPreview.performed += OnOpenModelPreview;
-        // --- µù¥U¥´¶}°­­±ªO¡AÃöª««~­±ªO ---
+        // --- è¨»å†Šæ‰“é–‹é¬¼é¢æ¿ï¼Œé—œç‰©å“é¢æ¿ ---
         InputProvider.InputActions.Inventory.ToGhostPanel.performed += OnToGhostPanel;
-        // --- µù¥U¥´¶}²Õ¦X½u¯Á­±ªO¡AÃöª««~­±ªO ---
+        // --- è¨»å†Šæ‰“é–‹çµ„åˆç·šç´¢é¢æ¿ï¼Œé—œç‰©å“é¢æ¿ ---
         InputProvider.InputActions.Inventory.ToCluePanel.performed += OnToCluePanel;
 
-        // **¥²­n¡GÀH®É¤Á´«¿é¤J¼Ò¦¡
+        // **å¿…è¦ï¼šéš¨æ™‚åˆ‡æ›è¼¸å…¥æ¨¡å¼
         if (InputDeviceManager.Instance != null)
         {
             InputDeviceManager.Instance.OnInputTypeChanged += HandleInputTypeChange;
-            // ª`·N¡G³o¸Ì¤£¦A»İ­n¥ß§Y©I¥s HandleInputTypeChange¡A
-            // ¦]¬° OpenPanel() ¤¤ªº UpdatePanelStateOnOpen() ·|³B²z
-            // ¥ß§Y®Ú¾Ú·í«eªº³]³ÆÃş«¬¡Aªì©l¤Æ¤@¦¸­±ªOª¬ºA
+            // æ³¨æ„ï¼šé€™è£¡ä¸å†éœ€è¦ç«‹å³å‘¼å« HandleInputTypeChangeï¼Œ
+            // å› ç‚º OpenPanel() ä¸­çš„ UpdatePanelStateOnOpen() æœƒè™•ç†
+            // ç«‹å³æ ¹æ“šç•¶å‰çš„è¨­å‚™é¡å‹ï¼Œåˆå§‹åŒ–ä¸€æ¬¡é¢æ¿ç‹€æ…‹
             //HandleInputTypeChange(InputDeviceManager.Instance.CurrentInputType);
         }
     }
 
     private void OnDisable()
     {
-        if (InputProvider.InputActions == null) return; // ¨¾§b
-        // --- ¨ú®øµù¥U ---
+        if (InputProvider.InputActions == null) return; // é˜²å‘†
+        // --- å–æ¶ˆè¨»å†Š ---
         InputProvider.InputActions.Inventory.CloseInventory.performed -= OnCloseInventory;
         InputProvider.InputActions.Inventory.OpenModelPreview.performed -= OnOpenModelPreview;
         InputProvider.InputActions.Inventory.ToGhostPanel.performed -= OnToGhostPanel;
         InputProvider.InputActions.Inventory.ToCluePanel.performed -= OnToCluePanel;
 
-        // ***** ·s¼W: ¨ú®ø­q¾\³]³ÆÅÜ§ó¨Æ¥ó *****
+        // ***** æ–°å¢: å–æ¶ˆè¨‚é–±è¨­å‚™è®Šæ›´äº‹ä»¶ *****
         if (InputDeviceManager.Instance != null)
         {
             InputDeviceManager.Instance.OnInputTypeChanged -= HandleInputTypeChange;
@@ -217,42 +224,42 @@ public class InventoryPanelUIController : MonoBehaviour
     }
 
     /// <summary>
-    /// ·í¿é¤J³]³Æ§ïÅÜ®É¡A¦¹¤èªk·|³Q InputDeviceManager ¦Û°Ê©I¥s¡C
+    /// ç•¶è¼¸å…¥è¨­å‚™æ”¹è®Šæ™‚ï¼Œæ­¤æ–¹æ³•æœƒè¢« InputDeviceManager è‡ªå‹•å‘¼å«ã€‚
     /// </summary>
     private void HandleInputTypeChange(InputDeviceManager.InputType newType)
     {
-        if (newType == InputDeviceManager.InputType.Gamepad) // ¤â¬`
+        if (newType == InputDeviceManager.InputType.Gamepad) // æ‰‹æŸ„
         {
-            // 1. ÁôÂÃ¨ÃÂê©w·Æ¹«¡A¨¾¤î¥¦¤zÂZ EventSystem
+            // 1. éš±è—ä¸¦é–å®šæ»‘é¼ ï¼Œé˜²æ­¢å®ƒå¹²æ“¾ EventSystem
             Cursor.visible = false;
             Cursor.lockState = CursorLockMode.Locked;
 
-            // 2. ³]©wUIµJÂI
-            // ÀË¬d currentSelectedSlot ¬O§_¬° null¡]¨Ò¦p­è±qÁä¹«¤Á´«¹L¨Ó¡^¡A´N¿ï¤¤²Ä¤@­Ó¡C
+            // 2. è¨­å®šUIç„¦é»
+            // æª¢æŸ¥ currentSelectedSlot æ˜¯å¦ç‚º nullï¼ˆä¾‹å¦‚å‰›å¾éµé¼ åˆ‡æ›éä¾†ï¼‰ï¼Œå°±é¸ä¸­ç¬¬ä¸€å€‹ã€‚
             if (currentSelectedSlot == null && itemSlots.Count > 0)
             {
                 EventSystem.current.SetSelectedGameObject(itemSlots[0].gameObject);
             }
             else if (currentSelectedSlot != null)
             {
-                // §_«h¡A­«·s¿ï¤¤·í«eªº®æ¤l¡]½T«OµJÂI¤£·|¥á¥¢¡^
+                // å¦å‰‡ï¼Œé‡æ–°é¸ä¸­ç•¶å‰çš„æ ¼å­ï¼ˆç¢ºä¿ç„¦é»ä¸æœƒä¸Ÿå¤±ï¼‰
                 EventSystem.current.SetSelectedGameObject(currentSelectedSlot.gameObject);
             }
         }
-        else // Áä¹«
+        else // éµé¼ 
         {
-            // 1. Åã¥Ü¨Ã¸ÑÂê·Æ¹«
+            // 1. é¡¯ç¤ºä¸¦è§£é–æ»‘é¼ 
             Cursor.visible = true;
             Cursor.lockState = CursorLockMode.None;
 
-            // 2. ²M°£¤â§âªºUIµJÂI¡AÅı·Æ¹«¥i¥H¦Û¥ÑÂIÀ»
+            // 2. æ¸…é™¤æ‰‹æŠŠçš„UIç„¦é»ï¼Œè®“æ»‘é¼ å¯ä»¥è‡ªç”±é»æ“Š
             EventSystem.current.SetSelectedGameObject(null);
         }
     }
 
-    #region ----- ®Ö¤ß UI ÅŞ¿è -----
+    #region ----- æ ¸å¿ƒ UI é‚è¼¯ -----
     /// <summary>
-    /// ·í­I¥]¼Æ¾Ú§ïÅÜ®É (OnInventoryChanged)¡A¨ê·s©Ò¦³®æ¤l
+    /// ç•¶èƒŒåŒ…æ•¸æ“šæ”¹è®Šæ™‚ (OnInventoryChanged)ï¼Œåˆ·æ–°æ‰€æœ‰æ ¼å­
     /// </summary>
     private void RefreshInventorySlots()
     {
@@ -265,33 +272,33 @@ public class InventoryPanelUIController : MonoBehaviour
         {
             if (i < currentItems.Count)
             {
-                // ¦Cªí
+                // åˆ—è¡¨
                 itemSlots[i].Setup(currentItems[i], defaultItem, HandleSlotSelected);
             }
             else
             {
-                // ¶W¥X¦Cªí½d³òªº®æ¤l¡A¨Ï¥Î defaultItem ¶ñ¥R
+                // è¶…å‡ºåˆ—è¡¨ç¯„åœçš„æ ¼å­ï¼Œä½¿ç”¨ defaultItem å¡«å……
                 itemSlots[i].Setup(null, defaultItem, HandleSlotSelected);
             }
         }
     }
 
     /// <summary>
-    /// ³o¬O©Ò¦³®æ¤l (InventorySlotUI) ªº¤¤¥¡¦^½Õ
+    /// é€™æ˜¯æ‰€æœ‰æ ¼å­ (InventorySlotUI) çš„ä¸­å¤®å›èª¿
     /// </summary>
     private void HandleSlotSelected(InventorySlotUI slot)
     {
         currentSelectedSlot = slot;
-        UpdateRightPanel(slot.CurrentItemData); // §ó·s¥k°¼­±ªO
+        UpdateRightPanel(slot.CurrentItemData); // æ›´æ–°å³å´é¢æ¿
 
-        // 2. ¦pªG¬O¤â§â¼Ò¦¡¡A¦Û°Êºu°Ê
+        // 2. å¦‚æœæ˜¯æ‰‹æŠŠæ¨¡å¼ï¼Œè‡ªå‹•æ»¾å‹•
         if (InputDeviceManager.Instance != null &&
             InputDeviceManager.Instance.CurrentInputType == InputDeviceManager.InputType.Gamepad)
         {
-            // ***** ­×§ï: ©I¥s·sªººu°Ê¤èªk *****
-            // §ä¨ì·í«e¿ï¤¤®æ¤lªº¯Á¤Ş
+            // ***** ä¿®æ”¹: å‘¼å«æ–°çš„æ»¾å‹•æ–¹æ³• *****
+            // æ‰¾åˆ°ç•¶å‰é¸ä¸­æ ¼å­çš„ç´¢å¼•
             int index = itemSlots.IndexOf(slot);
-            if (index != -1) // ½T«O§ä¨ì¤F¯Á¤Ş
+            if (index != -1) // ç¢ºä¿æ‰¾åˆ°äº†ç´¢å¼•
             {
                 ScrollToIndex(index);
             }
@@ -299,106 +306,106 @@ public class InventoryPanelUIController : MonoBehaviour
     }
 
     /// <summary>
-    /// ®Ú¾Ú¿ï¤¤ªºª««~¡A§ó·s¥k°¼ UI
+    /// æ ¹æ“šé¸ä¸­çš„ç‰©å“ï¼Œæ›´æ–°å³å´ UI
     /// </summary>
     private void UpdateRightPanel(ItemData data)
     {
-        // ÀË¬d data ¬O§_¬° null ©Î defaultItem
+        // æª¢æŸ¥ data æ˜¯å¦ç‚º null æˆ– defaultItem
         bool isDefault = (data == null || data == InventoryManager.Instance.defaultItem);
 
         if (isDefault)
         {
-            // Åã¥Ü¹w³]¸ê°T
+            // é¡¯ç¤ºé è¨­è³‡è¨Š
             itemImage.enabled = false;
             itemNameText.text = InventoryManager.Instance.defaultItem ? InventoryManager.Instance.defaultItem.itemName : "---";
-            itemDescriptionText.text = InventoryManager.Instance.defaultItem ? InventoryManager.Instance.defaultItem.description : "ªÅ®æ¤l¡C";
+            itemDescriptionText.text = InventoryManager.Instance.defaultItem ? InventoryManager.Instance.defaultItem.description : "ç©ºæ ¼å­ã€‚";
 
             useItemButton.gameObject.SetActive(false);
             previewItemButton.gameObject.SetActive(false);
         }
         else
         {
-            // Åã¥Ü¯u¹êª««~¸ê°T
+            // é¡¯ç¤ºçœŸå¯¦ç‰©å“è³‡è¨Š
             itemImage.sprite = data.itemImage;
             itemImage.enabled = (data.itemImage != null);
             itemNameText.text = data.itemName;
             itemDescriptionText.text = data.description;
 
-            // ®Ú¾Ú±zªº»İ¨D³]©w«ö¶s¥i¨£©Ê
-            useItemButton.gameObject.SetActive(isInteractionMode); // ¶È¦b¥æ¤¬¼Ò¦¡¤UÅã¥Ü
+            // æ ¹æ“šæ‚¨çš„éœ€æ±‚è¨­å®šæŒ‰éˆ•å¯è¦‹æ€§
+            useItemButton.gameObject.SetActive(isInteractionMode); // åƒ…åœ¨äº¤äº’æ¨¡å¼ä¸‹é¡¯ç¤º
 
             bool hasModel = (data.modelPrefab != null);
-            previewItemButton.gameObject.SetActive(hasModel); // ¶È¦b¦³¼Ò«¬®ÉÅã¥Ü
+            previewItemButton.gameObject.SetActive(hasModel); // åƒ…åœ¨æœ‰æ¨¡å‹æ™‚é¡¯ç¤º
         }
     }
 
     /// <summary>
-    /// ¥´¶}­±ªO®É¡A³]©wªì©lµJÂI
+    /// æ‰“é–‹é¢æ¿æ™‚ï¼Œè¨­å®šåˆå§‹ç„¦é»
     /// </summary>
     private void UpdatePanelStateOnOpen()
     {
-        // ***** ·s¼W: ªì©l¤Æ Scrollbar ¦ì¸m *****
+        // ***** æ–°å¢: åˆå§‹åŒ– Scrollbar ä½ç½® *****
         if (scrollRect != null)
         {
-            scrollRect.verticalNormalizedPosition = 1f; // 1f = ³Ì³»³¡
+            scrollRect.verticalNormalizedPosition = 1f; // 1f = æœ€é ‚éƒ¨
         }
 
-        // ¹w³]¿ï¤¤²Ä¤@­Ó®æ¤l
+        // é è¨­é¸ä¸­ç¬¬ä¸€å€‹æ ¼å­
         InventorySlotUI firstSlot = (itemSlots.Count > 0) ? itemSlots[0] : null;
         if (firstSlot == null) return;
 
         if (InputDeviceManager.Instance.CurrentInputType == InputDeviceManager.InputType.Gamepad)
         {
-            // ¤â§â¡GÁôÂÃ·Æ¹«¡A¨Ã¦Û°Ê¿ï¤¤²Ä¤@­Ó®æ¤l
+            // æ‰‹æŠŠï¼šéš±è—æ»‘é¼ ï¼Œä¸¦è‡ªå‹•é¸ä¸­ç¬¬ä¸€å€‹æ ¼å­
             Cursor.visible = false;
             Cursor.lockState = CursorLockMode.Locked;
             EventSystem.current.SetSelectedGameObject(firstSlot.gameObject);
 
-            // ¤â§â¼Ò¦¡¤]»İ­n¥ß§YÅã¥Ü²Ä¤@®æªº¤º®e
+            // æ‰‹æŠŠæ¨¡å¼ä¹Ÿéœ€è¦ç«‹å³é¡¯ç¤ºç¬¬ä¸€æ ¼çš„å…§å®¹
             HandleSlotSelected(firstSlot);
         }
         else
         {
-            // Áä¹«¡GÅã¥Ü·Æ¹«¡A²M°£¿ï¤¤¡A¨Ã¤â°Ê§ó·s¥k°¼­±ªO¥HÅã¥Ü²Ä¤@­Ó®æ¤lªº¤º®e
+            // éµé¼ ï¼šé¡¯ç¤ºæ»‘é¼ ï¼Œæ¸…é™¤é¸ä¸­ï¼Œä¸¦æ‰‹å‹•æ›´æ–°å³å´é¢æ¿ä»¥é¡¯ç¤ºç¬¬ä¸€å€‹æ ¼å­çš„å…§å®¹
             Cursor.visible = true;
             Cursor.lockState = CursorLockMode.None;
             EventSystem.current.SetSelectedGameObject(null);
 
-            // ³o·|º¡¨¬±zªº»İ¨D¡G¡uÀq»{Åã¥Ü²Ä¤@®æ¤º®eµL½×¦³µLÂIÀ»¡v
+            // é€™æœƒæ»¿è¶³æ‚¨çš„éœ€æ±‚ï¼šã€Œé»˜èªé¡¯ç¤ºç¬¬ä¸€æ ¼å…§å®¹ç„¡è«–æœ‰ç„¡é»æ“Šã€
             HandleSlotSelected(firstSlot);
         }
     }
 
     #endregion
 
-    #region ----- ¦Û°Êºu°Ê (¤â§â¾É¯è) -----
-    // ***** ·s¼W: ¨Ï¥Î¯Á¤Ş©M°Ï¶¡¨Óºu°Ê *****
+    #region ----- è‡ªå‹•æ»¾å‹• (æ‰‹æŠŠå°èˆª) -----
+    // ***** æ–°å¢: ä½¿ç”¨ç´¢å¼•å’Œå€é–“ä¾†æ»¾å‹• *****
     /// <summary>
-    /// ®Ú¾Ú¿ï¤¤®æ¤lªº¯Á¤Ş¡A±N Scrollbar ºu°Ê¨ì¹w³]¦ì¸m¡C
+    /// æ ¹æ“šé¸ä¸­æ ¼å­çš„ç´¢å¼•ï¼Œå°‡ Scrollbar æ»¾å‹•åˆ°é è¨­ä½ç½®ã€‚
     /// </summary>
-    /// <param name="index">¿ï¤¤®æ¤lªº¯Á¤Ş (0-39)</param>
+    /// <param name="index">é¸ä¸­æ ¼å­çš„ç´¢å¼• (0-39)</param>
     private void ScrollToIndex(int index)
     {
         if (scrollRect == null || itemSlots.Count == 0) return;
 
         float targetValue;
 
-        // ®Ú¾Ú±z©w¸qªº°Ï¶¡³]©w value
-        if (index >= 0 && index <= 15) // ²Ä 1-16 ®æ («e 4 ¦æ)
+        // æ ¹æ“šæ‚¨å®šç¾©çš„å€é–“è¨­å®š value
+        if (index >= 0 && index <= 15) // ç¬¬ 1-16 æ ¼ (å‰ 4 è¡Œ)
         {
-            targetValue = 1f; // «O«ù¦b³»³¡
+            targetValue = 1f; // ä¿æŒåœ¨é ‚éƒ¨
         }
-        else if (index >= 16 && index <= 31) // ²Ä 17-32 ®æ (¤¤¶¡ 4 ¦æ)
+        else if (index >= 16 && index <= 31) // ç¬¬ 17-32 æ ¼ (ä¸­é–“ 4 è¡Œ)
         {
-            targetValue = 0.34f; // ºu°Ê¨ì¤¤¶¡ (®Ú¾Ú±zªº­È)
+            targetValue = 0.34f; // æ»¾å‹•åˆ°ä¸­é–“ (æ ¹æ“šæ‚¨çš„å€¼)
         }
-        else // ²Ä 33-40 ®æ («á 2 ¦æ)
+        else // ç¬¬ 33-40 æ ¼ (å¾Œ 2 è¡Œ)
         {
-            targetValue = 0f; // ºu°Ê¨ì©³³¡
+            targetValue = 0f; // æ»¾å‹•åˆ°åº•éƒ¨
         }
 
-        // ³]¸m Scrollbar ªº««ª½¦ì¸m
-        // ¨Ï¥Î Mathf.Approximately Á×§K¦]¯BÂI¼Æºë«×°İÃD¾É­P¤£¥²­nªººu°Ê
+        // è¨­ç½® Scrollbar çš„å‚ç›´ä½ç½®
+        // ä½¿ç”¨ Mathf.Approximately é¿å…å› æµ®é»æ•¸ç²¾åº¦å•é¡Œå°è‡´ä¸å¿…è¦çš„æ»¾å‹•
         if (!Mathf.Approximately(scrollRect.verticalNormalizedPosition, targetValue))
         {
             scrollRect.verticalNormalizedPosition = targetValue;
@@ -406,45 +413,49 @@ public class InventoryPanelUIController : MonoBehaviour
     }
     #endregion
 
-    #region --- ©Ò¦³ Inventory map µù¥U¤èªk ---
-    private void OnCloseInventory(InputAction.CallbackContext context) //Ãö
+    #region --- æ‰€æœ‰ Inventory map è¨»å†Šæ–¹æ³• ---
+    private void OnCloseInventory(InputAction.CallbackContext context) //é—œ
     {
         ClosePanel();
     }
 
     private void OnOpenModelPreview(InputAction.CallbackContext context)
     {
-        OpenModelPreview();
+        // *** å¢åŠ æª¢æŸ¥æ˜¯å¦æœ‰é¸ä¸­ç‰©å“ï¼Œä¸”è©²ç‰©å“æ˜¯å¦æœ‰æ¨¡å‹ï¼Œå¦å‰‡ä¸æ‰“é–‹ ***
+Â  Â  Â  Â  if (currentSelectedSlot != null && currentSelectedSlot.CurrentItemData?.modelPrefab != null)
+        {
+            OpenModelPreview();
+        }
     }
 
-    private void OnToGhostPanel(InputAction.CallbackContext context) //ª½±µ½Õ¥Î SwitchInventoryPageButton.cs ªº¤èªk¡C¥k
+    private void OnToGhostPanel(InputAction.CallbackContext context) //ç›´æ¥èª¿ç”¨ SwitchInventoryPageButton.cs çš„æ–¹æ³•ã€‚å³
     {
-        EventSystem.current.SetSelectedGameObject(null); // ²M°£UIµJÂI
+        EventSystem.current.SetSelectedGameObject(null); // æ¸…é™¤UIç„¦é»
 
-        _switchInventoryPage.OnButtonClicked(1); // ª««~¨ì°­
+        _switchInventoryPage.OnButtonClicked(1); // ç‰©å“åˆ°é¬¼
 
-        // ±N GhostPanel map ±À¤J´Ì¡A¦¹®É«e¤@­Ó map ·|³Q¦Û°Ê¸T¥Î
+        // å°‡ GhostPanel map æ¨å…¥æ£§ï¼Œæ­¤æ™‚å‰ä¸€å€‹ map æœƒè¢«è‡ªå‹•ç¦ç”¨
         InputStackManager.Instance.PushMap(InputActionMaps._GhostPanel);
     }
-    private void OnToCluePanel(InputAction.CallbackContext context) //ª½±µ½Õ¥Î SwitchInventoryPageButton.cs ªº¤èªk¡C¥ª
+    private void OnToCluePanel(InputAction.CallbackContext context) //ç›´æ¥èª¿ç”¨ SwitchInventoryPageButton.cs çš„æ–¹æ³•ã€‚å·¦
     {
-        _switchInventoryPage.OnButtonClicked(3); // ª««~¨ì²Õ¦X½u¯Á
+        _switchInventoryPage.OnButtonClicked(3); // ç‰©å“åˆ°çµ„åˆç·šç´¢
 
-        // ±N CluePanel map ±À¤J´Ì¡A¦¹®É Inventory map ·|³Q¦Û°Ê¸T¥Î
+        // å°‡ CluePanel map æ¨å…¥æ£§ï¼Œæ­¤æ™‚ Inventory map æœƒè¢«è‡ªå‹•ç¦ç”¨
         InputStackManager.Instance.PushMap(InputActionMaps._CluePanel);
     }
     #endregion
 
-    // ----- «ö¶s»P¤£¬Omapªº¿é¤J¨Æ¥ó -----
+    // ----- æŒ‰éˆ•èˆ‡ä¸æ˜¯mapçš„è¼¸å…¥äº‹ä»¶ -----
 
     private void OnUseItemClicked()
     {
         if (currentSelectedSlot != null && currentSelectedSlot.CurrentItemData != InventoryManager.Instance.defaultItem)
         {
-            Debug.Log($"¨Ï¥Îª««~: {currentSelectedSlot.CurrentItemData.itemName}");
-            // ©I¥s PlayerInteraction ªº¨Ï¥Îª««~¤èªk
+            Debug.Log($"ä½¿ç”¨ç‰©å“: {currentSelectedSlot.CurrentItemData.itemName}");
+            // å‘¼å« PlayerInteraction çš„ä½¿ç”¨ç‰©å“æ–¹æ³•
             PlayerInteraction.Instance?.OnItemUsed(currentSelectedSlot.CurrentItemData);
-            // PlayerInteraction ªº OnItemUsed À³¸Ó·|­t³dÃö³¬­±ªO
+            // PlayerInteraction çš„ OnItemUsed æ‡‰è©²æœƒè² è²¬é—œé–‰é¢æ¿
         }
     }
 
@@ -452,7 +463,7 @@ public class InventoryPanelUIController : MonoBehaviour
     {
         if (currentSelectedSlot != null && currentSelectedSlot.CurrentItemData.modelPrefab != null)
         {
-            // ±zªº­ì¦³ÅŞ¿è
+            // æ‚¨çš„åŸæœ‰é‚è¼¯
             OpenModelPreview();
         }
     }

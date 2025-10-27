@@ -52,6 +52,19 @@ public class ItemPreviewController : MonoBehaviour
 
     public void ResetPreview(GameObject newModel)
     {
+        // 1. 清除 modelRoot 裡所有加了 PreviewModelTag 的模型
+        ClearCurrentPreview(); // *** 改為呼叫新方法 ***
+
+        StartCoroutine(DelayedInstantiate(newModel));
+    }
+
+    /// <summary>
+    /// *** 新增：清除 modelRoot 裡所有加了 PreviewModelTag 的模型。 ***
+    /// </summary>
+    public void ClearCurrentPreview()
+    {
+        if (modelRoot == null) return;
+
         // 清除 modelRoot 裡所有加了 PreviewModelTag 的模型
         foreach (Transform child in modelRoot)
         {
@@ -60,8 +73,6 @@ public class ItemPreviewController : MonoBehaviour
                 Destroy(child.gameObject);
             }
         }
-
-        StartCoroutine(DelayedInstantiate(newModel));
     }
 
     private IEnumerator DelayedInstantiate(GameObject newModel)
