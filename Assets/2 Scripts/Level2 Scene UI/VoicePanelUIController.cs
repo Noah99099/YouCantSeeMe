@@ -1,18 +1,29 @@
+// VoicePanelUIController.cs
 using System;
-using System.Collections;
-using System.Collections.Generic;
+using System.Collections.Generic; // 引用 List
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
+using UnityEngine.UI; // 引用 UI
+using TMPro; // 引用 TextMeshPro
 
 public class VoicePanelUIController : MonoBehaviour
 {
     // PlayerControls 主要來源於InputStackManager -> InputProvider -> VoicePanelUIController
     // **一律呼叫 InventoryPanelUIController.cs 的 ClosePanel() 來關閉案件紀錄簿
     // **切案件紀錄簿的其他頁用 SwitchInventoryPageButton.cs 的 OnButtonClicked(int index)
-
+    [Header("引用腳本")]
     public InventoryPanelUIController _inventoryPanelUI;
     public SwitchInventoryPageButton _switchInventoryPage; // 案件紀錄簿下方4個按鈕
+
+    [Header("聲音面板 (左側)")]
+    [SerializeField] private ScrollRect scrollRect; // 將您的 ScrollRect 拖曳到此
+    [SerializeField] private Transform slotsContainer; // 掛載 VoiceSlot prefab 的那個 Content 物件
+
+    [Header("聲音面板 (右側)")]
+    [SerializeField] private TMP_Text itemNameText; // 標題
+    [SerializeField] private TMP_Text itemDescText; // 使用前後的文本組件是同一個
+    [SerializeField] private Button useItemButton; // 使用聲音物品
 
     private void OnEnable()
     {

@@ -60,6 +60,7 @@ public class InventoryManager : MonoBehaviour
 
     /// <summary>
     /// 檢查背包中是否含有指定名稱的物品
+    /// 看起來應該是給 使用物品時 用
     /// </summary>
     /// <param name="itemNameToCheck">要檢查的物品名稱</param>
     /// <returns>如果找到返回 true，否則返回 false</returns>

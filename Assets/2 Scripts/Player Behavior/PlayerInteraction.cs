@@ -90,6 +90,23 @@ public class PlayerInteraction : MonoBehaviour
                 }
                 return;
             }
+            else if (currentInteractableObject.TryGetComponent<InteractableVoiceItem>(out var voice)) // 檢查是否是 InteractableVoiceItem（需聲音物品的交互物件）
+            {
+                if (pickupPromptText != null)
+                {
+                    // 如果是手把模式，更換UI文本提示
+                    if (InputDeviceManager.Instance.CurrentInputType == InputDeviceManager.InputType.Gamepad)
+                    {
+                        pickupPromptText.text = $"按 [叉] 與 {voice.voiceItemData.itemName} 交互";
+                    }
+                    else //鍵鼠
+                    {
+                        pickupPromptText.text = $"按 [滑鼠左鍵] 與 {voice.voiceItemData.itemName} 交互";
+                    }
+                    pickupPromptText.gameObject.SetActive(true);
+                }
+                return;
+            }
             else if (currentInteractableObject.TryGetComponent<PasswordButton>(out var button)) // 檢查是否是 PasswordButton（密碼鎖）
             {
                 if (pickupPromptText != null)
@@ -120,24 +137,6 @@ public class PlayerInteraction : MonoBehaviour
                     else //鍵鼠
                     {
                         pickupPromptText.text = $"按 [滑鼠左鍵] 與 {interactable.objectName} 交互";
-                    }
-                    pickupPromptText.gameObject.SetActive(true);
-                }
-                return;
-            }
-            else if (currentInteractableObject.TryGetComponent<InteractableVoice>(out var voice)) // 檢查是否是 InteractableVoice（需聲音物品的交互物件）
-            {
-                //currentInteractable = interactable;
-                if (pickupPromptText != null)
-                {
-                    // 如果是手把模式，更換UI文本提示
-                    if (InputDeviceManager.Instance.CurrentInputType == InputDeviceManager.InputType.Gamepad)
-                    {
-                        pickupPromptText.text = $"按 [叉] 與 {voice.objectName} 交互";
-                    }
-                    else //鍵鼠
-                    {
-                        pickupPromptText.text = $"按 [滑鼠左鍵] 與 {voice.objectName} 交互";
                     }
                     pickupPromptText.gameObject.SetActive(true);
                 }
@@ -221,10 +220,11 @@ public class PlayerInteraction : MonoBehaviour
                 Destroy(hitObject);
                 HidePrompt();
             }
-            else if (hitObject.TryGetComponent<InteractableVoice>(out var voiceItem)) //獲得物件，進聲音背包
+            else if (hitObject.TryGetComponent<InteractableVoiceItem>(out var voiceItem)) //獲得物件，進聲音面板
             {
-                Debug.Log($"Pressed button: {voiceItem.objectName}");
-                voiceItem.Interact();
+                Debug.Log($"Pressed button: {voiceItem.voiceItemData.itemName}");
+                VoiceItemManager.Instance.AddItem(voiceItem.voiceItemData);
+                Destroy(hitObject);
                 HidePrompt();
             }
             else if (hitObject.TryGetComponent<InteractableRole>(out var roleUnlock)) //獲得個別Role的Carousel
