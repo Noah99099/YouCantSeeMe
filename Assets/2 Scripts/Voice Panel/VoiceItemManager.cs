@@ -20,6 +20,10 @@ public class VoiceItemManager : MonoBehaviour
     // 這是配置數據 (Configuration Data)，不是 UI 狀態，所以保留
     public VoiceItemData defaultVoiceItem;
 
+    // ----- [新需求] 追蹤已使用的物品 -----
+    // 使用 HashSet 效率更高 (O(1) 查詢)
+    private HashSet<VoiceItemData> usedVoiceItems = new HashSet<VoiceItemData>();
+
     private void Awake()
     {
         if (Instance != null && Instance != this) { Destroy(gameObject); return; }
@@ -37,5 +41,38 @@ public class VoiceItemManager : MonoBehaviour
 
         items.Add(voiceItem);
         OnVoiceChanged?.Invoke(); // 只通知，不執行任何 UI 操作
+    }
+
+    // ----- [新需求] 標記與檢查使用狀態 -----
+    /// <summary>
+    /// [新] 標記一個聲音物品為「已使用」
+    /// </summary>
+    public void MarkItemAsUsed(VoiceItemData item)
+    {
+        if (item == null || usedVoiceItems.Contains(item)) return;
+
+        Debug.Log($"[VoiceItemManager] 將 {item.itemName} 標記為已使用。");
+        usedVoiceItems.Add(item);
+
+        // 觸發事件，強制 UI (VoicePanelUIController) 刷新
+        OnVoiceChanged?.Invoke();
+    }
+
+    /// <summary>
+    /// [新] 檢查一個聲音物品是否已被使用
+    /// </summary>
+    public bool IsItemUsed(VoiceItemData item)
+    {
+        if (item == null) return false;
+        return usedVoiceItems.Contains(item);
+    }
+
+    /// <summary>
+    /// [新] (可選) 在遊戲讀檔或重置時，清除使用狀態
+    /// </summary>
+    public void ResetUsedItems()
+    {
+        usedVoiceItems.Clear();
+        OnVoiceChanged?.Invoke();
     }
 }

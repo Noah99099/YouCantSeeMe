@@ -205,6 +205,9 @@ public class InventoryPanelUIController : MonoBehaviour
             // 立即根據當前的設備類型，初始化一次面板狀態
             //HandleInputTypeChange(InputDeviceManager.Instance.CurrentInputType);
         }
+
+        // 確保按鈕狀態在面板打開時是正確的
+        UpdateRightPanel(currentSelectedSlot?.CurrentItemData);
     }
 
     private void OnDisable()
@@ -331,11 +334,33 @@ public class InventoryPanelUIController : MonoBehaviour
             itemNameText.text = data.itemName;
             itemDescriptionText.text = data.description;
 
-            // 根據您的需求設定按鈕可見性
-            useItemButton.gameObject.SetActive(isInteractionMode); // 僅在交互模式下顯示
+            // [新需求] 檢查聲音物品是否正在使用
+            bool isVoiceItemActive = (PlayerInteraction.Instance != null && PlayerInteraction.Instance.IsVoiceItemActive);
 
+            // [修改] 根據您的需求設定按鈕可見性
+            if (isInteractionMode)
+            {
+                useItemButton.gameObject.SetActive(true);
+
+                // 如果正在使用聲音物品，則禁用此按鈕
+                if (isVoiceItemActive)
+                {
+                    useItemButton.interactable = false;
+                }
+                else
+                {
+                    useItemButton.interactable = true;
+                }
+            }
+            else
+            {
+                // (保持您原有的邏輯)
+                useItemButton.gameObject.SetActive(false);
+            }
+
+            // (您原有的預覽按鈕邏輯保持不變)
             bool hasModel = (data.modelPrefab != null);
-            previewItemButton.gameObject.SetActive(hasModel); // 僅在有模型時顯示
+            previewItemButton.gameObject.SetActive(hasModel);
         }
     }
 
@@ -415,7 +440,28 @@ public class InventoryPanelUIController : MonoBehaviour
     #region --- 所有 Inventory map 註冊方法 ---
     private void OnCloseInventory(InputAction.CallbackContext context) //關
     {
-        ClosePanel();
+        // [!! 解決方案 !!]
+        // 檢查我們是否是在「交互模式」下打開的 (isInteractionMode 在 OpenPanel 時被設置)
+        if (isInteractionMode)
+        {
+            // 如果是，我們必須呼叫 PlayerInteraction 的 "結束交互" 函式
+            // 這個函式會反過來呼叫 ClosePanel() *並且* 重置 CurrentTarget
+            if (PlayerInteraction.Instance != null)
+            {
+                PlayerInteraction.Instance.CloseInventoryAndExitInteraction();
+            }
+            else
+            {
+                // 備用方案，以防萬一 PlayerInteraction 丟失了
+                Debug.LogError("[InventoryPanelUIController] PlayerInteraction.Instance is null! Forcing ClosePanel().");
+                ClosePanel();
+            }
+        }
+        else
+        {
+            // 如果只是普通打開背包（非交互），則直接關閉
+            ClosePanel();
+        }
     }
 
     private void OnOpenModelPreview(InputAction.CallbackContext context)
@@ -448,6 +494,13 @@ public class InventoryPanelUIController : MonoBehaviour
     // ----- 按鈕與不是map的輸入事件 -----
     private void OnUseItemClicked()
     {
+        // [新需求] 檢查是否正在使用聲音物品
+        if (PlayerInteraction.Instance != null && PlayerInteraction.Instance.IsVoiceItemActive)
+        {
+            Debug.LogWarning("[InventoryPanelUIController] 正在使用聲音物品，無法使用一般物品！");
+            return; // 阻止使用
+        }
+
         if (currentSelectedSlot != null && currentSelectedSlot.CurrentItemData != InventoryManager.Instance.defaultItem)
         {
             Debug.Log($"使用物品: {currentSelectedSlot.CurrentItemData.itemName}");

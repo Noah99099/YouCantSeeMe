@@ -107,6 +107,11 @@ public class VoicePanelUIController : MonoBehaviour
             // 立即根據當前的設備類型，初始化一次面板狀態
             HandleInputTypeChange(InputDeviceManager.Instance.CurrentInputType);
         }
+
+        // [新需求] 當面板激活時，刷新一次，確保顯示正確的按鈕狀態
+        RefreshVoiceSlots();
+        // 確保右側面板也刷新
+        UpdatePanelStateOnOpen();
     }
 
     private void OnDisable()
@@ -253,12 +258,36 @@ public class VoicePanelUIController : MonoBehaviour
         }
         else
         {
-            // 顯示真實物品資訊
-            itemNameText.text = data.titleText;
-            itemDescText.text = data.descText_Before;
+            // [新需求] 檢查物品是否已使用
+            bool isUsed = VoiceItemManager.Instance.IsItemUsed(data);
 
-            // 根據您的需求設定按鈕可見性
-            useItemButton.gameObject.SetActive(true); // 有獲得聲音物品就顯示
+            itemNameText.text = data.titleText;
+
+            if (isUsed)
+            {
+                // [新需求] 已使用：顯示 After 文本，隱藏按鈕
+                itemDescText.text = data.descText_After;
+                useItemButton.gameObject.SetActive(false);
+            }
+            else
+            {
+                // [新需求] 未使用：顯示 Before 文本
+                itemDescText.text = data.descText_Before;
+
+                // [新需求] 檢查是否 *正在* 使用其他聲音物品
+                if (PlayerInteraction.Instance.IsVoiceItemActive)
+                {
+                    // 正在使用中，禁用按鈕
+                    useItemButton.gameObject.SetActive(true); // 顯示按鈕
+                    useItemButton.interactable = false; // 但禁用它
+                }
+                else
+                {
+                    // 未在使用中，啟用按鈕
+                    useItemButton.gameObject.SetActive(true); // 顯示按鈕
+                    useItemButton.interactable = true; // 啟用它
+                }
+            }
         }
     }
 
@@ -339,10 +368,37 @@ public class VoicePanelUIController : MonoBehaviour
     // ----- 點擊按鈕事件，不是map的輸入事件 -----
     private void OnUseVoiceItemClicked()
     {
+        // [新需求] 檢查是否正在使用聲音物品
+        if (PlayerInteraction.Instance.IsVoiceItemActive)
+        {
+            Debug.LogWarning("[VoicePanelUIController] 正在使用其他聲音物品，無法啟動。");
+            return;
+        }
+
         if (currentSelectedSlot != null && currentSelectedSlot.CurrentVoiceItemData != VoiceItemManager.Instance.defaultVoiceItem)
         {
-            Debug.Log($"使用物品: {currentSelectedSlot.CurrentVoiceItemData.itemName}");
-            // 使用聲音物品方法
+            // [新需求] 檢查是否已使用
+            if (VoiceItemManager.Instance.IsItemUsed(currentSelectedSlot.CurrentVoiceItemData))
+            {
+                Debug.LogWarning($"[VoicePanelUIController] {currentSelectedSlot.CurrentVoiceItemData.itemName} 已經使用過了。");
+                return; // (理論上按鈕不會顯示，但做個保險)
+            }
+
+            Debug.Log($"[VoicePanelUIController] 請求使用物品: {currentSelectedSlot.CurrentVoiceItemData.itemName}");
+
+            // 1. [新需求] 呼叫 PlayerInteraction 開始使用流程
+            PlayerInteraction.Instance.UseVoiceItem(currentSelectedSlot.CurrentVoiceItemData);
+
+            // 2. [新需求] 自動關閉案件紀錄簿
+            // (確保 _inventoryPanelUI 引用已正確設置)
+            if (_inventoryPanelUI != null)
+            {
+                _inventoryPanelUI.ClosePanel();
+            }
+            else
+            {
+                Debug.LogError("[VoicePanelUIController] _inventoryPanelUI 引用為 null，無法自動關閉面板！");
+            }
         }
     }
 }

@@ -8,6 +8,9 @@ public class VoiceItemData : ScriptableObject
     public string itemName; //名稱
     public Sprite voiceIcon;   // 對應聲音格子的圖片
 
+    [Header("聲音物品模型")]
+    public GameObject voiceItem;
+
     [Header("右側文字顯示")]
     public string titleText;       // 顯示在 InfoText1
 

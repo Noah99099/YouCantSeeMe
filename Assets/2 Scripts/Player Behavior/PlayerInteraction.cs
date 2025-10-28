@@ -3,11 +3,10 @@ using UnityEngine.InputSystem;
 using TMPro;
 using UnityEngine.EventSystems;
 using System.Linq;
+using System.Collections; // 為了 Coroutine
 
 /// <summary>
-/// UIInputManager 相關的內容不用
-/// 要重寫，代替UIInputManager
-/// 處理好了
+/// 與場景物件交互一律寫這裡
 /// </summary>
 public class PlayerInteraction : MonoBehaviour
 {
@@ -19,7 +18,20 @@ public class PlayerInteraction : MonoBehaviour
     [SerializeField] private LayerMask interactionLayer;
 
     [Header("UI 提示")]
-    [SerializeField] private TextMeshProUGUI pickupPromptText; 
+    [SerializeField] private TextMeshProUGUI pickupPromptText;
+
+    // ----- [新需求] 聲音物品 -----
+    [Header("聲音物品設定")]
+    [SerializeField] private Transform cornerAnchor; // 請將 Camera 的子物件 cornerAnchor 拖曳到此
+
+    [Tooltip("請將 Main Camera (或掛載 ScreenGlitchEffect 腳本的物件) 拖曳到此")]
+    [SerializeField] public ScreenGlitchEffect glitchController; // [修改] 引用特效控制器
+
+    private GameObject currentVoiceItemModel;
+
+    // ----- [新需求] 狀態管理 -----
+    public bool IsVoiceItemActive { get; private set; } // 核心狀態：是否正在使用聲音物品
+    private VoiceItemData activeVoiceItemData; // 儲存當前正在使用的聲音物品
 
     [Header("Debug")]
     [SerializeField] private bool showDebugRay = true;
@@ -46,20 +58,51 @@ public class PlayerInteraction : MonoBehaviour
         }
 
         playerCamera = Camera.main;
+        IsVoiceItemActive = false; // 初始化狀態：沒有使用聲音物品
     }
     
     void Start()
     {
         pickupPromptText.gameObject.SetActive(false);
+
+        // [修改] 初始化花屏特效
+        if (glitchController != null)
+        {
+            glitchController.StopGlitch(); // 確保開始時是關閉的
+        }
+        else
+        {
+            Debug.LogError("[PlayerInteraction] 'Glitch Controller' 引用未設置！請將 Main Camera 拖曳到此欄位。", this);
+        }
     }
 
     private void Update()
     {
+        // [新需求] 如果正在使用聲音物品，則完全跳過交互檢測
+        if (IsVoiceItemActive)
+        {
+            HidePrompt(); // 確保在使用聲音物品時不顯示任何提示
+            return;
+        }
+
+        // [!! 解決方案 !!]
+        // 如果玩家正在與一個物件交互（即 CurrentTarget != null，通常意味著物品欄已打開）
+        // 則也應該隱藏提示並跳過交互檢測
+        if (CurrentTarget != null)
+        {
+            HidePrompt(); // 確保在物品欄打開時，隱藏世界中的交互提示
+            return; // 不執行 ContinuousCheck()
+        }
+        // [!! 解決方案結束 !!]
+
         ContinuousCheck();
     }
     
     private void ContinuousCheck()
     {
+        // [新需求] (已在 Update() 中檢查，但雙重保險)
+        if (IsVoiceItemActive) return;
+
         Ray ray = new Ray(playerCamera.transform.position, playerCamera.transform.forward);
         currentInteractableObject = null;
         currentInteractable = null; // 重置當前可交互物件
@@ -124,7 +167,7 @@ public class PlayerInteraction : MonoBehaviour
                 }
                 return;
             }
-            else if (currentInteractableObject.TryGetComponent<InteractableObject>(out var interactable)) // 檢查是否是 InteractableObject（需物品的交互物件）
+            else if (currentInteractableObject.TryGetComponent<InteractableObject>(out var interactable)) // 檢查是否是 InteractableObject（需物品的交互點）
             {
                 currentInteractable = interactable;
                 if (pickupPromptText != null)
@@ -200,6 +243,13 @@ public class PlayerInteraction : MonoBehaviour
 
     public void HandleInteraction()
     {
+        // [新需求] 如果正在使用聲音物品，則完全阻止交互
+        if (IsVoiceItemActive)
+        {
+            Debug.Log("[PlayerInteraction] 正在使用聲音物品，交互已禁用。");
+            return;
+        }
+
         Ray ray = new Ray(playerCamera.transform.position, playerCamera.transform.forward);
         Debug.Log($"[HandleInteraction] Raycasting from {ray.origin} toward {ray.direction}, Range={interactionRange}");
 
@@ -223,6 +273,9 @@ public class PlayerInteraction : MonoBehaviour
             else if (hitObject.TryGetComponent<InteractableVoiceItem>(out var voiceItem)) //獲得物件，進聲音面板
             {
                 Debug.Log($"Pressed button: {voiceItem.voiceItemData.itemName}");
+                // [修改] 交互成功，觸發花屏特效
+                StartCoroutine(PlayGlitchEffectOnce());
+
                 VoiceItemManager.Instance.AddItem(voiceItem.voiceItemData);
                 Destroy(hitObject);
                 HidePrompt();
@@ -269,11 +322,6 @@ public class PlayerInteraction : MonoBehaviour
                 {
                     // true 代表是交互模式
                     _inventoryPanelController.OpenPanel(true);
-
-                    // 推入 Map 的邏輯最好也由 Level1UIController 或 Panel Controller 統一處理
-                    // 這裡暫時假設 OpenPanel 內部還沒有 PushMap
-                    // ***** 移除：將這個呼叫移到 OpenPanel() 內部 *****
-                    //InputStackManager.Instance.PushMap(InputActionMaps._Inventory);
                 }
                 HidePrompt();
             }
@@ -325,12 +373,20 @@ public class PlayerInteraction : MonoBehaviour
 
     #region ===== 使用案件紀錄簿-物品的方法 =====
     /// <summary>
-    /// 從背包使用物品按鈕呼叫
+    /// 從背包使用物品按鈕呼叫(一般物品)
     /// </summary>
     /// <param name="item">被使用的物品</param>
     // 從背包使用物品按鈕呼叫
     public void OnItemUsed(ItemData item)
     {
+        // [新需求] 檢查是否正在使用聲音物品
+        if (IsVoiceItemActive)
+        {
+            Debug.LogWarning("[PlayerInteraction] 正在使用聲音物品，無法使用一般物品。");
+            CloseInventoryAndExitInteraction();
+            return;
+        }
+
         if (CurrentTarget == null)
         {
             Debug.LogWarning("[PlayerInteraction] 沒有交互目標，無法使用物品");
@@ -358,7 +414,7 @@ public class PlayerInteraction : MonoBehaviour
     /// <summary>
     /// 關閉背包並退出交互模式
     /// </summary>
-    private void CloseInventoryAndExitInteraction()
+    public void CloseInventoryAndExitInteraction()
     {
         Debug.Log($"[PlayerInteraction] CloseInventoryAndExitInteraction start. CurrentTarget={(CurrentTarget != null ? CurrentTarget.name : "null")}");
 
@@ -377,6 +433,110 @@ public class PlayerInteraction : MonoBehaviour
 
         Debug.Log($"[PlayerInteraction] CloseInventoryAndExitInteraction end. CurrentTarget={(CurrentTarget != null ? CurrentTarget.name : "null")}");
     }
+    #endregion
+
+    #region ===== [新需求] 聲音物品使用流程 =====
+
+    /// <summary>
+    /// [新] 1. 從 VoicePanelUIController 呼叫，開始使用聲音物品
+    /// </summary>
+    public void UseVoiceItem(VoiceItemData voiceItem)
+    {
+        if (IsVoiceItemActive)
+        {
+            Debug.LogError($"[PlayerInteraction] 試圖使用 {voiceItem.itemName}，但 {activeVoiceItemData.itemName} 已經在使用了！");
+            return;
+        }
+
+        Debug.Log($"[PlayerInteraction] 開始使用聲音物品: {voiceItem.itemName}");
+
+        // 1. 進入激活狀態
+        IsVoiceItemActive = true;
+        activeVoiceItemData = voiceItem;
+
+        // 2. 在 cornerAnchor 顯示模型
+        if (voiceItem.voiceItem != null && cornerAnchor != null)
+        {
+            // 清理舊的模型 (保險)
+            if (currentVoiceItemModel != null) Destroy(currentVoiceItemModel);
+
+            currentVoiceItemModel = Instantiate(voiceItem.voiceItem, cornerAnchor);
+            currentVoiceItemModel.transform.localPosition = Vector3.zero;
+            currentVoiceItemModel.transform.localRotation = Quaternion.identity;
+        }
+        else
+        {
+            Debug.LogWarning($"[PlayerInteraction] {voiceItem.itemName} 的 'voiceItem' Prefab 或 'cornerAnchor' 未設置！");
+        }
+
+        // 3. 激活場景中對應的判定點
+        // (我們使用 FindObjectsOfType，因為判定點可能在任何地方)
+        var detectionPoints = FindObjectsOfType<VoiceItemDetectionPoint>();
+        bool foundPoint = false;
+        foreach (var point in detectionPoints)
+        {
+            if (point.ActivatePoint(voiceItem))
+            {
+                foundPoint = true;
+                Debug.Log($"[PlayerInteraction] 已激活判定點: {point.gameObject.name}");
+            }
+        }
+        if (!foundPoint)
+        {
+            Debug.LogWarning($"[PlayerInteraction] 使用了 {voiceItem.itemName}，但在場景中沒有找到對應的 VoiceItemDetectionPoint！");
+        }
+    }
+
+    /// <summary>
+    /// [新] 2. 由 VoiceItemDetectionPoint 呼叫，完成使用
+    /// </summary>
+    public void CompleteVoiceItemUsage(VoiceItemData voiceItem)
+    {
+        if (!IsVoiceItemActive || voiceItem != activeVoiceItemData)
+        {
+            Debug.LogWarning($"[PlayerInteraction] CompleteVoiceItemUsage 被呼叫，但物品 {voiceItem.itemName} 與當前激活的 {activeVoiceItemData.itemName} 不符。");
+            return;
+        }
+
+        Debug.Log($"[PlayerInteraction] 成功使用聲音物品: {voiceItem.itemName}");
+
+        // 1. 退出激活狀態
+        IsVoiceItemActive = false;
+        activeVoiceItemData = null;
+
+        // 2. 刪除 cornerAnchor 中的模型
+        if (currentVoiceItemModel != null)
+        {
+            Destroy(currentVoiceItemModel);
+            currentVoiceItemModel = null;
+        }
+
+        // 3. 標記物品為「已使用」
+        VoiceItemManager.Instance.MarkItemAsUsed(voiceItem);
+
+        // [修改] 確保花屏特效停止
+        if (glitchController != null)
+        {
+            glitchController.StopGlitch();
+        }
+    }
+
+    /// <summary>
+    /// [新] 拾取聲音物品時觸發一次花屏
+    /// </summary>
+    private IEnumerator PlayGlitchEffectOnce()
+    {
+        if (glitchController == null) yield break;
+
+        Debug.Log("播放花屏特效 (1秒)");
+        glitchController.PlayOneShotGlitch(); // <--- 呼叫新方法
+
+        yield return new WaitForSeconds(1.0f);
+
+        glitchController.StopGlitch(); // <--- 呼叫新方法
+        Debug.Log("花屏特效結束");
+    }
+
     #endregion
 
     private void HidePrompt() 
