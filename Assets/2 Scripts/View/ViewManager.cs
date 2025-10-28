@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using UnityEngine;
 using Spine.Unity;
+using UnityEngine.Rendering;
 
 /// <summary>
 /// UIInputManager 相關的內容不用
@@ -19,6 +20,10 @@ public class ViewManager : MonoBehaviour
 
     [Header("Spine動畫控制")]
     public SkeletonGraphic spineUI;
+
+    [Header("URP 濾鏡控制")]
+    [Tooltip("請將代表「陰視野」效果的那個 Volume 物件拖到這裡")]
+    public Volume yinVisionVolume;
 
     // 腳本設置：單例、接收 ViewType
     public static ViewManager Instance { get; private set; }
@@ -40,6 +45,9 @@ public class ViewManager : MonoBehaviour
     // 新增: 標記是否已初始化
     //private bool isInitialized = false;
 
+    // 用於儲存正在運行的 Volume 漸變協程
+    private Coroutine volumeFadeCoroutine;
+
     void Awake()
     {
         if (Instance != null && Instance != this) // 如果 Instance 已存在且不是自己
@@ -57,6 +65,12 @@ public class ViewManager : MonoBehaviour
         if (spineUI != null)
         {
             spineUI.AnimationState.SetAnimation(0, BLINK_IDLE_ANIM, true);
+        }
+
+        // 初始化陰視野濾鏡的權重為 0 (關閉)
+        if (yinVisionVolume != null)
+        {
+            yinVisionVolume.weight = 0f;
         }
     }
 
@@ -113,6 +127,51 @@ public class ViewManager : MonoBehaviour
 
         Debug.Log($"Switched to view: {CurrentView}");
         isAnimating = false;
+    }
+
+    /// <summary>
+    /// 開始一個新的 Volume 權重漸變
+    /// </summary>
+    /// <param name="targetWeight">目標權重 (0 或 1)</param>
+    /// <param name="duration">漸變持續時間</param>
+    private void StartVolumeFade(float targetWeight, float duration)
+    {
+        if (yinVisionVolume == null) return;
+
+        // 如果上一個漸變還在跑，先停止它
+        if (volumeFadeCoroutine != null)
+        {
+            StopCoroutine(volumeFadeCoroutine);
+        }
+        volumeFadeCoroutine = StartCoroutine(FadeVolumeWeight(targetWeight, duration));
+    }
+
+    /// <summary>
+    /// 實際執行漸變的協程
+    /// </summary>
+    private IEnumerator FadeVolumeWeight(float targetWeight, float duration)
+    {
+        float startWeight = yinVisionVolume.weight;
+        float time = 0;
+
+        // 處理 duration 為 0 的情況
+        if (duration <= 0)
+        {
+            yinVisionVolume.weight = targetWeight;
+            yield break; // 結束協程
+        }
+
+        while (time < duration)
+        {
+            // 使用 Lerp (線性插值) 來平滑計算當前的權重
+            yinVisionVolume.weight = Mathf.Lerp(startWeight, targetWeight, time / duration);
+            time += Time.deltaTime; // 更新經過的時間
+            yield return null; // 等待下一幀
+        }
+
+        // 循環結束後，確保權重被精確設置為目標值
+        yinVisionVolume.weight = targetWeight;
+        volumeFadeCoroutine = null;
     }
 
     // 等待Spine動畫完成的輔助類

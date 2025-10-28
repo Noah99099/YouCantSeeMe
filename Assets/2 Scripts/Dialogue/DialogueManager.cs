@@ -4,7 +4,7 @@ using System.Collections;
 using XNode;
 using System.Collections.Generic;
 using System.Linq;
-using System; // ***** 需求修改: 1. 添加 using System; *****
+using System;
 
 public class DialogueManager : MonoBehaviour
 {
@@ -117,6 +117,12 @@ public class DialogueManager : MonoBehaviour
         isAutoPlay = false;
         cameraHasBeenMoved = false;
         currentGraph = graph;
+
+        if (currentGraph != null)
+        {
+            // 在對話開始時，強制將 runtimeVariables 重置為 initialVariables 的內容
+            currentGraph.ResetVariables(); //
+        }
 
         StartNode startNode = graph.nodes.OfType<StartNode>().FirstOrDefault();
         if (startNode == null)
