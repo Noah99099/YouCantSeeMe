@@ -323,7 +323,7 @@ public class PlayerInteraction : MonoBehaviour
         }
     }
 
-    #region ===== 使用物品的方法 =====
+    #region ===== 使用案件紀錄簿-物品的方法 =====
     /// <summary>
     /// 從背包使用物品按鈕呼叫
     /// </summary>
@@ -338,7 +338,7 @@ public class PlayerInteraction : MonoBehaviour
             return;
         }
 
-        bool success = CurrentTarget.UseItem(item); // 呼叫 InteractableObject 的邏輯
+        bool success = CurrentTarget.UseItem(item); // 呼叫 InteractableObject（交互點） 的邏輯
 
         if (success)
         {
@@ -377,7 +377,6 @@ public class PlayerInteraction : MonoBehaviour
 
         Debug.Log($"[PlayerInteraction] CloseInventoryAndExitInteraction end. CurrentTarget={(CurrentTarget != null ? CurrentTarget.name : "null")}");
     }
-
     #endregion
 
     private void HidePrompt() 

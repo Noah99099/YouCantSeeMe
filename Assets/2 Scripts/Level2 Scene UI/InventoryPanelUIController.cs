@@ -375,7 +375,6 @@ public class InventoryPanelUIController : MonoBehaviour
             HandleSlotSelected(firstSlot);
         }
     }
-
     #endregion
 
     #region ----- 自動滾動 (手把導航) -----
@@ -447,7 +446,6 @@ public class InventoryPanelUIController : MonoBehaviour
     #endregion
 
     // ----- 按鈕與不是map的輸入事件 -----
-
     private void OnUseItemClicked()
     {
         if (currentSelectedSlot != null && currentSelectedSlot.CurrentItemData != InventoryManager.Instance.defaultItem)
