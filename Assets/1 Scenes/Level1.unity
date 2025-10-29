@@ -1102,7 +1102,7 @@ MonoBehaviour:
   yangUI: {fileID: 292124997}
   yinUI: {fileID: 1358306966}
   spineUI: {fileID: 494571057}
-  yinVisionVolume: {fileID: 0}
+  yinVisionVolume: {fileID: 1244382184}
 --- !u!114 &44230918
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1875,7 +1875,7 @@ Transform:
   m_GameObject: {fileID: 105162595}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 3.7, y: 0.54, z: 0}
+  m_LocalPosition: {x: -28.2, y: 0.54, z: -18.920004}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2477,7 +2477,7 @@ Transform:
   m_GameObject: {fileID: 128011516}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 3.14, y: 1.3600001, z: -6.210005}
+  m_LocalPosition: {x: -28.76, y: 1.3600001, z: -25.130009}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -11581,7 +11581,7 @@ Transform:
   m_GameObject: {fileID: 758026981}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 3.14, y: 1.3600001, z: -3.5299966}
+  m_LocalPosition: {x: -28.76, y: 1.3600001, z: -22.45}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -12662,6 +12662,7 @@ GameObject:
   m_Component:
   - component: {fileID: 832575519}
   - component: {fileID: 832575518}
+  - component: {fileID: 832575520}
   m_Layer: 0
   m_Name: YangVision Volume
   m_TagString: Untagged
@@ -12701,6 +12702,18 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &832575520
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 832575517}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9bb31470f5085584092d6c96f3c87920, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &847238530
 GameObject:
   m_ObjectHideFlags: 0
@@ -17512,7 +17525,7 @@ Transform:
   m_GameObject: {fileID: 1093943721}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -1.62, y: 0.54, z: -3}
+  m_LocalPosition: {x: -33.52, y: 0.54, z: -21.920004}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -20231,6 +20244,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1244382185}
   - component: {fileID: 1244382184}
+  - component: {fileID: 1244382186}
   m_Layer: 0
   m_Name: YinVisionVolume
   m_TagString: Untagged
@@ -20270,6 +20284,18 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1244382186
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1244382183}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9bb31470f5085584092d6c96f3c87920, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1248013005
 GameObject:
   m_ObjectHideFlags: 0
@@ -23910,7 +23936,7 @@ Transform:
   m_GameObject: {fileID: 1448784368}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -1.62, y: 0.54, z: -1.62}
+  m_LocalPosition: {x: -33.52, y: 0.54, z: -20.540005}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -26435,7 +26461,7 @@ Transform:
   m_GameObject: {fileID: 1596119172}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -1.62, y: 0.54, z: 0}
+  m_LocalPosition: {x: -33.52, y: 0.54, z: -18.920004}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -26498,7 +26524,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   voiceItemData: {fileID: 11400000, guid: 40da57772fe14e344ba3c9edb3d86ea7, type: 2}
-  childObjectToActivate: {fileID: 0}
   InteractionEnabled: 1
 --- !u!114 &1596119181
 MonoBehaviour:
@@ -28725,7 +28750,7 @@ Transform:
   m_GameObject: {fileID: 1738595597}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 3.17, y: 0.54, z: -1.64}
+  m_LocalPosition: {x: -28.73, y: 0.54, z: -20.560003}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -30227,7 +30252,7 @@ Transform:
   m_GameObject: {fileID: 1819392240}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 3.14, y: 1.3600001, z: -4.83}
+  m_LocalPosition: {x: -28.76, y: 1.3600001, z: -23.750004}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -31997,7 +32022,7 @@ Transform:
   m_GameObject: {fileID: 1917691295}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 5.020496, z: -12.18}
+  m_LocalPosition: {x: 0, y: 5.020496, z: -9.84}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -32474,7 +32499,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1948699525}
         m_TargetAssemblyTypeName: PrepareToYinView, Assembly-CSharp
-        m_MethodName: InvokeYangAction
+        m_MethodName: InvokeYangAction_HNum
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -32502,7 +32527,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1948699525}
         m_TargetAssemblyTypeName: PrepareToYinView, Assembly-CSharp
-        m_MethodName: InvokeYangAction
+        m_MethodName: InvokeYangAction_Gate
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -36223,7 +36248,7 @@ Transform:
   m_GameObject: {fileID: 2129976280}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1.11, z: -8.28}
+  m_LocalPosition: {x: -30.6, y: 1.11, z: -32.5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

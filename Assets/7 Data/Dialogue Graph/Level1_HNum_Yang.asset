@@ -113,13 +113,14 @@ MonoBehaviour:
   - {fileID: 4325695103058040274}
   - {fileID: -6217342539353125920}
   - {fileID: -1041543868291413372}
+  - {fileID: 4730207970333136106}
   triggerType: 1
   initialVariables:
   - name: HasInteract
     value: 0
   runtimeVariables:
   - name: HasInteract
-    value: 0
+    value: 1
 --- !u!114 &1564007505640938637
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -290,7 +291,10 @@ MonoBehaviour:
       _node: {fileID: 4325695103058040274}
       _typeQualifiedName: BaseNode, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
         PublicKeyToken=null
-      connections: []
+      connections:
+      - fieldName: entry
+        node: {fileID: 4730207970333136106}
+        reroutePoints: []
       _direction: 1
       _connectionType: 0
       _typeConstraint: 0
@@ -302,6 +306,51 @@ MonoBehaviour:
   variableName: HasInteract
   comparison: 0
   valueToCompare: 0
+--- !u!114 &4730207970333136106
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 162f442e20c248d4fa6c340c232c5e37, type: 3}
+  m_Name: Set Variable
+  m_EditorClassIdentifier: 
+  graph: {fileID: 11400000}
+  position: {x: 1576, y: 264}
+  ports:
+    keys:
+    - entry
+    - exit
+    values:
+    - _fieldName: entry
+      _node: {fileID: 4730207970333136106}
+      _typeQualifiedName: BaseNode, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+        PublicKeyToken=null
+      connections:
+      - fieldName: exitFalse
+        node: {fileID: 4325695103058040274}
+        reroutePoints: []
+      _direction: 0
+      _connectionType: 0
+      _typeConstraint: 0
+      _dynamic: 0
+    - _fieldName: exit
+      _node: {fileID: 4730207970333136106}
+      _typeQualifiedName: BaseNode, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+        PublicKeyToken=null
+      connections: []
+      _direction: 1
+      _connectionType: 0
+      _typeConstraint: 0
+      _dynamic: 0
+  isImportant: 0
+  entry: {fileID: 0}
+  exit: {fileID: 0}
+  variableName: HasInteract
+  value: 1
 --- !u!114 &4812623250559986688
 MonoBehaviour:
   m_ObjectHideFlags: 0

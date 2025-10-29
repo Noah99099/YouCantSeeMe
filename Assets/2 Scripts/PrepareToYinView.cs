@@ -1,5 +1,6 @@
 // PrepareToYinView.cs
 using System;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class PrepareToYinView : MonoBehaviour
@@ -7,12 +8,26 @@ public class PrepareToYinView : MonoBehaviour
     // 統一事件
     public static event Action YangAction;
     public GameObject finishYangCollider;
-    private int num = 0; //門牌、密碼鎖、門片
+    //門牌、密碼鎖、門片
+    private int num_Gate = 0; //門片
+    private int num_HNum = 0; //門牌
 
     public static event Action CanChangeView; // 給 Level1UIController.cs 接收用
 
     public static void InvokeYangAction()
     {
+        YangAction?.Invoke();
+    }
+
+    // 試試看這樣
+    public void InvokeYangAction_Gate()
+    {
+        num_Gate += 1;
+        YangAction?.Invoke();
+    }
+    public void InvokeYangAction_HNum()
+    {
+        num_HNum += 1;
         YangAction?.Invoke();
     }
 
@@ -30,13 +45,12 @@ public class PrepareToYinView : MonoBehaviour
     void HandleYinDialouge()
     {
         Debug.Log("收到 YangAction 事件！");
-        num += 1;
         Check();
     }
 
     private void Check() 
     {       
-        if (num == 3) //門牌、密碼鎖、門片
+        if (num_Gate >= 1 && num_HNum >= 1) // 門牌、門片至少一次交互
         {
             Debug.Log("[PrepareToYinView] 打開判定點");
             finishYangCollider.SetActive(true);

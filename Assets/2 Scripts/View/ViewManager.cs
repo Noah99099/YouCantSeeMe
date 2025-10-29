@@ -91,6 +91,10 @@ public class ViewManager : MonoBehaviour
     // 切換到陰視圖的協程
     private IEnumerator SwitchToYinView()
     {
+        // 嘗試把方法加過來，因為目前沒有切陰視野的效果
+        // 哇 超血紅
+        StartVolumeFade(1, 1);
+
         isAnimating = true;
         // 播放陽視圖到陰視圖的過渡動畫
         if (spineUI != null)
@@ -111,8 +115,10 @@ public class ViewManager : MonoBehaviour
     // 切換到陽視圖的協程
     private IEnumerator SwitchToYangView()
     {
-        isAnimating = true;
+        // 嘗試把方法加過來，因為目前沒有切陽視野的效果
+        StartVolumeFade(0, 1);
 
+        isAnimating = true;
         // 播放陰視圖到陽視圖的過渡動畫
         if (spineUI != null)
         {

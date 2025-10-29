@@ -7,7 +7,6 @@ public class InteractableVoiceItem : MonoBehaviour
     [Header("功能：獲得 聲音物品 進到 聲音面板")]
     // 在 Inspector 中，將你為這個物件建立的 VoiceItemData 資源檔拖曳到這裡
     public VoiceItemData voiceItemData;
-    public GameObject childObjectToActivate; // <--- !! 加入這一行 !!
 
     [HideInInspector] public bool InteractionEnabled = true;
 

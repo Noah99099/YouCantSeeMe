@@ -127,7 +127,10 @@ MonoBehaviour:
       _node: {fileID: -4680075495182640924}
       _typeQualifiedName: BaseNode, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
         PublicKeyToken=null
-      connections: []
+      connections:
+      - fieldName: entry
+        node: {fileID: 788050164383247311}
+        reroutePoints: []
       _direction: 1
       _connectionType: 0
       _typeConstraint: 0
@@ -157,13 +160,59 @@ MonoBehaviour:
   - {fileID: -4680075495182640924}
   - {fileID: -7906016775093267215}
   - {fileID: 7074182183567959134}
+  - {fileID: 788050164383247311}
   triggerType: 1
   initialVariables:
   - name: HasInteract
     value: 0
   runtimeVariables:
   - name: HasInteract
-    value: 0
+    value: 1
+--- !u!114 &788050164383247311
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 162f442e20c248d4fa6c340c232c5e37, type: 3}
+  m_Name: Set Variable
+  m_EditorClassIdentifier: 
+  graph: {fileID: 11400000}
+  position: {x: 696, y: 120}
+  ports:
+    keys:
+    - entry
+    - exit
+    values:
+    - _fieldName: entry
+      _node: {fileID: 788050164383247311}
+      _typeQualifiedName: BaseNode, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+        PublicKeyToken=null
+      connections:
+      - fieldName: exitFalse
+        node: {fileID: -4680075495182640924}
+        reroutePoints: []
+      _direction: 0
+      _connectionType: 0
+      _typeConstraint: 0
+      _dynamic: 0
+    - _fieldName: exit
+      _node: {fileID: 788050164383247311}
+      _typeQualifiedName: BaseNode, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+        PublicKeyToken=null
+      connections: []
+      _direction: 1
+      _connectionType: 0
+      _typeConstraint: 0
+      _dynamic: 0
+  isImportant: 0
+  entry: {fileID: 0}
+  exit: {fileID: 0}
+  variableName: HasInteract
+  value: 1
 --- !u!114 &2820922557780047288
 MonoBehaviour:
   m_ObjectHideFlags: 0
