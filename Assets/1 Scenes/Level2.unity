@@ -1386,7 +1386,6 @@ GameObject:
   - component: {fileID: 263979513}
   - component: {fileID: 263979512}
   - component: {fileID: 263979517}
-  - component: {fileID: 263979518}
   m_Layer: 0
   m_Name: Unopened_B1
   m_TagString: Untagged
@@ -1493,27 +1492,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   dialogueGraph: {fileID: 11400000, guid: f186c0a7a9f58dd4c952abbef5cfc192, type: 2}
---- !u!65 &263979518
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 263979511}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 1.0019403, y: 4.4928336, z: 1}
-  m_Center: {x: -0.10512805, y: 1.8363278, z: 0}
 --- !u!1 &309186853
 GameObject:
   m_ObjectHideFlags: 0
@@ -2616,22 +2594,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0d9023071c337a5458eaf17eb23abc6c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  eventID: PlayLiChunMeisStory
-  onEventTriggered:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 685365244}
-        m_TargetAssemblyTypeName: PlayVideo, Assembly-CSharp
-        m_MethodName: PlayForDeceased
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+  eventEntries:
+  - eventID: PlayLiChunMeisStory
+    onEventTriggered:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 685365244}
+          m_TargetAssemblyTypeName: PlayVideo, Assembly-CSharp
+          m_MethodName: PlayForDeceased
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
 --- !u!114 &685365246
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6101,6 +6080,7 @@ GameObject:
   - component: {fileID: 1140861593}
   - component: {fileID: 1140861595}
   - component: {fileID: 1140861596}
+  - component: {fileID: 1140861597}
   m_Layer: 3
   m_Name: MagicCircle
   m_TagString: Untagged
@@ -11044,22 +11024,47 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0d9023071c337a5458eaf17eb23abc6c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  eventID: LiChunMei
-  onEventTriggered:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 1123788159}
-        m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
-        m_MethodName: SetActive
-        m_Mode: 6
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 1
-        m_CallState: 2
+  eventEntries:
+  - eventID: LiChunMei
+    onEventTriggered:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 1123788159}
+          m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+          m_MethodName: SetActive
+          m_Mode: 6
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 1
+          m_CallState: 2
+        - m_Target: {fileID: 1140861597}
+          m_TargetAssemblyTypeName: DestroyMe, Assembly-CSharp
+          m_MethodName: DestroyObject
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 1
+          m_CallState: 2
+--- !u!114 &1140861597
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1140861585}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 38a65e189504f334687f4d1ec7d322e2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1184651469
 GameObject:
   m_ObjectHideFlags: 0
@@ -12221,22 +12226,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0d9023071c337a5458eaf17eb23abc6c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  eventID: DestoryCheckTwo
-  onEventTriggered:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 528079747}
-        m_TargetAssemblyTypeName: DestroyMe, Assembly-CSharp
-        m_MethodName: DestroyObject
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+  eventEntries:
+  - eventID: DestoryCheckTwo
+    onEventTriggered:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 528079747}
+          m_TargetAssemblyTypeName: DestroyMe, Assembly-CSharp
+          m_MethodName: DestroyObject
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
 --- !u!114 &1505029738
 MonoBehaviour:
   m_ObjectHideFlags: 0
