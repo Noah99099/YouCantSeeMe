@@ -43,7 +43,10 @@ public class DialogueManager : MonoBehaviour
     private Camera mainCamera;
 
     // 事件系統
-    private Dictionary<string, DialogueEventListener> eventListeners = new Dictionary<string, DialogueEventListener>();
+    // 【修改】將字典的值改為一個列表 (List)，以支援 "一對多" 廣播
+    private Dictionary<string, List<DialogueEventListener>> eventListeners = new Dictionary<string, List<DialogueEventListener>>();
+    // 【新功能】: 用於 "遊戲事件 -> 觸發對話" 的註冊表
+    private Dictionary<string, DialogueGraph> graphEventRegistry = new Dictionary<string, DialogueGraph>();
 
     // 攝影機還原
     private Vector3 originalCameraPos;
@@ -147,41 +150,118 @@ public class DialogueManager : MonoBehaviour
     {
         if (listener == null) return;
 
-        // --- 替換為以下迴圈 ---
         // 遍歷該監聽器組件中 "所有" 的事件項目
         foreach (var entry in listener.eventEntries)
         {
             string trimmedID = entry.eventID.Trim();
             if (string.IsNullOrEmpty(trimmedID)) continue;
 
-            if (eventListeners.ContainsKey(trimmedID))
+            // 【修改】註冊邏輯
+            // 1. 檢查這個 ID 是否已經有列表了
+            if (!eventListeners.ContainsKey(trimmedID))
             {
-                Debug.LogWarning($"事件ID '{trimmedID}' 已被 {eventListeners[trimmedID].gameObject.name} 註冊，將被 {listener.gameObject.name} 覆蓋。");
+                // 如果沒有，就建立一個新的列表
+                eventListeners[trimmedID] = new List<DialogueEventListener>();
             }
 
-            // 將 "Event ID" 作為 Key，"監聽器組件" 作為 Value 存入字典
-            eventListeners[trimmedID] = listener;
-            Debug.Log($"[DialogueManager] 成功註冊 ID: \"{trimmedID}\" -> 監聽物件: {listener.gameObject.name}");
+            // 2. 將這個監聽器加入到列表中 (如果它還不在列表中的話)
+            if (!eventListeners[trimmedID].Contains(listener))
+            {
+                eventListeners[trimmedID].Add(listener);
+                Debug.Log($"[DialogueManager] 成功註冊 ID: \"{trimmedID}\" -> 監聽物件: {listener.gameObject.name}");
+            }
         }
-    }    
+    }
 
     public void UnregisterListener(DialogueEventListener listener)
     {
         if (listener == null) return;
 
-        // --- T替換為以下迴圈 ---
         // 遍歷該監聽器組件中 "所有" 的事件項目
         foreach (var entry in listener.eventEntries)
         {
             string trimmedID = entry.eventID.Trim();
             if (string.IsNullOrEmpty(trimmedID)) continue;
 
-            // 檢查字典中是否包含此ID，並且確認註冊的 "就是這個" 監聽器
-            if (eventListeners.ContainsKey(trimmedID) && eventListeners[trimmedID] == listener)
+            // 【修改】取消註冊邏輯
+            // 1. 檢查這個 ID 的列表是否存在
+            if (eventListeners.ContainsKey(trimmedID))
             {
-                // 只有完全匹配才移除
-                eventListeners.Remove(trimmedID);
+                // 2. 如果存在，就從列表中移除這個監聽器
+                if (eventListeners[trimmedID].Contains(listener))
+                {
+                    eventListeners[trimmedID].Remove(listener);
+                }
+
+                // 3. (可選優化) 如果這個列表變空了，就從字典中移除這個 ID
+                if (eventListeners[trimmedID].Count == 0)
+                {
+                    eventListeners.Remove(trimmedID);
+                }
             }
+        }
+    }
+    /// <summary>
+    /// 【新功能】
+    /// 註冊一個 "遊戲事件ID" 到 "對話圖形" 的綁定。
+    /// 由 DialogueEventTrigger.cs 在 OnEnable 時呼叫。
+    /// </summary>
+    public void RegisterDialogueEvent(string eventID, DialogueGraph graph)
+    {
+        string trimmedID = eventID.Trim();
+        if (string.IsNullOrEmpty(trimmedID)) return;
+
+        if (graphEventRegistry.ContainsKey(trimmedID))
+        {
+            Debug.LogWarning($"[DialogueManager] 遊戲事件 ID '{trimmedID}' 已經被註冊。將被新的註冊覆蓋。");
+        }
+
+        graphEventRegistry[trimmedID] = graph;
+        Debug.Log($"[DialogueManager] 成功註冊「遊戲事件觸發器」: ID \"{trimmedID}\" -> Graph \"{graph.name}\"");
+    }
+
+    /// <summary>
+    /// 【新功能】
+    /// 取消註冊一個 "遊戲事件ID"。
+    /// 由 DialogueEventTrigger.cs 在 OnDisable 時呼叫。
+    /// </summary>
+    public void UnregisterDialogueEvent(string eventID)
+    {
+        string trimmedID = eventID.Trim();
+        if (string.IsNullOrEmpty(trimmedID)) return;
+
+        if (graphEventRegistry.ContainsKey(trimmedID))
+        {
+            graphEventRegistry.Remove(trimmedID);
+        }
+    }
+
+    /// <summary>
+    /// 【新功能 - 核心】
+    /// 任何其他腳本都可以呼叫此方法，透過 ID 來啟動一個對話。
+    /// </summary>
+    /// <param name="eventID">在 DialogueEventTrigger 中設定的 ID</param>
+    public void TriggerDialogueByEvent(string eventID)
+    {
+        string trimmedID = eventID.Trim();
+        if (string.IsNullOrEmpty(trimmedID)) return;
+
+        if (isDialogueActive)
+        {
+            Debug.LogWarning($"[DialogueManager] 嘗試觸發事件 '{trimmedID}'，但對話已在進行中。");
+            return; // 避免在對話中插入新對話
+        }
+
+        if (graphEventRegistry.TryGetValue(trimmedID, out DialogueGraph graphToStart))
+        {
+            // 找到了！啟動這個對話
+            Debug.Log($"[DialogueManager] 接收到遊戲事件 '{trimmedID}'，正在啟動對話: {graphToStart.name}");
+            StartConversation(graphToStart);
+        }
+        else
+        {
+            // 沒找到
+            Debug.LogWarning($"[DialogueManager] 嘗試觸發事件 '{trimmedID}'，但在註冊表中找不到對應的 DialogueGraph。");
         }
     }
     #endregion
@@ -303,20 +383,23 @@ public class DialogueManager : MonoBehaviour
         {
             if (!string.IsNullOrEmpty(eventNode.eventID))
             {
-                // (您的偵錯日誌可以保留)
-                // Debug_PrintListeners();
-
                 string trimmedID = eventNode.eventID.Trim();
                 Debug.Log($"[DialogueManager] 正在廣播事件，嘗試查找 ID: \"{trimmedID}\"");
 
-                if (eventListeners.ContainsKey(trimmedID))
+                // 【修改】廣播邏輯
+                // 1. 檢查是否有監聽器列表
+                if (eventListeners.TryGetValue(trimmedID, out List<DialogueEventListener> listenersToTrigger))
                 {
-                    // --- 
-                    // --- 核心修改：將 eventID 傳遞給監聽器 ---
-                    //
-                    // 舊程式碼: eventListeners[trimmedID].TriggerEvent();
-                    // ---
-                    eventListeners[trimmedID].TriggerEvent(trimmedID); // <--- 傳入 ID
+                    // 2. 遍歷這個列表中的 "所有" 監聽器
+                    //    (使用 .ToList() 建立一個副本，以防有監聽器在執行中途取消註冊自己)
+                    foreach (DialogueEventListener listener in listenersToTrigger.ToList()) 
+                    {
+                        if (listener != null)
+                        {
+                            // 3. 向 "每一個" 監聽器觸發事件
+                            listener.TriggerEvent(trimmedID);
+                        }
+                    }
                 }
                 else
                 {
@@ -436,9 +519,25 @@ public class DialogueManager : MonoBehaviour
         }
         else
         {
+            // 遍歷字典中所有的 "Key" (ID)
             foreach (var listenerPair in eventListeners)
             {
-                Debug.Log($"Key: \"{listenerPair.Key}\" -> 監聽物件: {listenerPair.Value.gameObject.name}");
+                // listenerPair.Key 是 string ID
+                // listenerPair.Value 是 List<DialogueEventListener>
+
+                // 【修正】: 必須遍歷 "列表" 中的每一個監聽器
+                foreach (DialogueEventListener listener in listenerPair.Value)
+                {
+                    // 確保監聽器沒有在執行過程中被銷毀
+                    if (listener != null)
+                    {
+                        Debug.Log($"Key: \"{listenerPair.Key}\" -> 監聽物件: {listener.gameObject.name}");
+                    }
+                    else
+                    {
+                        Debug.Log($"Key: \"{listenerPair.Key}\" -> 監聽物件: (null/已被銷毀)");
+                    }
+                }
             }
         }
         Debug.Log("-------------------------------------------");
@@ -670,7 +769,7 @@ public class DialogueManager : MonoBehaviour
             InputStackManager.Instance.PopMap(); //
             Debug.Log($"[DialogueManager] Popped '{dialogueActionMapName}' map from Input Stack."); //
         }
-        
+
         if (InputProvider.InputActions != null)
         {
             InputProvider.InputActions.Dialogue.Submit.performed -= SubmitDialogue;
@@ -681,9 +780,13 @@ public class DialogueManager : MonoBehaviour
         // ***** 需求修改: 3. 在 PopMap() 和所有清理工作完成後，觸發事件 *****
         OnConversationEnd?.Invoke();
     }
-
-    // Skip 和 AutoPlay 功能需要用新的圖形邏輯重寫，暫時保留或移除
-    public void OnSkip(InputAction.CallbackContext context)
+    
+    /// <summary>
+    /// 【新函式】
+    /// 執行「跳過」的核心邏輯。
+    /// 這個 public 方法可以被 UI 按鈕的 OnClick() 事件呼叫。
+    /// </summary>
+    public void TriggerSkip()
     {
         // 如果對話未激活、或正在等待選項，則不執行任何操作
         if (!isDialogueActive || isWaitingForChoice) return;
@@ -709,7 +812,15 @@ public class DialogueManager : MonoBehaviour
         // 5. 呼叫新的輔助方法來 "快速執行" 圖形
         ExecuteGraphUntilStop();
     }
-    
+
+    public void OnSkip(InputAction.CallbackContext context)
+    {
+        // 這個方法現在只是一個 "包裝器" (wrapper)
+        // 它從 Input System 接收 "S" 鍵的輸入
+        // 然後呼叫我們新的核心邏輯方法
+        TriggerSkip();
+    }
+
     public void SubmitDialogue(InputAction.CallbackContext context)
     {
         // 如果對話未激活、正在自動播放、或等待選項，則不執行任何操作
@@ -725,7 +836,7 @@ public class DialogueManager : MonoBehaviour
             // 1. 停止 "WaitForTypingToEnd" 協程 (因為我們手動完成了)
             //    StopAllCoroutines() 會停止此腳本上的所有協程
             StopAllCoroutines(); //
-            
+
             // 2. 更新狀態
             isTyping = false; //
 
@@ -738,16 +849,21 @@ public class DialogueManager : MonoBehaviour
         else
         {
             // --- 情況 2：玩家想要「進入下一句」 ---
-            
+
             // 1. 獲取下一個節點
             currentNode = currentNode.GetNextNode(); //
-            
+
             // 2. 處理下一個節點 (顯示文字、選項...)
             ProcessCurrentNode(); //
         }
     }
-
-    public void OnToggleAutoPlay(InputAction.CallbackContext context)
+    
+    /// <summary>
+    /// 【新函式】
+    /// 切換「自動播放」狀態的核心邏輯。
+    /// 這個 public 方法可以被 UI 按鈕的 OnClick() 事件呼叫。
+    /// </summary>
+    public void ToggleAutoPlay()
     {
         if (!isDialogueActive) return;
 
@@ -762,6 +878,14 @@ public class DialogueManager : MonoBehaviour
             currentNode = currentNode.GetNextNode();
             ProcessCurrentNode();
         }
+    }
+
+    public void OnToggleAutoPlay(InputAction.CallbackContext context)
+    {
+        // 這個方法現在只是一個 "包裝器" (wrapper)
+        // 它從 Input System 接收按鍵輸入
+        // 然後呼叫我們新的核心邏輯方法
+        ToggleAutoPlay();
     }
 
     /// <summary>
@@ -849,10 +973,25 @@ public class DialogueManager : MonoBehaviour
                 if (!string.IsNullOrEmpty(eventNode.eventID))
                 {
                     string trimmedID = eventNode.eventID.Trim();
-                    if (eventListeners.ContainsKey(trimmedID))
-                        eventListeners[trimmedID].TriggerEvent(trimmedID);
+
+                    // 【修正】: 必須遍歷列表，對 "每一個" 監聽器呼叫 TriggerEvent
+                    // (這個邏輯現在和 ProcessCurrentNode 中的邏輯一致了)
+                    if (eventListeners.TryGetValue(trimmedID, out List<DialogueEventListener> listenersToTrigger))
+                    {
+                        // 遍歷這個列表中的 "所有" 監聽器
+                        foreach (DialogueEventListener listener in listenersToTrigger.ToList())
+                        {
+                            if (listener != null)
+                            {
+                                // 向 "每一個" 監聽器觸發事件
+                                listener.TriggerEvent(trimmedID);
+                            }
+                        }
+                    }
                     else
+                    {
                         Debug.LogWarning($"[Skip] 找不到事件 ID '{trimmedID}' 的監聽器！");
+                    }
                 }
                 currentNode = eventNode.GetNextNode();
             }

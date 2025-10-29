@@ -9,15 +9,17 @@ using System.Text.RegularExpressions;
 
 public class DialogueUI : MonoBehaviour
 {
-    private enum TextEffectType { None, Shake, Wave }
+    private enum TextEffectType { None, Shake, Wave, Rainbow, Color }
     private class TextEffectInfo
     {
         public TextEffectType type;
         public int startIndex;
         public int length;
+        public string parameter;
     }
     [Header("對話 UI 元件")]
     [SerializeField] private GameObject dialogueBox;
+    [SerializeField] private Image dialogueBoxImage;
     [SerializeField] private TextMeshProUGUI nameText;
     [SerializeField] private TextMeshProUGUI contentText;
 
@@ -36,6 +38,7 @@ public class DialogueUI : MonoBehaviour
     [SerializeField] private float waveSpeed = 5f;
     [SerializeField] private float waveAmplitude = 10f;
     [SerializeField] private float textShakeIntensity = 2f;
+    [SerializeField] private float rainbowSpeed = 1f;
 
     [Header("選項 UI")]
     [SerializeField] private GameObject choiceContainer;
@@ -46,6 +49,9 @@ public class DialogueUI : MonoBehaviour
 
     [Header("計時器 UI")]
     [SerializeField] private Slider timerSlider;
+
+    [Header("對話框樣式")] // <--- 【新增】
+    [SerializeField] private DialogueBoxStyle defaultBoxStyle;
     // 內部變數
     private Coroutine typeWriterCoroutine;
     private List<Button> spawnedButtons = new List<Button>();
@@ -112,83 +118,135 @@ public class DialogueUI : MonoBehaviour
         ClearChoices();
     }
 
+    /// <summary>
+    /// 【新方法】
+    /// 根據傳入的角色 Profile 來套用對話框樣式
+    /// </summary>
+    /// <param name="profile">傳入 null 可套用預設(旁白)樣式</param>
+    private void ApplyStyle(CharacterProfile profile)
+    {
+        // 1. 決定要套用哪個樣式
+        //    - 如果 profile 和 profile.boxStyle 都存在 -> 用角色的樣式
+        //    - 否則 (例如是旁白，或角色沒有設定樣式) -> 用預設樣式
+        DialogueBoxStyle styleToApply = (profile != null && profile.boxStyle != null) 
+                                        ? profile.boxStyle 
+                                        : defaultBoxStyle;
+
+        // 2. 如果連 defaultBoxStyle 都沒有，就直接返回
+        if (styleToApply == null)
+        {
+            // (可選) 第一次使用時，將當前設定儲存為預設值
+            // if (defaultBoxStyle == null)
+            // {
+            //     Debug.LogWarning("DialogueUI 缺少 defaultBoxStyle。");
+            // }
+            return;
+        }
+
+        // 3. 套用樣式
+        if (dialogueBoxImage != null && styleToApply.boxSprite != null)
+        {
+            dialogueBoxImage.sprite = styleToApply.boxSprite;
+        }
+
+        if (nameText != null)
+        {
+            nameText.color = styleToApply.nameColor;
+            if (styleToApply.nameFont != null)
+            {
+                nameText.font = styleToApply.nameFont;
+            }
+        }
+
+        if (contentText != null)
+        {
+            contentText.color = styleToApply.contentColor;
+            if (styleToApply.contentFont != null)
+            {
+                contentText.font = styleToApply.contentFont;
+            }
+        }
+    }
+
     public void SetDialogue(DialogueLine line, float typeSpeed)
     {
         // --- 核心修正：無論如何，先確保 Name 和 Content 物件都啟用 ---
-        // (除非它們是 null)
         if (contentText != null) contentText.gameObject.SetActive(true);
         if (nameText != null) nameText.gameObject.SetActive(true);
 
-
         if (line.isNarration)
         {
-            // 如果是旁白，隱藏名字和所有立繪
-            if (nameText != null) nameText.gameObject.SetActive(false); //
-            if (characterSpriteLeft != null) characterSpriteLeft.gameObject.SetActive(false); //
-            if (characterSpriteRight != null) characterSpriteRight.gameObject.SetActive(false); //
+            // 【修改】如果是旁白，套用預設樣式 (null 會觸發 defaultBoxStyle)
+            ApplyStyle(null); 
 
-            ProcessTextForEffects(line.content, typeSpeed); //
+            if (nameText != null) nameText.gameObject.SetActive(false); 
+            if (characterSpriteLeft != null) characterSpriteLeft.gameObject.SetActive(false); 
+            if (characterSpriteRight != null) characterSpriteRight.gameObject.SetActive(false); 
 
-            // ----- 修正：刪除多餘的 StartTypewriter -----
-            //StartTypewriter(line.content, typeSpeed); //
-            
-            // 提前結束方法，不執行後面的角色邏輯
-            return; //
+            ProcessTextForEffects(line.content, typeSpeed); 
+            return; 
         }
 
         // --- 這是非旁白情況 ---
-        string localizedContent = line.content; // 暫時繞過 LocalizationManager，使用原始文本
-        //等到要做本地化再打開
-        //string localizedContent = LocalizationManager.Instance.GetLocalizedText(line.contentKey);
+        string localizedContent = line.content; 
         
-        // (這行已在最上面做過，可選)
-        // nameText.gameObject.SetActive(true); 
-
         CharacterProfile speakerProfile;
         if (!characterDatabase.TryGetValue(line.characterID, out speakerProfile))
         {
             // 找不到角色 Profile 的備用邏輯
+            
+            // 【修改】找不到角色，也套用預設樣式
+            ApplyStyle(null); 
+
             nameText.text = line.speakerName;
             if (characterSpriteLeft != null) characterSpriteLeft.gameObject.SetActive(false);
             if (characterSpriteRight != null) characterSpriteRight.gameObject.SetActive(false);
             
-            ProcessTextForEffects(localizedContent, typeSpeed); // <-- 使用這個
-            // ----- 修正：刪除多餘的 StartTypewriter -----
-            // StartTypewriter(localizedContent, typeSpeed);
+            ProcessTextForEffects(localizedContent, typeSpeed); 
             return;
         }
 
-        nameText.text = line.overrideName ? line.speakerName : speakerProfile.characterName; //
-        UpdateCharacterSprite(line.characterID, line.expression, line.position, line.animation); //
-        HighlightSpeaker(line.position); //
+        // 【修改】成功找到角色，套用 "該角色" 的樣式
+        ApplyStyle(speakerProfile); 
+
+        nameText.text = line.overrideName ? line.speakerName : speakerProfile.characterName; 
+        UpdateCharacterSprite(line.characterID, line.expression, line.position, line.animation); 
+        HighlightSpeaker(line.position); 
         
-        ProcessTextForEffects(localizedContent, typeSpeed); //
-        
-        // ----- 修正：刪除多餘的 StartTypewriter -----
-        // StartTypewriter(localizedContent, typeSpeed); //
+        ProcessTextForEffects(localizedContent, typeSpeed); 
     }
 
     private void ProcessTextForEffects(string fullText, float typeSpeed)
     {
         textEffects.Clear();
         string cleanText = fullText;
-        string pattern = @"<(\w+)>(.*?)<\/\1>";
+
+        // 【修改】更新 Regex，使其 "只" 匹配我們自訂的特效標籤
+        // 1. (shake|wave|rainbow|color) -> Group 1: 只匹配 "shake", "wave", "rainbow", "color"
+        // 2. (?:=(.*?))?    -> Group 2: (可選) 參數值 (e.g., "red", "#FF0000")
+        // 3. (.*?)          -> Group 3: 標籤內的內容
+        string pattern = @"<(shake|wave|rainbow|color)(?:=(.*?))?>(.*?)<\/\1>"; // <--- 【請修改這一行】
         MatchCollection matches = Regex.Matches(fullText, pattern, RegexOptions.IgnoreCase);
 
         foreach (Match match in matches.Cast<Match>().Reverse())
         {
-            string tag = match.Groups[1].Value;
-            string content = match.Groups[2].Value;
+            string tag = match.Groups[1].Value;       // e.g., "color"
+            string parameter = match.Groups[2].Value; // e.g., "red"
+            string content = match.Groups[3].Value;   // e.g., "這是紅字"
+
             TextEffectType type;
             if (Enum.TryParse<TextEffectType>(tag, true, out type))
             {
                 textEffects.Add(new TextEffectInfo
                 {
                     type = type,
-                    startIndex = match.Groups[2].Index,
-                    length = content.Length
+                    startIndex = match.Index, //【修改】使用 match.Index 來獲取在 "cleanText" 中的起始位置
+                    length = content.Length,
+                    parameter = parameter // <--- 【新增】儲存解析到的參數
                 });
             }
+
+            // 從後往前，將 <tag>content</tag> 替換為 content
             cleanText = cleanText.Remove(match.Index, match.Length).Insert(match.Index, content);
         }
 
@@ -280,23 +338,44 @@ public class DialogueUI : MonoBehaviour
 
     // 需求 #6: RPG Maker 的文本延遲效果
     private IEnumerator TypeWriterEffect(int totalChars, float speed)
-{
-    // 如果速度設定為 0 或負數，我們將其視為立即顯示
-    if (speed <= 0)
     {
-        contentText.maxVisibleCharacters = totalChars;
+        // 如果速度設定為 0 或負數，我們將其視為立即顯示
+        if (speed <= 0)
+        {
+            contentText.maxVisibleCharacters = totalChars;
+            typeWriterCoroutine = null;
+            yield break; // 結束協程
+        }
+
+        // 正常速度的打字機效果
+        for (int i = 0; i <= totalChars; i++)
+        {
+            contentText.maxVisibleCharacters = i;
+            yield return new WaitForSeconds(speed);
+        }
         typeWriterCoroutine = null;
-        yield break; // 結束協程
     }
 
-    // 正常速度的打字機效果
-    for (int i = 0; i <= totalChars; i++)
+    /// <summary>
+    /// 【新輔助函式】
+    /// 嘗試將字串 (如 "red", "yellow" 或 "#FF0000") 解析為 Color
+    /// </summary>
+    private Color ParseColor(string colorString)
     {
-        contentText.maxVisibleCharacters = i;
-        yield return new WaitForSeconds(speed);
+        Color parsedColor;
+        
+        // ColorUtility.TryParseHtmlString 非常強大，
+        // 它可以處理 "red", "blue" 等顏色名稱，
+        // 也可以處理 "#FF0000" (有#) 和 "FF0000" (無#) 的 16 進位碼
+        if (ColorUtility.TryParseHtmlString(colorString, out parsedColor))
+        {
+            return parsedColor;
+        }
+
+        // 如果解析失敗，返回預設顏色並顯示警告
+        Debug.LogWarning($"[DialogueUI] 無法解析顏色標籤: '{colorString}'。將使用預設白色。");
+        return Color.white;
     }
-    typeWriterCoroutine = null;
-}
     
     private void AnimateText()
     {
@@ -309,13 +388,17 @@ public class DialogueUI : MonoBehaviour
             var charInfo = textInfo.characterInfo[i];
             if (!charInfo.isVisible) continue;
 
-            Vector3[] vertices = textInfo.meshInfo[charInfo.materialReferenceIndex].vertices;
+            int matIndex = charInfo.materialReferenceIndex;
+            Vector3[] vertices = textInfo.meshInfo[matIndex].vertices;
+            Color32[] colors = textInfo.meshInfo[matIndex].colors32;
             Vector3 offset = Vector3.zero;
 
             foreach (var effect in textEffects)
             {
+                // 檢查當前字元是否在效果範圍內
                 if (i >= effect.startIndex && i < effect.startIndex + effect.length)
                 {
+                    // --- 處理頂點位移 (Shake, Wave) ---
                     if (effect.type == TextEffectType.Shake)
                     {
                         offset += new Vector3(UnityEngine.Random.Range(-textShakeIntensity, textShakeIntensity), UnityEngine.Random.Range(-textShakeIntensity, textShakeIntensity), 0);
@@ -324,19 +407,43 @@ public class DialogueUI : MonoBehaviour
                     {
                         offset += new Vector3(0, Mathf.Sin(Time.time * waveSpeed + i * 0.5f) * waveAmplitude, 0);
                     }
+
+                    // --- 處理顏色 (Dynamic) ---
+                    else if (effect.type == TextEffectType.Rainbow)
+                    {
+                        float hue = Mathf.Repeat(Time.time * rainbowSpeed + i * 0.1f, 1f);
+                        Color rainbowColor = Color.HSVToRGB(hue, 1, 1);
+                        for (int j = 0; j < 4; j++) { colors[charInfo.vertexIndex + j] = rainbowColor; }
+                    }
+
+                    // --- 【新功能】處理自訂顏色 (Static) ---
+                    else if (effect.type == TextEffectType.Color)
+                    {
+                        // 呼叫我們的新輔助函式來解析參數
+                        Color colorToApply = ParseColor(effect.parameter);
+                        for (int j = 0; j < 4; j++)
+                        {
+                            colors[charInfo.vertexIndex + j] = colorToApply;
+                        }
+                    }
                 }
             }
 
+            // --- 統一應用頂點位移 ---
             for (int j = 0; j < 4; j++)
             {
                 vertices[charInfo.vertexIndex + j] += offset;
             }
         }
 
+        // --- 統一更新 Mesh ---
         for (int i = 0; i < textInfo.meshInfo.Length; i++)
         {
             var meshInfo = textInfo.meshInfo[i];
+
             meshInfo.mesh.vertices = meshInfo.vertices;
+            meshInfo.mesh.colors32 = meshInfo.colors32; // 確保顏色也被更新
+
             contentText.UpdateGeometry(meshInfo.mesh, i);
         }
     }

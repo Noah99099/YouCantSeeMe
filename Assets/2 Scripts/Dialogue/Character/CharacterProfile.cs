@@ -8,6 +8,7 @@ public class CharacterProfile : ScriptableObject
     public string characterName; // 顯示在對話框上的名字
 
     public List<CharacterExpression> expressions;
+    public DialogueBoxStyle boxStyle;
 
     // 一個輔助方法，方便我們透過關鍵字找到對應的 Sprite
     public Sprite GetSprite(string keyword)
