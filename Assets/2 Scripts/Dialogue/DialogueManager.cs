@@ -145,20 +145,43 @@ public class DialogueManager : MonoBehaviour
     }
     public void RegisterListener(DialogueEventListener listener)
     {
-        string trimmedID = listener.eventID.Trim();
-        if (eventListeners.ContainsKey(trimmedID))
+        if (listener == null) return;
+
+        // --- 替換為以下迴圈 ---
+        // 遍歷該監聽器組件中 "所有" 的事件項目
+        foreach (var entry in listener.eventEntries)
         {
-            Debug.LogWarning($"事件ID '{trimmedID}' 已被註冊，將被覆蓋。");
+            string trimmedID = entry.eventID.Trim();
+            if (string.IsNullOrEmpty(trimmedID)) continue;
+
+            if (eventListeners.ContainsKey(trimmedID))
+            {
+                Debug.LogWarning($"事件ID '{trimmedID}' 已被 {eventListeners[trimmedID].gameObject.name} 註冊，將被 {listener.gameObject.name} 覆蓋。");
+            }
+
+            // 將 "Event ID" 作為 Key，"監聽器組件" 作為 Value 存入字典
+            eventListeners[trimmedID] = listener;
+            Debug.Log($"[DialogueManager] 成功註冊 ID: \"{trimmedID}\" -> 監聽物件: {listener.gameObject.name}");
         }
-        eventListeners[trimmedID] = listener;
-    }
+    }    
 
     public void UnregisterListener(DialogueEventListener listener)
     {
-        string trimmedID = listener.eventID.Trim();
-        if (eventListeners.ContainsKey(trimmedID))
+        if (listener == null) return;
+
+        // --- T替換為以下迴圈 ---
+        // 遍歷該監聽器組件中 "所有" 的事件項目
+        foreach (var entry in listener.eventEntries)
         {
-            eventListeners.Remove(trimmedID);
+            string trimmedID = entry.eventID.Trim();
+            if (string.IsNullOrEmpty(trimmedID)) continue;
+
+            // 檢查字典中是否包含此ID，並且確認註冊的 "就是這個" 監聽器
+            if (eventListeners.ContainsKey(trimmedID) && eventListeners[trimmedID] == listener)
+            {
+                // 只有完全匹配才移除
+                eventListeners.Remove(trimmedID);
+            }
         }
     }
     #endregion
@@ -280,15 +303,20 @@ public class DialogueManager : MonoBehaviour
         {
             if (!string.IsNullOrEmpty(eventNode.eventID))
             {
-                // --- 新增日誌：在查找前，打印出字典所有內容 ---
-                Debug_PrintListeners();
+                // (您的偵錯日誌可以保留)
+                // Debug_PrintListeners();
 
                 string trimmedID = eventNode.eventID.Trim();
                 Debug.Log($"[DialogueManager] 正在廣播事件，嘗試查找 ID: \"{trimmedID}\"");
 
                 if (eventListeners.ContainsKey(trimmedID))
                 {
-                    eventListeners[trimmedID].TriggerEvent();
+                    // --- 
+                    // --- 核心修改：將 eventID 傳遞給監聽器 ---
+                    //
+                    // 舊程式碼: eventListeners[trimmedID].TriggerEvent();
+                    // ---
+                    eventListeners[trimmedID].TriggerEvent(trimmedID); // <--- 傳入 ID
                 }
                 else
                 {
@@ -657,29 +685,29 @@ public class DialogueManager : MonoBehaviour
     // Skip 和 AutoPlay 功能需要用新的圖形邏輯重寫，暫時保留或移除
     public void OnSkip(InputAction.CallbackContext context)
     {
-        if (!isDialogueActive || isTyping) return;
+        // 如果對話未激活、或正在等待選項，則不執行任何操作
+        if (!isDialogueActive || isWaitingForChoice) return;
 
-        // 停止所有正在進行的協程，例如打字效果
+        // 1. 停止所有正在運行的協程 (例如打字、自動播放、等待)
         StopAllCoroutines();
-        isTyping = false;
-        dialogueUI.ClearChoices(); // 如果剛好在選項處，也清除選項
-                                   // --- 在跳過之前，停止當前語音 ---
+        isTyping = false; 
+
+        // 2. 停止當前語音
         if (DialogueAudioManager.Instance != null) DialogueAudioManager.Instance.StopVoiceOver();
 
-        Debug.Log("開始尋找下一個重要節點...");
-        BaseNode nextImportantNode = FindNextImportantNode();
+        // 3. 如果當前節點是 LineNode (我們剛剛打斷了它的打字)
+        if (currentNode is LineNode lineNode)
+        {
+            // 確保文字是完整的 (以防萬一)
+            dialogueUI.CompleteText(lineNode.line.content);
+        }
 
-        if (nextImportantNode != null)
-        {
-            Debug.Log("找到重要節點: " + nextImportantNode.name);
-            currentNode = nextImportantNode;
-            ProcessCurrentNode();
-        }
-        else
-        {
-            Debug.Log("找不到更多重要節點，對話結束。");
-            EndConversation();
-        }
+        // 4. 我們現在處於 "已完成" 當前節點的狀態。
+        //    移動到下一個節點，準備開始快速執行。
+        currentNode = currentNode.GetNextNode();
+
+        // 5. 呼叫新的輔助方法來 "快速執行" 圖形
+        ExecuteGraphUntilStop();
     }
     
     public void SubmitDialogue(InputAction.CallbackContext context)
@@ -735,83 +763,164 @@ public class DialogueManager : MonoBehaviour
             ProcessCurrentNode();
         }
     }
-    /*
-    private void OnToggleAutoPlay(InputAction.CallbackContext context)
+
+    /// <summary>
+    /// 【新函式】
+    /// 快速執行圖形邏輯，直到遇到「停止點」或圖形結束。
+    /// </summary>
+    private void ExecuteGraphUntilStop()
     {
-        if (!isDialogueActive) return;
+        // 設置一個安全迴圈上限，防止圖形邏輯錯誤導致死循環
+        int loopLimit = 1000; 
 
-        isAutoPlay = !isAutoPlay;
-        Debug.Log("自動播放: " + (isAutoPlay ? "開啟" : "關閉"));
-
-        // 如果剛開啟自動播放，且當前對話處於靜止狀態（不在打字，也不在等選項）
-        // 我們就主動觸發一次前進，讓對話繼續下去
-        if (isAutoPlay && !isTyping && !isWaitingForChoice)
+        while (loopLimit-- > 0)
         {
-            // 移動到下一個節點
-            currentNode = currentNode.GetNextNode();
-            ProcessCurrentNode();
-        }
-    }
-    */
-
-    private BaseNode FindNextImportantNode()
-    {
-        // 使用佇列 (Queue) 進行廣度優先搜索
-        Queue<BaseNode> nodesToVisit = new Queue<BaseNode>();
-
-        // 使用 HashSet 記錄已訪問過的節點，避免在迴圈中卡死
-        HashSet<BaseNode> visitedNodes = new HashSet<BaseNode>();
-
-        // 將當前節點的所有直接後續節點加入佇列
-        if (currentNode is ChoiceNode choiceNode)
-        {
-            for (int i = 0; i < choiceNode.choices.Count; i++)
+            if (currentNode == null)
             {
-                BaseNode nextNode = choiceNode.GetNextNodeForChoice(i);
-                if (nextNode != null) nodesToVisit.Enqueue(nextNode);
-            }
-        }
-        else
-        {
-            BaseNode nextNode = currentNode.GetNextNode();
-            if (nextNode != null) nodesToVisit.Enqueue(nextNode);
-        }
-
-        // 將當前節點標記為已訪問
-        visitedNodes.Add(currentNode);
-
-        // 開始搜索
-        while (nodesToVisit.Count > 0)
-        {
-            BaseNode node = nodesToVisit.Dequeue();
-
-            if (visitedNodes.Contains(node)) continue;
-            visitedNodes.Add(node);
-
-            // 檢查是否找到了重要節點
-            if (node.isImportant)
-            {
-                return node; // 找到了！返回這個節點
+                // 到達圖形終點
+                EndConversation();
+                return;
             }
 
-            // 如果沒找到，將這個節點的後續節點加入佇列，繼續搜索
-            if (node is ChoiceNode cNode)
+            // --- 1. 檢查「停止點」 ---
+            // 如果節點是「重要節點」、或是需要玩家互動的「顯示文字」或「選項」
+            // 我們就必須停止快速執行，並正常處理這個節點。
+            if (currentNode.isImportant || currentNode is LineNode || currentNode is ChoiceNode || currentNode is TimedChoiceNode)
             {
-                for (int i = 0; i < cNode.choices.Count; i++)
+                Debug.Log($"[Skip] 停止於重要節點或互動節點: {currentNode.name}");
+                ProcessCurrentNode(); // 正常處理這個節點 (例如：顯示文字、顯示選項)
+                return; // 結束快速執行
+            }
+
+            // --- 2. 執行「邏輯節點」(並跳過「等待節點」) ---
+            // 如果不是停止點，我們就 "立即執行" 該節點的邏輯，然後前進。
+
+            Debug.Log($"[Skip] 快速執行邏輯節點: {currentNode.name}");
+
+            if (currentNode is SetVariableNode setVarNode)
+            {
+                (currentGraph as DialogueGraph).SetVariable(setVarNode.variableName, setVarNode.value);
+                currentNode = setVarNode.GetNextNode();
+            }
+            else if (currentNode is ConditionalNode conditionalNode)
+            {
+                float actualValue = (currentGraph as DialogueGraph).GetVariable(conditionalNode.variableName);
+                float compareValue = conditionalNode.valueToCompare;
+                bool result = false;
+                switch (conditionalNode.comparison)
                 {
-                    BaseNode next = cNode.GetNextNodeForChoice(i);
-                    if (next != null) nodesToVisit.Enqueue(next);
+                    case ComparisonType.EqualTo: result = actualValue == compareValue; break;
+                    case ComparisonType.NotEqualTo: result = actualValue != compareValue; break;
+                    case ComparisonType.GreaterThan: result = actualValue > compareValue; break;
+                    case ComparisonType.LessThan: result = actualValue < compareValue; break;
+                    case ComparisonType.GreaterThanOrEqualTo: result = actualValue >= compareValue; break;
+                    case ComparisonType.LessThanOrEqualTo: result = actualValue <= compareValue; break;
                 }
+                currentNode = conditionalNode.GetNextNode(result);
+            }
+            else if (currentNode is WaitNode waitNode)
+            {
+                // 跳過等待
+                currentNode = waitNode.GetNextNode();
+            }
+            else if (currentNode is PlayAnimationNode animNode)
+            {
+                // 觸發動畫 (這是非阻塞的)
+                if (!string.IsNullOrEmpty(animNode.targetObjectName))
+                {
+                    GameObject target = GameObject.Find(animNode.targetObjectName);
+                    if (target != null)
+                    {
+                        Animator animator = target.GetComponent<Animator>();
+                        if (animator != null && !string.IsNullOrEmpty(animNode.triggerName))
+                            animator.SetTrigger(animNode.triggerName);
+                    }
+                }
+                currentNode = animNode.GetNextNode();
+            }
+            else if (currentNode is CameraControlNode camNode)
+            {
+                // 跳過運鏡 (不等待)
+                currentNode = camNode.GetNextNode();
+            }
+            else if (currentNode is InvokeEventNode eventNode)
+            {
+                // 觸發事件
+                if (!string.IsNullOrEmpty(eventNode.eventID))
+                {
+                    string trimmedID = eventNode.eventID.Trim();
+                    if (eventListeners.ContainsKey(trimmedID))
+                        eventListeners[trimmedID].TriggerEvent(trimmedID);
+                    else
+                        Debug.LogWarning($"[Skip] 找不到事件 ID '{trimmedID}' 的監聽器！");
+                }
+                currentNode = eventNode.GetNextNode();
+            }
+            else if (currentNode is SetGlobalVariableNode setGlobalNode)
+            {
+                // 執行設置全域變數
+                if (setGlobalNode.database != null)
+                    setGlobalNode.database.SetVariable(setGlobalNode.globalVariableName, setGlobalNode.valueToSet);
+                currentNode = setGlobalNode.GetNextNode();
+            }
+            else if (currentNode is GetGlobalVariableNode getGlobalNode)
+            {
+                // 執行獲取全域變數
+                if (getGlobalNode.database != null && currentGraph != null)
+                {
+                    float globalValue = getGlobalNode.database.GetVariable(getGlobalNode.globalVariableName);
+                    (currentGraph as DialogueGraph).SetVariable(getGlobalNode.localVariableName, globalValue);
+                }
+                currentNode = getGlobalNode.GetNextNode();
+            }
+            else if (currentNode is UpdateQuestNode questNode)
+            {
+                // 執行更新任務
+                if (QuestManager.Instance != null)
+                    QuestManager.Instance.UpdateQuestStatus(questNode.questID, questNode.newStatus);
+                currentNode = questNode.GetNextNode();
+            }
+            else if (currentNode is CheckQuestNode checkQuestNode)
+            {
+                // 執行檢查任務
+                bool conditionResult = false;
+                if (QuestManager.Instance != null)
+                {
+                    QuestStatus currentStatus = QuestManager.Instance.GetQuestStatus(checkQuestNode.questID);
+                    conditionResult = (currentStatus == checkQuestNode.statusToCheck);
+                }
+                currentNode = checkQuestNode.GetNextNode(conditionResult);
+            }
+            else if (currentNode is CheckSpecificItemsNode checkSpecificItemsNode)
+            {
+                // 執行檢查物品
+                bool allItemsFound = true;
+                if (InventoryManager.Instance != null && checkSpecificItemsNode.requiredItems != null)
+                {
+                    foreach (ItemData requiredItem in checkSpecificItemsNode.requiredItems)
+                    {
+                        if (requiredItem != null && !InventoryManager.Instance.HasItem(requiredItem.itemID))
+                        {
+                            allItemsFound = false;
+                            break;
+                        }
+                    }
+                }
+                else { allItemsFound = false; }
+                currentNode = checkSpecificItemsNode.GetNextNode(allItemsFound);
             }
             else
             {
-                BaseNode next = node.GetNextNode();
-                if (next != null) nodesToVisit.Enqueue(next);
+                // 其他未知的節點類型，安全起見直接前進
+                currentNode = currentNode.GetNextNode();
             }
-        }
+        } // 結束 while 迴圈
 
-        // 如果遍歷完所有可達節點都沒找到，返回 null
-        return null;
+        if (loopLimit <= 0)
+        {
+            Debug.LogError("[DialogueManager] Skip 功能達到了迴圈上限 (1000次)。請檢查您的對話圖形是否有無限迴圈。");
+            EndConversation();
+        }
     }
     public bool IsDialogueActive()
     {

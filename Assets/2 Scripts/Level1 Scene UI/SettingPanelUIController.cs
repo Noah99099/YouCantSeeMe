@@ -2,55 +2,59 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class SettingPanelUIController : MonoBehaviour
 {
-    // PlayerControls ¥D­n¨Ó·½©óInputStackManager -> InputProvider -> SettingPanelUIController
-    [Tooltip("¹CÀ¸³]¸m­±ªO")]
+    // PlayerControls çµ±ä¸€ç”±InputStackManager -> InputProvider -> SettingPanelUIController
+    [Tooltip("è¨­å®šé¢æ¿çš„æ ¹ç‰©ä»¶")]
     public GameObject settingPanel;
-    [Tooltip("¥k¤U¨¤ªº´£¥Üµø³¥¹Ï¼Ğ")]
+    [Tooltip("æ¨™é¡Œæˆ–å…¶ä»–æœƒè¢«éš±è—çš„UI")]
     public GameObject titleUI;
-    [Header("·Ç¤ß")]
+    [Header("æº–å¿ƒ")]
     public GameObject crossHair;
-    [Header("³]¸m°Ï°ì")]
+    [Header("è¨­å®šåˆ†é ")]
     public GameObject setting;
-    [Header("¾Ş§@«ü¥Ü°Ï°ì")]
+    [Header("æ“ä½œèªªæ˜åˆ†é ")]
     public GameObject operation;
-    [Header("¥ª°¼4­Ó«ö¶s")]
+    [Header("é¢æ¿å°è¦½æŒ‰éˆ•")]
     public Button[] buttons_settingPanel;
-    [Header("¹CÀ¸³]©wslider¡B¼Ğ¥Ü¹Ï¤ù")]
-    public Slider[] sliders_settingPanel; // ¦@4­Ó
-    public Image[] images_hint; // ¦@4­Ó
-    [Header("¾Ş§@«ü¥ÜScrollRect")]
+    [Header("è¨­å®šSliderèˆ‡æç¤ºåœ–ç‰‡")]
+    public Slider[] sliders_settingPanel; // ç¯„ä¾‹ç‚º4å€‹
+    public Image[] images_hint; // å°æ‡‰Sliderçš„æç¤ºåœ–
+    [Header("æ“ä½œèªªæ˜ScrollRect")]
     public ScrollRect operation_scrollRect;
+    [Header("å ´æ™¯åç¨±")]
+    [Tooltip("æ‚¨åœ¨ Build Settings ä¸­çš„ä¸»é¸å–®å ´æ™¯åç¨±")]
+    [SerializeField] private string mainMenuSceneName = "MainMenu";
 
     private void OnEnable()
     {
-        // *** ÃöÁä­×§ï: ¨Ï¥Î¨Ó¦Û Level1UIController ªº¦@¨É¹ê¨Ò ***
-        if (InputProvider.InputActions == null) return; // ¨¾§b
+        // *** é‡è¦ä¿®æ”¹: æ”¹ç‚ºä½¿ç”¨ Level1UIController çš„åŒå¥—é‚è¼¯ ***
+        if (InputProvider.InputActions == null) return; // é˜²å‘†
         InputProvider.InputActions.Setting.CloseSetting.performed += OnCloseSettingPanel;
 
-        // Àq»{¥´¶} 'setting' °Ï°ì
+        // é è¨­é¡¯ç¤º 'setting' åˆ†é 
         setting.SetActive(true);
         operation.SetActive(false);
 
-        // **¥²­n¡GÀH®É¤Á´«¿é¤J¼Ò¦¡
+        // **æ ¹æ“šç›®å‰ä½¿ç”¨çš„è¼¸å…¥è£ç½®
         if (InputDeviceManager.Instance != null)
         {
             InputDeviceManager.Instance.OnInputTypeChanged += HandleInputTypeChange;
 
-            // ¥ß§Y®Ú¾Ú·í«eªº³]³ÆÃş«¬¡Aªì©l¤Æ¤@¦¸­±ªOª¬ºA
+            // è™•ç†ç•¶å‰çš„è£ç½®é¡å‹ï¼Œä¸¦è§¸ç™¼ä¸€æ¬¡åˆ·æ–°
             HandleInputTypeChange(InputDeviceManager.Instance.CurrentInputType);
         }
     }
 
     private void OnDisable()
     {
-        // *** ÃöÁä­×§ï: ²¾°£ playerControls.Setting.Disable(); ***
-        if (InputProvider.InputActions == null) return; // ¨¾§b
+        // *** é‡è¦ä¿®æ”¹: ç§»é™¤ playerControls.Setting.Disable(); ***
+        if (InputProvider.InputActions == null) return; // é˜²å‘†
         InputProvider.InputActions.Setting.CloseSetting.performed -= OnCloseSettingPanel;
 
-        // ***** ·s¼W: ¨ú®ø­q¾\³]³ÆÅÜ§ó¨Æ¥ó *****
+        // ***** æ–°å¢: å–æ¶ˆè¨‚é–±è£ç½®è®Šæ›´äº‹ä»¶ *****
         if (InputDeviceManager.Instance != null)
         {
             InputDeviceManager.Instance.OnInputTypeChanged -= HandleInputTypeChange;
@@ -59,27 +63,27 @@ public class SettingPanelUIController : MonoBehaviour
 
     private void Update()
     {
-        // ®Ú¾Ú·í«e¿ï¾Üªº Slider Åã¥Ü¹ïÀ³ªº´£¥Ü¹Ï¤ù
+        // æŒçºŒæª¢æŸ¥ç•¶å‰é¸å–çš„ Slider ä¸¦æ›´æ–°æç¤ºåœ–ç‰‡
         HandleSliderHintImages();
     }
 
     /// <summary>
-    /// ·í¿é¤J³]³Æ§ïÅÜ®É¡A¦¹¤èªk·|³Q InputDeviceManager ¦Û°Ê©I¥s¡C
+    /// è™•ç†è¼¸å…¥è£ç½®è®Šæ›´ï¼Œæ­¤æ–¹æ³•ç”± InputDeviceManager å‘¼å«è§¸ç™¼ã€‚
     /// </summary>
     private void HandleInputTypeChange(InputDeviceManager.InputType newType)
     {
-        if (newType == InputDeviceManager.InputType.Gamepad) // ¤â¬`
+        if (newType == InputDeviceManager.InputType.Gamepad) // æ‰‹æŠŠ
         {
-            // ¤Á´«¨ì¤â§â¼Ò¦¡¡G
-            // ³]©wUIµJÂI
+            // å•Ÿç”¨æ‰‹æŠŠè‡ªå‹•å°èˆª
+            // è¨­å®šUIç„¦é»
             if (EventSystem.current.currentSelectedGameObject == null)
             {
                 SetFocusForCurrentPanel();
             }
         }
-        else // Áä¹«
+        else // éµé¼ 
         {
-            // 1. ²M°£UIµJÂI¡AÅı·Æ¹«¥i¥H¦Û¥ÑÂIÀ»
+            // 1. æ¸…é™¤UIç„¦é»ï¼Œè®“æ»‘é¼ å¯ä»¥è‡ªç”±é»é¸
             EventSystem.current.SetSelectedGameObject(null);
         }
     }
@@ -90,56 +94,56 @@ public class SettingPanelUIController : MonoBehaviour
     }
 
     /// <summary>
-    /// ®Ú¾Ú·í«e¶}±Òªº¹CÀ¸³]©w­±ªO¡A³]©w¤â§âªºUIµJÂI
+    /// ç•¶å‰å•Ÿå‹•è¨­å®šé¢æ¿æ™‚ï¼Œè¨­å®šé è¨­çš„UIç„¦é»
     /// </summary>
     private void SetFocusForCurrentPanel()
     {
-        // ®Ú¾Ú»İ¨D¡G"¤â¬`: Àq»{ selected buttons_settingPanel[0]"
-        // §Ú­ÌÁ`¬O±N "Àq»{" µJÂI³]¸m¬°¥ª°¼ªº²Ä¤@­Ó«ö¶s¡C
-        // ¤l°Ï°ìªºµJÂI¤Á´«¥Ñ«ö¶sÂIÀ»¨Æ¥ó³B²z¡C
+        // ç›®å‰é‚è¼¯: "æ‰‹æŠŠ: é è¨­ selected buttons_settingPanel[0]"
+        // å› ç‚ºæ‰‹æŠŠæ˜¯å°‡ "é è¨­" ç„¦é»è¨­å®šåœ¨é¢æ¿çš„ç¬¬ä¸€å€‹æŒ‰éˆ•ä¸Šã€‚
+        // å„åˆ†é çš„ç„¦é»æœƒç”±æŒ‰éˆ•é»æ“Šå¾Œè½‰ç§»ã€‚
 
-        EventSystem.current.SetSelectedGameObject(null); // ¥ı²M°£
+        EventSystem.current.SetSelectedGameObject(null); // å…ˆæ¸…é™¤
 
-        // ÀË¬d¬O§_¦³³]©w¹w³]«ö¶s¡AÁ×§K³ø¿ù
+        // æª¢æŸ¥æ˜¯å¦æœ‰è¨­å®šæŒ‰éˆ•ï¼Œé¿å…éŒ¯èª¤
         if (buttons_settingPanel.Length > 0 && buttons_settingPanel[0] != null)
         {
-            // ±N EventSystem ªºµJÂI³]©w¨ì±z«ü©wªº¨º­Ó«ö¶s¤W
+            // å°‡ EventSystem çš„ç„¦é»è¨­å®šåˆ°æŒ‡å®šçš„ç¬¬ä¸€å€‹æŒ‰éˆ•ä¸Š
             EventSystem.current.SetSelectedGameObject(buttons_settingPanel[0].gameObject);
-            Debug.Log($"[{this}] ¤w±NUIµJÂI³]©w¨ìÀq»{«ö¶s: {buttons_settingPanel[0].name}");
+            Debug.Log($"[{this}] å·²å°‡UIç„¦é»è¨­å®šåˆ°é è¨­æŒ‰éˆ•: {buttons_settingPanel[0].name}");
         }
     }
 
-    #region === ¥ª°¼4­Ó«ö¶sªº¤èªk(¥Ø«e3­Ó) ===
+    #region === é¢æ¿å°è¦½æŒ‰éˆ•åŠŸèƒ½ ===
     /// <summary>
-    /// Ãö³¬³]¸m­±ªOªº¤½¦@¤èªk (¨Ñµ¹ Input Action ©M«ö¶s©I¥s)
+    /// é—œé–‰è¨­å®šé¢æ¿çš„ä¸»è¦åŠŸèƒ½ (æœƒè¢« Input Action å’ŒæŒ‰éˆ•é»æ“Šå‘¼å«)
     /// </summary>
     public void ClosePanel()
     {
-        // 1. *** PopMap ¼g¦b³o¸Ì ***
-        InputStackManager.Instance.PopMap(); // PopMap() ²{¦b·|¦Û°Ê³B²z·Æ¹«ª¬ºA
+        // 1. *** PopMap æ”¹åœ¨é€™è£¡ ***
+        InputStackManager.Instance.PopMap(); // PopMap() æœƒè‡ªå‹•å‘¼å«ä¸¦å•Ÿç”¨å‰ä¸€å€‹ Map
 
-        // 2. °õ¦æÃö³¬ Panel ªºÅŞ¿è
-        EventSystem.current.SetSelectedGameObject(null); //²M°£©Ò¦³UIµJÂIÁ×§K¥X°İÃD
+        // 2. æ¸…é™¤ EventSystem çš„é¸å–
+        EventSystem.current.SetSelectedGameObject(null); //æ¸…é™¤æ‰‹æŠŠUIç„¦é»é¿å…å‡ºéŒ¯
         
-        // ¬°¤F«OÀI«ì´_¥k°¼Àq»{
+        // æ¢å¾©åˆ†é çš„é è¨­ç‹€æ…‹
         setting.SetActive(true);
         operation.SetActive(false);
 
         settingPanel.SetActive(false);
         titleUI.SetActive(true);
         crossHair.SetActive(true);
-        Debug.Log($"[{this}] ¹CÀ¸³]¸m­±ªO¤wÃö³¬¡C");
+        Debug.Log($"[{this}] è¨­å®šé¢æ¿å·²è¢«é—œé–‰");
     }
 
     /// <summary>
-    /// ÂIÀ» "¹CÀ¸³]¸m" «ö¶s (À³¸j©w¨ì buttons_settingPanel[0])
+    /// é»æ“Š "éŠæˆ²è¨­å®š" æŒ‰éˆ• (å°æ‡‰ buttons_settingPanel[0])
     /// </summary>
     public void OnButtonGameSettingsClicked()
     {
         setting.SetActive(true);
         operation.SetActive(false);
 
-        // ¤â¬`¼Ò¦¡¤U¡A±NµJÂI¤Á´«¨ì¥k°¼ Slider °Ï°ì
+        // æ‰‹æŠŠæ¨¡å¼ä¸‹ï¼Œå°‡ç„¦é»è½‰ç§»åˆ°ç¬¬ä¸€å€‹ Slider ä¸Š
         if (InputDeviceManager.Instance.CurrentInputType == InputDeviceManager.InputType.Gamepad)
         {
             if (sliders_settingPanel.Length > 0 && sliders_settingPanel[0] != null)
@@ -150,14 +154,14 @@ public class SettingPanelUIController : MonoBehaviour
     }
 
     /// <summary>
-    /// ÂIÀ» "¾Ş§@«ü¥Ü" «ö¶s (À³¸j©w¨ì buttons_settingPanel[1])
+    /// é»æ“Š "æ“ä½œèªªæ˜" æŒ‰éˆ• (å°æ‡‰ buttons_settingPanel[1])
     /// </summary>
     public void OnButtonOperationClicked()
     {
         setting.SetActive(false);
         operation.SetActive(true);
 
-        // ¤â¬`¼Ò¦¡¤U¡A±NµJÂI¤Á´«¨ì¥k°¼ operation_scrollRect
+        // æ‰‹æŠŠæ¨¡å¼ä¸‹ï¼Œå°‡ç„¦é»è½‰ç§»åˆ° operation_scrollRect
         if (InputDeviceManager.Instance.CurrentInputType == InputDeviceManager.InputType.Gamepad)
         {
             if (operation_scrollRect != null)
@@ -168,25 +172,33 @@ public class SettingPanelUIController : MonoBehaviour
     }
 
     /// <summary>
-    /// ÂIÀ» "Ãö³¬" ©Î "ªğ¦^" «ö¶s (À³¸j©w¨ì buttons_settingPanel[2] ©Î [3])
+    /// é»æ“Š "é—œé–‰" æˆ– "è¿”å›" æŒ‰éˆ• (å°æ‡‰ buttons_settingPanel[2] æˆ– [3])
     /// </summary>
     public void OnButtonCloseClicked()
     {
-        // Ãö³¬­±ªO
+        // é—œé–‰é¢æ¿
         ClosePanel();
+    }
+
+    /// <summary>
+    /// é€™æ˜¯ä¸€å€‹å…¬é–‹ (public) æ–¹æ³•ï¼Œæ‰€ä»¥ Unity çš„ Button å¯ä»¥å‘¼å«å®ƒã€‚
+    /// </summary>
+    public void QuitGame() //buttons_mainMenuPanel[4]
+    {
+        Application.Quit();
     }
     #endregion
 
     /// <summary>
-    /// ®Ú¾Ú·í«e EventSystem ¿ï¾Üªºª«¥ó¡A§ó·s Setting Panel ¤¤ªº´£¥Ü¹Ï¤ù¡C
-    /// (ÅŞ¿è¦P StartSceneUIController)
+    /// æŒçºŒæª¢æŸ¥ EventSystem çš„é¸å–ç‰©ä»¶ï¼Œæ›´æ–° Setting Panel ä¸Šçš„Slideræç¤ºåœ–ç‰‡ã€‚
+    /// (é‚è¼¯åŒ StartSceneUIController)
     /// </summary>
     private void HandleSliderHintImages()
     {
-        // 1. ¥u¦b 'setting' ¤l­±ªO¶}±Ò®É¤~°õ¦æ¦¹ÅŞ¿è
+        // 1. åªåœ¨ 'setting' åˆ†é å•Ÿç”¨æ™‚æ‰åŸ·è¡Œæ­¤é‚è¼¯
         if (!setting.activeSelf)
         {
-            // ½T«O 'setting' Ãö³¬®É¡A©Ò¦³´£¥Ü³£ÁôÂÃ
+            // å¦‚æœ 'setting' æœªå•Ÿç”¨ï¼Œéš±è—æ‰€æœ‰æç¤ºåœ–
             for (int i = 0; i < images_hint.Length; i++)
             {
                 if (images_hint[i] != null)
@@ -197,20 +209,20 @@ public class SettingPanelUIController : MonoBehaviour
             return;
         }
 
-        // 2. Àò¨ú·í«e¿ï¾Üªºª«¥ó
+        // 2. ç²å–ç•¶å‰é¸å–çš„ç‰©ä»¶
         GameObject currentSelected = EventSystem.current.currentSelectedGameObject;
 
-        // 3. ¹M¾ú©Ò¦³ slider¡A§ó·s¹ïÀ³ hint image ªº¥i¨£©Ê
-        // °²³] sliders_settingPanel ©M images_hint ¼Æ¶q¤@­P
+        // 3. éæ­·æ‰€æœ‰ sliderï¼Œæ›´æ–°å…¶ hint image çš„å¯è¦‹åº¦
+        // å‡è¨­ sliders_settingPanel èˆ‡ images_hint çš„é †åºä¸€è‡´
         for (int i = 0; i < sliders_settingPanel.Length; i++)
         {
-            // ¶i¦æ¦w¥şÀË¬d¡A¨¾¤î°}¦C¥¼³]©w©Îªø«×¤£¤Ç°t
+            // åšå¥½ç©ºå€¼æª¢æŸ¥ï¼Œé¿å…é™£åˆ—é•·åº¦ä¸ç¬¦æˆ–ç©ºå¼•ç”¨
             if (i < images_hint.Length && sliders_settingPanel[i] != null && images_hint[i] != null)
             {
-                // ÀË¬d·í«e¿ï¾Üªºª«¥ó¬O§_¬°²Ä i ­Ó slider
+                // æª¢æŸ¥ç•¶å‰é¸å–çš„ç‰©ä»¶æ˜¯å¦ç‚ºç¬¬ i å€‹ slider
                 bool isSelected = (currentSelected == sliders_settingPanel[i].gameObject);
 
-                // ®Ú¾Ú¬O§_³Q¿ï¤¤¨Ó³]¸m¹ïÀ³ hint image ªº Active ª¬ºA
+                // æ ¹æ“šæ˜¯å¦è¢«é¸å–ä¾†è¨­å®š hint image çš„ Active ç‹€æ…‹
                 images_hint[i].gameObject.SetActive(isSelected);
             }
         }

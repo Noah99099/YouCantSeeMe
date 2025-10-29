@@ -1103,6 +1103,7 @@ MonoBehaviour:
   yinUI: {fileID: 1358306966}
   spineUI: {fileID: 494571057}
   yinVisionVolume: {fileID: 1244382184}
+  yangVisionVolume: {fileID: 832575518}
 --- !u!114 &44230918
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1254,22 +1255,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0d9023071c337a5458eaf17eb23abc6c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  eventID: FinishLock_DiaPos
-  onEventTriggered:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 52907486}
-        m_TargetAssemblyTypeName: DestroyMe, Assembly-CSharp
-        m_MethodName: DestroyObject
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+  eventEntries:
+  - eventID: 
+    onEventTriggered:
+      m_PersistentCalls:
+        m_Calls: []
+  - eventID: 
+    onEventTriggered:
+      m_PersistentCalls:
+        m_Calls: []
+  - eventID: 
+    onEventTriggered:
+      m_PersistentCalls:
+        m_Calls: []
 --- !u!114 &52907488
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10039,7 +10037,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 86.489296}
+  m_AnchoredPosition: {x: 0, y: 157}
   m_SizeDelta: {x: 250.8214, y: 65.8817}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &650945583
@@ -19463,10 +19461,10 @@ Light:
   m_Type: 0
   m_Shape: 0
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_Intensity: 1
+  m_Intensity: 1.5
   m_Range: 10
-  m_SpotAngle: 44.34295
-  m_InnerSpotAngle: 26.965542
+  m_SpotAngle: 70.15485
+  m_InnerSpotAngle: 47.166157
   m_CookieSize: 10
   m_Shadows:
     m_Type: 0
@@ -19522,7 +19520,7 @@ Transform:
   m_GameObject: {fileID: 1201664229}
   serializedVersion: 2
   m_LocalRotation: {x: 0.48394382, y: -0, z: -0, w: 0.8750991}
-  m_LocalPosition: {x: 1.427, y: 2.339, z: 1.303}
+  m_LocalPosition: {x: 1.427, y: 2.013, z: 1.469}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -21658,8 +21656,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1.2519268, y: 0.9999998, z: 0.99999976}
-  m_Center: {x: -0.12596183, y: 0, z: 0}
+  m_Size: {x: 1.2519268, y: 0.9999998, z: 2.65959}
+  m_Center: {x: -0.12596183, y: 0, z: -0.8297961}
 --- !u!114 &1331579471
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -21685,22 +21683,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0d9023071c337a5458eaf17eb23abc6c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  eventID: FinishYangView
-  onEventTriggered:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 1948699529}
-        m_TargetAssemblyTypeName: DestroyMe, Assembly-CSharp
-        m_MethodName: DestroyObject
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+  eventEntries: []
 --- !u!1 &1336338684
 GameObject:
   m_ObjectHideFlags: 0
@@ -27091,6 +27074,7 @@ MonoBehaviour:
   - {fileID: 1818503667}
   - {fileID: 368349698}
   operation_scrollRect: {fileID: 1777897030}
+  mainMenuSceneName: StartScene
 --- !u!114 &1640733875
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -30921,7 +30905,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1851808836}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1640733874}
+        m_TargetAssemblyTypeName: SettingPanelUIController, Assembly-CSharp
+        m_MethodName: QuitGame
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1851808836
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -32361,8 +32357,6 @@ GameObject:
   - component: {fileID: 1948699522}
   - component: {fileID: 1948699525}
   - component: {fileID: 1948699526}
-  - component: {fileID: 1948699528}
-  - component: {fileID: 1948699527}
   - component: {fileID: 1948699529}
   m_Layer: 0
   m_Name: FinishYangView_DiaPos
@@ -32462,78 +32456,47 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0d9023071c337a5458eaf17eb23abc6c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  eventID: CheckHNum_Yang
-  onEventTriggered:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 1948699525}
-        m_TargetAssemblyTypeName: PrepareToYinView, Assembly-CSharp
-        m_MethodName: InvokeYangAction_HNum
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
---- !u!114 &1948699527
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1948699516}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0d9023071c337a5458eaf17eb23abc6c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  eventID: CheckGate_Yang
-  onEventTriggered:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 1948699525}
-        m_TargetAssemblyTypeName: PrepareToYinView, Assembly-CSharp
-        m_MethodName: InvokeYangAction_Gate
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
---- !u!114 &1948699528
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1948699516}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0d9023071c337a5458eaf17eb23abc6c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  eventID: CheckLock_Yang
-  onEventTriggered:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 1948699525}
-        m_TargetAssemblyTypeName: PrepareToYinView, Assembly-CSharp
-        m_MethodName: InvokeYangAction
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+  eventEntries:
+  - eventID: FinishLock_DiaPos
+    onEventTriggered:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 1331579467}
+          m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+          m_MethodName: SetActive
+          m_Mode: 6
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 1
+          m_CallState: 2
+        - m_Target: {fileID: 5350762199903392180}
+          m_TargetAssemblyTypeName: ChangeObjectLayer, Assembly-CSharp
+          m_MethodName: ChangeLayer
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+        - m_Target: {fileID: 8870541908983940245}
+          m_TargetAssemblyTypeName: ChangeObjectLayer, Assembly-CSharp
+          m_MethodName: ChangeLayer
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
 --- !u!114 &1948699529
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -34296,8 +34259,8 @@ Transform:
   m_GameObject: {fileID: 2002494050}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1.5478, y: 0.2129, z: 1.4367}
-  m_LocalScale: {x: 1.6065129, y: 0.39331487, z: 0.70866585}
+  m_LocalPosition: {x: 1.5545, y: 0.2129, z: 0.8181}
+  m_LocalScale: {x: 1.5931873, y: 0.39331487, z: 1.9458953}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -34339,22 +34302,35 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0d9023071c337a5458eaf17eb23abc6c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  eventID: StartLock_DiaPos
-  onEventTriggered:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 2002494056}
-        m_TargetAssemblyTypeName: DestroyMe, Assembly-CSharp
-        m_MethodName: DestroyObject
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+  eventEntries:
+  - eventID: CheckLock_Yang
+    onEventTriggered:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 2002494050}
+          m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+          m_MethodName: SetActive
+          m_Mode: 6
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+        - m_Target: {fileID: 1948699516}
+          m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+          m_MethodName: SetActive
+          m_Mode: 6
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
 --- !u!1 &2011091784
 GameObject:
   m_ObjectHideFlags: 0
@@ -36664,6 +36640,7 @@ GameObject:
   - component: {fileID: 1444619174}
   - component: {fileID: 8816726380380164322}
   - component: {fileID: 8816726380380164323}
+  - component: {fileID: 8816726380380164324}
   m_Layer: 3
   m_Name: L1_HNum
   m_TagString: Untagged
@@ -38684,22 +38661,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0d9023071c337a5458eaf17eb23abc6c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  eventID: Gate_NoInteractL
-  onEventTriggered:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 5350762199903392180}
-        m_TargetAssemblyTypeName: ChangeObjectLayer, Assembly-CSharp
-        m_MethodName: ChangeLayer
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+  eventEntries:
+  - eventID: CheckGate_Yang
+    onEventTriggered:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 1948699525}
+          m_TargetAssemblyTypeName: PrepareToYinView, Assembly-CSharp
+          m_MethodName: InvokeYangAction_Gate
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
 --- !u!114 &5350762199903392180
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -39639,6 +39617,35 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   yangDialogueGraph: {fileID: 11400000, guid: a9099fc4f7ba30e40a6952c1cf184cf9, type: 2}
   yinDialogueGraph: {fileID: 11400000, guid: d75507c3dfeac3947a986b4915450e67, type: 2}
+--- !u!114 &8816726380380164324
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 381171150214237389}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0d9023071c337a5458eaf17eb23abc6c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  eventEntries:
+  - eventID: CheckHNum_Yang
+    onEventTriggered:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 1948699525}
+          m_TargetAssemblyTypeName: PrepareToYinView, Assembly-CSharp
+          m_MethodName: InvokeYangAction_HNum
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
 --- !u!33 &8870541908983940238
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -39740,22 +39747,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0d9023071c337a5458eaf17eb23abc6c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  eventID: Gate_NoInteractR
-  onEventTriggered:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 8870541908983940245}
-        m_TargetAssemblyTypeName: ChangeObjectLayer, Assembly-CSharp
-        m_MethodName: ChangeLayer
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+  eventEntries: []
 --- !u!114 &8870541908983940245
 MonoBehaviour:
   m_ObjectHideFlags: 0

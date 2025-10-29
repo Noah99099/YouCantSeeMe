@@ -22,8 +22,9 @@ public class ViewManager : MonoBehaviour
     public SkeletonGraphic spineUI;
 
     [Header("URP 濾鏡控制")]
-    [Tooltip("請將代表「陰視野」效果的那個 Volume 物件拖到這裡")]
+    [Tooltip("請將代表陰陽視野效果的那個 Volume 物件拖到這裡")]
     public Volume yinVisionVolume;
+    public Volume yangVisionVolume;
 
     // 腳本設置：單例、接收 ViewType
     public static ViewManager Instance { get; private set; }
@@ -67,13 +68,16 @@ public class ViewManager : MonoBehaviour
             spineUI.AnimationState.SetAnimation(0, BLINK_IDLE_ANIM, true);
         }
 
-        // 初始化陰視野濾鏡的權重為 0 (關閉)
+        // 【修正 1】: 在 Awake 時就把兩個 Volume 的初始權重都設定好
         if (yinVisionVolume != null)
         {
-            yinVisionVolume.weight = 0f;
+            yinVisionVolume.weight = 0f; // 陰視野 (Yin) 預設關閉
+        }
+        if (yangVisionVolume != null)
+        {
+            yangVisionVolume.weight = 1f; // 陽視野 (Yang) 預設開啟
         }
     }
-
     public void ToggleView()
     {
         if (isAnimating) return;
@@ -93,7 +97,7 @@ public class ViewManager : MonoBehaviour
     {
         // 嘗試把方法加過來，因為目前沒有切陰視野的效果
         // 哇 超血紅
-        StartVolumeFade(1, 1);
+        StartVolumeFade(1, 0, 1);
 
         isAnimating = true;
         // 播放陽視圖到陰視圖的過渡動畫
@@ -115,8 +119,8 @@ public class ViewManager : MonoBehaviour
     // 切換到陽視圖的協程
     private IEnumerator SwitchToYangView()
     {
-        // 嘗試把方法加過來，因為目前沒有切陽視野的效果
-        StartVolumeFade(0, 1);
+        // 【修正 2】: 陰視野 (Yin) 設為 0, 陽視野 (Yang) 設為 1
+        StartVolumeFade(0, 1, 1);
 
         isAnimating = true;
         // 播放陰視圖到陽視圖的過渡動畫
@@ -138,45 +142,57 @@ public class ViewManager : MonoBehaviour
     /// <summary>
     /// 開始一個新的 Volume 權重漸變
     /// </summary>
-    /// <param name="targetWeight">目標權重 (0 或 1)</param>
+    /// <param name="yinTargetWeight">陰視野的目標權重 (0 或 1)</param>
+    /// <param name="yangTargetWeight">陽視野的目標權重 (0 或 1)</param>
     /// <param name="duration">漸變持續時間</param>
-    private void StartVolumeFade(float targetWeight, float duration)
+    private void StartVolumeFade(float yinTargetWeight, float yangTargetWeight, float duration) // 【修改】增加 yaㄒngTargetWeight 參數
     {
-        if (yinVisionVolume == null) return;
+        // 【修改】檢查兩個 Volume 是否存在
+        if (yinVisionVolume == null || yangVisionVolume == null) return;
 
         // 如果上一個漸變還在跑，先停止它
         if (volumeFadeCoroutine != null)
         {
             StopCoroutine(volumeFadeCoroutine);
         }
-        volumeFadeCoroutine = StartCoroutine(FadeVolumeWeight(targetWeight, duration));
+        // 【修改】傳遞兩個目標權重
+        volumeFadeCoroutine = StartCoroutine(FadeVolumeWeight(yinTargetWeight, yangTargetWeight, duration));
     }
 
     /// <summary>
     /// 實際執行漸變的協程
     /// </summary>
-    private IEnumerator FadeVolumeWeight(float targetWeight, float duration)
+    private IEnumerator FadeVolumeWeight(float yinTargetWeight, float yangTargetWeight, float duration) // 【修改】增加 yangTargetWeight 參數
     {
-        float startWeight = yinVisionVolume.weight;
+        // 【修改】獲取兩個 Volume 的起始權重
+        float yinStartWeight = yinVisionVolume.weight;
+        float yangStartWeight = yangVisionVolume.weight;
         float time = 0;
 
         // 處理 duration 為 0 的情況
         if (duration <= 0)
         {
-            yinVisionVolume.weight = targetWeight;
+            yinVisionVolume.weight = yinTargetWeight;
+            yangVisionVolume.weight = yangTargetWeight; // 【修改】
             yield break; // 結束協程
         }
 
         while (time < duration)
         {
-            // 使用 Lerp (線性插值) 來平滑計算當前的權重
-            yinVisionVolume.weight = Mathf.Lerp(startWeight, targetWeight, time / duration);
+            float t = time / duration; // 計算插值比例
+            
+            // 【修改】使用 Lerp (線性插值) 來平滑計算兩個 Volume 當前的權重
+            yinVisionVolume.weight = Mathf.Lerp(yinStartWeight, yinTargetWeight, t);
+            yangVisionVolume.weight = Mathf.Lerp(yangStartWeight, yangTargetWeight, t);
+            
             time += Time.deltaTime; // 更新經過的時間
             yield return null; // 等待下一幀
         }
 
-        // 循環結束後，確保權重被精確設置為目標值
-        yinVisionVolume.weight = targetWeight;
+        // 【修改】循環結束後，確保權重被精確設置為目標值
+        yinVisionVolume.weight = yinTargetWeight;
+        yangVisionVolume.weight = yangTargetWeight;
+        
         volumeFadeCoroutine = null;
     }
 
