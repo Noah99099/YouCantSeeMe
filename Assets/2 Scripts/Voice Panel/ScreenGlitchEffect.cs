@@ -10,6 +10,7 @@ public class ScreenGlitchEffect : MonoBehaviour
 {
     private Volume glitchVolume;
     private ChromaticAberration chromaticAberration; // 我們要控制的 "色差" 效果
+    private FilmGrain filmGrain; // 自己綁的膠卷效果
 
     void Awake()
     {
@@ -27,6 +28,13 @@ public class ScreenGlitchEffect : MonoBehaviour
             return;
         }
 
+        // 嘗試從 Profile 中獲取 "膠捲" 效果
+        if (!glitchVolume.profile.TryGet(out filmGrain))
+        {
+            Debug.LogError("[ScreenGlitchEffect] 在 Volume Profile 中找不到 Film Grain (膠捲) 效果！請確保您已 'Add Override'。", this);
+            return;
+        }
+
         // 遊戲開始時確保特效是關閉的
         StopGlitch();
     }
@@ -37,11 +45,14 @@ public class ScreenGlitchEffect : MonoBehaviour
     public void SetGlitchIntensity(float intensity)
     {
         if (chromaticAberration == null) return;
+        if (filmGrain == null) return;
 
-        float clampedIntensity = Mathf.Clamp01(intensity);
+        float clampedIntensity = Mathf.Clamp01(intensity); // 色差用
+        float filmClampedIntensity = Mathf.Clamp01(intensity); // 膠捲用
 
         // URP 中，參數需要使用 .value 來設置
         chromaticAberration.intensity.value = clampedIntensity;
+        filmGrain.intensity.value = filmClampedIntensity;
     }
 
     /// <summary>

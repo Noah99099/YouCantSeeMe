@@ -24,9 +24,6 @@ public class SettingPanelUIController : MonoBehaviour
     public Image[] images_hint; // 對應Slider的提示圖
     [Header("操作說明ScrollRect")]
     public ScrollRect operation_scrollRect;
-    [Header("場景名稱")]
-    [Tooltip("您在 Build Settings 中的主選單場景名稱")]
-    [SerializeField] private string mainMenuSceneName = "MainMenu";
 
     private void OnEnable()
     {

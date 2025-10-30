@@ -22,7 +22,9 @@ public class PlayerInteraction : MonoBehaviour
 
     // ----- [新需求] 聲音物品 -----
     [Header("聲音物品設定")]
-    [SerializeField] private Transform cornerAnchor; // 請將 Camera 的子物件 cornerAnchor 拖曳到此
+    [SerializeField] private Transform cornerAnchor; // 請將 Camera 的子物件 cornerAnchor 拖曳到此[Header("特效與聲音 (可選)")]
+    [Tooltip("獲得聲音物品的雜音 AudioSource")]
+    [SerializeField] private AudioSource staticNoiseSource;
 
     [Tooltip("請將 Main Camera (或掛載 ScreenGlitchEffect 腳本的物件) 拖曳到此")]
     [SerializeField] public ScreenGlitchEffect glitchController; // [修改] 引用特效控制器
@@ -59,6 +61,12 @@ public class PlayerInteraction : MonoBehaviour
 
         playerCamera = Camera.main;
         IsVoiceItemActive = false; // 初始化狀態：沒有使用聲音物品
+
+        if (staticNoiseSource != null) // 初始不播放「獲得聲音物品雜音」
+        {
+            staticNoiseSource.volume = 0;
+            staticNoiseSource.Stop();
+        }
     }
     
     void Start()
@@ -273,6 +281,8 @@ public class PlayerInteraction : MonoBehaviour
             else if (hitObject.TryGetComponent<InteractableVoiceItem>(out var voiceItem)) //獲得物件，進聲音面板
             {
                 Debug.Log($"Pressed button: {voiceItem.voiceItemData.itemName}");
+                // 新增一次雜音
+                
                 // [修改] 交互成功，觸發花屏特效
                 StartCoroutine(PlayGlitchEffectOnce());
 
@@ -529,12 +539,25 @@ public class PlayerInteraction : MonoBehaviour
         if (glitchController == null) yield break;
 
         Debug.Log("播放花屏特效 (1秒)");
-        glitchController.PlayOneShotGlitch(); // <--- 呼叫新方法
-
+        glitchController.PlayOneShotGlitch(); // <--- 呼叫 ScreenGlitchEffect.cs
+        StartCoroutine(PlayNoiseForDuration(1f)); // 要手動打數字
         yield return new WaitForSeconds(1.0f);
-
-        glitchController.StopGlitch(); // <--- 呼叫新方法
+        glitchController.StopGlitch(); // <--- 呼叫 ScreenGlitchEffect.cs
         Debug.Log("花屏特效結束");
+    }
+
+    /// <summary>
+    /// [新] 拾取聲音物品時觸發一次雜音
+    /// </summary>
+    /// <param name="duration">時長</param>
+    /// <returns></returns>
+    private IEnumerator PlayNoiseForDuration(float duration)
+    {
+        staticNoiseSource.volume = 1;
+        staticNoiseSource.Play();
+        yield return new WaitForSeconds(duration);
+        staticNoiseSource.Stop();
+        staticNoiseSource.volume = 0;
     }
 
     #endregion
