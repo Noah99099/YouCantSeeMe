@@ -1,3 +1,4 @@
+// CarouselController.cs
 using UnityEngine;
 using UnityEngine.UI;
 

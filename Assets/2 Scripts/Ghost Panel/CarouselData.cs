@@ -1,3 +1,4 @@
+// CarouselData.cs
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "NewCarouselData", menuName = "Carousel/CarouselData")]

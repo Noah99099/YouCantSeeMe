@@ -1,3 +1,4 @@
+// RolePastManager.cs
 using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
