@@ -1,72 +1,43 @@
-// ÀÉ®×¦WºÙ: ScreenGlitchEffect.cs
-// (½Ğ±N¦¹¸}¥»±¾¸ü¨ì±zªº Main Camera ¤W¡A»P Volume ¤¸¥ó©ñ¦b¤@°_)
-
+// æª”æ¡ˆåç¨±: ScreenGlitchEffect.cs
 using UnityEngine;
-using UnityEngine.Rendering; // ¤Ş¥Î Rendering ®Ö¤ß
-using UnityEngine.Rendering.Universal; // ¤Ş¥Î URP
+using UnityEngine.Rendering;
 
-[RequireComponent(typeof(Volume))]
 public class ScreenGlitchEffect : MonoBehaviour
 {
-    private Volume glitchVolume;
-    private ChromaticAberration chromaticAberration; // §Ú­Ì­n±±¨îªº "¦â®t" ®ÄªG
-    private FilmGrain filmGrain; // ¦Û¤v¸jªº½¦¨÷®ÄªG
+    // æ‹–å…¥æ›è¼‰æ­¤è…³æœ¬çš„ "Glitch" Volume ç‰©ä»¶
+    [Tooltip("è«‹å°‡æ­¤è…³æœ¬æ‰€åœ¨çš„ Volume ç‰©ä»¶æ‹–åˆ°é€™è£¡")]
+    public Volume glitchVolume;
 
     void Awake()
     {
-        glitchVolume = GetComponent<Volume>();
-        if (glitchVolume == null || glitchVolume.profile == null)
+        if (glitchVolume == null)
         {
-            Debug.LogError("[ScreenGlitchEffect] §ä¤£¨ì Volume ©Î Volume Profile¡I", this);
+            glitchVolume = GetComponent<Volume>(); // å˜—è©¦è‡ªå‹•ç²å–
+        }
+        if (glitchVolume == null)
+        {
+            Debug.LogError("[ScreenGlitchEffect] æ‰¾ä¸åˆ° Volume å…ƒä»¶ï¼", this);
             return;
         }
 
-        // ¹Á¸Õ±q Profile ¤¤Àò¨ú "¦â®t" ®ÄªG
-        if (!glitchVolume.profile.TryGet(out chromaticAberration))
-        {
-            Debug.LogError("[ScreenGlitchEffect] ¦b Volume Profile ¤¤§ä¤£¨ì Chromatic Aberration (¦â®t) ®ÄªG¡I½Ğ½T«O±z¤w 'Add Override'¡C", this);
-            return;
-        }
-
-        // ¹Á¸Õ±q Profile ¤¤Àò¨ú "½¦±²" ®ÄªG
-        if (!glitchVolume.profile.TryGet(out filmGrain))
-        {
-            Debug.LogError("[ScreenGlitchEffect] ¦b Volume Profile ¤¤§ä¤£¨ì Film Grain (½¦±²) ®ÄªG¡I½Ğ½T«O±z¤w 'Add Override'¡C", this);
-            return;
-        }
-
-        // ¹CÀ¸¶}©l®É½T«O¯S®Ä¬OÃö³¬ªº
+        // éŠæˆ²é–‹å§‹æ™‚ç¢ºä¿ç‰¹æ•ˆ (Volume) æ˜¯é—œé–‰çš„
         StopGlitch();
     }
 
-    /// <summary>
-    /// ³]¸mªá«Ì±j«× (0.0 ¨ì 1.0)
-    /// </summary>
+    // å°‡å¼·åº¦ 0-1 æ˜ å°„åˆ° Volume çš„ Weight 0-1
     public void SetGlitchIntensity(float intensity)
     {
-        if (chromaticAberration == null) return;
-        if (filmGrain == null) return;
-
-        float clampedIntensity = Mathf.Clamp01(intensity); // ¦â®t¥Î
-        float filmClampedIntensity = Mathf.Clamp01(intensity); // ½¦±²¥Î
-
-        // URP ¤¤¡A°Ñ¼Æ»İ­n¨Ï¥Î .value ¨Ó³]¸m
-        chromaticAberration.intensity.value = clampedIntensity;
-        filmGrain.intensity.value = filmClampedIntensity;
+        if (glitchVolume == null) return;
+        glitchVolume.weight = Mathf.Clamp01(intensity);
     }
 
-    /// <summary>
-    /// [·s] ±Mªù¥Î©ó "¬B¨ú" ®É¼½©ñ¤@¦¸©Ê¯S®Ä
-    /// </summary>
+    // å‘¼å«æ™‚ï¼Œå°‡ Weight è¨­ç‚º 1 (é–‹å•Ÿ)
     public void PlayOneShotGlitch()
     {
-        // PlayerInteraction ¤¤ªº Coroutine ·|³B²z 1 ¬íªº«ùÄò®É¶¡
-        SetGlitchIntensity(1.0f); // ³]¸m¬°³Ì¤j±j«× (±z¥i¥H½Õ¾ã 1.0)
+        SetGlitchIntensity(1.0f);
     }
 
-    /// <summary>
-    /// [·s] ±Mªù¥Î©ó°±¤î©Ò¦³¯S®Ä
-    /// </summary>
+    // å‘¼å«æ™‚ï¼Œå°‡ Weight è¨­ç‚º 0 (é—œé–‰)
     public void StopGlitch()
     {
         SetGlitchIntensity(0.0f);
