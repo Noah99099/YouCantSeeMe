@@ -7511,9 +7511,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_IsGlobal: 1
-  priority: 0
+  priority: 20
   blendDistance: 0
-  weight: 1
+  weight: 0
   sharedProfile: {fileID: 11400000, guid: af29745c7c0fbc5468b46ee51183372d, type: 2}
 --- !u!114 &330585553
 MonoBehaviour:
@@ -7527,6 +7527,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dbbbc3d8c11a7f94db712debf8c3b0fd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  glitchVolume: {fileID: 330585552}
 --- !u!1 &331307903
 GameObject:
   m_ObjectHideFlags: 0
@@ -14895,7 +14896,7 @@ RectTransform:
   m_AnchorMax: {x: 0, y: 1}
   m_AnchoredPosition: {x: 23.8, y: -11.94}
   m_SizeDelta: {x: 100, y: 100}
-  m_Pivot: {x: 0, y: 1}
+  m_Pivot: {x: 0.5, y: 1}
 --- !u!114 &752219573
 MonoBehaviour:
   m_ObjectHideFlags: 0
