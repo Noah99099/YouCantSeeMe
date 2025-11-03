@@ -27,8 +27,8 @@ public class TutorialCarouselManager : MonoBehaviour
     public GameObject imagePrefab;       // 要在 Content 中生成的圖片 Prefab
 
     [Header("Pagination Colors")]
-    public Color dotActiveColor = Color.white;
-    public Color dotInactiveColor = Color.gray;
+    public Color dotActiveColor;
+    public Color dotInactiveColor;
 
     private TutorialData currentTutorial;
     private Image[] dots;
@@ -121,7 +121,16 @@ public class TutorialCarouselManager : MonoBehaviour
         for (int i = 0; i < currentTutorial.slides.Length; i++)
         {
             GameObject dot = Instantiate(dotPrefab, paginationPanel);
-            dots[i] = dot.GetComponent<Image>();
+            //dots[i] = dot.GetComponent<Image>();
+
+            Image dotImage = dot.GetComponent<Image>(); //因為沒有正確打開所以改這樣
+
+            if (dotImage != null)
+            {
+                dotImage.enabled = true; // <-- 在這裡強制啟用
+            }
+
+            dots[i] = dotImage; //修改到這裡
         }
 
         // 5. 初始化到第一頁

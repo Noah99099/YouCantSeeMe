@@ -24,8 +24,10 @@ public class TutorialTrigger : MonoBehaviour
         StartCoroutine(ShowTutorialAfterDelay(tutorialToShow[1]));
     }
 
-    public void CaseRecordBook() // 使用紀錄簿（物、鬼、聲、組合）
+    public void CaseRecordBook() // 使用紀錄簿（物、鬼、聲、組合） + 平面圖
     {
+        // 目前規劃是先顯示紀錄簿後接著平面圖
+        // 只能寫在一起
         StartCoroutine(ShowTutorialAfterDelay(tutorialToShow[2]));
     }
 

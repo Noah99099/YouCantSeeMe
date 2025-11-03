@@ -11,6 +11,8 @@ public class ItemData : ScriptableObject
     public Sprite itemImage; //物件圖片
     public Sprite icon; //物件圖標
     public string itemName; //物件名稱文本
+    [Header("基本資訊")]
+    public bool isClueItem;
 
     [TextArea(3,10)]
     public string description; // 物品描述文本
