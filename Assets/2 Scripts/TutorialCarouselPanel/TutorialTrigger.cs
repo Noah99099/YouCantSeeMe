@@ -31,11 +31,6 @@ public class TutorialTrigger : MonoBehaviour
         StartCoroutine(ShowTutorialAfterDelay(tutorialToShow[2]));
     }
 
-    public void Map() // 使用平面圖
-    {
-        StartCoroutine(ShowTutorialAfterDelay(tutorialToShow[3]));
-    }
-
     /// <summary>
     /// 啟動一個協程 (Coroutine)，等待一幀後再顯示教學。
     /// </summary>

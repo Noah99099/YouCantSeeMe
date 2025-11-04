@@ -7,6 +7,7 @@ public class VoiceItemData : ScriptableObject
     [Header("UI 元件")]
     public string itemName; //名稱
     public Sprite voiceIcon;   // 對應聲音格子的圖片
+    public string voiceItemID; // 觸發對話用ID
 
     [Header("聲音物品模型")]
     public GameObject voiceItem;

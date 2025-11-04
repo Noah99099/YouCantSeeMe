@@ -287,6 +287,18 @@ public class PlayerInteraction : MonoBehaviour
                 StartCoroutine(PlayGlitchEffectOnce());
 
                 VoiceItemManager.Instance.AddItem(voiceItem.voiceItemData);
+
+                // 獲得聲音物件觸發的對話
+                if (voiceItem.voiceItemData.voiceItemID == "BulletWarhead_Kitchen") //廚房的子彈
+                {
+                    // 觸發對話事件！
+                    DialogueManager.Instance.TriggerDialogueByEvent("BulletWarhead_Kitchen");
+                }
+                else if (voiceItem.voiceItemData.voiceItemID == "BulletWarhead_DiningRoom") //飯廳的子彈
+                {
+                    DialogueManager.Instance.TriggerDialogueByEvent("BulletWarhead_DiningRoom");
+                }
+
                 Destroy(hitObject);
                 HidePrompt();
             }

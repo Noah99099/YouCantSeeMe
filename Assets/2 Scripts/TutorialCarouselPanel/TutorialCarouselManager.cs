@@ -2,6 +2,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro; // 記得引入 TextMeshPro
+using System.Collections; // 為了 IEnumator (雖然這個版本沒用到，但備用方案會用到)
 
 /// <summary>
 /// 專門管理教學指示 (Tutorial) 的 Carousel 腳本。
@@ -116,11 +117,17 @@ public class TutorialCarouselManager : MonoBehaviour
         // 建議: 在 contentRect (Content 物件) 上掛載一個 HorizontalLayoutGroup
         // 並設定 Child Alignment, Spacing, Padding，這樣圖片會自動排好。
 
+        // --- 解決方案：在這裡加入 ---
+        // 強制 contentRect 立即重新計算其排版和大小
+        // (記得你的腳本頂部要有 using UnityEngine.UI;)
+        LayoutRebuilder.ForceRebuildLayoutImmediate(contentRect);
+        // --- 結束 ---
+
         // 4. 建立新的 Dots
         dots = new Image[currentTutorial.slides.Length];
         for (int i = 0; i < currentTutorial.slides.Length; i++)
         {
-            GameObject dot = Instantiate(dotPrefab, paginationPanel);
+            GameObject dot = Instantiate(dotPrefab, paginationPanel); //報錯
             //dots[i] = dot.GetComponent<Image>();
 
             Image dotImage = dot.GetComponent<Image>(); //因為沒有正確打開所以改這樣
@@ -128,9 +135,14 @@ public class TutorialCarouselManager : MonoBehaviour
             if (dotImage != null)
             {
                 dotImage.enabled = true; // <-- 在這裡強制啟用
+                dots[i] = dotImage;
+            }
+            else
+            {
+                // 如果 prefab 錯誤，dots[i] 會是 null，並在這裡報錯
+                Debug.LogError("dotPrefab 缺少 Image 元件！", dot);
             }
 
-            dots[i] = dotImage; //修改到這裡
         }
 
         // 5. 初始化到第一頁
@@ -216,7 +228,13 @@ public class TutorialCarouselManager : MonoBehaviour
         // 2. 更新 Dots 顏色
         for (int i = 0; i < dots.Length; i++)
         {
-            dots[i].color = (i == currentIndex) ? dotActiveColor : dotInactiveColor;
+            // --- [健壯性修改] ---
+            // 增加 Null 檢查，避免 prefab 錯誤時導致報錯
+            if (dots[i] != null)
+            {
+                dots[i].color = (i == currentIndex) ? dotActiveColor : dotInactiveColor;
+            }
+            // --- 結束修改 ---
         }
 
         // 3. 更新箭頭可否點擊 (在第一頁不能按左，在最後一頁不能按右)
