@@ -19,9 +19,13 @@ MonoBehaviour:
     correctClueID: PINEAPPLE_001
   - requiredClueType: 1
     hintText: "\u67D0\u89D2\u8272\u63D0\u8D77\u4ECA\u5929\u8CB7\u7684\u6C34\u679C\u5F88\u91CD"
-    correctClueID: MEM_LiChunMei_LiChunMei1-1
+    correctClueID: R401
   - requiredClueType: 2
     hintText: "\u5480\u56BC\u7684\u8072\u97F3"
     correctClueID: SOUND_CHEW_B
   successMessage: "C\u5403\u6389\u4E86\u9CF3\u68A8"
-  failureMessage: "\u6709\u4E00\u500B\u932F\u8AA4"
+  failureMessages:
+  - "\u6709\u4E00\u500B\u932F\u8AA4"
+  - "\u6709\u5169\u500B\u932F\u8AA4"
+  - "\u6709\u4E09\u500B\u932F\u8AA4"
+  - "\u5168\u90E8\u932F\u8AA4"

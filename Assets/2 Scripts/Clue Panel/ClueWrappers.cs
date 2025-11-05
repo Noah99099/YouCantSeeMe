@@ -36,9 +36,8 @@ public class MemoryClueWrapper : IClue
         _index = index;
     }
 
-    // !!重要!! 回憶的 ClueID 使用 "MEM_角色名_索引" (例如: MEM_角色C_1)
-    // 這樣與你的範例 "角色C-1" 邏輯一致
-    public string ClueID => $"MEM_{_role.roleName}_{_index + 1}";
+    // !!重要!! 回憶的 ClueID 現在使用 CarouselData 的 .name 屬性 (例如: "R101")
+    public string ClueID => _memory.name;
 
     // 物品標題 (例如 "角色A的2回憶")
     public string ClueName => $"[{_role.roleName}的回憶 {_index + 1}]";

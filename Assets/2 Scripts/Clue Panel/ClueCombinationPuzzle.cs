@@ -30,6 +30,7 @@ public class ClueCombinationPuzzle : ScriptableObject
     // 組合正確時的描述文本
     public string successMessage; // (例如 "C吃掉了鳳梨")
 
-    // 組合不正確時的描述文本 (可以擴展為多個)
-    public string failureMessage; // (例如 "有一個錯誤")
+    [Header("組合失敗的訊息")]
+    [Tooltip("請依順序填入錯誤訊息：\n[0] = 1 個錯誤\n[1] = 2 個錯誤\n[2] = 3 個錯誤...")]
+    public List<string> failureMessages = new List<string>();
 }

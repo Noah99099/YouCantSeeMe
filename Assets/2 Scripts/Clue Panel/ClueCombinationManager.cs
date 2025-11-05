@@ -110,7 +110,7 @@ public class ClueCombinationManager : MonoBehaviour
     {
         ClueCombinationPuzzle puzzle = allPuzzles[currentPuzzleIndex];
 
-        // 檢查是否所有格子都填滿了
+        // 1. 檢查是否所有格子都填滿了
         bool allFilled = true;
         for (int i = 0; i < puzzle.clueSlots.Count; i++)
         {
@@ -127,26 +127,54 @@ public class ClueCombinationManager : MonoBehaviour
             return;
         }
 
-        bool allCorrect = true;
+        // 2. [新] 計算錯誤的數量
+        // (不再使用 allCorrect bool，而是用 incorrectCount)
+        int incorrectCount = 0;
         foreach (var slotDef in puzzle.clueSlots.Select((value, i) => new { i, value }))
         {
-            if (!_currentPuzzleState.ContainsKey(slotDef.i) ||
-                _currentPuzzleState[slotDef.i] != slotDef.value.correctClueID)
+            // 既然 allFilled 為 true, _currentPuzzleState 必定包含 key
+            if (_currentPuzzleState[slotDef.i] != slotDef.value.correctClueID)
             {
-                allCorrect = false;
-                break;
+                incorrectCount++;
             }
         }
 
-        if (allCorrect)
+        // 3. [新] 根據錯誤數量顯示訊息
+        if (incorrectCount == 0)
         {
+            // 組合正確
             puzzleUI.SetResultMessage(puzzle.successMessage, Color.green);
             puzzleUI.LockAllSlots();
             puzzleUI.ShowConnectionLine();
         }
         else
         {
-            puzzleUI.SetResultMessage(puzzle.failureMessage, Color.yellow);
+            // 組合錯誤
+            string message;
+
+            // 檢查使用者是否有在 Inspector 中填入 failureMessages
+            if (puzzle.failureMessages == null || puzzle.failureMessages.Count == 0)
+            {
+                message = "組合不正確"; // 預設的備用訊息
+            }
+            else
+            {
+                // 1 個錯誤 -> 索引 0
+                // 2 個錯誤 -> 索引 1
+                int messageIndex = incorrectCount - 1;
+
+                // 防止索引超出範圍 (例如 4 個全錯，但只定義了 3 條訊息)
+                if (messageIndex >= puzzle.failureMessages.Count)
+                {
+                    // 就使用最後一條可用的錯誤訊息
+                    messageIndex = puzzle.failureMessages.Count - 1;
+                }
+
+                message = puzzle.failureMessages[messageIndex];
+            }
+
+            // 顯示對應的錯誤訊息
+            puzzleUI.SetResultMessage(message, Color.yellow);
         }
     }
 
@@ -218,17 +246,20 @@ public class ClueCombinationManager : MonoBehaviour
         VoiceItemData sound = VoiceItemManager.Instance.items.FirstOrDefault(x => x.voiceItemID == clueID);
         if (sound != null && VoiceItemManager.Instance.IsItemUsed(sound)) return new SoundClueWrapper(sound);
 
-        // 3. 搜尋回憶 (ID = "MEM_角色名_索引")
-        if (clueID.StartsWith("MEM_"))
+        // 3. 搜尋回憶 (ID = CarouselData.name, 例如: "R101", "R401")
+        // (我們假設所有回憶 ID 都以 'R' 開頭作為快速過濾)
+        if (clueID.StartsWith("R"))
         {
             foreach (RoleData role in playerCollectedRoles)
             {
                 for (int i = 0; i < role.carousels.Length; i++)
                 {
-                    string memID = $"MEM_{role.roleName}_{i + 1}";
-                    if (memID == clueID)
+                    CarouselData memory = role.carousels[i];
+
+                    // 檢查 CarouselData (ScriptableObject) 的 .name 屬性
+                    if (memory != null && memory.name == clueID)
                     {
-                        return new MemoryClueWrapper(role, role.carousels[i], i);
+                        return new MemoryClueWrapper(role, memory, i);
                     }
                 }
             }
