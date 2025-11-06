@@ -57,7 +57,11 @@ public class ClueCombinationManager : MonoBehaviour
         // [更新] 傳入 "this" (manager) 讓 UI 可以回頭查找 ClueID
         puzzleUI.DisplayPuzzle(puzzle, _currentPuzzleState, this, OnSlotClicked);
 
-        inventoryGrid.Hide();
+        // 顯示一個「空」的左側網格
+        // (InventoryClueGrid.cs 的 Show 邏輯會處理 clues 列表為空的情況，只顯示面板，不顯示格子)
+        inventoryGrid.Show(new List<IClue>(), EClueType.Item, OnGridItemClicked);
+
+        // 隱藏詳細資訊面板
         detailsPanel.Hide();
     }
 
@@ -71,6 +75,7 @@ public class ClueCombinationManager : MonoBehaviour
         _currentSelectedSlot = slot;
         detailsPanel.Hide();
 
+        // [正常邏輯] 點擊後，用符合條件的線索「重新填充」左側網格
         List<IClue> eligibleClues = GetEligibleClues(slot.RequiredClueType);
         inventoryGrid.Show(eligibleClues, slot.RequiredClueType, OnGridItemClicked);
     }
@@ -95,7 +100,9 @@ public class ClueCombinationManager : MonoBehaviour
         _currentPuzzleState[_currentSelectedSlot.SlotIndex] = _currentSelectedClue.ClueID;
         // TODO: SaveStateForPuzzle(allPuzzles[currentPuzzleIndex].name, _currentPuzzleState);
 
-        inventoryGrid.Hide();
+        // [!!] 修正 #3 (補充)
+        // 填入物品後，左側網格恢復為「空」狀態，而不是隱藏
+        inventoryGrid.Show(new List<IClue>(), EClueType.Item, OnGridItemClicked);
         detailsPanel.Hide();
         _currentSelectedSlot = null;
         _currentSelectedClue = null;
@@ -109,10 +116,11 @@ public class ClueCombinationManager : MonoBehaviour
     private void CheckCombination()
     {
         ClueCombinationPuzzle puzzle = allPuzzles[currentPuzzleIndex];
+        int totalSlots = puzzle.clueSlots.Count; // [新] 獲取右側格子總數
 
         // 1. 檢查是否所有格子都填滿了
         bool allFilled = true;
-        for (int i = 0; i < puzzle.clueSlots.Count; i++)
+        for (int i = 0; i < totalSlots; i++)
         {
             if (!_currentPuzzleState.ContainsKey(i) || string.IsNullOrEmpty(_currentPuzzleState[i]))
             {
@@ -143,7 +151,7 @@ public class ClueCombinationManager : MonoBehaviour
         if (incorrectCount == 0)
         {
             // 組合正確
-            puzzleUI.SetResultMessage(puzzle.successMessage, Color.green);
+            puzzleUI.SetResultMessage(puzzle.successMessage, Color.green); // 可以再調顏色
             puzzleUI.LockAllSlots();
             puzzleUI.ShowConnectionLine();
         }
@@ -174,10 +182,26 @@ public class ClueCombinationManager : MonoBehaviour
             }
 
             // 顯示對應的錯誤訊息
-            puzzleUI.SetResultMessage(message, Color.yellow);
+            // [新] 決定錯誤訊息的顏色
+            Color failureColor;
+
+            // 檢查錯誤數量是否等於總格子數 (例如 4 錯 / 4 格)
+            if (incorrectCount == totalSlots)
+            {
+                // 全錯
+                failureColor = Color.red;
+            }
+            else
+            {
+                // 部分錯誤 (例如 1, 2, 3 錯 / 4 格)
+                failureColor = Color.yellow;
+            }
+
+            // 顯示對應的錯誤訊息和 [新] 顏色
+            puzzleUI.SetResultMessage(message, failureColor);
+            // --- [!!] 修改結束 [!!] ---
         }
     }
-
 
     /// <summary>
     /// [已更新] 獲取所有「符合條件」的線索 (核心過濾邏輯)

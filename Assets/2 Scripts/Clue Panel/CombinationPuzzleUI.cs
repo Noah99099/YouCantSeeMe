@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using System;
 using System.Collections.Generic;
 
 /// <summary>
@@ -42,11 +43,12 @@ public class CombinationPuzzleUI : MonoBehaviour
     /// [已更新] 顯示一個新的謎題
     /// </summary>
     public void DisplayPuzzle(ClueCombinationPuzzle puzzle,
-                              Dictionary<int, string> savedState,
-                              ClueCombinationManager manager, // [新增]
-                              System.Action<CombinationSlotUI> onSlotClickedCallback)
+                              Dictionary<int, string> existingState,
+                              ClueCombinationManager manager, // 用於回頭查找 ClueID
+                              Action<CombinationSlotUI> onSlotClickedCallback)
     {
-        _manager = manager; // 儲存 manager 引用
+        if (puzzle == null) return;
+            _manager = manager; // 儲存 manager 引用
 
         // 1. 清理舊的格子
         foreach (Transform child in slotsContainer)
@@ -54,34 +56,36 @@ public class CombinationPuzzleUI : MonoBehaviour
             Destroy(child.gameObject);
         }
         _currentSlots.Clear();
-        connectionLine.SetActive(false);
 
-        // 2. 設置標題
+        // 2. 設置新內容
         titleText.text = puzzle.puzzleTitle;
-        SetResultMessage("", Color.white);
+        resultText.text = ""; // 重置結果
+        resultText.gameObject.SetActive(false); // 隱藏結果
+        connectionLine.gameObject.SetActive(false);
 
         // 3. 實例化新的格子
         for (int i = 0; i < puzzle.clueSlots.Count; i++)
         {
+            ClueSlotDefinition slotDef = puzzle.clueSlots[i];
             GameObject slotGO = Instantiate(combinationSlotPrefab, slotsContainer);
             CombinationSlotUI slotUI = slotGO.GetComponent<CombinationSlotUI>();
 
-            ClueSlotDefinition slotDef = puzzle.clueSlots[i];
-            slotUI.Initialize(slotDef, i, onSlotClickedCallback);
-
-            // [已更新] 檢查是否有保存的狀態
-            if (savedState.ContainsKey(i))
+            if (slotUI != null)
             {
-                string savedClueID = savedState[i];
-                // [已更新] 使用 Manager 的 helper 函數來查找 Clue
-                IClue filledClue = _manager.GetClueFromID(savedClueID);
-                if (filledClue != null)
+                // 檢查是否有已填入的線索 (來自存檔)
+                IClue existingClue = null;
+                if (existingState.ContainsKey(i) && !string.IsNullOrEmpty(existingState[i]))
                 {
-                    slotUI.FillSlot(filledClue);
+                    existingClue = manager.GetClueFromID(existingState[i]);
                 }
-            }
 
-            _currentSlots.Add(slotUI);
+                // --- [!!] 這就是您要求的修正 [!!] ---
+                // 呼叫 CombinationSlotUI.cs 中的 Setup() 方法
+                slotUI.Setup(slotDef, i, existingClue, onSlotClickedCallback);
+                // --- [!!] 修正結束 [!!] ---
+
+                _currentSlots.Add(slotUI);
+            }
         }
     }
 
@@ -92,11 +96,6 @@ public class CombinationPuzzleUI : MonoBehaviour
         resultText.gameObject.SetActive(!string.IsNullOrEmpty(message));
     }
 
-    public void ShowConnectionLine()
-    {
-        connectionLine.SetActive(true);
-    }
-
     public void LockAllSlots()
     {
         foreach (var slot in _currentSlots)
@@ -104,5 +103,12 @@ public class CombinationPuzzleUI : MonoBehaviour
             slot.Lock();
         }
     }
+
+    public void ShowConnectionLine()
+    {
+        connectionLine.SetActive(true);
+    }
+
+    
 }
 

@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using System;
 
 /// <summary>
 /// 管理右側單一個「填入物品格子」
@@ -14,49 +15,69 @@ public class CombinationSlotUI : MonoBehaviour
     public Button clickButton;
 
     [Header("顏色配置")]
-    public Color itemBorderColor = Color.yellow;
-    public Color memoryBorderColor = Color.red;
-    public Color soundBorderColor = Color.blue;
+    public Color colorItem = Color.yellow; // 外框
+    public Color colorMemory = Color.red; // 外框
+    public Color colorSound = Color.blue; // 外框
+    public Color colorDefaultBorder = Color.white;
+    public Color colorDefaultIcon = Color.white; // 內框(空)的顏色
+    public Color colorFilledIcon = Color.white;  // 內框(有圖)的顏色
 
     // --- 狀態 ---
     public int SlotIndex { get; private set; }
     public EClueType RequiredClueType { get; private set; }
-    public IClue FilledClue { get; private set; }
+    //public IClue FilledClue { get; private set; }
     public bool IsLocked { get; private set; }
-
+    private IClue _filledClue = null;
     private System.Action<CombinationSlotUI> _onClickCallback;
 
-    public void Initialize(ClueSlotDefinition definition, int index, System.Action<CombinationSlotUI> onClickCallback)
+    private void Start()
+    {
+        if (clickButton != null)
+        {
+            clickButton.onClick.AddListener(OnSlotClicked);
+        }
+    }
+
+    /// <summary>
+    /// [已更新] 初始化格子 (在 LoadPuzzle 時被呼叫)
+    /// </summary>
+    public void Setup(ClueSlotDefinition slotDefinition, int index, IClue existingClue, Action<CombinationSlotUI> onClick)
     {
         SlotIndex = index;
-        RequiredClueType = definition.requiredClueType;
-        hintText.text = definition.hintText;
-        _onClickCallback = onClickCallback;
+        RequiredClueType = slotDefinition.requiredClueType;
+        _onClickCallback = onClick;
         IsLocked = false;
+
+        // --- [!!] 修正 #1 和 #2 [!!] ---
+        // 1. 提示文本 (HintText) 始終顯示
+        hintText.text = slotDefinition.hintText;
+        hintText.gameObject.SetActive(true);
+
+        // 2. 內框 (IconImage) 始終顯示
+        iconImage.gameObject.SetActive(true);
+        // --- [!!] 修正結束 [!!] ---
 
         // 設置外框顏色
         switch (RequiredClueType)
         {
-            case EClueType.Item:
-                borderImage.color = itemBorderColor;
-                break;
-            case EClueType.Memory:
-                borderImage.color = memoryBorderColor;
-                break;
-            case EClueType.Sound:
-                borderImage.color = soundBorderColor;
-                break;
+            case EClueType.Item: borderImage.color = colorItem; break;
+            case EClueType.Memory: borderImage.color = colorMemory; break;
+            case EClueType.Sound: borderImage.color = colorSound; break;
+            default: borderImage.color = colorDefaultBorder; break;
         }
 
-        iconImage.sprite = null; // 默認清空
-        iconImage.gameObject.SetActive(false);
-        clickButton.onClick.AddListener(OnClick);
-    }
-
-    private void OnClick()
-    {
-        if (IsLocked) return;
-        _onClickCallback?.Invoke(this);
+        // 檢查是否有存檔 (或上一次) 填入的線索
+        if (existingClue != null)
+        {
+            FillSlot(existingClue);
+        }
+        else
+        {
+            // 如果是空的，顯示為「空狀態」
+            iconImage.sprite = null;
+            iconImage.color = colorDefaultIcon; // 顯示為白色內框
+            _filledClue = null;
+        }
     }
 
     /// <summary>
@@ -64,17 +85,23 @@ public class CombinationSlotUI : MonoBehaviour
     /// </summary>
     public void FillSlot(IClue clue)
     {
-        if (clue == null) return;
-        if (clue.ClueType != RequiredClueType)
-        {
-            Debug.LogError($"類型不匹配！格子需要 {RequiredClueType} 但填入的是 {clue.ClueType}");
-            return;
-        }
+        _filledClue = clue;
 
-        FilledClue = clue;
-        iconImage.sprite = clue.ClueIcon;
+        // --- [!!] 修正 #1 和 #2 [!!] ---
+        // 1. 內框 (IconImage) 始終顯示
         iconImage.gameObject.SetActive(true);
-        hintText.gameObject.SetActive(false); // 填入後隱藏提示
+        iconImage.sprite = clue.ClueIcon;
+        iconImage.color = colorFilledIcon; // 確保有圖標時也是白色 (或您想要的顏色)
+
+        // 2. 提示文本 (HintText) 始終顯示 (不需要動它，保持原樣)
+        // hintText.gameObject.SetActive(true); // 這一行在 Setup 已經做過
+        // --- [!!] 修正結束 [!!] ---
+    }
+
+    private void OnSlotClicked()
+    {
+        if (IsLocked || _onClickCallback == null) return;
+        _onClickCallback(this);
     }
 
     /// <summary>
