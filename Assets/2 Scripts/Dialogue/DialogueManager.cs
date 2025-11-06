@@ -123,8 +123,10 @@ public class DialogueManager : MonoBehaviour
 
         if (currentGraph != null)
         {
-            // 在對話開始時，強制將 runtimeVariables 重置為 initialVariables 的內容
-            currentGraph.ResetVariables(); //
+            // 【重要】我們不再於此處重置變數。
+            // 重置的工作將交給 GameInitializer.cs 
+            // 在遊戲一開始就全部處理完畢。
+            // currentGraph.ResetVariables(); // <--- 已刪除
         }
 
         StartNode startNode = graph.nodes.OfType<StartNode>().FirstOrDefault();
