@@ -8,8 +8,7 @@ public class InteractableRole : MonoBehaviour
     public RoleData targetRole; // ex: Role1, Role2
     [Header("要解鎖的 Carousel")]
     public CarouselData unlockCarousel;
-    [Header("RolePastManager腳本")]
-    public RolePastManager rolePastManager;
+
     public string objectName = "神秘物品"; // 提示顯示用(PromptText)
     [Header("解鎖後要刪掉的物件")]
     public GameObject[] objects;
@@ -19,10 +18,14 @@ public class InteractableRole : MonoBehaviour
     /// </summary>
     public void Interact()
     {
-        if (rolePastManager != null && targetRole != null && unlockCarousel != null)
+        // 不再使用 rolePastManager 變數，
+        // 而是直接使用「全局單例」 RolePastManager.Instance
+        if (RolePastManager.Instance != null && targetRole != null && unlockCarousel != null)
         {
-            rolePastManager.AddCarouselToRole(targetRole, unlockCarousel);
-            Debug.Log($"已解鎖 {targetRole.roleName} 的 Carousel: {unlockCarousel.name}");
+            // [!!] 修改這一行 [!!]
+            RolePastManager.Instance.AddCarouselToRole(targetRole, unlockCarousel);
+
+            Debug.Log($"已解K {targetRole.roleName} 的 Carousel: {unlockCarousel.name}");
         }
 
         for (int i = 0; i < objects.Length; i++)

@@ -38,6 +38,12 @@ public class InventoryManager : MonoBehaviour
 
         items.Add(item);
         OnInventoryChanged?.Invoke(); // 只通知，不執行任何 UI 操作
+
+        // [!!] 在這裡通知 ClueCombinationManager 獲得案件物品 [!!]
+        if (item.isClueItem)
+        {
+            ClueCombinationManager.Instance?.CheckForNewPuzzleUnlocks();
+        }
     }
 
     /// <summary>

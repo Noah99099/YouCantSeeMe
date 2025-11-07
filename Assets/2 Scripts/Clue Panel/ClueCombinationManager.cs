@@ -1,66 +1,165 @@
 using UnityEngine;
+using UnityEngine.UI;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine.EventSystems;
+using System;
 
 /// <summary>
 /// [已更新] 組合線索功能 總控制器
 /// </summary>
 public class ClueCombinationManager : MonoBehaviour
 {
+    // [新] Singleton (單例)
+    public static ClueCombinationManager Instance { get; private set; }
+
     [Header("所有謎題")]
     public List<ClueCombinationPuzzle> allPuzzles;
-    private int currentPuzzleIndex = 0;
+    //private int currentPuzzleIndex = 0;
 
-    [Header("玩家持有的回憶")]
-    // [!!重要!!] 你需要將玩家獲得的 RoleData 實例 (ScriptableObject) 加入到這個 List
-    public List<RoleData> playerCollectedRoles;
+    //[Header("玩家持有的回憶")]
+    //// [!!重要!!] 你需要將玩家獲得的 RoleData 實例 (ScriptableObject) 加入到這個 List
+    //public List<RoleData> playerCollectedRoles;
+
+    //[Header("管理器引用")]
+    //// [!!] 新增 [!!] 您可以在 Inspector 中拖入，或者讓它自動尋找
+    //public RolePastManager rolePastManager;
 
     [Header("UI 引用")]
-    public CombinationPuzzleUI puzzleUI;     // 右側組合頁
     public InventoryClueGrid inventoryGrid;  // 左側格子
     public ClueDetailsPanel detailsPanel;    // 左下詳細資訊
+
+    [Header("導航按鈕")]
+    public Button nextButton;
+    public Button prevButton;
+
+    [Header("Puzzle UI Prefab (您的新架構)")]
+    public GameObject puzzleContainerPrefab; // [!!] 拖入您的 PuzzleContainer_Prefab
+    public Transform puzzleContainerParent;  // [!!] 拖入您場景中的 "PuzzlePanel" (容器)
 
     // --- 狀態變數 ---
     private CombinationSlotUI _currentSelectedSlot; // 當前點擊的「右側」填入格
     private IClue _currentSelectedClue;             // 當前點擊的「左側」物品
 
     // 用於保存當前謎題進度 (key: slot索引, value: 填入的ClueID)
-    // [!!] 你需要實現儲存/讀取 _currentPuzzleState 的邏輯 (例如 PlayerPrefs)
-    private Dictionary<int, string> _currentPuzzleState;
+    // Key: 謎題的 .name (或 ID), Value: 該謎題的狀態 (Key: slot索引, Value: ClueID)
+    private Dictionary<string, Dictionary<int, string>> _allPuzzleStates;
+
+    // [新] 儲存「所有」謎題的 UI 實例
+    private List<PuzzleContainerUI> _instantiatedPuzzles = new List<PuzzleContainerUI>();
+    private PuzzleContainerUI _activePuzzleUI; // [新] 對當前活動 UI 的引用
+
+    // [新] 儲存「已解鎖」謎題在 allPuzzles 中的「索引」
+    // (例如 [1, 0] 表示 test2 (索引1) 和 test1 (索引0) 被解鎖了)
+    private List<int> _unlockedPuzzleMasterIndices = new List<int>();
+
+    // [新] 當前顯示的謎題在 _unlockedPuzzleMasterIndices 列表中的索引
+    // (例如 0, 1)
+    private int _currentUnlockedListIndex = -1;
+
+    // [新] 當前顯示的謎題在 allPuzzles 總表中的索引
+    // (例如 0, 1) - 用於 CheckCombination
+    private int _currentActiveMasterIndex = -1;
+
+    // [新] Awake (用於 Singleton)
+    void Awake()
+    {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+        }
+        else
+        {
+            Instance = this;
+            DontDestroyOnLoad(gameObject); // [!!] 確保 CCM 也是 DontDestroyOnLoad
+        }
+    }
 
     void Start()
     {
         // 檢查是否引用了 UI
-        if (puzzleUI == null || inventoryGrid == null || detailsPanel == null)
+        if (inventoryGrid == null || detailsPanel == null || puzzleContainerPrefab == null || puzzleContainerParent == null)
         {
             Debug.LogError("[ClueCombinationManager] UI 引用未設置！");
             return;
         }
 
-        // 載入第一個謎題
-        LoadPuzzle(currentPuzzleIndex);
+        // [新] 初始化所有謎題的狀態儲存
+        _allPuzzleStates = new Dictionary<string, Dictionary<int, string>>();
+        // 在遊戲開始時，預先生成所有的 Puzzle UI
+        _instantiatedPuzzles.Clear();
+        foreach (var puzzle in allPuzzles)
+        {
+            // 1. 初始化數據字典
+            // TODO: 這裡未來可以替換為「從存檔讀取」
+            _allPuzzleStates[puzzle.name] = new Dictionary<int, string>();
+            Dictionary<int, string> puzzleState = _allPuzzleStates[puzzle.name];
+
+            // 2. 生成 UI Prefab
+            GameObject go = Instantiate(puzzleContainerPrefab, puzzleContainerParent);
+            PuzzleContainerUI ui = go.GetComponent<PuzzleContainerUI>();
+
+            if (ui != null)
+            {
+                // 3. 初始化這個 UI 頁面 (只執行一次)
+                // (注意：SetupPuzzle 是舊的 DisplayPuzzle)
+                ui.SetupPuzzle(puzzle, puzzleState, this, OnSlotClicked);
+
+                // 4. 預設隱藏
+                go.SetActive(false);
+                _instantiatedPuzzles.Add(ui);
+            }
+        }
+
+        // [新] 由 Manager 直接綁定導航按鈕
+        if (nextButton != null) nextButton.onClick.AddListener(NextPuzzle);
+        if (prevButton != null) prevButton.onClick.AddListener(PreviousPuzzle);
+
+        // 3. [新] 遊戲一開始時，檢查解鎖狀態 (例如讀取存檔後)
+        _unlockedPuzzleMasterIndices.Clear();
+        CheckForNewPuzzleUnlocks(true); // true = 這是第一次載入
     }
 
-    public void LoadPuzzle(int index)
+    /// <summary>
+    /// 根據「已解鎖列表的索引」來載入謎題
+    /// </summary>
+    public void LoadPuzzleByUnlockedIndex(int unlockedListIndex)
     {
-        if (index < 0 || index >= allPuzzles.Count) return;
+        // 檢查是否有任何已解鎖的謎題
+        if (_unlockedPuzzleMasterIndices.Count == 0 || unlockedListIndex < 0 || unlockedListIndex >= _unlockedPuzzleMasterIndices.Count)
+        {
+            // [新] 沒有謎題可顯示，隱藏所有內容
+            foreach (var ui in _instantiatedPuzzles) ui.gameObject.SetActive(false);
+            _activePuzzleUI = null;
+            _currentUnlockedListIndex = -1;
+            _currentActiveMasterIndex = -1;
 
-        currentPuzzleIndex = index;
-        ClueCombinationPuzzle puzzle = allPuzzles[index];
+            // 隱藏左側面板 (或顯示提示)
+            inventoryGrid.Hide(); // 假設有 Hide()
+            detailsPanel.Hide();
+            return;
+        }
 
-        // TODO: 載入這個謎題的 _currentPuzzleState (例如從存檔)
-        // 範例： _currentPuzzleState = LoadStateForPuzzle(puzzle.name);
-        if (_currentPuzzleState == null)
-            _currentPuzzleState = new Dictionary<int, string>();
+        _currentUnlockedListIndex = unlockedListIndex;
+        // [新] 獲取謎題的「總表索引」
+        _currentActiveMasterIndex = _unlockedPuzzleMasterIndices[_currentUnlockedListIndex];
 
-        // 顯示謎題UI
-        // [更新] 傳入 "this" (manager) 讓 UI 可以回頭查找 ClueID
-        puzzleUI.DisplayPuzzle(puzzle, _currentPuzzleState, this, OnSlotClicked);
+        // 循環所有 UI 實例，只激活當前的
+        for (int i = 0; i < _instantiatedPuzzles.Count; i++)
+        {
+            bool isActive = (i == _currentActiveMasterIndex);
+            _instantiatedPuzzles[i].gameObject.SetActive(isActive);
+
+            if (isActive)
+            {
+                // [新] 保存對當前活動 UI 的引用
+                _activePuzzleUI = _instantiatedPuzzles[i];
+            }
+        }
 
         // 顯示一個「空」的左側網格
         // (InventoryClueGrid.cs 的 Show 邏輯會處理 clues 列表為空的情況，只顯示面板，不顯示格子)
         inventoryGrid.Show(new List<IClue>(), EClueType.Item, OnGridItemClicked);
-
         // 隱藏詳細資訊面板
         detailsPanel.Hide();
     }
@@ -70,13 +169,21 @@ public class ClueCombinationManager : MonoBehaviour
     /// </summary>
     public void OnSlotClicked(CombinationSlotUI slot)
     {
+        // [!!] 偵錯 1 [!!]
+        Debug.Log($"[CCM] OnSlotClicked: 點擊了格子 {slot.SlotIndex}。格子需要的類型是: {slot.RequiredClueType}");
+
         if (slot.IsLocked) return;
 
         _currentSelectedSlot = slot;
         detailsPanel.Hide();
 
+        // [!!] 偵錯 2 [!!]
+        Debug.Log("[CCM] OnSlotClicked: 正在呼叫 GetEligibleClues...");
         // [正常邏輯] 點擊後，用符合條件的線索「重新填充」左側網格
         List<IClue> eligibleClues = GetEligibleClues(slot.RequiredClueType);
+
+        // [!!] 偵錯 3 [!!]
+        Debug.Log($"[CCM] OnSlotClicked: GetEligibleClues 執行完畢。獲取到 {eligibleClues.Count} 個線索。正在呼叫 inventoryGrid.Show...");
         inventoryGrid.Show(eligibleClues, slot.RequiredClueType, OnGridItemClicked);
     }
 
@@ -97,8 +204,17 @@ public class ClueCombinationManager : MonoBehaviour
         if (_currentSelectedSlot == null || _currentSelectedClue == null) return;
 
         _currentSelectedSlot.FillSlot(_currentSelectedClue);
-        _currentPuzzleState[_currentSelectedSlot.SlotIndex] = _currentSelectedClue.ClueID;
-        // TODO: SaveStateForPuzzle(allPuzzles[currentPuzzleIndex].name, _currentPuzzleState);
+
+        // [修改] 必須使用 _currentActiveMasterIndex
+        if (_currentActiveMasterIndex == -1) return; // 安全檢查
+
+        // 獲取當前謎題和其專屬狀態
+        ClueCombinationPuzzle puzzle = allPuzzles[_currentActiveMasterIndex];
+        Dictionary<int, string> currentPuzzleState = _allPuzzleStates[puzzle.name];
+
+        // 將狀態寫入「正確的」字典中
+        currentPuzzleState[_currentSelectedSlot.SlotIndex] = _currentSelectedClue.ClueID;
+        // TODO: SaveStateForPuzzle(puzzle.name, currentPuzzleState);
 
         // [!!] 修正 #3 (補充)
         // 填入物品後，左側網格恢復為「空」狀態，而不是隱藏
@@ -115,23 +231,32 @@ public class ClueCombinationManager : MonoBehaviour
     /// </summary>
     private void CheckCombination()
     {
-        ClueCombinationPuzzle puzzle = allPuzzles[currentPuzzleIndex];
+        // [修改] 必須使用 _currentActiveMasterIndex
+        if (_currentActiveMasterIndex == -1) return; // 安全檢查
+
+        ClueCombinationPuzzle puzzle = allPuzzles[_currentActiveMasterIndex];
+        // [新] 獲取「正確的」狀態字典
+        Dictionary<int, string> currentPuzzleState = _allPuzzleStates[puzzle.name];
         int totalSlots = puzzle.clueSlots.Count; // [新] 獲取右側格子總數
 
         // 1. 檢查是否所有格子都填滿了
         bool allFilled = true;
         for (int i = 0; i < totalSlots; i++)
         {
-            if (!_currentPuzzleState.ContainsKey(i) || string.IsNullOrEmpty(_currentPuzzleState[i]))
+            // [新] 檢查「正確的」狀態字典
+            if (!currentPuzzleState.ContainsKey(i) || string.IsNullOrEmpty(currentPuzzleState[i]))
             {
                 allFilled = false;
                 break;
             }
         }
 
+        // [新] 確保我們有活動的 UI 引用
+        if (_activePuzzleUI == null) return;
+
         if (!allFilled)
         {
-            puzzleUI.SetResultMessage("", Color.white); // 尚未填滿，不顯示提示
+            _activePuzzleUI.SetResultMessage("", Color.white); // 尚未填滿，不顯示提示
             return;
         }
 
@@ -140,8 +265,8 @@ public class ClueCombinationManager : MonoBehaviour
         int incorrectCount = 0;
         foreach (var slotDef in puzzle.clueSlots.Select((value, i) => new { i, value }))
         {
-            // 既然 allFilled 為 true, _currentPuzzleState 必定包含 key
-            if (_currentPuzzleState[slotDef.i] != slotDef.value.correctClueID)
+            // 既然 allFilled 為 true, currentPuzzleState 必定包含 key
+            if (currentPuzzleState[slotDef.i] != slotDef.value.correctClueID)
             {
                 incorrectCount++;
             }
@@ -151,9 +276,9 @@ public class ClueCombinationManager : MonoBehaviour
         if (incorrectCount == 0)
         {
             // 組合正確
-            puzzleUI.SetResultMessage(puzzle.successMessage, Color.green); // 可以再調顏色
-            puzzleUI.LockAllSlots();
-            puzzleUI.ShowConnectionLine();
+            _activePuzzleUI.SetResultMessage(puzzle.successMessage, Color.green); // 可以再調顏色
+            _activePuzzleUI.LockAllSlots();
+            _activePuzzleUI.ShowConnectionLine();
         }
         else
         {
@@ -198,7 +323,7 @@ public class ClueCombinationManager : MonoBehaviour
             }
 
             // 顯示對應的錯誤訊息和 [新] 顏色
-            puzzleUI.SetResultMessage(message, failureColor);
+            _activePuzzleUI.SetResultMessage(message, failureColor);
             // --- [!!] 修改結束 [!!] ---
         }
     }
@@ -208,6 +333,9 @@ public class ClueCombinationManager : MonoBehaviour
     /// </summary>
     private List<IClue> GetEligibleClues(EClueType requiredType)
     {
+        // [!!] 偵錯 4 [!!]
+        Debug.Log($"[CCM] GetEligibleClues: 開始尋找類型 {requiredType} 的線索。");
+
         List<IClue> clues = new List<IClue>();
 
         switch (requiredType)
@@ -225,16 +353,44 @@ public class ClueCombinationManager : MonoBehaviour
                 break;
 
             case EClueType.Memory:
-                // 使用在 Inspector 中指派的 playerCollectedRoles 列表
-                foreach (RoleData role in playerCollectedRoles)
+                // [!!] 這是最關鍵的偵錯 [!!]
+                Debug.Log("[CCM] GetEligibleClues: 進入 Memory 區塊...");
+
+                if (RolePastManager.Instance == null)
                 {
-                    for (int i = 0; i < role.carousels.Length; i++)
+                    Debug.LogError("[CCM] GetEligibleClues: [致命錯誤!] RolePastManager.Instance 是 null！");
+                    break; // 立刻跳出
+                }
+
+                if (RolePastManager.Instance.unlockedMemories == null)
+                {
+                    Debug.LogError("[CCM] GetEligIBLEClues: [致命錯誤!] RolePastManager.Instance.unlockedMemories 字典是 null！");
+                    break; // 立刻跳出
+                }
+
+                // [!!] 偵錯 5 [!!]
+                Debug.Log($"[CCM] GetEligibleClues: RPM.Instance.unlockedMemories 字典中有 {RolePastManager.Instance.unlockedMemories.Count} 個 Role Key。");
+
+                foreach (var entry in RolePastManager.Instance.unlockedMemories)
+                {
+                    // [!!] 偵錯 6 [!!]
+                    Debug.Log($"[CCM] GetEligibleClues: 正在遍歷 Role '{entry.Key.name}' (ID: {entry.Key.GetInstanceID()})... 該 Role 有 {entry.Value.Count} 個已解鎖回憶。");
+
+                    foreach (CarouselData memory in entry.Value)
                     {
-                        CarouselData memory = role.carousels[i];
-                        // 確保數據有效
-                        if (memory != null && memory.images.Length > 0 && memory.texts.Length > 0)
+                        if (memory != null)
                         {
-                            clues.Add(new MemoryClueWrapper(role, memory, i));
+                            int index = Array.IndexOf(entry.Key.carousels, memory);
+                            if (index > -1)
+                            {
+                                // [!!] 偵錯 7 [!!]
+                                Debug.Log($"[CCM] GetEligibleClues: [成功!] 找到並添加回憶 '{memory.name}' 到列表。");
+                                clues.Add(new MemoryClueWrapper(entry.Key, memory, index));
+                            }
+                            else
+                            {
+                                Debug.LogWarning($"[CCM] GetEligibleClues: 找到回憶 '{memory.name}'，但 Array.IndexOf 在 Role '{entry.Key.name}' 中失敗 (返回 -1)！");
+                            }
                         }
                     }
                 }
@@ -252,6 +408,9 @@ public class ClueCombinationManager : MonoBehaviour
                 }
                 break;
         }
+
+        // [!!] 偵錯 8 [!!]
+        Debug.Log($"[CCM] GetEligibleClues: 尋找完畢。總共返回 {clues.Count} 個線索。");
         return clues;
     }
 
@@ -274,16 +433,23 @@ public class ClueCombinationManager : MonoBehaviour
         // (我們假設所有回憶 ID 都以 'R' 開頭作為快速過濾)
         if (clueID.StartsWith("R"))
         {
-            foreach (RoleData role in playerCollectedRoles)
+            // [!!] 修改 [!!]
+            // 直接使用 RolePastManager.Instance
+            if (RolePastManager.Instance != null && RolePastManager.Instance.unlockedMemories != null)
             {
-                for (int i = 0; i < role.carousels.Length; i++)
+                foreach (var entry in RolePastManager.Instance.unlockedMemories)
                 {
-                    CarouselData memory = role.carousels[i];
-
-                    // 檢查 CarouselData (ScriptableObject) 的 .name 屬性
-                    if (memory != null && memory.name == clueID)
+                    RoleData role = entry.Key;
+                    foreach (CarouselData memory in entry.Value)
                     {
-                        return new MemoryClueWrapper(role, memory, i);
+                        if (memory != null && memory.name == clueID)
+                        {
+                            int index = Array.IndexOf(role.carousels, memory);
+                            if (index > -1)
+                            {
+                                return new MemoryClueWrapper(role, memory, index);
+                            }
+                        }
                     }
                 }
             }
@@ -296,13 +462,128 @@ public class ClueCombinationManager : MonoBehaviour
 
     public void NextPuzzle()
     {
-        LoadPuzzle((currentPuzzleIndex + 1) % allPuzzles.Count);
+        if (_unlockedPuzzleMasterIndices.Count == 0) return;
+        int nextUnlockedIndex = (_currentUnlockedListIndex + 1) % _unlockedPuzzleMasterIndices.Count;
+        LoadPuzzleByUnlockedIndex(nextUnlockedIndex);
+        EventSystem.current.SetSelectedGameObject(null);
     }
 
     public void PreviousPuzzle()
     {
-        int prevIndex = (currentPuzzleIndex - 1 + allPuzzles.Count) % allPuzzles.Count;
-        LoadPuzzle(prevIndex);
+        if (_unlockedPuzzleMasterIndices.Count == 0) return;
+        int prevUnlockedIndex = (_currentUnlockedListIndex - 1 + _unlockedPuzzleMasterIndices.Count) % _unlockedPuzzleMasterIndices.Count;
+        LoadPuzzleByUnlockedIndex(prevUnlockedIndex);
+        EventSystem.current.SetSelectedGameObject(null);
+    }
+
+    /// <summary>
+    /// [新] 更新導航按鈕的顯示 (例如：只有1個謎題時隱藏按鈕)
+    /// </summary>
+    private void UpdateNavigationButtons()
+    {
+        bool showButtons = _unlockedPuzzleMasterIndices.Count > 1;
+        if (nextButton != null) nextButton.gameObject.SetActive(showButtons);
+        if (prevButton != null) prevButton.gameObject.SetActive(showButtons);
+    }
+
+    /// <summary>
+    /// [新] 獲取玩家當前持有的「所有」線索 ID (用於檢查)
+    /// </summary>
+    private HashSet<string> GetAllPlayerClueIDs()
+    {
+        HashSet<string> ids = new HashSet<string>();
+
+        // 1. 物品 (Items)
+        if (InventoryManager.Instance != null)
+        {
+            foreach (ItemData item in InventoryManager.Instance.items)
+            {
+                // 我們假設所有 isClueItem 的物品都是「原料」
+                if (item.isClueItem) ids.Add(item.itemID);
+            }
+        }
+
+        // 2. 聲音 (Sounds)
+        if (VoiceItemManager.Instance != null)
+        {
+            foreach (VoiceItemData sound in VoiceItemManager.Instance.items)
+            {
+                if (VoiceItemManager.Instance.IsItemUsed(sound)) ids.Add(sound.voiceItemID);
+            }
+        }
+
+        // 3. 回憶 (Memories)
+        // 直接使用 RolePastManager.Instance
+        if (RolePastManager.Instance != null && RolePastManager.Instance.unlockedMemories != null)
+        {
+            foreach (var entry in RolePastManager.Instance.unlockedMemories)
+            {
+                foreach (CarouselData memory in entry.Value)
+                {
+                    if (memory != null) ids.Add(memory.name);
+                }
+            }
+        }
+
+        return ids;
+    }
+
+    /// <summary>
+    /// [新] 檢查特定謎題是否滿足解鎖條件
+    /// </summary>
+    private bool CheckIfPuzzleIsReady(ClueCombinationPuzzle puzzle, HashSet<string> playerClueIDs)
+    {
+        // 檢查玩家是否擁有「所有」正確答案 (原料)
+        foreach (ClueSlotDefinition slot in puzzle.clueSlots)
+        {
+            if (!playerClueIDs.Contains(slot.correctClueID))
+            {
+                // 缺少任何一個原料
+                return false;
+            }
+        }
+        // 所有原料都齊了
+        return true;
+    }
+
+    /// <summary>
+    /// [新] 核心函式：檢查並解鎖新的謎題
+    /// </summary>
+    /// <param name="isFirstLoad">是否為遊戲/場景第一次載入</param>
+    public void CheckForNewPuzzleUnlocks(bool isFirstLoad = false)
+    {
+        HashSet<string> playerClueIDs = GetAllPlayerClueIDs();
+        bool aNewPuzzleWasUnlocked = false;
+
+        // 遍歷「總表」
+        for (int i = 0; i < allPuzzles.Count; i++)
+        {
+            // 如果這個索引 i 已經在「已解鎖表」中，跳過
+            if (_unlockedPuzzleMasterIndices.Contains(i)) continue;
+
+            ClueCombinationPuzzle puzzle = allPuzzles[i];
+
+            // 檢查是否滿足解鎖條件
+            if (CheckIfPuzzleIsReady(puzzle, playerClueIDs))
+            {
+                // [!!] 解鎖 [!!]
+                _unlockedPuzzleMasterIndices.Add(i);
+                aNewPuzzleWasUnlocked = true;
+                Debug.Log($"[ClueCombinationManager] 謎題已解鎖: {puzzle.puzzleTitle}");
+
+                // TODO: 在這裡顯示「已解鎖新組合！」的 UI 提示
+            }
+        }
+
+        // 更新導航按鈕的可見性
+        UpdateNavigationButtons();
+
+        // 如果這是第一次載入，或這是遊戲中第一個被解鎖的謎題
+        if ((isFirstLoad || aNewPuzzleWasUnlocked) && _currentUnlockedListIndex == -1 && _unlockedPuzzleMasterIndices.Count > 0)
+        {
+            // 自動載入第一個可用的謎題
+            LoadPuzzleByUnlockedIndex(0);
+        }
     }
 }
 

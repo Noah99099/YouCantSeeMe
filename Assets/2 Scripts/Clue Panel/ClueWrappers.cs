@@ -39,18 +39,34 @@ public class MemoryClueWrapper : IClue
     // !!重要!! 回憶的 ClueID 現在使用 CarouselData 的 .name 屬性 (例如: "R101")
     public string ClueID => _memory.name;
 
-    // 物品標題 (例如 "角色A的2回憶")
-    public string ClueName => $"[{_role.roleName}的回憶 {_index + 1}]";
+    // 物品標題 (使用 CarouselData 的 texts[0])
+    public string ClueName
+    {
+        get
+        {
+            // 優先使用 texts[0] 作為標題
+            if (_memory.texts != null && _memory.texts.Length > 0 && !string.IsNullOrEmpty(_memory.texts[0]))
+            {
+                return _memory.texts[0]; // 範例: "他前幾天吃了水果"
+            }
+            // 如果 texts[0] 為空，提供一個備用標題 (使用您舊的邏輯)
+            return $"[{_role.roleName}的回憶 {_index + 1}]";
+        }
+    }
 
     // 物品描述 (例如 "他前幾天吃了水果")
-    // 假設 texts[0] 是標題, texts[1] 是描述
+    // 假設 (使用 CarouselData 的 texts[1])
     public string ClueDescription
     {
         get
         {
-            if (_memory.texts.Length > 1) return _memory.texts[1]; // 範例: 舌頭流血了
-            if (_memory.texts.Length > 0) return _memory.texts[0]; // 範例: 他前幾天吃了水果
-            return "（沒有描述）";
+            // 優先使用 texts[1] 作為描述
+            if (_memory.texts != null && _memory.texts.Length > 1 && !string.IsNullOrEmpty(_memory.texts[1]))
+            {
+                return _memory.texts[1]; // 範例: "舌頭流血了"
+            }
+            // 如果 texts[1] 為空，不提供描述
+            return ""; // 返回空字串
         }
     }
 

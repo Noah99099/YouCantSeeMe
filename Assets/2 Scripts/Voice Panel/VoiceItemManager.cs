@@ -56,6 +56,9 @@ public class VoiceItemManager : MonoBehaviour
 
         // 觸發事件，強制 UI (VoicePanelUIController) 刷新
         OnVoiceChanged?.Invoke();
+
+        // [!!] 在這裡通知 ClueCombinationManager 獲得案件物品 [!!]
+        ClueCombinationManager.Instance?.CheckForNewPuzzleUnlocks();
     }
 
     /// <summary>
