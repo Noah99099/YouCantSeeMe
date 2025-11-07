@@ -1,40 +1,46 @@
-// ÀÉ®×¦WºÙ: VoiceItemDetectionPoint.cs
-
 using UnityEngine;
+using UnityEngine.Rendering;
+using UnityEngine.Rendering.Universal;
 
 [RequireComponent(typeof(Collider))]
 public class VoiceItemDetectionPoint : MonoBehaviour
 {
-    [Header("§P©wÂI³]©w")]
-    [Tooltip("¦¹§P©wÂI»İ­n­ş­ÓÁn­µª««~¤~¯àÄ²µo")]
+    [Header("ï¿½Pï¿½wï¿½Iï¿½]ï¿½w")]
+    [Tooltip("ï¿½ï¿½ï¿½Pï¿½wï¿½Iï¿½İ­nï¿½ï¿½ï¿½ï¿½ï¿½nï¿½ï¿½ï¿½ï¿½ï¿½~ï¿½~ï¿½ï¿½Ä²ï¿½o")]
     [SerializeField] private VoiceItemData requiredVoiceItem;
 
-    [Header("¯S®Ä»PÁn­µ (¥i¿ï)")]
-    [Tooltip("¹ïÀ³ªºÂø­µ AudioSource")]
+    [Header("ï¿½Sï¿½Ä»Pï¿½nï¿½ï¿½ (ï¿½iï¿½ï¿½)")]
+    [Tooltip("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ AudioSource")]
     [SerializeField] private AudioSource staticNoiseSource;
 
-    [Header("§P©w½d³ò")]
-    [Tooltip("¶}©l°»´úª±®a¨Ã²£¥Í¯S®Äªº³Ì»·¶ZÂ÷")]
+    [Header("ï¿½Pï¿½wï¿½dï¿½ï¿½")]
+    [Tooltip("ï¿½}ï¿½lï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½aï¿½Ã²ï¿½ï¿½Í¯Sï¿½Äªï¿½ï¿½Ì»ï¿½ï¿½Zï¿½ï¿½")]
     [SerializeField] private float maxDetectionDistance = 20.0f;
-    [Tooltip("¯S®Ä³Ì±j (­µ¶q³Ì¤j) ªº¶ZÂ÷")]
+    [Tooltip("ï¿½Sï¿½Ä³Ì±j (ï¿½ï¿½ï¿½qï¿½Ì¤j) ï¿½ï¿½ï¿½Zï¿½ï¿½")]
     [SerializeField] private float minDetectionDistance = 1.0f;
 
-    [Header("Ä²µo³]©w")]
-    [Tooltip("Ä²µo°Êµeªº¼v¤ù")]
+    [Header("Ä²ï¿½oï¿½]ï¿½w")]
+    [Tooltip("Ä²ï¿½oï¿½Êµeï¿½ï¿½ï¿½vï¿½ï¿½")]
     [SerializeField] private PlayVideo playVideo;
-    [Tooltip("³Ì«á­n§R°£ªºª«¥ó")]
+    [Tooltip("ï¿½Ì«ï¿½nï¿½Rï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½")]
     [SerializeField] private GameObject destroyObj;
 
     private Transform playerTransform;
-    private bool isActivated = false; // §P©wÂI¬O§_³Q¿E¬¡
-    private ScreenGlitchEffect glitchController; // ªá«Ì¯S®Ä±±¨î¾¹
+    private bool isActivated = false; // ï¿½Pï¿½wï¿½Iï¿½Oï¿½_ï¿½Qï¿½Eï¿½ï¿½
+    private ScreenGlitchEffect glitchController; // ï¿½ï¿½Ì¯Sï¿½Ä±ï¿½ï¿½î¾¹
+
+    // ----- [!! æ–°å¢ !!] -----
+    // æˆ‘å€‘ç¾åœ¨éœ€è¦ç›´æ¥å­˜å– FilmGrain "åƒæ•¸" æœ¬èº«
+    private FilmGrain filmGrainEffect;
+    private ChromaticAberration chromaticAberrationEffect;
+    // ----- [!! çµæŸæ–°å¢ !!] -----
 
     private void Awake()
     {
         Collider col = GetComponent<Collider>();
         if (col == null || !col.isTrigger)
         {
-            Debug.LogWarning($"[VoiceItemDetectionPoint] {gameObject.name} »İ­n¤@­Ó 'Is Trigger' = true ªº Collider¡C", this);
+            Debug.LogWarning($"[VoiceItemDetectionPoint] {gameObject.name} ï¿½İ­nï¿½@ï¿½ï¿½ 'Is Trigger' = true ï¿½ï¿½ Colliderï¿½C", this);
         }
 
         GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
@@ -44,18 +50,39 @@ public class VoiceItemDetectionPoint : MonoBehaviour
         }
         else
         {
-            Debug.LogError($"[VoiceItemDetectionPoint] §ä¤£¨ì Tag ¬° 'Player' ªºª«¥ó¡I", this);
+            Debug.LogError($"[VoiceItemDetectionPoint] ï¿½ä¤£ï¿½ï¿½ Tag ï¿½ï¿½ 'Player' ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½I", this);
         }
 
-        // [­×§ï] ¹Á¸ÕÀò¨ú¥ş§½ªºªá«Ì±±¨î¾¹ (±q PlayerInteraction ³æ¨ÒÀò¨ú)
+        // [ï¿½×§ï¿½] ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ì±ï¿½ï¿½î¾¹ (ï¿½q PlayerInteraction ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½)
         if (PlayerInteraction.Instance != null && PlayerInteraction.Instance.glitchController != null)
         {
-            // Àò¨ú PlayerInteraction ¤Wªº Glitch Controller ¤Ş¥Î
+            // ï¿½ï¿½ï¿½ PlayerInteraction ï¿½Wï¿½ï¿½ Glitch Controller ï¿½Ş¥ï¿½
             this.glitchController = PlayerInteraction.Instance.glitchController;
+            // ----- [!! æ–°å¢ !!] -----
+            // æ—¢ç„¶æ‹¿åˆ°äº† Controllerï¼Œå°±å¾å®ƒçš„ Volume Profile è£¡é å…ˆæŠ“å‡º FilmGrain åƒæ•¸
+            if (this.glitchController.glitchVolume != null && this.glitchController.glitchVolume.profile != null)
+            {
+                // 1. æŠ“å– FilmGrain
+                if (!this.glitchController.glitchVolume.profile.TryGet(out filmGrainEffect))
+                {
+                    Debug.LogError($"[VoiceItemDetectionPoint]  {this.glitchController.glitchVolume.name}  Profile ä¤£ FilmGrainI");
+                }
+                
+                // 2. æŠ“å– ChromaticAberration (è‰²å·®) [!! æ–°å¢ !!]
+                if (!this.glitchController.glitchVolume.profile.TryGet(out chromaticAberrationEffect))
+                {
+                    Debug.LogError($"[VoiceItemDetectionPoint]  {this.glitchController.glitchVolume.name}  Profile ä¤£ ChromaticAberrationI");
+                }
+            }
+            else
+            {
+                Debug.LogError("[VoiceItemDetectionPoint] Glitch Controller  'glitchVolume' wBoO Profile wI");
+            }
+            // ----- [!! çµæŸæ–°å¢ !!] -----
         }
         else
         {
-            Debug.LogWarning($"[VoiceItemDetectionPoint] µLªk±q PlayerInteraction.Instance Àò¨ú Glitch Controller¡I", this);
+            Debug.LogWarning($"[VoiceItemDetectionPoint] ï¿½Lï¿½kï¿½q PlayerInteraction.Instance ï¿½ï¿½ï¿½ Glitch Controllerï¿½I", this);
         }
 
         if (staticNoiseSource != null)
@@ -66,18 +93,18 @@ public class VoiceItemDetectionPoint : MonoBehaviour
     }
 
     /// <summary>
-    /// ¥Ñ PlayerInteraction ©I¥s¡A¹Á¸Õ¿E¬¡³o­Ó§P©wÂI
+    /// ï¿½ï¿½ PlayerInteraction ï¿½Iï¿½sï¿½Aï¿½ï¿½ï¿½Õ¿Eï¿½ï¿½ï¿½oï¿½Ó§Pï¿½wï¿½I
     /// </summary>
     public bool ActivatePoint(VoiceItemData item)
     {
         if (item == requiredVoiceItem)
         {
             isActivated = true;
-            Debug.Log($"[VoiceItemDetectionPoint] {gameObject.name} ¤w³Q¿E¬¡¡C");
+            Debug.Log($"[VoiceItemDetectionPoint] {gameObject.name} ï¿½wï¿½Qï¿½Eï¿½ï¿½ï¿½C");
 
             if (staticNoiseSource != null && !staticNoiseSource.isPlaying)
             {
-                staticNoiseSource.Play(); // ¶}©l¼½©ñÂø­µ
+                staticNoiseSource.Play(); // ï¿½}ï¿½lï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
             }
             return true;
         }
@@ -93,17 +120,28 @@ public class VoiceItemDetectionPoint : MonoBehaviour
 
         float distance = Vector3.Distance(transform.position, playerTransform.position);
 
-        // ®Ö¤ßÅŞ¿è¡G¶ZÂ÷¶Vªñ¡A±j«× (intensity) ¶V±µªñ 1.0
+        // ï¿½Ö¤ï¿½ï¿½Ş¿ï¿½Gï¿½Zï¿½ï¿½ï¿½Vï¿½ï¿½Aï¿½jï¿½ï¿½ (intensity) ï¿½Vï¿½ï¿½ï¿½ï¿½ 1.0
         float intensity = Mathf.InverseLerp(maxDetectionDistance, minDetectionDistance, distance);
         intensity = Mathf.Clamp01(intensity);
 
-        // 1. ±±¨îªá«Ì¯S®Ä
-        if (glitchController != null)
+        // ----- [!! æ–°å¢ !!] -----
+        // è€Œæ˜¯ç›´æ¥ä¿®æ”¹ FilmGrain åƒæ•¸çš„ .value
+        // å› ç‚º GlitchVolume (P=20, W=1) æœƒè¦†è“‹ YinVolume (P=10, W=1)
+        // æ‰€ä»¥é€™è£¡çš„ä¿®æ”¹æœƒ 100% é¡¯ç¤ºå‡ºä¾†
+        // 1. æ‡‰ç”¨åˆ° FilmGrain
+        if (filmGrainEffect != null)
         {
-            glitchController.SetGlitchIntensity(intensity);
+            filmGrainEffect.intensity.value = intensity;
         }
+        
+        // 2. æ‡‰ç”¨åˆ° ChromaticAberration [!! æ–°å¢ !!]
+        if (chromaticAberrationEffect != null)
+        {
+            chromaticAberrationEffect.intensity.value = intensity;
+        }
+        // ----- [!! çµæŸæ–°å¢ !!] -----
 
-        // 2. ±±¨îÂø­µ­µ®Ä
+        // 2. ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         if (staticNoiseSource != null)
         {
             staticNoiseSource.volume = intensity;
@@ -111,40 +149,51 @@ public class VoiceItemDetectionPoint : MonoBehaviour
     }
 
     /// <summary>
-    /// ·íª±®a¨«¶i§P©wÂI®É
+    /// ï¿½ï¿½ï¿½ï¿½ï¿½aï¿½ï¿½ï¿½iï¿½Pï¿½wï¿½Iï¿½ï¿½
     /// </summary>
     private void OnTriggerEnter(Collider other)
     {
-        // ¥²¶·¬O¿E¬¡ª¬ºA¡A¥B¶i¤Jªº¬Oª±®a
+        // ï¿½ï¿½ï¿½ï¿½ï¿½Oï¿½Eï¿½ï¿½ï¿½ï¿½ï¿½Aï¿½Aï¿½Bï¿½iï¿½Jï¿½ï¿½ï¿½Oï¿½ï¿½ï¿½a
         if (isActivated && other.CompareTag("Player"))
         {
-            Debug.Log($"[VoiceItemDetectionPoint] ª±®a¤w¶i¤J {gameObject.name} Ä²µo°Ï°ì¡C");
+            Debug.Log($"[VoiceItemDetectionPoint] ï¿½ï¿½ï¿½aï¿½wï¿½iï¿½J {gameObject.name} Ä²ï¿½oï¿½Ï°ï¿½C");
             isActivated = false;
 
-            // 1. °±¤î¯S®Ä©MÁn­µ
+            // 1. ï¿½ï¿½ï¿½ï¿½Sï¿½Ä©Mï¿½nï¿½ï¿½
             if (glitchController != null)
             {
-                glitchController.StopGlitch(); // ©I¥s°±¤î
+                glitchController.StopGlitch(); // (é€™æœƒå°‡ Weight è¨­ç‚º 0)
             }
+            // ----- [!! æ–°å¢ !!] -----
+            // é †æ‰‹å°‡åƒæ•¸ä¹Ÿæ­¸é›¶ï¼Œä¿æŒä¹¾æ·¨
+            if (filmGrainEffect != null)
+            {
+                filmGrainEffect.intensity.value = 0f;
+            }
+            if (chromaticAberrationEffect != null) // [!! æ–°å¢ !!]
+            {
+                chromaticAberrationEffect.intensity.value = 0f;
+            }
+            // ----- [!! çµæŸæ–°å¢ !!] -----
             if (staticNoiseSource != null)
             {
                 staticNoiseSource.Stop();
             }
 
-            // 2. ¼½©ñ°Êµe (±z¤w¬[³]¦n)
+            // 2. ï¿½ï¿½ï¿½ï¿½Êµe (ï¿½zï¿½wï¿½[ï¿½]ï¿½n)
             if (playVideo != null)
             {
                 playVideo.PlayForDeceased();
             }
-            Debug.Log("[VoiceItemDetectionPoint] ¼½©ñ°Êµe/¼v¤ù...");
+            Debug.Log("[VoiceItemDetectionPoint] ï¿½ï¿½ï¿½ï¿½Êµe/ï¿½vï¿½ï¿½...");
 
-            // 3. ³qª¾ PlayerInteraction ¬yµ{µ²§ô
+            // 3. ï¿½qï¿½ï¿½ PlayerInteraction ï¿½yï¿½{ï¿½ï¿½ï¿½ï¿½
             PlayerInteraction.Instance.CompleteVoiceItemUsage(requiredVoiceItem);
 
-            // 4. ¸T¥Î¦¹§P©wÂIª«¥ó
+            // 4. ï¿½Tï¿½Î¦ï¿½ï¿½Pï¿½wï¿½Iï¿½ï¿½ï¿½ï¿½
             gameObject.SetActive(false);
 
-            // 5. §R±¼§P©wÂI
+            // 5. ï¿½Rï¿½ï¿½ï¿½Pï¿½wï¿½I
             Destroy(destroyObj);
         }
     }

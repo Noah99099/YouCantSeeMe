@@ -476,6 +476,15 @@ public class PlayerInteraction : MonoBehaviour
         IsVoiceItemActive = true;
         activeVoiceItemData = voiceItem;
 
+        // ----- [!! 解決方案 步驟 1 !!] -----
+        // 立刻將 Glitch Volume 的權重設為 1，
+        // 這樣它就能以 P=20 優先級 "覆蓋" 陰視野 (P=10)
+        if (glitchController != null)
+        {
+            glitchController.PlayOneShotGlitch(); // 等同於 SetGlitchIntensity(1.0)
+        }
+        // ----- [!! 解決方案結束 !!] -----
+
         // 2. 在 cornerAnchor 顯示模型
         if (voiceItem.voiceItem != null && cornerAnchor != null)
         {
