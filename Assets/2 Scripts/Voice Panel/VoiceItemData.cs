@@ -12,6 +12,11 @@ public class VoiceItemData : ScriptableObject
     [Header("聲音物品模型")]
     public GameObject voiceItem;
 
+    // [!! 新增 !!]
+    // 用來定義在 cornerAnchor 生成時的模型縮放比例
+    // 1.0 = 原始大小, 0.5 = 50%, 2.0 = 200%
+    public float itemScale = 1.0f;
+
     [Header("右側文字顯示")]
     public string titleText;       // 顯示在 InfoText1
 

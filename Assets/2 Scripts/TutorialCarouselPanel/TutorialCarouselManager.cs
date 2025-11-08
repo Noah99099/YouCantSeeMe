@@ -35,6 +35,8 @@ public class TutorialCarouselManager : MonoBehaviour
     private Image[] dots;
     private int currentIndex = 0;
 
+    private bool isScrolling = false; // <-- [FIX 1] 在這裡加入鎖
+
     void Awake()
     {
         // 綁定按鈕事件
@@ -156,6 +158,9 @@ public class TutorialCarouselManager : MonoBehaviour
     /// </summary>
     private void Move(int direction)
     {
+        // 如果正在捲動，就忽略這次的點擊事件
+        if (isScrolling) return;
+
         if (dots == null || dots.Length == 0) return;
 
         int newIndex = currentIndex + direction;
@@ -185,6 +190,8 @@ public class TutorialCarouselManager : MonoBehaviour
     /// </summary>
     private System.Collections.IEnumerator SmoothScrollTo(float targetPos)
     {
+        isScrolling = true; // <-- [FIX 3.1] 協程開始時「上鎖」
+
         float startPos = scrollRect.horizontalNormalizedPosition;
         float timer = 0f;
         float duration = 0.25f; // 滾動動畫時間 (秒)
@@ -198,6 +205,7 @@ public class TutorialCarouselManager : MonoBehaviour
             yield return null;
         }
         scrollRect.horizontalNormalizedPosition = targetPos;
+        isScrolling = false; // <-- [FIX 3.2] 協程結束時「解鎖」
     }
 
 

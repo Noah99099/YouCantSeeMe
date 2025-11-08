@@ -31,6 +31,13 @@ public class TutorialTrigger : MonoBehaviour
         StartCoroutine(ShowTutorialAfterDelay(tutorialToShow[2]));
     }
 
+    public void AfterGetVoiceItem() // 獲得聲音物品後
+    {
+        // 目前規劃是先顯示紀錄簿後接著平面圖
+        // 只能寫在一起
+        StartCoroutine(ShowTutorialAfterDelay(tutorialToShow[3]));
+    }
+
     /// <summary>
     /// 啟動一個協程 (Coroutine)，等待一幀後再顯示教學。
     /// </summary>

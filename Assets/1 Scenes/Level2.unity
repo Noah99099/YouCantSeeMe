@@ -1064,12 +1064,6 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 215079163}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &215079165 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 649404905723171948, guid: 7fc053bb33cd44445a741123a0247613,
-    type: 3}
-  m_PrefabInstance: {fileID: 215079163}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &242812336
 GameObject:
   m_ObjectHideFlags: 0
@@ -3130,8 +3124,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   targetRole: {fileID: 11400000, guid: bc1fb5f1b3772c048a7c422ac4f74a19, type: 2}
   unlockCarousel: {fileID: 11400000, guid: 719f815b73eec1045aee2b745e8e0499, type: 2}
-  rolePastManager: {fileID: 1415359577174830215, guid: 46ff141108d04ad4b897ad8c8b1bea7d,
-    type: 3}
   objectName: "\u674E\u6625\u6885\u7684\u7B2C\u4E00\u500B\u60C5\u5831"
   objects:
   - {fileID: 1123788159}
@@ -14166,6 +14158,67 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.14555979, y: 0.29675773, z: 3.4999995}
   m_Center: {x: -3.1348183, y: 2.3793426, z: 0.32371357}
+--- !u!1 &1696600602
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1696600603}
+  - component: {fileID: 1696600604}
+  m_Layer: 0
+  m_Name: FirstGetVoiceItem
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1696600603
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1696600602}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1696600604
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1696600602}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0d9023071c337a5458eaf17eb23abc6c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  eventEntries:
+  - eventID: FirstGetVoiceItem
+    onEventTriggered:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 1962172033}
+          m_TargetAssemblyTypeName: TutorialTrigger, Assembly-CSharp
+          m_MethodName: AfterGetVoiceItem
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
 --- !u!1 &1717323515
 GameObject:
   m_ObjectHideFlags: 0
@@ -15345,6 +15398,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 0d99fe3aa138a0f479b173c500e8e20e, type: 2}
   - {fileID: 11400000, guid: 7e25ca577f2da8f4ab7acf95c1127050, type: 2}
   - {fileID: 11400000, guid: 0f4f35a0995e9c344b0688141cac8ccd, type: 2}
+  - {fileID: 11400000, guid: ef3b1b687240513478b3a4d1912b0607, type: 2}
 --- !u!114 &1962172034
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -15366,7 +15420,8 @@ MonoBehaviour:
   rightArrow: {fileID: 1769958004}
   paginationPanel: {fileID: 1148956000}
   closeButton: {fileID: 616342468}
-  dotPrefab: {fileID: 215079165}
+  dotPrefab: {fileID: 649404905723171948, guid: 7fc053bb33cd44445a741123a0247613,
+    type: 3}
   imagePrefab: {fileID: 5694952940782043751, guid: 8ce9b9b90f98e094a9d1499811fcada3,
     type: 3}
   dotActiveColor: {r: 1, g: 0, b: 0, a: 1}
@@ -17227,6 +17282,7 @@ SceneRoots:
   - {fileID: 263979515}
   - {fileID: 153675837}
   - {fileID: 146398587}
+  - {fileID: 1696600603}
   - {fileID: 7474358686120263169}
   - {fileID: 89017975984639607}
   - {fileID: 1857073736}

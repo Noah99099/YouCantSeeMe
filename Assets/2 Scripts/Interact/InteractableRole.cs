@@ -18,6 +18,43 @@ public class InteractableRole : MonoBehaviour
     /// </summary>
     public void Interact()
     {
+        // [!!] 新增的偵錯區塊 [!!]
+        Debug.Log($"[InteractableRole] Interact() for '{this.gameObject.name}' 已被呼叫。");
+        Debug.Log($"[InteractableRole] --- 正在檢查 IF 條件 ---");
+
+        // 檢查 1: RolePastManager.Instance
+        if (RolePastManager.Instance == null)
+        {
+            Debug.LogError($"[InteractableRole] 條件 1 失敗: RolePastManager.Instance 是 null！");
+        }
+        else
+        {
+            Debug.Log($"[InteractableRole] 條件 1 通過: RolePastManager.Instance 存在 (ID: {RolePastManager.Instance.GetInstanceID()})。");
+        }
+
+        // 檢查 2: targetRole
+        if (targetRole == null)
+        {
+            Debug.LogError($"[InteractableRole] 條件 2 失敗: targetRole 是 null！");
+        }
+        else
+        {
+            Debug.Log($"[InteractableRole] 條件 2 通過: targetRole 是 '{targetRole.name}'。");
+        }
+
+        // 檢查 3: unlockCarousel
+        if (unlockCarousel == null)
+        {
+            // [!!] 這 99% 是問題所在 [!!]
+            Debug.LogError($"[InteractableRole] 條件 3 失敗: unlockCarousel 是 null！");
+        }
+        else
+        {
+            Debug.Log($"[InteractableRole] 條件 3 通過: unlockCarousel 是 '{unlockCarousel.name}'。");
+        }
+        Debug.Log($"[InteractableRole] --- IF 條件檢查完畢 ---");
+        // [!!] 偵錯區塊結束 [!!]
+
         // 不再使用 rolePastManager 變數，
         // 而是直接使用「全局單例」 RolePastManager.Instance
         if (RolePastManager.Instance != null && targetRole != null && unlockCarousel != null)
@@ -26,8 +63,11 @@ public class InteractableRole : MonoBehaviour
             RolePastManager.Instance.AddCarouselToRole(targetRole, unlockCarousel);
 
             Debug.Log($"已解K {targetRole.roleName} 的 Carousel: {unlockCarousel.name}");
-        }
+        }   
+    }
 
+    public void DestoryObjectsAfterVideo() 
+    {
         for (int i = 0; i < objects.Length; i++)
         {
             Destroy(objects[i]); // 解鎖後刪掉的物件

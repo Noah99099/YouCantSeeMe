@@ -458,7 +458,6 @@ public class PlayerInteraction : MonoBehaviour
     #endregion
 
     #region ===== [新需求] 聲音物品使用流程 =====
-
     /// <summary>
     /// [新] 1. 從 VoicePanelUIController 呼叫，開始使用聲音物品
     /// </summary>
@@ -494,6 +493,9 @@ public class PlayerInteraction : MonoBehaviour
             currentVoiceItemModel = Instantiate(voiceItem.voiceItem, cornerAnchor);
             currentVoiceItemModel.transform.localPosition = Vector3.zero;
             currentVoiceItemModel.transform.localRotation = Quaternion.identity;
+
+            // 根據 ScriptableObject 中定義的 itemScale 來設定模型的本地縮放
+            currentVoiceItemModel.transform.localScale = Vector3.one * voiceItem.itemScale;
         }
         else
         {

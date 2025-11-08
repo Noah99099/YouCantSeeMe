@@ -86,7 +86,8 @@ public class PuzzleContainerUI : MonoBehaviour
     /// </summary>
     public void ShowConnectionLine()
     {
-        connectionLine.SetActive(true);
+        //connectionLine.SetActive(true);
+        connectionLine.SetActive(false); //目前不用連線所以關掉
     }
 
     

@@ -30,16 +30,22 @@ public class PlayVideo : MonoBehaviour
         }
         else
         {
-            // 【核心】創建一個回調 (Callback)
-            // 我們使用 Lambda 運算式來定義這個 "動作"
-            // 這個動作就是去呼叫 targetRole.Interact()
+            // [!!] 核心修改 [!!]
+            // 我們不再創建回調，而是在「播放之前」就立刻解鎖
+
+            // 1. 「立刻」觸發 Interact() 來解鎖物品/回憶
+            Debug.Log($"[PlayVideo] 影片即將播放，立刻觸發 {targetRole.name} 的 Interact()。");
+            targetRole.Interact(); // <-- 核心修改點
+
+            // 2. 【新】創建一個「影片播完後」的回調
+            //    這個回調指向新的 DestoryObjectsAfterVideo 函式
             System.Action onFinishedAction = () =>
             {
-                Debug.Log($"[PlayVideo] 影片播放完畢，準備觸發 {targetRole.name} 的 Interact()。");
-                targetRole.Interact();
+                Debug.Log($"[PlayVideo] 影片播放完畢，準備觸發 {targetRole.name} 的 DestoryObjectsAfterVideo() (銷毀物件)。");
+                targetRole.DestoryObjectsAfterVideo();
             };
 
-            // 呼叫 PlayVideo，並傳入影片和我們剛創建的回調
+            // 3. 呼叫 PlayVideo，並傳入影片和我們剛創建的「銷毀物件」回調
             videoController.PlayVideo(clip, onFinishedAction);
         }
     }

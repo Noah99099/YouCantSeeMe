@@ -28,7 +28,9 @@ public class PasswordLockManager : MonoBehaviour
 
     private string currentInput = "";
     private const int MaxDigits = 4;
-    
+
+    // 【新增】一個 bool 變數來防止在重置延遲期間重複輸入
+    private bool isChecking = false;
 
     private void Awake()
     {
@@ -46,7 +48,8 @@ public class PasswordLockManager : MonoBehaviour
 
     public void HandleButtonPress(PasswordButton button)
     {
-        if (currentInput.Length >= MaxDigits) return;
+        // 【修改】增加 isChecking 判斷
+        if (currentInput.Length >= MaxDigits || isChecking) return;
         Debug.Log($"== Before Append: currentInput = {currentInput}");
         currentInput += button.Value.ToString();
         Debug.Log($"== After Append: currentInput = {currentInput}");
@@ -59,6 +62,8 @@ public class PasswordLockManager : MonoBehaviour
 
         if (currentInput.Length == MaxDigits)
         {
+            // 【修改】設定 isChecking 為 true
+            isChecking = true;
             CheckPassword();
         }
     }
@@ -97,6 +102,10 @@ public class PasswordLockManager : MonoBehaviour
             }
 
             finishLock_DiaPos.SetActive(true);
+
+            // 注意：密碼正確後，我們沒有重置 isChecking，
+            // 這會使密碼鎖 "鎖定" 在正確狀態，是合理的。
+            // 如果你希望解鎖後還能重置，可以在此處呼叫 ResetLock() 或 ResetLock(false)。
         }
         else
         {
@@ -108,8 +117,20 @@ public class PasswordLockManager : MonoBehaviour
                 audioSource.PlayOneShot(failSE, pressSEVolume);
             }
 
-            ResetLock();
+            // 【修改】不再直接呼叫 ResetLock()，
+            // 而是啟動帶有延遲的協程
+            StartCoroutine(ResetAfterDelay(0.5f)); //可調延遲時間
         }
+    }
+
+    // 【新增】用於延遲重置的協程
+    private IEnumerator ResetAfterDelay(float delay)
+    {
+        // 等待指定的秒數
+        yield return new WaitForSeconds(delay);
+
+        // 等待結束後，執行重置
+        ResetLock();
     }
 
     private void ResetLock()
@@ -117,5 +138,8 @@ public class PasswordLockManager : MonoBehaviour
         Debug.Log("ResetLock() 執行");
         currentInput = "";
         UpdateDisplay();
+
+        // 【修改】重置 isChecking 狀態，允許再次輸入
+        isChecking = false;
     }
 }
