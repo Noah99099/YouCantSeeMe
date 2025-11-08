@@ -16794,7 +16794,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &897227262
 RectTransform:
   m_ObjectHideFlags: 0
@@ -16901,7 +16901,7 @@ MonoBehaviour:
   tweenTargetIsTargetGO: 1
   delay: 0
   duration: 1
-  easeType: 6
+  easeType: 27
   easeCurve:
     serializedVersion: 2
     m_Curve:
@@ -16939,7 +16939,7 @@ MonoBehaviour:
   animationType: 1
   targetType: 5
   forcedTargetType: 0
-  autoPlay: 1
+  autoPlay: 0
   useTargetAsV3: 1
   endValueFloat: 0
   endValueV3: {x: 771, y: 277.13763, z: 0}

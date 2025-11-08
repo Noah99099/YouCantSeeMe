@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 using Spine;
 using Spine.Unity;
-using DG.Tweening;
+//using DG.Tweening;
 
 public class LogoRotating : MonoBehaviour
 {
-    [Header("±ÛÂà¨¤«×")]
+    [Header("ï¿½ï¿½ï¿½à¨¤ï¿½ï¿½")]
     public float rotationSpeed;
 
     // Update is called once per frame
