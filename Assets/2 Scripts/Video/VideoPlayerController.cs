@@ -106,5 +106,12 @@ public class VideoPlayerController : MonoBehaviour
             // 清除回調，確保它只被執行一次
             onPlaybackComplete = null;
         }
+
+        // 4. [!!] 新增 [!!]
+        //    發送「全局信號」給動畫管理器
+        if (PuzzleUnlockAnimator.Instance != null)
+        {
+            PuzzleUnlockAnimator.Instance.OnVideoPlaybackFinished();
+        }
     }
 }

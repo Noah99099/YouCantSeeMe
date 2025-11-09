@@ -1,27 +1,27 @@
-// VoiceItemManager.cs
+ï»¿// VoiceItemManager.cs
 using System.Collections.Generic;
 using UnityEngine;
-using System; // »İ­n¤Ş¥Î System ¤~¯à¨Ï¥Î Action
-using System.Linq; // ¬°¤F .Exists() ©M .Any()
+using System; // éœ€è¦å¼•ç”¨ System æ‰èƒ½ä½¿ç”¨ Action
+using System.Linq; // ç‚ºäº† .Exists() å’Œ .Any()
 
 public class VoiceItemManager : MonoBehaviour
 {
-    // --- ³æ¨Ò¼Ò¦¡ (Singleton) ---
+    // --- å–®ä¾‹æ¨¡å¼ (Singleton) ---
     public static VoiceItemManager Instance { get; private set; }
 
-    // ·íÁn­µ¤º®e§ïÅÜ®ÉÄ²µoªº¨Æ¥ó¡AUI ·|­q¾\³o­Ó¨Æ¥ó¨Ó§ó·sÅã¥Ü
+    // ç•¶è²éŸ³å…§å®¹æ”¹è®Šæ™‚è§¸ç™¼çš„äº‹ä»¶ï¼ŒUI æœƒè¨‚é–±é€™å€‹äº‹ä»¶ä¾†æ›´æ–°é¡¯ç¤º
     public event Action OnVoiceChanged;
 
-    [Header("¥\¯à¡GºŞ²zÁn­µª«¥ó¡]¥u¼W¤£´î¡^")]
-    // Àx¦s©Ò¦³ª««~¸ê®Æªº List
+    [Header("åŠŸèƒ½ï¼šç®¡ç†è²éŸ³ç‰©ä»¶ï¼ˆåªå¢ä¸æ¸›ï¼‰")]
+    // å„²å­˜æ‰€æœ‰ç‰©å“è³‡æ–™çš„ List
     public List<VoiceItemData> items = new List<VoiceItemData>();
 
-    [Header("Àq»{Åã¥Üª««~ (½Ğ¦b Inspector «ü¬£¤@­Ó VoiceItemData ¸ê²£)")]
-    // ³o¬O°t¸m¼Æ¾Ú (Configuration Data)¡A¤£¬O UI ª¬ºA¡A©Ò¥H«O¯d
+    [Header("é»˜èªé¡¯ç¤ºç‰©å“ (è«‹åœ¨ Inspector æŒ‡æ´¾ä¸€å€‹ VoiceItemData è³‡ç”¢)")]
+    // é€™æ˜¯é…ç½®æ•¸æ“š (Configuration Data)ï¼Œä¸æ˜¯ UI ç‹€æ…‹ï¼Œæ‰€ä»¥ä¿ç•™
     public VoiceItemData defaultVoiceItem;
 
-    // ----- [·s»İ¨D] °lÂÜ¤w¨Ï¥Îªºª««~ -----
-    // ¨Ï¥Î HashSet ®Ä²v§ó°ª (O(1) ¬d¸ß)
+    // ----- [æ–°éœ€æ±‚] è¿½è¹¤å·²ä½¿ç”¨çš„ç‰©å“ -----
+    // ä½¿ç”¨ HashSet æ•ˆç‡æ›´é«˜ (O(1) æŸ¥è©¢)
     private HashSet<VoiceItemData> usedVoiceItems = new HashSet<VoiceItemData>();
 
     private void Awake()
@@ -32,37 +32,37 @@ public class VoiceItemManager : MonoBehaviour
     }
 
     /// <summary>
-    /// ·s¼Wª««~¨ìÁn­µ­±ªO
+    /// æ–°å¢ç‰©å“åˆ°è²éŸ³é¢æ¿
     /// </summary>
-    /// <param name="item">­n·s¼Wªºª««~¸ê®Æ</param>
+    /// <param name="item">è¦æ–°å¢çš„ç‰©å“è³‡æ–™</param>
     public void AddItem(VoiceItemData voiceItem)
     {
         if (voiceItem == null || items.Contains(voiceItem)) return;
 
         items.Add(voiceItem);
-        OnVoiceChanged?.Invoke(); // ¥u³qª¾¡A¤£°õ¦æ¥ô¦ó UI ¾Ş§@
+        OnVoiceChanged?.Invoke(); // åªé€šçŸ¥ï¼Œä¸åŸ·è¡Œä»»ä½• UI æ“ä½œ
     }
 
-    // ----- [·s»İ¨D] ¼Ğ°O»PÀË¬d¨Ï¥Îª¬ºA -----
+    // ----- [æ–°éœ€æ±‚] æ¨™è¨˜èˆ‡æª¢æŸ¥ä½¿ç”¨ç‹€æ…‹ -----
     /// <summary>
-    /// [·s] ¼Ğ°O¤@­ÓÁn­µª««~¬°¡u¤w¨Ï¥Î¡v
+    /// [æ–°] æ¨™è¨˜ä¸€å€‹è²éŸ³ç‰©å“ç‚ºã€Œå·²ä½¿ç”¨ã€
     /// </summary>
     public void MarkItemAsUsed(VoiceItemData item)
     {
         if (item == null || usedVoiceItems.Contains(item)) return;
 
-        Debug.Log($"[VoiceItemManager] ±N {item.itemName} ¼Ğ°O¬°¤w¨Ï¥Î¡C");
+        Debug.Log($"[VoiceItemManager] å°‡ {item.itemName} æ¨™è¨˜ç‚ºå·²ä½¿ç”¨ã€‚");
         usedVoiceItems.Add(item);
 
-        // Ä²µo¨Æ¥ó¡A±j¨î UI (VoicePanelUIController) ¨ê·s
+        // è§¸ç™¼äº‹ä»¶ï¼Œå¼·åˆ¶ UI (VoicePanelUIController) åˆ·æ–°
         OnVoiceChanged?.Invoke();
 
-        // [!!] ¦b³o¸Ì³qª¾ ClueCombinationManager Àò±o®×¥óª««~ [!!]
-        ClueCombinationManager.Instance?.CheckForNewPuzzleUnlocks();
+        // é€šçŸ¥ ClueCombinationManagerï¼Œå‘ŠçŸ¥å®ƒé€™æ¬¡è§£é–çš„é¡å‹æ˜¯ Sound
+Â  Â  Â  Â  ClueCombinationManager.Instance?.CheckForNewPuzzleUnlocks(false, EClueType.Sound);
     }
 
     /// <summary>
-    /// [·s] ÀË¬d¤@­ÓÁn­µª««~¬O§_¤w³Q¨Ï¥Î
+    /// [æ–°] æª¢æŸ¥ä¸€å€‹è²éŸ³ç‰©å“æ˜¯å¦å·²è¢«ä½¿ç”¨
     /// </summary>
     public bool IsItemUsed(VoiceItemData item)
     {
@@ -71,7 +71,7 @@ public class VoiceItemManager : MonoBehaviour
     }
 
     /// <summary>
-    /// [·s] (¥i¿ï) ¦b¹CÀ¸ÅªÀÉ©Î­«¸m®É¡A²M°£¨Ï¥Îª¬ºA
+    /// [æ–°] (å¯é¸) åœ¨éŠæˆ²è®€æª”æˆ–é‡ç½®æ™‚ï¼Œæ¸…é™¤ä½¿ç”¨ç‹€æ…‹
     /// </summary>
     public void ResetUsedItems()
     {

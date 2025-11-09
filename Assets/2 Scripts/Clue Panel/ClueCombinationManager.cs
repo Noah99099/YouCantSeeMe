@@ -550,12 +550,15 @@ public class ClueCombinationManager : MonoBehaviour
     /// [新] 核心函式：檢查並解鎖新的謎題
     /// </summary>
     /// <param name="isFirstLoad">是否為遊戲/場景第一次載入</param>
-    public void CheckForNewPuzzleUnlocks(bool isFirstLoad = false)
+    public void CheckForNewPuzzleUnlocks(bool isFirstLoad = false, EClueType unlockType = EClueType.Item)
     {
         HashSet<string> playerClueIDs = GetAllPlayerClueIDs();
-        bool aNewPuzzleWasUnlocked = false;
 
-        // 遍歷「總表」
+        // 我們不再用 bool aNewPuzzleWasUnlocked，
+        // 而是建立一個「新解鎖列表」
+        List<ClueCombinationPuzzle> newlyUnlockedPuzzles = new List<ClueCombinationPuzzle>();
+
+        // 遍歷「總表」，檢查是否有新解鎖
         for (int i = 0; i < allPuzzles.Count; i++)
         {
             // 如果這個索引 i 已經在「已解鎖表」中，跳過
@@ -568,10 +571,28 @@ public class ClueCombinationManager : MonoBehaviour
             {
                 // [!!] 解鎖 [!!]
                 _unlockedPuzzleMasterIndices.Add(i);
-                aNewPuzzleWasUnlocked = true;
-                Debug.Log($"[ClueCombinationManager] 謎題已解鎖: {puzzle.puzzleTitle}");
 
-                // TODO: 在這裡顯示「已解鎖新組合！」的 UI 提示
+                // [!!] 將新解鎖的謎題加入列表 [!!]
+                // 因為 i 總是從小到大，這自動保證了順序
+                newlyUnlockedPuzzles.Add(puzzle);
+                Debug.Log($"[ClueCombinationManager] 謎題已解鎖: {puzzle.puzzleTitle}");
+            }
+        }
+
+        // --- 檢查動畫觸發 ---
+        // 如果列表「不」為空
+        if (newlyUnlockedPuzzles.Count > 0)
+        {
+            if (PuzzleUnlockAnimator.Instance == null)
+            {
+                Debug.LogWarning("[ClueCombinationManager] 偵測到新謎題，但找不到 PuzzleUnlockAnimator.Instance！");
+            }
+            else
+            {
+                // [!!] 核心修改 [!!]
+                // 將「整個列表」和「觸發類型」交給 PUA 處理
+                Debug.Log($"[ClueCombinationManager] 發現 {newlyUnlockedPuzzles.Count} 個新謎題，正在傳送給 PUA...");
+                PuzzleUnlockAnimator.Instance.QueueNewUnlocks(newlyUnlockedPuzzles, unlockType);
             }
         }
 
@@ -579,9 +600,8 @@ public class ClueCombinationManager : MonoBehaviour
         UpdateNavigationButtons();
 
         // 如果這是第一次載入，或這是遊戲中第一個被解鎖的謎題
-        if ((isFirstLoad || aNewPuzzleWasUnlocked) && _currentUnlockedListIndex == -1 && _unlockedPuzzleMasterIndices.Count > 0)
+        if ((isFirstLoad || newlyUnlockedPuzzles.Count > 0) && _currentUnlockedListIndex == -1 && _unlockedPuzzleMasterIndices.Count > 0)
         {
-            // 自動載入第一個可用的謎題
             LoadPuzzleByUnlockedIndex(0);
         }
     }

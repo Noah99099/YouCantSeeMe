@@ -545,7 +545,14 @@ public class PlayerInteraction : MonoBehaviour
         }
 
         // 3. 標記物品為「已使用」
-        VoiceItemManager.Instance.MarkItemAsUsed(voiceItem);
+        if (VoiceItemManager.Instance != null)
+        {
+            // 標記為「已使用」(這樣它才會成為一個線索)
+            VoiceItemManager.Instance.MarkItemAsUsed(voiceItem);
+
+            // [!!] 通知 CCM，並告知類型是「Sound」[!!]
+            ClueCombinationManager.Instance?.CheckForNewPuzzleUnlocks(false, EClueType.Sound);
+        }
 
         // [修改] 確保花屏特效停止
         if (glitchController != null)

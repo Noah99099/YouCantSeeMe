@@ -5,24 +5,18 @@ using UnityEngine.Rendering.Universal;
 [RequireComponent(typeof(Collider))]
 public class VoiceItemDetectionPoint : MonoBehaviour
 {
-    [Header("�P�w�I�]�w")]
-    [Tooltip("���P�w�I�ݭn�����n�����~�~��Ĳ�o")]
+    [Header("聲音物品")]
     [SerializeField] private VoiceItemData requiredVoiceItem;
 
-    [Header("�S�ĻP�n�� (�i��)")]
-    [Tooltip("���������� AudioSource")]
+    [Header("雜音")]
     [SerializeField] private AudioSource staticNoiseSource;
 
-    [Header("�P�w�d��")]
-    [Tooltip("�}�l�������a�ò��ͯS�Ī��̻��Z��")]
+    [Header("距離設置")]
     [SerializeField] private float maxDetectionDistance = 20.0f;
-    [Tooltip("�S�ĳ̱j (���q�̤j) ���Z��")]
     [SerializeField] private float minDetectionDistance = 1.0f;
 
-    [Header("Ĳ�o�]�w")]
-    [Tooltip("Ĳ�o�ʵe���v��")]
+    [Header("影片和刪除物品")]
     [SerializeField] private PlayVideo playVideo;
-    [Tooltip("�̫�n�R��������")]
     [SerializeField] private GameObject destroyObj;
 
     private Transform playerTransform;

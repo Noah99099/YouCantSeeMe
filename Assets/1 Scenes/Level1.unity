@@ -11367,6 +11367,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 897227262}
+  - {fileID: 1010038201}
   - {fileID: 368210403}
   - {fileID: 494571059}
   m_Father: {fileID: 1728009658}
@@ -16808,7 +16809,6 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1184545046}
-  - {fileID: 1010038201}
   m_Father: {fileID: 606221570}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -16930,7 +16930,7 @@ MonoBehaviour:
   loops: 1
   id: 
   isRelative: 0
-  isFrom: 0
+  isFrom: 1
   isIndependentUpdate: 0
   autoKill: 1
   isActive: 1
@@ -16942,7 +16942,7 @@ MonoBehaviour:
   autoPlay: 0
   useTargetAsV3: 1
   endValueFloat: 0
-  endValueV3: {x: 771, y: 277.13763, z: 0}
+  endValueV3: {x: 792, y: 277.13763, z: 0}
   endValueV2: {x: 0, y: 0}
   endValueColor: {r: 1, g: 1, b: 1, a: 1}
   endValueString: 
@@ -19425,7 +19425,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1010038201}
   m_Layer: 5
-  m_Name: Trans
+  m_Name: HintTrans
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -19438,16 +19438,16 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1010038200}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 897227262}
+  m_Father: {fileID: 606221570}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -382, y: 0}
+  m_AnchoredPosition: {x: 792, y: 277.13763}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1015695234
@@ -34699,6 +34699,7 @@ GameObject:
   - component: {fileID: 1683159258}
   - component: {fileID: 1683159259}
   - component: {fileID: 1683159260}
+  - component: {fileID: 1683159261}
   m_Layer: 0
   m_Name: ClueCombinationManager
   m_TagString: Untagged
@@ -34755,6 +34756,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ba7ac67011748ee40b71d2353686f020, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &1683159261
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1683159257}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ffa2da987020622489967ab776131ed7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  uiPanel: {fileID: 897227262}
+  targetPosition: {fileID: 1010038201}
+  titleText: {fileID: 1184545047}
+  slideInDuration: 1
+  displayDuration: 1
+  slideOutDuration: 1
+  easeIn: 27
+  easeOut: 27
 --- !u!1 &1685303895
 GameObject:
   m_ObjectHideFlags: 0

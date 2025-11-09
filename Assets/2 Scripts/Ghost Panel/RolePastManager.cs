@@ -49,7 +49,9 @@ public class RolePastManager : MonoBehaviour
 
         if (isNewCarousel)
         {
-            ClueCombinationManager.Instance?.CheckForNewPuzzleUnlocks();
+            // 呼叫 CheckForNewPuzzleUnlocks 時，
+            // 傳入 EClueType.Memory 來告知 CCM 這次的解鎖類型
+            ClueCombinationManager.Instance?.CheckForNewPuzzleUnlocks(false, EClueType.Memory);
         }
     }
 }
