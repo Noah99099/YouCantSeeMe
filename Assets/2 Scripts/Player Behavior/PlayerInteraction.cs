@@ -4,6 +4,7 @@ using TMPro;
 using UnityEngine.EventSystems;
 using System.Linq;
 using System.Collections; // 為了 Coroutine
+using UnityEngine.Rendering.Universal;
 
 /// <summary>
 /// 與場景物件交互一律寫這裡
@@ -46,6 +47,12 @@ public class PlayerInteraction : MonoBehaviour
     private GameObject currentInteractableObject = null;
     private InteractableObject currentInteractable; // 用於存儲當前可交互物件 腳本
 
+    // ----- [!! 新增 !!] -----
+    // 我們需要快取 (Cache) 這兩個效果參數
+    private FilmGrain filmGrainEffect;
+    private ChromaticAberration chromaticAberrationEffect;
+    // ----- [!! 結束新增 !!] -----
+
     private void Awake()
     {
         // 實現單例模式，但不跨場景
@@ -77,6 +84,27 @@ public class PlayerInteraction : MonoBehaviour
         if (glitchController != null)
         {
             glitchController.StopGlitch(); // 確保開始時是關閉的
+            // ----- [!! 新增 !!] -----
+            // 獲取 Glitch Volume Profile 中的參數，以便手動控制
+            if (glitchController.glitchVolume != null && glitchController.glitchVolume.profile != null)
+            {
+                // 1. 抓取 FilmGrain
+                if (!glitchController.glitchVolume.profile.TryGet(out filmGrainEffect))
+                {
+                    Debug.LogWarning($"[PlayerInteraction]  {glitchController.glitchVolume.name}  Profile 䤣 FilmGrainI");
+                }
+                
+                // 2. 抓取 ChromaticAberration
+                if (!glitchController.glitchVolume.profile.TryGet(out chromaticAberrationEffect))
+                {
+                    Debug.LogWarning($"[PlayerInteraction]  {glitchController.glitchVolume.name}  Profile 䤣 ChromaticAberrationI");
+                }
+            }
+            else
+            {
+                Debug.LogError("[PlayerInteraction] Glitch Controller  'glitchVolume' wBoO Profile wI", this);
+            }
+            // ----- [!! 結束新增 !!] -----
         }
         else
         {
@@ -475,14 +503,18 @@ public class PlayerInteraction : MonoBehaviour
         IsVoiceItemActive = true;
         activeVoiceItemData = voiceItem;
 
-        // ----- [!! 解決方案 步驟 1 !!] -----
+        // ----- [!! 解決方案 步驟 1 (已修改) !!] -----
         // 立刻將 Glitch Volume 的權重設為 1，
         // 這樣它就能以 P=20 優先級 "覆蓋" 陰視野 (P=10)
         if (glitchController != null)
         {
-            glitchController.PlayOneShotGlitch(); // 等同於 SetGlitchIntensity(1.0)
+            glitchController.PlayOneShotGlitch(); 
         }
-        // ----- [!! 解決方案結束 !!] -----
+
+        // [!! 在這裡添加 !!] 
+        // 呼叫 "瞬間音效" (Sound 1) 的協程
+        StartCoroutine(PlayNoiseForDuration(1f));
+        // ----- [!! 添加結束 !!] -----
 
         // 2. 在 cornerAnchor 顯示模型
         if (voiceItem.voiceItem != null && cornerAnchor != null)
@@ -569,10 +601,27 @@ public class PlayerInteraction : MonoBehaviour
         if (glitchController == null) yield break;
 
         Debug.Log("播放花屏特效 (1秒)");
-        glitchController.PlayOneShotGlitch(); // <--- 呼叫 ScreenGlitchEffect.cs
-        StartCoroutine(PlayNoiseForDuration(1f)); // 要手動打數字
+        // ----- [!! 修改 !!] -----
+        // 1. 手動將強度設為 1.0 (或你想要的最大值)
+        if (filmGrainEffect != null) filmGrainEffect.intensity.value = 1.0f;
+        if (chromaticAberrationEffect != null) chromaticAberrationEffect.intensity.value = 1.0f;
+        
+        // 2. 開啟 Volume (Weight = 1)
+        glitchController.PlayOneShotGlitch(); 
+        
+        // 3. 播放聲音
+        StartCoroutine(PlayNoiseForDuration(1f));
+        
+        // 4. 等待
         yield return new WaitForSeconds(1.0f);
-        glitchController.StopGlitch(); // <--- 呼叫 ScreenGlitchEffect.cs
+        
+        // 5. 關閉 Volume (Weight = 0)
+        glitchController.StopGlitch(); 
+        
+        // 6. 手動將強度歸零 (清理狀態)
+        if (filmGrainEffect != null) filmGrainEffect.intensity.value = 0.0f;
+        if (chromaticAberrationEffect != null) chromaticAberrationEffect.intensity.value = 0.0f;
+        // ----- [!! 結束修改 !!] -----
         Debug.Log("花屏特效結束");
     }
 
