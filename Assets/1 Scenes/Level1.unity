@@ -3362,7 +3362,7 @@ GameObject:
   m_Component:
   - component: {fileID: 189574481}
   m_Layer: 0
-  m_Name: "---------- \u521D\u59CB\u5C0D\u8A71 ----------"
+  m_Name: "///\u521D\u59CB\u5C0D\u8A71"
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3543,7 +3543,7 @@ GameObject:
   m_Component:
   - component: {fileID: 200836826}
   m_Layer: 0
-  m_Name: "------\u6848\u4EF6\u7D00\u9304\u7C3F------"
+  m_Name: "@\u6848\u4EF6\u7D00\u9304\u7C3F"
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -7082,8 +7082,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -72, y: -8}
-  m_SizeDelta: {x: 683, y: 50}
+  m_AnchoredPosition: {x: -2.97229, y: -34.24627}
+  m_SizeDelta: {x: 821.0554, y: 102.4926}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &331307905
 MonoBehaviour:
@@ -7169,7 +7169,7 @@ MonoBehaviour:
   m_VertexBufferAutoSizeReduction: 0
   m_useMaxVisibleDescender: 1
   m_pageToDisplay: 1
-  m_margin: {x: 0, y: 0, z: -143.11804, w: -54.96573}
+  m_margin: {x: 0, y: 0, z: -0.37512207, w: 0.28964233}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_hasFontAssetChanged: 0
@@ -8086,7 +8086,7 @@ GameObject:
   m_Component:
   - component: {fileID: 407544344}
   m_Layer: 0
-  m_Name: "---------- \u5C0D\u8A71\u4EA4\u4E92\u9EDE ----------"
+  m_Name: "///\u5C0D\u8A71\u4EA4\u4E92\u9EDE"
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -13555,7 +13555,7 @@ GameObject:
   m_Component:
   - component: {fileID: 723614219}
   m_Layer: 0
-  m_Name: "------\u904A\u6232\u83DC\u55AE\u7CFB\u7D71------"
+  m_Name: "@\u904A\u6232\u83DC\u55AE\u7CFB\u7D71"
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -14867,7 +14867,7 @@ GameObject:
   m_Component:
   - component: {fileID: 817765505}
   m_Layer: 0
-  m_Name: ------Manager------
+  m_Name: '@Manager'
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -20564,8 +20564,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -339, y: 59}
-  m_SizeDelta: {x: 150.3, y: 50}
+  m_AnchoredPosition: {x: -72.32492, y: 59}
+  m_SizeDelta: {x: 683.65, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1050380335
 MonoBehaviour:
@@ -32891,7 +32891,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1594306397}
   m_Layer: 0
-  m_Name: ----------PLACE----------
+  m_Name: ///PLACE
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -34755,6 +34755,9 @@ MonoBehaviour:
   allPuzzles:
   - {fileID: 11400000, guid: 49650133f421db14b85c275fa75e42c9, type: 2}
   - {fileID: 11400000, guid: d15f1c661628620418cf3abd3450f82a, type: 2}
+  puzzleRewardItems:
+  - {fileID: 11400000, guid: 055c762c0a4d9f4449ac0a4738faf8b6, type: 2}
+  - {fileID: 11400000, guid: 7577dffc10af11746b6d7a796ab33ae5, type: 2}
   inventoryGrid: {fileID: 963066901}
   detailsPanel: {fileID: 1158249450}
   nextButton: {fileID: 799713988}
@@ -34804,7 +34807,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1685303896}
   m_Layer: 0
-  m_Name: ------BASIC SETTING------
+  m_Name: //BASIC SETTING
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -34835,7 +34838,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1686047442}
   m_Layer: 0
-  m_Name: "------\u6E96\u5FC3+\u53F3\u4E0B------"
+  m_Name: "@\u6E96\u5FC3+\u53F3\u4E0B"
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -42630,7 +42633,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1998735094}
   m_Layer: 0
-  m_Name: ------Dialogue System------
+  m_Name: //Dialogue System
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

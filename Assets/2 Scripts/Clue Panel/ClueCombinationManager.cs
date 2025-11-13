@@ -17,9 +17,10 @@ public class ClueCombinationManager : MonoBehaviour
     public List<ClueCombinationPuzzle> allPuzzles;
     //private int currentPuzzleIndex = 0;
 
-    //[Header("玩家持有的回憶")]
-    //// [!!重要!!] 你需要將玩家獲得的 RoleData 實例 (ScriptableObject) 加入到這個 List
-    //public List<RoleData> playerCollectedRoles;
+    // 用於存放解鎖對應謎題後，要給予玩家的獎勵物品
+    // 索引必須對應 allPuzzles (例如 allPuzzles[0] 解鎖後給 puzzleRewardItems[0])
+    [Header("解鎖謎題後的獎勵物品 (索引對應 allPuzzles)")]
+    public List<ItemData> puzzleRewardItems;
 
     //[Header("管理器引用")]
     //// [!!] 新增 [!!] 您可以在 Inspector 中拖入，或者讓它自動尋找
@@ -279,6 +280,10 @@ public class ClueCombinationManager : MonoBehaviour
             _activePuzzleUI.SetResultMessage(puzzle.successMessage, Color.green); // 可以再調顏色
             _activePuzzleUI.LockAllSlots();
             _activePuzzleUI.ShowConnectionLine();
+
+            // [!!] 新增：發放獎勵物品 [!!]
+            // 只有在完全正確時才發放
+            GivePuzzleReward(_currentActiveMasterIndex);
         }
         else
         {
@@ -325,6 +330,30 @@ public class ClueCombinationManager : MonoBehaviour
             // 顯示對應的錯誤訊息和 [新] 顏色
             _activePuzzleUI.SetResultMessage(message, failureColor);
             // --- [!!] 修改結束 [!!] ---
+        }
+    }
+
+    /// <summary>
+    /// [新] 輔助函式：發放指定謎題的獎勵
+    /// </summary>
+    private void GivePuzzleReward(int puzzleIndex)
+    {
+        if (InventoryManager.Instance == null) return;
+
+        // 檢查是否有配置獎勵
+        if (puzzleRewardItems != null && puzzleIndex < puzzleRewardItems.Count)
+        {
+            ItemData reward = puzzleRewardItems[puzzleIndex];
+            if (reward != null)
+            {
+                // 檢查是否已經擁有 (避免重複刷獎勵 Log)
+                // InventoryManager.AddItem 內部也有檢查，但這裡檢查可以避免重複的 Debug.Log
+                if (!InventoryManager.Instance.HasItem(reward.itemName))
+                {
+                    Debug.Log($"[CCM] 謎題 {puzzleIndex} 組合正確！發放獎勵: {reward.itemName}");
+                    InventoryManager.Instance.AddItem(reward);
+                }
+            }
         }
     }
 
@@ -458,7 +487,6 @@ public class ClueCombinationManager : MonoBehaviour
         Debug.LogWarning($"[GetClueFromID] 找不到 ID: {clueID} 對應的線索。");
         return null;
     }
-
 
     public void NextPuzzle()
     {
