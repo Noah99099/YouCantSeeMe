@@ -348,7 +348,7 @@ public class InventoryUI : MonoBehaviour
     /// </summary>
     public void UpdateUI()
     {
-        if (InventoryManager.Instance?.items == null)
+        if (InventoryManager.Instance == null)
         {
             Debug.LogWarning("UpdateUI 被跳過: InventoryManager.items 為 null");
             return;
@@ -356,7 +356,7 @@ public class InventoryUI : MonoBehaviour
 
         Debug.Log($"更新背包UI (isInventoryVisible={isInventoryVisible})");
 
-        slotManager.UpdateSlots(InventoryManager.Instance.items, OnSlotClicked); // 更新左側格子，這步驟與 isInventoryVisible 無關
+        slotManager.UpdateSlots(InventoryManager.Instance.GetOwnedItemsData(), OnSlotClicked); // 更新左側格子，這步驟與 isInventoryVisible 無關
 
         // 如果背包面板未顯示，不更新右側 UI
         if (!isInventoryVisible) return;

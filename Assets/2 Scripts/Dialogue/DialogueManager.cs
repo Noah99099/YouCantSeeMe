@@ -268,6 +268,43 @@ public class DialogueManager : MonoBehaviour
     }
     #endregion
 
+    /// <summary>
+    /// 【新輔助方法】
+    /// 立即停止當前圖形，並無縫跳轉到一個新圖形的第一個節點。
+    /// 這用於 "路由器圖形" (Router Graph)。
+    /// </summary>
+    private void JumpToGraph(DialogueGraph newGraph)
+    {
+        Debug.Log($"[DialogueManager] 正在從 {currentGraph.name} 跳轉到 {newGraph.name}...");
+
+        if (newGraph == null)
+        {
+            Debug.LogError("StartGraphNode 嘗試跳轉，但 newGraph 為 null！");
+            EndConversation(); // 安全起見，直接結束
+            return;
+        }
+
+        // 1. 更新當前圖形
+        currentGraph = newGraph;
+
+        // 2. 找到新圖形的 StartNode
+        StartNode startNode = currentGraph.nodes.OfType<StartNode>().FirstOrDefault();
+        if (startNode == null)
+        {
+            Debug.LogError($"錯誤：在跳轉到的圖形 '{currentGraph.name}' 中找不到 StartNode！");
+            EndConversation();
+            return;
+        }
+
+        // 3. 獲取新圖形的第一個節點
+        currentNode = startNode.GetNextNode();
+
+        // 4. 立即開始處理新圖形
+        // (注意：我們不呼叫 EndConversation/StartConversation，
+        //  是為了保持 UI 和輸入堆疊的連續性)
+        ProcessCurrentNode();
+    }
+
     private void ProcessCurrentNode()
     {
         if (currentNode == null)
@@ -276,6 +313,7 @@ public class DialogueManager : MonoBehaviour
             return;
         }
 
+        // --- 1. 處理「停止點」節點 ---
         if (currentNode is LineNode lineNode)
         {
             if (DialogueAudioManager.Instance != null)
@@ -291,89 +329,24 @@ public class DialogueManager : MonoBehaviour
         else if (currentNode is ChoiceNode choiceNode)
         {
             isWaitingForChoice = true;
-            // 注意：ShowChoices 方法的參數可能需要從 List<Choice> 改為 List<string>
-            // 這取決於你的 DialogueUI.cs 如何實現
             dialogueUI.ShowChoices(choiceNode.choiceKeys, OnChoiceMade);
         }
-        else if (currentNode is SetVariableNode setVarNode)
+        else if (currentNode is TimedChoiceNode timedChoiceNode)
         {
-            // 執行設置變數的邏輯
-            (currentGraph as DialogueGraph).SetVariable(setVarNode.variableName, setVarNode.value);
-
-            // 邏輯節點不應停留，立即前進到下一個節點
-            currentNode = setVarNode.GetNextNode();
-            ProcessCurrentNode(); // 使用遞迴立即處理下一個節點
-        }
-        else if (currentNode is ConditionalNode conditionalNode)
-        {
-            // 執行條件判斷
-            float actualValue = (currentGraph as DialogueGraph).GetVariable(conditionalNode.variableName);
-            float compareValue = conditionalNode.valueToCompare;
-            bool result = false;
-
-            switch (conditionalNode.comparison)
-            {
-                case ComparisonType.EqualTo: result = actualValue == compareValue; break;
-                case ComparisonType.NotEqualTo: result = actualValue != compareValue; break;
-                case ComparisonType.GreaterThan: result = actualValue > compareValue; break;
-                case ComparisonType.LessThan: result = actualValue < compareValue; break;
-                case ComparisonType.GreaterThanOrEqualTo: result = actualValue >= compareValue; break;
-                case ComparisonType.LessThanOrEqualTo: result = actualValue <= compareValue; break;
-            }
-
-            // 根據判斷結果，前進到 True 或 False 的出口
-            currentNode = conditionalNode.GetNextNode(result);
-            ProcessCurrentNode(); // 使用遞迴立即處理下一個節點
+            isWaitingForChoice = true;
+            dialogueUI.ShowChoices(timedChoiceNode.choiceKeys, OnChoiceMade);
+            dialogueUI.StartTimer(timedChoiceNode.timeLimit, OnTimerTimeout);
         }
         else if (currentNode is WaitNode waitNode)
         {
-            // 如果是等待節點，就啟動等待協程
             StartCoroutine(HandleWaitNode(waitNode));
-        }
-        else if (currentNode is PlayAnimationNode animNode)
-        {
-            if (!string.IsNullOrEmpty(animNode.targetObjectName))
-            {
-                // 1. 根據名字在場景中尋找物件
-                GameObject target = GameObject.Find(animNode.targetObjectName);
-
-                if (target != null)
-                {
-                    // 2. 獲取該物件上的 Animator 元件
-                    Animator animator = target.GetComponent<Animator>();
-                    if (animator != null && !string.IsNullOrEmpty(animNode.triggerName))
-                    {
-                        // 3. 觸發動畫
-                        animator.SetTrigger(animNode.triggerName);
-                        Debug.Log($"正在為 {target.name} 播放動畫觸發器: {animNode.triggerName}");
-                    }
-                    else
-                    {
-                        Debug.LogWarning($"在物件 {target.name} 上找不到 Animator 元件，或 Trigger Name 為空！");
-                    }
-                }
-                else
-                {
-                    Debug.LogWarning($"在場景中找不到名為 {animNode.targetObjectName} 的物件！");
-                }
-            }
-            else
-            {
-                Debug.LogWarning("PlayAnimationNode 沒有設定 Target Object Name！");
-            }
-
-            // 立即前進到下一個節點
-            currentNode = animNode.GetNextNode();
-            ProcessCurrentNode();
         }
         else if (currentNode is CameraControlNode camNode)
         {
-            // 如果需要等待運鏡結束
             if (camNode.waitForTransition)
             {
                 StartCoroutine(HandleCameraControl(camNode));
             }
-            // 如果不需要等待，直接開始運鏡並立刻前進到下一個節點
             else
             {
                 StartCoroutine(HandleCameraControl(camNode));
@@ -381,135 +354,178 @@ public class DialogueManager : MonoBehaviour
                 ProcessCurrentNode();
             }
         }
-        else if (currentNode is InvokeEventNode eventNode)
+        // --- 2. 處理「邏輯」節點 (呼叫新的輔助方法) ---
+        else
         {
-            if (!string.IsNullOrEmpty(eventNode.eventID))
+            // 【修正】: 這裡的 "node" 變數名稱必須在每個 else if 中都獨一無二
+            if(currentNode is StartGraphNode startGraphNode)
             {
-                string trimmedID = eventNode.eventID.Trim();
-                Debug.Log($"[DialogueManager] 正在廣播事件，嘗試查找 ID: \"{trimmedID}\"");
+                // 這是一個跳轉節點，立即執行跳轉並 "返回"
+                JumpToGraph(startGraphNode.graphToStart);
+                return; // 必須返回，停止處理舊圖形
+            }
+            else if(currentNode is SetVariableNode setVarNode)           currentNode = ProcessSetVariableNode(setVarNode);
+            else if (currentNode is ConditionalNode conditionalNode)     currentNode = ProcessConditionalNode(conditionalNode);
+            else if (currentNode is PlayAnimationNode animNode)       currentNode = ProcessPlayAnimationNode(animNode);
+            else if (currentNode is InvokeEventNode eventNode)         currentNode = ProcessInvokeEventNode(eventNode);
+            else if (currentNode is SetGlobalVariableNode setGlobalNode) currentNode = ProcessSetGlobalVariableNode(setGlobalNode);
+            else if (currentNode is GetGlobalVariableNode getGlobalNode) currentNode = ProcessGetGlobalVariableNode(getGlobalNode);
+            else if (currentNode is UpdateQuestNode questNode)         currentNode = ProcessUpdateQuestNode(questNode);
+            else if (currentNode is CheckQuestNode checkQuestNode)      currentNode = ProcessCheckQuestNode(checkQuestNode);
+            else if (currentNode is CheckSpecificItemsNode itemsNode)   currentNode = ProcessCheckSpecificItemsNode(itemsNode);
+            else if (currentNode is CheckItemNode itemNode)             currentNode = ProcessCheckItemNode(itemNode);
+            else
+            {
+                // 未知節點，安全起見直接前進
+                Debug.LogWarning($"未知的節點類型: {currentNode.GetType()}，將直接跳過。");
+                currentNode = currentNode.GetNextNode();
+            }
+            // 立即處理下一個節點
+            ProcessCurrentNode();
+        }
+    }
 
-                // 【修改】廣播邏輯
-                // 1. 檢查是否有監聽器列表
-                if (eventListeners.TryGetValue(trimmedID, out List<DialogueEventListener> listenersToTrigger))
-                {
-                    // 2. 遍歷這個列表中的 "所有" 監聽器
-                    //    (使用 .ToList() 建立一個副本，以防有監聽器在執行中途取消註冊自己)
-                    foreach (DialogueEventListener listener in listenersToTrigger.ToList()) 
-                    {
-                        if (listener != null)
-                        {
-                            // 3. 向 "每一個" 監聽器觸發事件
-                            listener.TriggerEvent(trimmedID);
-                        }
-                    }
-                }
+    private BaseNode ProcessSetVariableNode(SetVariableNode node)
+    {
+        (currentGraph as DialogueGraph).SetVariable(node.variableName, node.value);
+        return node.GetNextNode();
+    }
+
+    private BaseNode ProcessConditionalNode(ConditionalNode node)
+    {
+        float actualValue = (currentGraph as DialogueGraph).GetVariable(node.variableName);
+        float compareValue = node.valueToCompare;
+        bool result = false;
+        switch (node.comparison)
+        {
+            case ComparisonType.EqualTo: result = actualValue == compareValue; break;
+            case ComparisonType.NotEqualTo: result = actualValue != compareValue; break;
+            case ComparisonType.GreaterThan: result = actualValue > compareValue; break;
+            case ComparisonType.LessThan: result = actualValue < compareValue; break;
+            case ComparisonType.GreaterThanOrEqualTo: result = actualValue >= compareValue; break;
+            case ComparisonType.LessThanOrEqualTo: result = actualValue <= compareValue; break;
+        }
+        return node.GetNextNode(result);
+    }
+
+    private BaseNode ProcessPlayAnimationNode(PlayAnimationNode node)
+    {
+        if (!string.IsNullOrEmpty(node.targetObjectName))
+        {
+            GameObject target = GameObject.Find(node.targetObjectName);
+            if (target != null)
+            {
+                Animator animator = target.GetComponent<Animator>();
+                if (animator != null && !string.IsNullOrEmpty(node.triggerName))
+                    animator.SetTrigger(node.triggerName);
                 else
-                {
-                    Debug.LogWarning($"[DialogueManager] 在場景中找不到監聽事件 ID '{trimmedID}' 的監聽器！");
-                }
-            }
-
-            currentNode = eventNode.GetNextNode();
-            ProcessCurrentNode();
-        }
-        else if (currentNode is TimedChoiceNode timedChoiceNode)
-        {
-            isWaitingForChoice = true;
-            dialogueUI.ShowChoices(timedChoiceNode.choiceKeys, OnChoiceMade);
-            // 同時啟動計時器，並將 OnTimerTimeout 方法作為回呼
-            dialogueUI.StartTimer(timedChoiceNode.timeLimit, OnTimerTimeout);
-        }
-        else if (currentNode is SetGlobalVariableNode setGlobalNode)
-        {
-            if (setGlobalNode.database != null)
-            {
-                setGlobalNode.database.SetVariable(setGlobalNode.globalVariableName, setGlobalNode.valueToSet);
-            }
-            // 邏輯節點，立即前進
-            currentNode = setGlobalNode.GetNextNode();
-            ProcessCurrentNode();
-        }
-        else if (currentNode is GetGlobalVariableNode getGlobalNode)
-        {
-            if (getGlobalNode.database != null && currentGraph != null)
-            {
-                float globalValue = getGlobalNode.database.GetVariable(getGlobalNode.globalVariableName);
-                (currentGraph as DialogueGraph).SetVariable(getGlobalNode.localVariableName, globalValue);
-            }
-            // 邏輯節點，立即前進
-            currentNode = getGlobalNode.GetNextNode();
-            ProcessCurrentNode();
-        }
-        else if (currentNode is UpdateQuestNode questNode)
-        {
-            // 確保 QuestManager 存在
-            if (QuestManager.Instance != null)
-            {
-                QuestManager.Instance.UpdateQuestStatus(questNode.questID, questNode.newStatus);
+                    Debug.LogWarning($"在物件 {target.name} 上找不到 Animator 元件，或 Trigger Name 為空！");
             }
             else
-            {
-                Debug.LogWarning("場景中找不到 QuestManager！無法更新任務狀態。");
-            }
-
-            // 立即前進到下一個節點
-            currentNode = questNode.GetNextNode();
-            ProcessCurrentNode();
+                Debug.LogWarning($"在場景中找不到名為 {node.targetObjectName} 的物件！");
         }
-        else if (currentNode is CheckQuestNode checkQuestNode)
-        {
-            bool conditionResult = false;
-            // 確保 QuestManager 存在
-            if (QuestManager.Instance != null)
-            {
-                // 獲取當前任務狀態，並與節點中設定的狀態進行比較
-                QuestStatus currentStatus = QuestManager.Instance.GetQuestStatus(checkQuestNode.questID);
-                conditionResult = (currentStatus == checkQuestNode.statusToCheck);
-            }
-            else
-            {
-                Debug.LogWarning("場景中找不到 QuestManager！無法檢查任務狀態。");
-            }
+        return node.GetNextNode();
+    }
 
-            // 根據比較結果，前進到 Pass 或 Fail 的出口
-            currentNode = checkQuestNode.GetNextNode(conditionResult);
-            ProcessCurrentNode();
-        }
-        else if (currentNode is CheckSpecificItemsNode checkSpecificItemsNode)
+    private BaseNode ProcessInvokeEventNode(InvokeEventNode node)
+    {
+        if (!string.IsNullOrEmpty(node.eventID))
         {
-            bool allItemsFound = true; // 先假設所有物品都找到了
-
-            // 確保 InventoryManager 存在
-            if (InventoryManager.Instance != null && checkSpecificItemsNode.requiredItems != null)
+            string trimmedID = node.eventID.Trim();
+            if (eventListeners.TryGetValue(trimmedID, out List<DialogueEventListener> listenersToTrigger))
             {
-                // 遍歷節點中設定的每一個必要物品
-                foreach (ItemData requiredItem in checkSpecificItemsNode.requiredItems)
+                foreach (DialogueEventListener listener in listenersToTrigger.ToList())
                 {
-                    // --- 核心修正：傳遞 ItemData 中的 itemID (或 itemName) 字串 ---
-                    // 假設您的 ItemData.cs 中有 public string itemID;
-                    if (requiredItem != null && !InventoryManager.Instance.HasItem(requiredItem.itemID))
-                    {
-                        allItemsFound = false;
-                        Debug.Log($"[Dialogue CheckSpecificItems] 檢查失敗：缺少物品 ID '{requiredItem.itemID}'"); // 建議 Log ID
-                        break;
-                    }
+                    if (listener != null) listener.TriggerEvent(trimmedID);
                 }
             }
             else
-            {
-                Debug.LogWarning("場景中找不到 InventoryManager 或 CheckSpecificItemsNode 未指定 Required Items！");
-                allItemsFound = false; // 如果有問題，也視為失敗
-            }
-
-            if (allItemsFound)
-            {
-                Debug.Log($"[Dialogue CheckSpecificItems] 檢查通過：所有必需物品都已找到。");
-            }
-
-            // 根據最終檢查結果，前進到 Pass 或 Fail 的出口
-            currentNode = checkSpecificItemsNode.GetNextNode(allItemsFound);
-            ProcessCurrentNode();
+                Debug.LogWarning($"[DialogueManager] 找不到事件 ID '{trimmedID}' 的監聽器！");
         }
+        return node.GetNextNode();
+    }
+
+    private BaseNode ProcessSetGlobalVariableNode(SetGlobalVariableNode node)
+    {
+        if (node.database != null)
+        {
+            node.database.SetVariable(node.globalVariableName, node.valueToSet);
+        }
+        return node.GetNextNode();
+    }
+
+    private BaseNode ProcessGetGlobalVariableNode(GetGlobalVariableNode node)
+    {
+        if (node.database != null && currentGraph != null)
+        {
+            float globalValue = node.database.GetVariable(node.globalVariableName);
+            (currentGraph as DialogueGraph).SetVariable(node.localVariableName, globalValue);
+        }
+        return node.GetNextNode();
+    }
+    
+    private BaseNode ProcessUpdateQuestNode(UpdateQuestNode node)
+    {
+        if (QuestManager.Instance != null)
+            QuestManager.Instance.UpdateQuestStatus(node.questID, node.newStatus);
+        else
+            Debug.LogWarning("場景中找不到 QuestManager！無法更新任務狀態。");
+        return node.GetNextNode();
+    }
+
+    private BaseNode ProcessCheckQuestNode(CheckQuestNode node)
+    {
+        bool conditionResult = false;
+        if (QuestManager.Instance != null)
+        {
+            QuestStatus currentStatus = QuestManager.Instance.GetQuestStatus(node.questID);
+            conditionResult = (currentStatus == node.statusToCheck);
+        }
+        else
+            Debug.LogWarning("場景中找不到 QuestManager！無法檢查任務狀態。");
+        return node.GetNextNode(conditionResult);
+    }
+
+    private BaseNode ProcessCheckSpecificItemsNode(CheckSpecificItemsNode node)
+    {
+        bool allItemsFound = true;
+        if (InventoryManager.Instance != null && node.requiredItems != null)
+        {
+            foreach (ItemData requiredItem in node.requiredItems)
+            {
+                if (requiredItem != null && !InventoryManager.Instance.HasItem(requiredItem.itemID))
+                {
+                    allItemsFound = false;
+                    break;
+                }
+            }
+        }
+        else { allItemsFound = false; }
+        return node.GetNextNode(allItemsFound);
+    }
+
+    private BaseNode ProcessCheckItemNode(CheckItemNode node)
+    {
+        bool conditionResult = false;
+        if (InventoryManager.Instance != null && node.itemToCheck != null)
+        {
+            // 現在 GetItemCount() 存在了，這段程式碼可以正確運作
+            int actualQuantity = InventoryManager.Instance.GetItemCount(node.itemToCheck.itemID);
+            int requiredQuantity = node.requiredQuantity;
+            switch (node.comparison)
+            {
+                case ComparisonType.EqualTo: conditionResult = actualQuantity == requiredQuantity; break;
+                case ComparisonType.NotEqualTo: conditionResult = actualQuantity != requiredQuantity; break;
+                case ComparisonType.GreaterThan: conditionResult = actualQuantity > requiredQuantity; break;
+                case ComparisonType.LessThan: conditionResult = actualQuantity < requiredQuantity; break;
+                case ComparisonType.GreaterThanOrEqualTo: conditionResult = actualQuantity >= requiredQuantity; break;
+                case ComparisonType.LessThanOrEqualTo: conditionResult = actualQuantity <= requiredQuantity; break;
+            }
+        }
+        else
+            Debug.LogWarning($"CheckItemNode 錯誤：InventoryManager 不存在或 ItemData 未指定！");
+        
+        return node.GetNextNode(conditionResult);
     }
 
     public void Debug_PrintListeners()
@@ -891,168 +907,64 @@ public class DialogueManager : MonoBehaviour
     }
 
     /// <summary>
-    /// 【新函式】
+    /// 【優化】
     /// 快速執行圖形邏輯，直到遇到「停止點」或圖形結束。
     /// </summary>
     private void ExecuteGraphUntilStop()
     {
-        // 設置一個安全迴圈上限，防止圖形邏輯錯誤導致死循環
         int loopLimit = 1000; 
 
         while (loopLimit-- > 0)
         {
             if (currentNode == null)
             {
-                // 到達圖形終點
                 EndConversation();
                 return;
             }
 
             // --- 1. 檢查「停止點」 ---
-            // 如果節點是「重要節點」、或是需要玩家互動的「顯示文字」或「選項」
-            // 我們就必須停止快速執行，並正常處理這個節點。
-            if (currentNode.isImportant || currentNode is LineNode || currentNode is ChoiceNode || currentNode is TimedChoiceNode)
+            if (currentNode.isImportant || 
+                currentNode is LineNode || 
+                currentNode is ChoiceNode || 
+                currentNode is TimedChoiceNode ||
+                currentNode is WaitNode || // (在Skip中，WaitNode 也被視為 "邏輯節點" 來跳過)
+                currentNode is CameraControlNode) // (在Skip中，Camera 也被跳過)
             {
-                Debug.Log($"[Skip] 停止於重要節點或互動節點: {currentNode.name}");
-                ProcessCurrentNode(); // 正常處理這個節點 (例如：顯示文字、顯示選項)
-                return; // 結束快速執行
+                // 【修改】只有 "真正" 需要玩家輸入的才停下
+                if (currentNode.isImportant || currentNode is LineNode || currentNode is ChoiceNode || currentNode is TimedChoiceNode)
+                {
+                    Debug.Log($"[Skip] 停止於重要節點或互動節點: {currentNode.name}");
+                    ProcessCurrentNode(); 
+                    return; 
+                }
             }
 
             // --- 2. 執行「邏輯節點」(並跳過「等待節點」) ---
-            // 如果不是停止點，我們就 "立即執行" 該節點的邏輯，然後前進。
-
             Debug.Log($"[Skip] 快速執行邏輯節點: {currentNode.name}");
-
-            if (currentNode is SetVariableNode setVarNode)
+            
+            // 【修正】: 這裡的 "node" 變數名稱也必須獨一無二
+            if (currentNode is StartGraphNode startGraphNode)
             {
-                (currentGraph as DialogueGraph).SetVariable(setVarNode.variableName, setVarNode.value);
-                currentNode = setVarNode.GetNextNode();
+                // 跳過模式也必須執行跳轉
+                JumpToGraph(startGraphNode.graphToStart);
+                return; // 停止 while 迴圈
             }
-            else if (currentNode is ConditionalNode conditionalNode)
-            {
-                float actualValue = (currentGraph as DialogueGraph).GetVariable(conditionalNode.variableName);
-                float compareValue = conditionalNode.valueToCompare;
-                bool result = false;
-                switch (conditionalNode.comparison)
-                {
-                    case ComparisonType.EqualTo: result = actualValue == compareValue; break;
-                    case ComparisonType.NotEqualTo: result = actualValue != compareValue; break;
-                    case ComparisonType.GreaterThan: result = actualValue > compareValue; break;
-                    case ComparisonType.LessThan: result = actualValue < compareValue; break;
-                    case ComparisonType.GreaterThanOrEqualTo: result = actualValue >= compareValue; break;
-                    case ComparisonType.LessThanOrEqualTo: result = actualValue <= compareValue; break;
-                }
-                currentNode = conditionalNode.GetNextNode(result);
-            }
-            else if (currentNode is WaitNode waitNode)
-            {
-                // 跳過等待
-                currentNode = waitNode.GetNextNode();
-            }
-            else if (currentNode is PlayAnimationNode animNode)
-            {
-                // 觸發動畫 (這是非阻塞的)
-                if (!string.IsNullOrEmpty(animNode.targetObjectName))
-                {
-                    GameObject target = GameObject.Find(animNode.targetObjectName);
-                    if (target != null)
-                    {
-                        Animator animator = target.GetComponent<Animator>();
-                        if (animator != null && !string.IsNullOrEmpty(animNode.triggerName))
-                            animator.SetTrigger(animNode.triggerName);
-                    }
-                }
-                currentNode = animNode.GetNextNode();
-            }
-            else if (currentNode is CameraControlNode camNode)
-            {
-                // 跳過運鏡 (不等待)
-                currentNode = camNode.GetNextNode();
-            }
-            else if (currentNode is InvokeEventNode eventNode)
-            {
-                // 觸發事件
-                if (!string.IsNullOrEmpty(eventNode.eventID))
-                {
-                    string trimmedID = eventNode.eventID.Trim();
-
-                    // 【修正】: 必須遍歷列表，對 "每一個" 監聽器呼叫 TriggerEvent
-                    // (這個邏輯現在和 ProcessCurrentNode 中的邏輯一致了)
-                    if (eventListeners.TryGetValue(trimmedID, out List<DialogueEventListener> listenersToTrigger))
-                    {
-                        // 遍歷這個列表中的 "所有" 監聽器
-                        foreach (DialogueEventListener listener in listenersToTrigger.ToList())
-                        {
-                            if (listener != null)
-                            {
-                                // 向 "每一個" 監聽器觸發事件
-                                listener.TriggerEvent(trimmedID);
-                            }
-                        }
-                    }
-                    else
-                    {
-                        Debug.LogWarning($"[Skip] 找不到事件 ID '{trimmedID}' 的監聽器！");
-                    }
-                }
-                currentNode = eventNode.GetNextNode();
-            }
-            else if (currentNode is SetGlobalVariableNode setGlobalNode)
-            {
-                // 執行設置全域變數
-                if (setGlobalNode.database != null)
-                    setGlobalNode.database.SetVariable(setGlobalNode.globalVariableName, setGlobalNode.valueToSet);
-                currentNode = setGlobalNode.GetNextNode();
-            }
-            else if (currentNode is GetGlobalVariableNode getGlobalNode)
-            {
-                // 執行獲取全域變數
-                if (getGlobalNode.database != null && currentGraph != null)
-                {
-                    float globalValue = getGlobalNode.database.GetVariable(getGlobalNode.globalVariableName);
-                    (currentGraph as DialogueGraph).SetVariable(getGlobalNode.localVariableName, globalValue);
-                }
-                currentNode = getGlobalNode.GetNextNode();
-            }
-            else if (currentNode is UpdateQuestNode questNode)
-            {
-                // 執行更新任務
-                if (QuestManager.Instance != null)
-                    QuestManager.Instance.UpdateQuestStatus(questNode.questID, questNode.newStatus);
-                currentNode = questNode.GetNextNode();
-            }
-            else if (currentNode is CheckQuestNode checkQuestNode)
-            {
-                // 執行檢查任務
-                bool conditionResult = false;
-                if (QuestManager.Instance != null)
-                {
-                    QuestStatus currentStatus = QuestManager.Instance.GetQuestStatus(checkQuestNode.questID);
-                    conditionResult = (currentStatus == checkQuestNode.statusToCheck);
-                }
-                currentNode = checkQuestNode.GetNextNode(conditionResult);
-            }
-            else if (currentNode is CheckSpecificItemsNode checkSpecificItemsNode)
-            {
-                // 執行檢查物品
-                bool allItemsFound = true;
-                if (InventoryManager.Instance != null && checkSpecificItemsNode.requiredItems != null)
-                {
-                    foreach (ItemData requiredItem in checkSpecificItemsNode.requiredItems)
-                    {
-                        if (requiredItem != null && !InventoryManager.Instance.HasItem(requiredItem.itemID))
-                        {
-                            allItemsFound = false;
-                            break;
-                        }
-                    }
-                }
-                else { allItemsFound = false; }
-                currentNode = checkSpecificItemsNode.GetNextNode(allItemsFound);
-            }
+            else if(currentNode is SetVariableNode setVarNode)           currentNode = ProcessSetVariableNode(setVarNode);
+            else if (currentNode is ConditionalNode conditionalNode)     currentNode = ProcessConditionalNode(conditionalNode);
+            else if (currentNode is PlayAnimationNode animNode)       currentNode = ProcessPlayAnimationNode(animNode);
+            else if (currentNode is InvokeEventNode eventNode)         currentNode = ProcessInvokeEventNode(eventNode);
+            else if (currentNode is SetGlobalVariableNode setGlobalNode) currentNode = ProcessSetGlobalVariableNode(setGlobalNode);
+            else if (currentNode is GetGlobalVariableNode getGlobalNode) currentNode = ProcessGetGlobalVariableNode(getGlobalNode);
+            else if (currentNode is UpdateQuestNode questNode)         currentNode = ProcessUpdateQuestNode(questNode);
+            else if (currentNode is CheckQuestNode checkQuestNode)      currentNode = ProcessCheckQuestNode(checkQuestNode);
+            else if (currentNode is CheckSpecificItemsNode itemsNode)   currentNode = ProcessCheckSpecificItemsNode(itemsNode);
+            else if (currentNode is CheckItemNode itemNode)             currentNode = ProcessCheckItemNode(itemNode);
+            // 【修改】在 Skip 模式中，跳過 Wait 和 Camera
+            else if (currentNode is WaitNode waitNode)                currentNode = waitNode.GetNextNode();
+            else if (currentNode is CameraControlNode camNode)       currentNode = camNode.GetNextNode();
             else
             {
-                // 其他未知的節點類型，安全起見直接前進
+                // 其他未知節點，安全起見直接前進
                 currentNode = currentNode.GetNextNode();
             }
         } // 結束 while 迴圈

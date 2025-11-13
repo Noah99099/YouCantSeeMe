@@ -6,63 +6,63 @@ using UnityEngine.EventSystems;
 using System;
 
 /// <summary>
-/// [¤w§ó·s] ²Õ¦X½u¯Á¥\¯à Á`±±¨î¾¹
+/// [å…¨æ–°] çµ„åˆé¢æ¿çš„ æ ¸å¿ƒç®¡ç†å™¨
 /// </summary>
 public class ClueCombinationManager : MonoBehaviour
 {
-    // [·s] Singleton (³æ¨Ò)
+    // [æ–°] Singleton (å–®ä¾‹)
     public static ClueCombinationManager Instance { get; private set; }
 
-    [Header("©Ò¦³Á¼ÃD")]
+    [Header("æ‰€æœ‰çš„è¬é¡Œ")]
     public List<ClueCombinationPuzzle> allPuzzles;
     //private int currentPuzzleIndex = 0;
 
-    // ¥Î©ó¦s©ñ¸ÑÂê¹ïÀ³Á¼ÃD«á¡A­nµ¹¤©ª±®aªº¼úÀyª««~
-    // ¯Á¤Ş¥²¶·¹ïÀ³ allPuzzles (¨Ò¦p allPuzzles[0] ¸ÑÂê«áµ¹ puzzleRewardItems[0])
-    [Header("¸ÑÂêÁ¼ÃD«áªº¼úÀyª««~ (¯Á¤Ş¹ïÀ³ allPuzzles)")]
+    // é€™æœƒæ ¹æ“šç´¢å¼•å°æ‡‰è¬é¡Œï¼Œå¿…é ˆæŒ‰ç…§é †åº
+    // (ä¾‹å¦‚ allPuzzles[0] æœƒå°æ‡‰ puzzleRewardItems[0])
+    [Header("è¬é¡Œå°æ‡‰çš„çå‹µç‰©å“ (å¿…é ˆå°æ‡‰ allPuzzles)")]
     public List<ItemData> puzzleRewardItems;
 
-    //[Header("ºŞ²z¾¹¤Ş¥Î")]
-    //// [!!] ·s¼W [!!] ±z¥i¥H¦b Inspector ¤¤©ì¤J¡A©ÎªÌÅı¥¦¦Û°Ê´M§ä
+    //[Header("å…¶ä»–ç®¡ç†å™¨")]
+    //// [!!] ç§»é™¤ [!!] è®“å®ƒåœ¨ Inspector æ‹–å…¥ï¼Œé¿å…æœªä¾†å‡ºéŒ¯
     //public RolePastManager rolePastManager;
 
-    [Header("UI ¤Ş¥Î")]
-    public InventoryClueGrid inventoryGrid;  // ¥ª°¼®æ¤l
-    public ClueDetailsPanel detailsPanel;    // ¥ª¤U¸Ô²Ó¸ê°T
+    [Header("UI å¼•ç”¨")]
+    public InventoryClueGrid inventoryGrid;  // å·¦å´ç·šç´¢æ¬„
+    public ClueDetailsPanel detailsPanel;    // å³ä¸‹è©³ç´°è³‡è¨Š
 
-    [Header("¾É¯è«ö¶s")]
+    [Header("å°è¦½æŒ‰éˆ•")]
     public Button nextButton;
     public Button prevButton;
 
-    [Header("Puzzle UI Prefab (±zªº·s¬[ºc)")]
-    public GameObject puzzleContainerPrefab; // [!!] ©ì¤J±zªº PuzzleContainer_Prefab
-    public Transform puzzleContainerParent;  // [!!] ©ì¤J±z³õ´º¤¤ªº "PuzzlePanel" (®e¾¹)
+    [Header("Puzzle UI Prefab (è«‹åœ¨æ­¤æŒ‡å®š)")]
+    public GameObject puzzleContainerPrefab; // [!!] è«‹æŒ‡å®š PuzzleContainer_Prefab
+    public Transform puzzleContainerParent;  // [!!] è«‹æŒ‡å®šè¬é¡Œçš„ "PuzzlePanel" (çˆ¶ç‰©ä»¶)
 
-    // --- ª¬ºAÅÜ¼Æ ---
-    private CombinationSlotUI _currentSelectedSlot; // ·í«eÂIÀ»ªº¡u¥k°¼¡v¶ñ¤J®æ
-    private IClue _currentSelectedClue;             // ·í«eÂIÀ»ªº¡u¥ª°¼¡vª««~
+    // --- å…§éƒ¨ç‹€æ…‹ ---
+    private CombinationSlotUI _currentSelectedSlot; // ç•¶å‰é»é¸çš„å¾…å¡«å…¥ç©ºæ ¼
+    private IClue _currentSelectedClue;             // ç•¶å‰é»é¸çš„å¾…ä½¿ç”¨ç·šç´¢
 
-    // ¥Î©ó«O¦s·í«eÁ¼ÃD¶i«× (key: slot¯Á¤Ş, value: ¶ñ¤JªºClueID)
-    // Key: Á¼ÃDªº .name (©Î ID), Value: ¸ÓÁ¼ÃDªºª¬ºA (Key: slot¯Á¤Ş, Value: ClueID)
+    // é€™æœƒå„²å­˜æ‰€æœ‰è¬é¡Œçš„ç‹€æ…‹ (key: slotç´¢å¼•, value: å¡«å…¥çš„ClueID)
+    // Key: è¬é¡Œçš„ .name (ç•¶ ID), Value: è©²è¬é¡Œçš„ç‹€æ…‹ (Key: slotç´¢å¼•, Value: ClueID)
     private Dictionary<string, Dictionary<int, string>> _allPuzzleStates;
 
-    // [·s] Àx¦s¡u©Ò¦³¡vÁ¼ÃDªº UI ¹ê¨Ò
+    // [æ–°] å„²å­˜æ‰€æœ‰è¢«å¯¦ä¾‹åŒ–çš„è¬é¡Œ UI ç‰©ä»¶
     private List<PuzzleContainerUI> _instantiatedPuzzles = new List<PuzzleContainerUI>();
-    private PuzzleContainerUI _activePuzzleUI; // [·s] ¹ï·í«e¬¡°Ê UI ªº¤Ş¥Î
+    private PuzzleContainerUI _activePuzzleUI; // [æ–°] ç•¶å‰é¡¯ç¤ºçš„ UI ç®¡ç†å™¨
 
-    // [·s] Àx¦s¡u¤w¸ÑÂê¡vÁ¼ÃD¦b allPuzzles ¤¤ªº¡u¯Á¤Ş¡v
-    // (¨Ò¦p [1, 0] ªí¥Ü test2 (¯Á¤Ş1) ©M test1 (¯Á¤Ş0) ³Q¸ÑÂê¤F)
+    // [æ–°] å„²å­˜å·²è¢«è§£é–çš„è¬é¡Œåœ¨ allPuzzles ä¸­çš„åŸå§‹ç´¢å¼•
+    // (ä¾‹å¦‚ [1, 0] è¡¨ç¤º test2 (ç´¢å¼•1) å’Œ test1 (ç´¢å¼•0) è¢«è§£é–äº†)
     private List<int> _unlockedPuzzleMasterIndices = new List<int>();
 
-    // [·s] ·í«eÅã¥ÜªºÁ¼ÃD¦b _unlockedPuzzleMasterIndices ¦Cªí¤¤ªº¯Á¤Ş
-    // (¨Ò¦p 0, 1)
+    // [æ–°] ç•¶å‰é¡¯ç¤ºçš„è¬é¡Œåœ¨ _unlockedPuzzleMasterIndices æ¸…å–®ä¸­çš„ç´¢å¼•
+    // (ä¾‹å¦‚ 0, 1)
     private int _currentUnlockedListIndex = -1;
 
-    // [·s] ·í«eÅã¥ÜªºÁ¼ÃD¦b allPuzzles Á`ªí¤¤ªº¯Á¤Ş
-    // (¨Ò¦p 0, 1) - ¥Î©ó CheckCombination
+    // [æ–°] ç•¶å‰é¡¯ç¤ºçš„è¬é¡Œåœ¨ allPuzzles ç¸½æ¸…å–®ä¸­çš„ç´¢å¼•
+    // (ä¾‹å¦‚ 0, 1) - ç”¨æ–¼ CheckCombination
     private int _currentActiveMasterIndex = -1;
 
-    // [·s] Awake (¥Î©ó Singleton)
+    // [æ–°] Awake (ç”¨æ–¼ Singleton)
     void Awake()
     {
         if (Instance != null && Instance != this)
@@ -72,80 +72,80 @@ public class ClueCombinationManager : MonoBehaviour
         else
         {
             Instance = this;
-            DontDestroyOnLoad(gameObject); // [!!] ½T«O CCM ¤]¬O DontDestroyOnLoad
+            DontDestroyOnLoad(gameObject); // [!!] ç¢ºä¿ CCM ä¹Ÿæ˜¯ DontDestroyOnLoad
         }
     }
 
     void Start()
     {
-        // ÀË¬d¬O§_¤Ş¥Î¤F UI
+        // æª¢æŸ¥æ˜¯å¦å¼•ç”¨äº† UI
         if (inventoryGrid == null || detailsPanel == null || puzzleContainerPrefab == null || puzzleContainerParent == null)
         {
-            Debug.LogError("[ClueCombinationManager] UI ¤Ş¥Î¥¼³]¸m¡I");
+            Debug.LogError("[ClueCombinationManager] UI å¼•ç”¨å°šæœªè¨­å®šï¼");
             return;
         }
 
-        // [·s] ªì©l¤Æ©Ò¦³Á¼ÃDªºª¬ºAÀx¦s
+        // [æ–°] åˆå§‹åŒ–æ‰€æœ‰è¬é¡Œçš„ç‹€æ…‹å„²å­˜
         _allPuzzleStates = new Dictionary<string, Dictionary<int, string>>();
-        // ¦b¹CÀ¸¶}©l®É¡A¹w¥ı¥Í¦¨©Ò¦³ªº Puzzle UI
+        // åœ¨éŠæˆ²ä¸€é–‹å§‹ï¼Œé å…ˆå¯¦ä¾‹åŒ–æ‰€æœ‰çš„ Puzzle UI
         _instantiatedPuzzles.Clear();
         foreach (var puzzle in allPuzzles)
         {
-            // 1. ªì©l¤Æ¼Æ¾Ú¦r¨å
-            // TODO: ³o¸Ì¥¼¨Ó¥i¥H´À´«¬°¡u±q¦sÀÉÅª¨ú¡v
+            // 1. åˆå§‹åŒ–å„²å­˜ç©ºé–“
+            // TODO: é€™è£¡æœªä¾†å¯ä»¥è®€å–ç©å®¶çš„å­˜æª”
             _allPuzzleStates[puzzle.name] = new Dictionary<int, string>();
             Dictionary<int, string> puzzleState = _allPuzzleStates[puzzle.name];
 
-            // 2. ¥Í¦¨ UI Prefab
+            // 2. å¯¦ä¾‹åŒ– UI Prefab
             GameObject go = Instantiate(puzzleContainerPrefab, puzzleContainerParent);
             PuzzleContainerUI ui = go.GetComponent<PuzzleContainerUI>();
 
             if (ui != null)
             {
-                // 3. ªì©l¤Æ³o­Ó UI ­¶­± (¥u°õ¦æ¤@¦¸)
-                // (ª`·N¡GSetupPuzzle ¬OÂÂªº DisplayPuzzle)
+                // 3. åˆå§‹åŒ–é€™å€‹ UI å¯¦ä¾‹ (åƒ…åŸ·è¡Œä¸€æ¬¡)
+                // (è«‹æ³¨æ„:SetupPuzzle ä¸æ˜¯ DisplayPuzzle)
                 ui.SetupPuzzle(puzzle, puzzleState, this, OnSlotClicked);
 
-                // 4. ¹w³]ÁôÂÃ
+                // 4. é è¨­éš±è—
                 go.SetActive(false);
                 _instantiatedPuzzles.Add(ui);
             }
         }
 
-        // [·s] ¥Ñ Manager ª½±µ¸j©w¾É¯è«ö¶s
+        // [æ–°] å¹« Manager ç¶å®šå°è¦½æŒ‰éˆ•
         if (nextButton != null) nextButton.onClick.AddListener(NextPuzzle);
         if (prevButton != null) prevButton.onClick.AddListener(PreviousPuzzle);
 
-        // 3. [·s] ¹CÀ¸¤@¶}©l®É¡AÀË¬d¸ÑÂêª¬ºA (¨Ò¦pÅª¨ú¦sÀÉ«á)
+        // 3. [æ–°] éŠæˆ²ä¸€é–‹å§‹ï¼Œæª¢æŸ¥è§£é–ç‹€æ…‹ (ä¾‹å¦‚è®€å–å­˜æª”å¾Œ)
         _unlockedPuzzleMasterIndices.Clear();
-        CheckForNewPuzzleUnlocks(true); // true = ³o¬O²Ä¤@¦¸¸ü¤J
+        CheckForNewPuzzleUnlocks(true); // true = é€™æ˜¯ç¬¬ä¸€æ¬¡è¼‰å…¥
     }
 
     /// <summary>
-    /// ®Ú¾Ú¡u¤w¸ÑÂê¦Cªíªº¯Á¤Ş¡v¨Ó¸ü¤JÁ¼ÃD
+    /// é€éã€Œå·²è§£é–æ¸…å–®ã€çš„ç´¢å¼•ä¾†è¼‰å…¥è¬é¡Œ
     /// </summary>
     public void LoadPuzzleByUnlockedIndex(int unlockedListIndex)
     {
-        // ÀË¬d¬O§_¦³¥ô¦ó¤w¸ÑÂêªºÁ¼ÃD
+        // æª¢æŸ¥æ˜¯å¦çœŸçš„æœ‰å·²è§£é–çš„è¬é¡Œ
         if (_unlockedPuzzleMasterIndices.Count == 0 || unlockedListIndex < 0 || unlockedListIndex >= _unlockedPuzzleMasterIndices.Count)
         {
-            // [·s] ¨S¦³Á¼ÃD¥iÅã¥Ü¡AÁôÂÃ©Ò¦³¤º®e
+            // [æ–°] è‹¥æ²’æœ‰è¬é¡Œå¯ä»¥é¡¯ç¤ºï¼Œéš±è—æ‰€æœ‰å…§å®¹
             foreach (var ui in _instantiatedPuzzles) ui.gameObject.SetActive(false);
             _activePuzzleUI = null;
             _currentUnlockedListIndex = -1;
             _currentActiveMasterIndex = -1;
 
-            // ÁôÂÃ¥ª°¼­±ªO (©ÎÅã¥Ü´£¥Ü)
-            inventoryGrid.Hide(); // °²³]¦³ Hide()
+            // é—œé–‰ç›¸é—œä»‹é¢ (é¿å…æ®˜ç•™)
+            inventoryGrid.Hide(); // å‡è¨­æœ‰ Hide()
             detailsPanel.Hide();
             return;
         }
 
         _currentUnlockedListIndex = unlockedListIndex;
-        // [·s] Àò¨úÁ¼ÃDªº¡uÁ`ªí¯Á¤Ş¡v
+        // [æ–°] æ‰¾åˆ°è¬é¡Œçš„ã€Œç¸½ç´¢å¼•ã€
         _currentActiveMasterIndex = _unlockedPuzzleMasterIndices[_currentUnlockedListIndex];
 
-        // ´`Àô©Ò¦³ UI ¹ê¨Ò¡A¥u¿E¬¡·í«eªº
+        // å°‡æ‰€æœ‰ UI éš±è—ï¼Œåªé¡¯ç¤ºç•¶å‰çš„
         for (int i = 0; i < _instantiatedPuzzles.Count; i++)
         {
             bool isActive = (i == _currentActiveMasterIndex);
@@ -153,43 +153,43 @@ public class ClueCombinationManager : MonoBehaviour
 
             if (isActive)
             {
-                // [·s] «O¦s¹ï·í«e¬¡°Ê UI ªº¤Ş¥Î
+                // [æ–°] å„²å­˜ç•¶å‰é¡¯ç¤ºçš„ UI ç®¡ç†å™¨
                 _activePuzzleUI = _instantiatedPuzzles[i];
             }
         }
 
-        // Åã¥Ü¤@­Ó¡uªÅ¡vªº¥ª°¼ºô®æ
-        // (InventoryClueGrid.cs ªº Show ÅŞ¿è·|³B²z clues ¦Cªí¬°ªÅªº±¡ªp¡A¥uÅã¥Ü­±ªO¡A¤£Åã¥Ü®æ¤l)
+        // åˆ·æ–°ä¸€æ¬¡ã€Œç·šç´¢ã€æ¸…å–®
+        // (InventoryClueGrid.cs çš„ Show æ–¹æ³•æœƒæ¸…é™¤ clues æ¸…å–®ä¸¦é‡æ–°ç¯©é¸ï¼Œåªæœƒé¡¯ç¤ºæ¨™é¡Œï¼Œä¸æœƒé¡¯ç¤ºå…§å®¹)
         inventoryGrid.Show(new List<IClue>(), EClueType.Item, OnGridItemClicked);
-        // ÁôÂÃ¸Ô²Ó¸ê°T­±ªO
+        // éš±è—è©³ç´°è³‡è¨Šä»‹é¢
         detailsPanel.Hide();
     }
 
     /// <summary>
-    /// (Callback) ·íª±®aÂIÀ»¡u¥k°¼¡vªº¶ñ¤J®æ¤l®É
+    /// (Callback) ç•¶ç©å®¶é»é¸äº†ã€Œå¾…å¡«å…¥ã€çš„ç©ºæ ¼æ™‚
     /// </summary>
     public void OnSlotClicked(CombinationSlotUI slot)
     {
-        // [!!] °»¿ù 1 [!!]
-        Debug.Log($"[CCM] OnSlotClicked: ÂIÀ»¤F®æ¤l {slot.SlotIndex}¡C®æ¤l»İ­nªºÃş«¬¬O: {slot.RequiredClueType}");
+        // [!!] åµéŒ¯ 1 [!!]
+        Debug.Log($"[CCM] OnSlotClicked: é»é¸äº†æ ¼å­ {slot.SlotIndex}ã€‚æ ¼å­éœ€è¦çš„é¡å‹æ˜¯: {slot.RequiredClueType}");
 
         if (slot.IsLocked) return;
 
         _currentSelectedSlot = slot;
         detailsPanel.Hide();
 
-        // [!!] °»¿ù 2 [!!]
-        Debug.Log("[CCM] OnSlotClicked: ¥¿¦b©I¥s GetEligibleClues...");
-        // [¥¿±`ÅŞ¿è] ÂIÀ»«á¡A¥Î²Å¦X±ø¥óªº½u¯Á¡u­«·s¶ñ¥R¡v¥ª°¼ºô®æ
+        // [!!] åµéŒ¯ 2 [!!]
+        Debug.Log("[CCM] OnSlotClicked: æ­£åœ¨å‘¼å« GetEligibleClues...");
+        // [æ ¸å¿ƒæ–¹æ³•] å‘¼å«ä¸¦ç¯©é¸å‡ºã€Œç¬¦åˆé¡å‹ã€çš„ã€Œç©å®¶æŒæœ‰ã€çš„ç·šç´¢
         List<IClue> eligibleClues = GetEligibleClues(slot.RequiredClueType);
 
-        // [!!] °»¿ù 3 [!!]
-        Debug.Log($"[CCM] OnSlotClicked: GetEligibleClues °õ¦æ§¹²¦¡CÀò¨ú¨ì {eligibleClues.Count} ­Ó½u¯Á¡C¥¿¦b©I¥s inventoryGrid.Show...");
+        // [!!] åµéŒ¯ 3 [!!]
+        Debug.Log($"[CCM] OnSlotClicked: GetEligibleClues åŸ·è¡Œå®Œç•¢ã€‚å…±æ‰¾åˆ° {eligibleClues.Count} æ¢ç·šç´¢ã€‚æ­£åœ¨å‘¼å« inventoryGrid.Show...");
         inventoryGrid.Show(eligibleClues, slot.RequiredClueType, OnGridItemClicked);
     }
 
     /// <summary>
-    /// (Callback) ·íª±®aÂIÀ»¡u¥ª°¼¡v®æ¤l¤¤ªº½u¯Á®É
+    /// (Callback) ç•¶ç©å®¶é»é¸äº†å·¦å´ã€Œç·šç´¢æ¬„ã€ä¸­çš„ç·šç´¢
     /// </summary>
     public void OnGridItemClicked(IClue clue)
     {
@@ -198,7 +198,7 @@ public class ClueCombinationManager : MonoBehaviour
     }
 
     /// <summary>
-    /// (Callback) ·íª±®aÂIÀ»¡u¨Ï¥Îª««~¡v«ö¶s®É
+    /// (Callback) ç•¶ç©å®¶é»é¸äº†å³ä¸‹è§’ã€Œä½¿ç”¨æ­¤ç·šç´¢ã€çš„æŒ‰éˆ•
     /// </summary>
     public void OnUseItemClicked()
     {
@@ -206,19 +206,19 @@ public class ClueCombinationManager : MonoBehaviour
 
         _currentSelectedSlot.FillSlot(_currentSelectedClue);
 
-        // [­×§ï] ¥²¶·¨Ï¥Î _currentActiveMasterIndex
-        if (_currentActiveMasterIndex == -1) return; // ¦w¥şÀË¬d
+        // [ä¿®æ­£] å¿…é ˆä½¿ç”¨ _currentActiveMasterIndex
+        if (_currentActiveMasterIndex == -1) return; // å®‰å…¨æª¢æŸ¥
 
-        // Àò¨ú·í«eÁ¼ÃD©M¨ä±MÄİª¬ºA
+        // æ‰¾åˆ°ç•¶å‰è¬é¡Œå’Œå…¶ç‹€æ…‹
         ClueCombinationPuzzle puzzle = allPuzzles[_currentActiveMasterIndex];
         Dictionary<int, string> currentPuzzleState = _allPuzzleStates[puzzle.name];
 
-        // ±Nª¬ºA¼g¤J¡u¥¿½Tªº¡v¦r¨å¤¤
+        // å°‡ç·šç´¢å­˜å…¥ã€Œå„²å­˜ç³»çµ±ã€ä¸­
         currentPuzzleState[_currentSelectedSlot.SlotIndex] = _currentSelectedClue.ClueID;
         // TODO: SaveStateForPuzzle(puzzle.name, currentPuzzleState);
 
-        // [!!] ­×¥¿ #3 (¸É¥R)
-        // ¶ñ¤Jª««~«á¡A¥ª°¼ºô®æ«ì´_¬°¡uªÅ¡vª¬ºA¡A¦Ó¤£¬OÁôÂÃ
+        // [!!] éœ€æ±‚ #3 (éš±è—)
+        // å¡«å…¥ç·šç´¢å¾Œï¼Œç«‹åˆ»æ¸…ç©ºã€Œç·šç´¢æ¬„ã€ï¼Œé¿å…æ··æ·†
         inventoryGrid.Show(new List<IClue>(), EClueType.Item, OnGridItemClicked);
         detailsPanel.Hide();
         _currentSelectedSlot = null;
@@ -228,23 +228,23 @@ public class ClueCombinationManager : MonoBehaviour
     }
 
     /// <summary>
-    // ÀË¬d·í«e²Õ¦X¬O§_¥¿½T
+    // æª¢æŸ¥ç•¶å‰çµ„åˆæ˜¯å¦æ­£ç¢º
     /// </summary>
     private void CheckCombination()
     {
-        // [­×§ï] ¥²¶·¨Ï¥Î _currentActiveMasterIndex
-        if (_currentActiveMasterIndex == -1) return; // ¦w¥şÀË¬d
+        // [ä¿®æ­£] å¿…é ˆä½¿ç”¨ _currentActiveMasterIndex
+        if (_currentActiveMasterIndex == -1) return; // å®‰å…¨æª¢æŸ¥
 
         ClueCombinationPuzzle puzzle = allPuzzles[_currentActiveMasterIndex];
-        // [·s] Àò¨ú¡u¥¿½Tªº¡vª¬ºA¦r¨å
+        // [æ–°] å¾ã€Œå„²å­˜ç³»çµ±ã€è®€å–ç‹€æ…‹
         Dictionary<int, string> currentPuzzleState = _allPuzzleStates[puzzle.name];
-        int totalSlots = puzzle.clueSlots.Count; // [·s] Àò¨ú¥k°¼®æ¤lÁ`¼Æ
+        int totalSlots = puzzle.clueSlots.Count; // [æ–°] ç²å–ç¸½å…±çš„æ ¼å­æ•¸
 
-        // 1. ÀË¬d¬O§_©Ò¦³®æ¤l³£¶ñº¡¤F
+        // 1. æª¢æŸ¥æ˜¯å¦æ‰€æœ‰æ ¼å­éƒ½å¡«æ»¿äº†
         bool allFilled = true;
         for (int i = 0; i < totalSlots; i++)
         {
-            // [·s] ÀË¬d¡u¥¿½Tªº¡vª¬ºA¦r¨å
+            // [æ–°] æª¢æŸ¥ã€Œå„²å­˜ç³»çµ±ã€çš„ç‹€æ…‹
             if (!currentPuzzleState.ContainsKey(i) || string.IsNullOrEmpty(currentPuzzleState[i]))
             {
                 allFilled = false;
@@ -252,105 +252,105 @@ public class ClueCombinationManager : MonoBehaviour
             }
         }
 
-        // [·s] ½T«O§Ú­Ì¦³¬¡°Êªº UI ¤Ş¥Î
+        // [æ–°] å¦‚æœç¼ºå°‘ç•¶å‰ UI çš„å¼•ç”¨
         if (_activePuzzleUI == null) return;
 
         if (!allFilled)
         {
-            _activePuzzleUI.SetResultMessage("", Color.white); // ©|¥¼¶ñº¡¡A¤£Åã¥Ü´£¥Ü
+            _activePuzzleUI.SetResultMessage("", Color.white); // å°šæœªå¡«æ»¿ï¼Œæ¸…é™¤è¨Šæ¯
             return;
         }
 
-        // 2. [·s] ­pºâ¿ù»~ªº¼Æ¶q
-        // (¤£¦A¨Ï¥Î allCorrect bool¡A¦Ó¬O¥Î incorrectCount)
+        // 2. [æ–°] è¨ˆç®—éŒ¯èª¤çš„æ•¸é‡
+        // (æˆ‘å€‘æ”¹ç”¨ allCorrect boolï¼Œè€Œé incorrectCount)
         int incorrectCount = 0;
         foreach (var slotDef in puzzle.clueSlots.Select((value, i) => new { i, value }))
         {
-            // ¬JµM allFilled ¬° true, currentPuzzleState ¥²©w¥]§t key
+            // æ—¢ç„¶ allFilled ç‚º true, currentPuzzleState å¿…å®šå­˜åœ¨ key
             if (currentPuzzleState[slotDef.i] != slotDef.value.correctClueID)
             {
                 incorrectCount++;
             }
         }
 
-        // 3. [·s] ®Ú¾Ú¿ù»~¼Æ¶qÅã¥Ü°T®§
+        // 3. [æ–°] æ ¹æ“šéŒ¯èª¤æ•¸é‡é¡¯ç¤ºè¨Šæ¯
         if (incorrectCount == 0)
         {
-            // ²Õ¦X¥¿½T
-            _activePuzzleUI.SetResultMessage(puzzle.successMessage, Color.green); // ¥i¥H¦A½ÕÃC¦â
+            // çµ„åˆæ­£ç¢º
+            _activePuzzleUI.SetResultMessage(puzzle.successMessage, Color.green); // ä¹Ÿå¯ä»¥ç”¨è‡ªè¨‚é¡è‰²
             _activePuzzleUI.LockAllSlots();
             _activePuzzleUI.ShowConnectionLine();
 
-            // [!!] ·s¼W¡Gµo©ñ¼úÀyª««~ [!!]
-            // ¥u¦³¦b§¹¥ş¥¿½T®É¤~µo©ñ
+            // [!!] æ–°å¢ï¼šçµ¦äºˆçå‹µç‰©å“ [!!]
+            // åƒ…åœ¨çµ„åˆæ­£ç¢ºæ™‚çµ¦äºˆ
             GivePuzzleReward(_currentActiveMasterIndex);
         }
         else
         {
-            // ²Õ¦X¿ù»~
+            // çµ„åˆéŒ¯èª¤
             string message;
 
-            // ÀË¬d¨Ï¥ÎªÌ¬O§_¦³¦b Inspector ¤¤¶ñ¤J failureMessages
+            // æª¢æŸ¥æ˜¯å¦æœ‰åœ¨ Inspector å¡«å¯« failureMessages
             if (puzzle.failureMessages == null || puzzle.failureMessages.Count == 0)
             {
-                message = "²Õ¦X¤£¥¿½T"; // ¹w³]ªº³Æ¥Î°T®§
+                message = "çµ„åˆä¸æ­£ç¢º"; // é è¨­çš„éŒ¯èª¤è¨Šæ¯
             }
             else
             {
-                // 1 ­Ó¿ù»~ -> ¯Á¤Ş 0
-                // 2 ­Ó¿ù»~ -> ¯Á¤Ş 1
+                // 1 å€‹éŒ¯èª¤ -> ç´¢å¼• 0
+                // 2 å€‹éŒ¯èª¤ -> ç´¢å¼• 1
                 int messageIndex = incorrectCount - 1;
 
-                // ¨¾¤î¯Á¤Ş¶W¥X½d³ò (¨Ò¦p 4 ­Ó¥ş¿ù¡A¦ı¥u©w¸q¤F 3 ±ø°T®§)
+                // é˜²æ­¢ç´¢å¼•è¶…å‡ºç¯„åœ (ä¾‹å¦‚ 4 å€‹éŒ¯èª¤ï¼Œä½†åªè¨­å®šäº† 3 æ¢è¨Šæ¯)
                 if (messageIndex >= puzzle.failureMessages.Count)
                 {
-                    // ´N¨Ï¥Î³Ì«á¤@±ø¥i¥Îªº¿ù»~°T®§
+                    // å°±ä½¿ç”¨æœ€å¾Œä¸€æ¢å¯ç”¨çš„éŒ¯èª¤è¨Šæ¯
                     messageIndex = puzzle.failureMessages.Count - 1;
                 }
 
                 message = puzzle.failureMessages[messageIndex];
             }
 
-            // Åã¥Ü¹ïÀ³ªº¿ù»~°T®§
-            // [·s] ¨M©w¿ù»~°T®§ªºÃC¦â
+            // é¡¯ç¤ºå°æ‡‰çš„éŒ¯èª¤è¨Šæ¯
+            // [æ–°] ä¸¦è¨­å®šéŒ¯èª¤è¨Šæ¯çš„é¡è‰²
             Color failureColor;
 
-            // ÀË¬d¿ù»~¼Æ¶q¬O§_µ¥©óÁ`®æ¤l¼Æ (¨Ò¦p 4 ¿ù / 4 ®æ)
+            // æª¢æŸ¥éŒ¯èª¤æ•¸é‡æ˜¯å¦ç­‰æ–¼ç¸½æ ¼å­æ•¸ (ä¾‹å¦‚ 4 éŒ¯ / 4 æ ¼)
             if (incorrectCount == totalSlots)
             {
-                // ¥ş¿ù
+                // å…¨éŒ¯
                 failureColor = Color.red;
             }
             else
             {
-                // ³¡¤À¿ù»~ (¨Ò¦p 1, 2, 3 ¿ù / 4 ®æ)
+                // éƒ¨åˆ†éŒ¯èª¤ (ä¾‹å¦‚ 1, 2, 3 éŒ¯ / 4 æ ¼)
                 failureColor = Color.yellow;
             }
 
-            // Åã¥Ü¹ïÀ³ªº¿ù»~°T®§©M [·s] ÃC¦â
+            // é¡¯ç¤ºéŒ¯èª¤è¨Šæ¯èˆ‡ [æ–°] é¡è‰²
             _activePuzzleUI.SetResultMessage(message, failureColor);
-            // --- [!!] ­×§ïµ²§ô [!!] ---
+            // --- [!!] ä¿®æ”¹çµæŸ [!!] ---
         }
     }
 
     /// <summary>
-    /// [·s] »²§U¨ç¦¡¡Gµo©ñ«ü©wÁ¼ÃDªº¼úÀy
+    /// [æ–°] å¢åŠ ï¼šçµ¦äºˆæ­¤è¬é¡Œçš„çå‹µ
     /// </summary>
     private void GivePuzzleReward(int puzzleIndex)
     {
         if (InventoryManager.Instance == null) return;
 
-        // ÀË¬d¬O§_¦³°t¸m¼úÀy
+        // æª¢æŸ¥æ˜¯å¦æœ‰è¨­å®šçå‹µ
         if (puzzleRewardItems != null && puzzleIndex < puzzleRewardItems.Count)
         {
             ItemData reward = puzzleRewardItems[puzzleIndex];
             if (reward != null)
             {
-                // ÀË¬d¬O§_¤w¸g¾Ö¦³ (Á×§K­«½Æ¨ê¼úÀy Log)
-                // InventoryManager.AddItem ¤º³¡¤]¦³ÀË¬d¡A¦ı³o¸ÌÀË¬d¥i¥HÁ×§K­«½Æªº Debug.Log
-                if (!InventoryManager.Instance.HasItem(reward.itemName))
+                // æª¢æŸ¥æ˜¯å¦å·²ç¶“æ“æœ‰ (é¿å…é‡è¤‡çµ¦äºˆ Log)
+                // InventoryManager.AddItem å…§éƒ¨æœƒè™•ç†ï¼Œä½†é€™è£¡æª¢æŸ¥å¯ä»¥é¿å…æ´— Debug.Log
+                if (!InventoryManager.Instance.HasItem(reward.itemID))
                 {
-                    Debug.Log($"[CCM] Á¼ÃD {puzzleIndex} ²Õ¦X¥¿½T¡Iµo©ñ¼úÀy: {reward.itemName}");
+                    Debug.Log($"[CCM] è¬é¡Œ {puzzleIndex} çµ„åˆæ­£ç¢ºï¼ç²å¾—çå‹µ: {reward.itemName}");
                     InventoryManager.Instance.AddItem(reward);
                 }
             }
@@ -358,22 +358,23 @@ public class ClueCombinationManager : MonoBehaviour
     }
 
     /// <summary>
-    /// [¤w§ó·s] Àò¨ú©Ò¦³¡u²Å¦X±ø¥ó¡vªº½u¯Á (®Ö¤ß¹LÂoÅŞ¿è)
+    /// [å…¨æ–°] ç²å–æ‰€æœ‰ã€Œç¬¦åˆé¡å‹ã€çš„ã€Œç·šç´¢ã€ (é‡æ§‹æ­¤æ–¹æ³•)
     /// </summary>
     private List<IClue> GetEligibleClues(EClueType requiredType)
     {
-        // [!!] °»¿ù 4 [!!]
-        Debug.Log($"[CCM] GetEligibleClues: ¶}©l´M§äÃş«¬ {requiredType} ªº½u¯Á¡C");
+        // [!!] åµéŒ¯ 4 [!!]
+        Debug.Log($"[CCM] GetEligibleClues: é–‹å§‹æœå°‹ {requiredType} é¡å‹çš„ç·šç´¢ã€‚");
 
         List<IClue> clues = new List<IClue>();
 
         switch (requiredType)
         {
             case EClueType.Item:
-                // ¨Ï¥Î InventoryManager ³æ¨Ò
-                foreach (ItemData item in InventoryManager.Instance.items)
+                // ä½¿ç”¨ InventoryManager å–®ä¾‹
+                // ã€ä¿®æ­£ã€‘: "items" åˆ—è¡¨å·²ä¸å­˜åœ¨ï¼Œæ”¹ç‚ºå‘¼å«æ–°çš„ "GetOwnedItemsData()" æ–¹æ³•
+                foreach (ItemData item in InventoryManager.Instance.GetOwnedItemsData())
                 {
-                    // [!!] ¥u²K¥[ [ª««~:®×¥ó] (isClueItem == true)
+                    // [!!] åªåŠ å…¥ [ç·šç´¢:ç‰©å“] (isClueItem == true)
                     if (item.isClueItem)
                     {
                         clues.Add(new ItemClueWrapper(item));
@@ -382,28 +383,28 @@ public class ClueCombinationManager : MonoBehaviour
                 break;
 
             case EClueType.Memory:
-                // [!!] ³o¬O³ÌÃöÁäªº°»¿ù [!!]
-                Debug.Log("[CCM] GetEligibleClues: ¶i¤J Memory °Ï¶ô...");
+                // [!!] é€™æ˜¯æ–°ç³»çµ±çš„é—œéµ [!!]
+                Debug.Log("[CCM] GetEligibleClues: é€²å…¥ Memory é‚è¼¯...");
 
                 if (RolePastManager.Instance == null)
                 {
-                    Debug.LogError("[CCM] GetEligibleClues: [­P©R¿ù»~!] RolePastManager.Instance ¬O null¡I");
-                    break; // ¥ß¨è¸õ¥X
+                    Debug.LogError("[CCM] GetEligibleClues: [åš´é‡éŒ¯èª¤!] RolePastManager.Instance æ˜¯ nullï¼");
+                    break; // ä¸­æ–·åŸ·è¡Œ
                 }
 
                 if (RolePastManager.Instance.unlockedMemories == null)
                 {
-                    Debug.LogError("[CCM] GetEligIBLEClues: [­P©R¿ù»~!] RolePastManager.Instance.unlockedMemories ¦r¨å¬O null¡I");
-                    break; // ¥ß¨è¸õ¥X
+                    Debug.LogError("[CCM] GetEligibleClues: [åš´é‡éŒ¯èª¤!] RolePastManager.Instance.unlockedMemories ç«Ÿç„¶æ˜¯ nullï¼");
+                    break; // ä¸­æ–·åŸ·è¡Œ
                 }
 
-                // [!!] °»¿ù 5 [!!]
-                Debug.Log($"[CCM] GetEligibleClues: RPM.Instance.unlockedMemories ¦r¨å¤¤¦³ {RolePastManager.Instance.unlockedMemories.Count} ­Ó Role Key¡C");
+                // [!!] åµéŒ¯ 5 [!!]
+                Debug.Log($"[CCM] GetEligibleClues: RPM.Instance.unlockedMemories å­—å…¸ä¸­æœ‰ {RolePastManager.Instance.unlockedMemories.Count} å€‹ Role Keyã€‚");
 
                 foreach (var entry in RolePastManager.Instance.unlockedMemories)
                 {
-                    // [!!] °»¿ù 6 [!!]
-                    Debug.Log($"[CCM] GetEligibleClues: ¥¿¦b¹M¾ú Role '{entry.Key.name}' (ID: {entry.Key.GetInstanceID()})... ¸Ó Role ¦³ {entry.Value.Count} ­Ó¤w¸ÑÂê¦^¾Ğ¡C");
+                    // [!!] åµéŒ¯ 6 [!!]
+                    Debug.Log($"[CCM] GetEligibleClues: æ­£åœ¨è™•ç† Role '{entry.Key.name}' (ID: {entry.Key.GetInstanceID()})... è©² Role æœ‰ {entry.Value.Count} æ¢å·²è§£é–è¨˜æ†¶ã€‚");
 
                     foreach (CarouselData memory in entry.Value)
                     {
@@ -412,13 +413,13 @@ public class ClueCombinationManager : MonoBehaviour
                             int index = Array.IndexOf(entry.Key.carousels, memory);
                             if (index > -1)
                             {
-                                // [!!] °»¿ù 7 [!!]
-                                Debug.Log($"[CCM] GetEligibleClues: [¦¨¥\!] §ä¨ì¨Ã²K¥[¦^¾Ğ '{memory.name}' ¨ì¦Cªí¡C");
+                                // [!!] åµéŒ¯ 7 [!!]
+                                Debug.Log($"[CCM] GetEligibleClues: [æˆåŠŸ!] æ‰¾åˆ°ä¸¦åŠ å…¥è¨˜æ†¶ '{memory.name}' ç·šç´¢ã€‚");
                                 clues.Add(new MemoryClueWrapper(entry.Key, memory, index));
                             }
                             else
                             {
-                                Debug.LogWarning($"[CCM] GetEligibleClues: §ä¨ì¦^¾Ğ '{memory.name}'¡A¦ı Array.IndexOf ¦b Role '{entry.Key.name}' ¤¤¥¢±Ñ (ªğ¦^ -1)¡I");
+                                Debug.LogWarning($"[CCM] GetEligibleClues: æ‰¾åˆ°è¨˜æ†¶ '{memory.name}'ï¼Œä½† Array.IndexOf åœ¨ Role '{entry.Key.name}' æ‰¾ä¸åˆ° (è¿”å› -1)ï¼");
                             }
                         }
                     }
@@ -426,10 +427,10 @@ public class ClueCombinationManager : MonoBehaviour
                 break;
 
             case EClueType.Sound:
-                // ¨Ï¥Î VoiceItemManager ³æ¨Ò
+                // ä½¿ç”¨ VoiceItemManager å–®ä¾‹
                 foreach (VoiceItemData sound in VoiceItemManager.Instance.items)
                 {
-                    // [!!] ¥u²K¥[ [¤w¨Ï¥Î¦¨¥\] ªºÁn­µ
+                    // [!!] åªåŠ å…¥ [å·²ä½¿ç”¨éçš„è²éŸ³]
                     if (VoiceItemManager.Instance.IsItemUsed(sound))
                     {
                         clues.Add(new SoundClueWrapper(sound));
@@ -438,32 +439,33 @@ public class ClueCombinationManager : MonoBehaviour
                 break;
         }
 
-        // [!!] °»¿ù 8 [!!]
-        Debug.Log($"[CCM] GetEligibleClues: ´M§ä§¹²¦¡CÁ`¦@ªğ¦^ {clues.Count} ­Ó½u¯Á¡C");
+        // [!!] åµéŒ¯ 8 [!!]
+        Debug.Log($"[CCM] GetEligibleClues: æœå°‹å®Œç•¢ã€‚ç¸½å…±è¿”å› {clues.Count} æ¢ç·šç´¢ã€‚");
         return clues;
     }
 
     /// <summary>
-    /// [·s¼W] ®Ú¾Ú ClueID ¬d§ä IClue (¥Î©óÅª¨ú¦sÀÉ)
+    /// [æ–°å¢] é€é ClueID æ‰¾åˆ° IClue (ç”¨æ–¼è®€å–å­˜æª”)
     /// </summary>
     public IClue GetClueFromID(string clueID)
     {
         if (string.IsNullOrEmpty(clueID)) return null;
 
-        // 1. ·j´Mª««~ (ID = itemID)
-        ItemData item = InventoryManager.Instance.items.FirstOrDefault(x => x.itemID == clueID);
+        // 1. æœå°‹ç‰©å“ (ID = itemID)
+        // ã€ä¿®æ­£ã€‘: "items" åˆ—è¡¨å·²ä¸å­˜åœ¨ï¼Œæ”¹ç‚ºå‘¼å«æ–°çš„ "GetOwnedItemsData()" æ–¹æ³•
+        ItemData item = InventoryManager.Instance.GetOwnedItemsData().FirstOrDefault(x => x.itemID == clueID);
         if (item != null && item.isClueItem) return new ItemClueWrapper(item);
 
-        // 2. ·j´MÁn­µ (ID = voiceItemID)
+        // 2. æœå°‹è²éŸ³ (ID = voiceItemID)
         VoiceItemData sound = VoiceItemManager.Instance.items.FirstOrDefault(x => x.voiceItemID == clueID);
         if (sound != null && VoiceItemManager.Instance.IsItemUsed(sound)) return new SoundClueWrapper(sound);
 
-        // 3. ·j´M¦^¾Ğ (ID = CarouselData.name, ¨Ò¦p: "R101", "R401")
-        // (§Ú­Ì°²³]©Ò¦³¦^¾Ğ ID ³£¥H 'R' ¶}ÀY§@¬°§Ö³t¹LÂo)
+        // 3. æœå°‹è¨˜æ†¶ (ID = CarouselData.name, ä¾‹å¦‚: "R101", "R401")
+        // (æˆ‘å€‘å‡è¨­æ‰€æœ‰è¨˜æ†¶ ID éƒ½æ˜¯ 'R' é–‹é ­ä»¥åŠ é€Ÿæœå°‹)
         if (clueID.StartsWith("R"))
         {
-            // [!!] ­×§ï [!!]
-            // ª½±µ¨Ï¥Î RolePastManager.Instance
+            // [!!] ä¿®æ­£ [!!]
+            // å¿…é ˆä½¿ç”¨ RolePastManager.Instance
             if (RolePastManager.Instance != null && RolePastManager.Instance.unlockedMemories != null)
             {
                 foreach (var entry in RolePastManager.Instance.unlockedMemories)
@@ -484,7 +486,7 @@ public class ClueCombinationManager : MonoBehaviour
             }
         }
 
-        Debug.LogWarning($"[GetClueFromID] §ä¤£¨ì ID: {clueID} ¹ïÀ³ªº½u¯Á¡C");
+        Debug.LogWarning($"[GetClueFromID] æ‰¾ä¸åˆ° ID: {clueID} å°æ‡‰çš„ç·šç´¢ã€‚");
         return null;
     }
 
@@ -505,7 +507,7 @@ public class ClueCombinationManager : MonoBehaviour
     }
 
     /// <summary>
-    /// [·s] §ó·s¾É¯è«ö¶sªºÅã¥Ü (¨Ò¦p¡G¥u¦³1­ÓÁ¼ÃD®ÉÁôÂÃ«ö¶s)
+    /// [æ–°] æ›´æ–°å°è¦½æŒ‰éˆ•çš„é¡¯ç¤º (ä¾‹å¦‚ï¼šè‹¥åªæœ‰1å€‹è¬é¡Œå‰‡éš±è—æŒ‰éˆ•)
     /// </summary>
     private void UpdateNavigationButtons()
     {
@@ -515,23 +517,24 @@ public class ClueCombinationManager : MonoBehaviour
     }
 
     /// <summary>
-    /// [·s] Àò¨úª±®a·í«e«ù¦³ªº¡u©Ò¦³¡v½u¯Á ID (¥Î©óÀË¬d)
+    /// [æ–°] ç²å–ç©å®¶ç•¶å‰æ“æœ‰çš„ã€Œæ‰€æœ‰ã€ç·šç´¢ ID (ç”¨æ–¼æª¢æŸ¥)
     /// </summary>
     private HashSet<string> GetAllPlayerClueIDs()
     {
         HashSet<string> ids = new HashSet<string>();
 
-        // 1. ª««~ (Items)
+        // 1. ç‰©å“ (Items)
         if (InventoryManager.Instance != null)
         {
-            foreach (ItemData item in InventoryManager.Instance.items)
+            // ã€ä¿®æ­£ã€‘: "items" åˆ—è¡¨å·²ä¸å­˜åœ¨ï¼Œæ”¹ç‚ºå‘¼å«æ–°çš„ "GetOwnedItemsData()" æ–¹æ³•
+            foreach (ItemData item in InventoryManager.Instance.GetOwnedItemsData())
             {
-                // §Ú­Ì°²³]©Ò¦³ isClueItem ªºª««~³£¬O¡u­ì®Æ¡v
+                // æˆ‘å€‘å‡è¨­ isClueItem çš„ç‰©å“æ‰æ˜¯ã€Œç·šç´¢ã€
                 if (item.isClueItem) ids.Add(item.itemID);
             }
         }
 
-        // 2. Án­µ (Sounds)
+        // 2. è²éŸ³ (Sounds)
         if (VoiceItemManager.Instance != null)
         {
             foreach (VoiceItemData sound in VoiceItemManager.Instance.items)
@@ -540,8 +543,8 @@ public class ClueCombinationManager : MonoBehaviour
             }
         }
 
-        // 3. ¦^¾Ğ (Memories)
-        // ª½±µ¨Ï¥Î RolePastManager.Instance
+        // 3. è¨˜æ†¶ (Memories)
+        // å¿…é ˆä½¿ç”¨ RolePastManager.Instance
         if (RolePastManager.Instance != null && RolePastManager.Instance.unlockedMemories != null)
         {
             foreach (var entry in RolePastManager.Instance.unlockedMemories)
@@ -557,81 +560,80 @@ public class ClueCombinationManager : MonoBehaviour
     }
 
     /// <summary>
-    /// [·s] ÀË¬d¯S©wÁ¼ÃD¬O§_º¡¨¬¸ÑÂê±ø¥ó
+    /// [æ–°] æª¢æŸ¥å–®ä¸€è¬é¡Œæ˜¯å¦å·²æ»¿è¶³ã€Œè§£é–æ¢ä»¶ã€
     /// </summary>
     private bool CheckIfPuzzleIsReady(ClueCombinationPuzzle puzzle, HashSet<string> playerClueIDs)
     {
-        // ÀË¬dª±®a¬O§_¾Ö¦³¡u©Ò¦³¡v¥¿½Tµª®× (­ì®Æ)
+        // æª¢æŸ¥ç©å®¶æ˜¯å¦æ“æœ‰ã€Œæ‰€æœ‰ã€æ­£ç¢ºç­”æ¡ˆ (çš„ç·šç´¢)
         foreach (ClueSlotDefinition slot in puzzle.clueSlots)
         {
             if (!playerClueIDs.Contains(slot.correctClueID))
             {
-                // ¯Ê¤Ö¥ô¦ó¤@­Ó­ì®Æ
+                // ç¼ºå°‘ä»»ä½•ä¸€å€‹ç­”æ¡ˆ
                 return false;
             }
         }
-        // ©Ò¦³­ì®Æ³£»ô¤F
+        // æ‰€æœ‰ç­”æ¡ˆéƒ½é½Šäº†
         return true;
     }
 
     /// <summary>
-    /// [·s] ®Ö¤ß¨ç¦¡¡GÀË¬d¨Ã¸ÑÂê·sªºÁ¼ÃD
+    /// [æ–°] æ ¸å¿ƒåŠŸèƒ½ï¼šæª¢æŸ¥æ˜¯å¦æœ‰æ–°çš„è¬é¡Œè¢«è§£é–
     /// </summary>
-    /// <param name="isFirstLoad">¬O§_¬°¹CÀ¸/³õ´º²Ä¤@¦¸¸ü¤J</param>
+    /// <param name="isFirstLoad">æ˜¯å¦æ˜¯éŠæˆ²/å ´æ™¯çš„ç¬¬ä¸€æ¬¡è¼‰å…¥</param>
     public void CheckForNewPuzzleUnlocks(bool isFirstLoad = false, EClueType unlockType = EClueType.Item)
     {
         HashSet<string> playerClueIDs = GetAllPlayerClueIDs();
 
-        // §Ú­Ì¤£¦A¥Î bool aNewPuzzleWasUnlocked¡A
-        // ¦Ó¬O«Ø¥ß¤@­Ó¡u·s¸ÑÂê¦Cªí¡v
+        // æˆ‘å€‘éœ€è¦ä¸€å€‹ bool ä¾†åˆ¤æ–·ï¼Œ
+        // ç¨å¾Œæ˜¯å¦è¦æ’­æ”¾ã€Œæ–°è¬é¡Œã€çš„å‹•ç•«
         List<ClueCombinationPuzzle> newlyUnlockedPuzzles = new List<ClueCombinationPuzzle>();
 
-        // ¹M¾ú¡uÁ`ªí¡v¡AÀË¬d¬O§_¦³·s¸ÑÂê
+        // è¿­ä»£ã€Œç¸½æ¸…å–®ã€ï¼Œæª¢æŸ¥æ˜¯å¦å¯ä»¥è§£é–
         for (int i = 0; i < allPuzzles.Count; i++)
         {
-            // ¦pªG³o­Ó¯Á¤Ş i ¤w¸g¦b¡u¤w¸ÑÂêªí¡v¤¤¡A¸õ¹L
+            // å¦‚æœé€™å€‹ç´¢å¼• i å·²ç¶“åœ¨ã€Œå·²è§£é–ã€åˆ—è¡¨ï¼Œå°±è·³é
             if (_unlockedPuzzleMasterIndices.Contains(i)) continue;
 
             ClueCombinationPuzzle puzzle = allPuzzles[i];
 
-            // ÀË¬d¬O§_º¡¨¬¸ÑÂê±ø¥ó
+            // æª¢æŸ¥æ˜¯å¦æ»¿è¶³è§£é–æ¢ä»¶
             if (CheckIfPuzzleIsReady(puzzle, playerClueIDs))
             {
-                // [!!] ¸ÑÂê [!!]
+                // [!!] è§£é– [!!]
                 _unlockedPuzzleMasterIndices.Add(i);
 
-                // [!!] ±N·s¸ÑÂêªºÁ¼ÃD¥[¤J¦Cªí [!!]
-                // ¦]¬° i Á`¬O±q¤p¨ì¤j¡A³o¦Û°Ê«OÃÒ¤F¶¶§Ç
+                // [!!] å°‡æ–°è§£é–çš„è¬é¡ŒåŠ å…¥åˆ—è¡¨ [!!]
+                // è¨»ï¼š i åªæ˜¯ç´¢å¼•ï¼Œé€™è£¡è¦å‚³éçš„æ˜¯ Puzzle ç‰©ä»¶
                 newlyUnlockedPuzzles.Add(puzzle);
-                Debug.Log($"[ClueCombinationManager] Á¼ÃD¤w¸ÑÂê: {puzzle.puzzleTitle}");
+                Debug.Log($"[ClueCombinationManager] è¬é¡Œå·²è§£é–: {puzzle.puzzleTitle}");
             }
         }
 
-        // --- ÀË¬d°ÊµeÄ²µo ---
-        // ¦pªG¦Cªí¡u¤£¡v¬°ªÅ
+        // --- æª¢æŸ¥å‹•ç•«è§¸ç™¼ ---
+        // å¦‚æœæœ‰ã€Œæ–°ã€çš„è¬é¡Œ
         if (newlyUnlockedPuzzles.Count > 0)
         {
             if (PuzzleUnlockAnimator.Instance == null)
             {
-                Debug.LogWarning("[ClueCombinationManager] °»´ú¨ì·sÁ¼ÃD¡A¦ı§ä¤£¨ì PuzzleUnlockAnimator.Instance¡I");
+                Debug.LogWarning("[ClueCombinationManager] æœ‰æ–°è¬é¡Œè§£é–ï¼Œä½†æ‰¾ä¸åˆ° PuzzleUnlockAnimator.Instanceï¼");
             }
             else
             {
-                // [!!] ®Ö¤ß­×§ï [!!]
-                // ±N¡u¾ã­Ó¦Cªí¡v©M¡uÄ²µoÃş«¬¡v¥æµ¹ PUA ³B²z
-                Debug.Log($"[ClueCombinationManager] µo²{ {newlyUnlockedPuzzles.Count} ­Ó·sÁ¼ÃD¡A¥¿¦b¶Ç°eµ¹ PUA...");
+                // [!!] æ ¸å¿ƒä¿®æ”¹ [!!]
+                // å°‡ã€Œæ–°è¬é¡Œåˆ—è¡¨ã€èˆ‡ã€Œè§¸ç™¼é¡å‹ã€å‚³éçµ¦ PUA è™•ç†
+                Debug.Log($"[ClueCombinationManager] åµæ¸¬åˆ° {newlyUnlockedPuzzles.Count} å€‹æ–°è¬é¡Œï¼Œæ­£åœ¨æäº¤çµ¦ PUA...");
                 PuzzleUnlockAnimator.Instance.QueueNewUnlocks(newlyUnlockedPuzzles, unlockType);
             }
         }
 
-        // §ó·s¾É¯è«ö¶sªº¥i¨£©Ê
+        // æ›´æ–°å°è¦½æŒ‰éˆ•çš„å¯è¦‹åº¦
         UpdateNavigationButtons();
 
-        // ¦pªG³o¬O²Ä¤@¦¸¸ü¤J¡A©Î³o¬O¹CÀ¸¤¤²Ä¤@­Ó³Q¸ÑÂêªºÁ¼ÃD
+        // å¦‚æœæ˜¯ç¬¬ä¸€æ¬¡è¼‰å…¥ï¼Œæˆ–è€…é€™æ˜¯ç¬¬ä¸€æ¬¡æœ‰è¬é¡Œè¢«è§£é–ï¼Œå°±è‡ªå‹•é¡¯ç¤ºç¬¬ä¸€å€‹å¯ç”¨çš„è¬é¡Œ
         if ((isFirstLoad || newlyUnlockedPuzzles.Count > 0) && _currentUnlockedListIndex == -1 && _unlockedPuzzleMasterIndices.Count > 0)
         {
             LoadPuzzleByUnlockedIndex(0);
         }
     }
 }
-

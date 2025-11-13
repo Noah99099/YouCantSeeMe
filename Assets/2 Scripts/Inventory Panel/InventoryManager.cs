@@ -1,24 +1,24 @@
-// InventoryManager.cs
+// InventoryManager.cs (升級版)
 using System.Collections.Generic;
 using UnityEngine;
-using System; // 需要引用 System 才能使用 Action
-using System.Linq; // 為了 .Exists() 和 .Any()
+using System;
+using System.Linq;
 
-[DefaultExecutionOrder(-15)] //最早初始化此腳本
+[DefaultExecutionOrder(-15)]
 public class InventoryManager : MonoBehaviour
 {
-    // --- 單例模式 (Singleton) ---
     public static InventoryManager Instance { get; private set; }
-
-    // 當背包內容改變時觸發的事件，UI 會訂閱這個事件來更新顯示
     public event Action OnInventoryChanged;
 
     [Header("功能：管理背包物件的增減")]
-    // 儲存所有物品資料的 List
-    public List<ItemData> items = new List<ItemData>();
+    // 【修改】使用 Dictionary 來追蹤 物品ID 和 對應的數量
+    private Dictionary<string, int> itemQuantities = new Dictionary<string, int>();
 
-    [Header("默認顯示物品 (請在 Inspector 指派一個 ItemData 資產)")]
-    // 這是配置數據 (Configuration Data)，不是 UI 狀態，所以保留
+    // 【新增】一個列表，用於儲存 "獲得過的" 物品的 ItemData 實例
+    // 這樣 UI 才能知道要顯示什麼圖標和名稱
+    private Dictionary<string, ItemData> itemDatabase = new Dictionary<string, ItemData>();
+
+    [Header("默認顯示物品")]
     public ItemData defaultItem;
 
     private void Awake()
@@ -29,17 +29,32 @@ public class InventoryManager : MonoBehaviour
     }
 
     /// <summary>
-    /// 新增物品到背包
+    /// 【修改】新增物品到背包 (現在會處理數量)
     /// </summary>
-    /// <param name="item">要新增的物品資料</param>
     public void AddItem(ItemData item)
     {
-        if (item == null || items.Contains(item)) return;
+        if (item == null) return;
+        string itemID = item.itemID; // 假設您的 ItemData 中有 itemID
 
-        items.Add(item);
-        OnInventoryChanged?.Invoke(); // 只通知，不執行任何 UI 操作
+        // 1. 如果這是第一次獲得，先存入 "資料庫"
+        if (!itemDatabase.ContainsKey(itemID))
+        {
+            itemDatabase[itemID] = item;
+        }
 
-        // [!!] 在這裡通知 ClueCombinationManager 獲得案件物品 [!!]
+        // 2. 增加數量
+        if (itemQuantities.ContainsKey(itemID))
+        {
+            itemQuantities[itemID]++; // 數量+1
+        }
+        else
+        {
+            itemQuantities[itemID] = 1; // 第一次獲得，數量設為1
+        }
+        
+        Debug.Log($"[InventoryManager] 已新增: {item.itemName} (ID: {itemID})。目前總數: {itemQuantities[itemID]}");
+        OnInventoryChanged?.Invoke(); // 通知UI更新
+
         if (item.isClueItem)
         {
             ClueCombinationManager.Instance?.CheckForNewPuzzleUnlocks();
@@ -47,33 +62,62 @@ public class InventoryManager : MonoBehaviour
     }
 
     /// <summary>
-    /// 從背包移除物品 (可選，未來可能會用到)
+    /// 【修改】從背包移除物品 (現在會處理數量)
     /// </summary>
-    /// <param name="item">要移除的物品資料</param>
     public void RemoveItem(ItemData item)
     {
-        if (items.Contains(item))
+        if (item == null) return;
+        string itemID = item.itemID;
+
+        if (itemQuantities.ContainsKey(itemID) && itemQuantities[itemID] > 0)
         {
-            items.Remove(item);
-            OnInventoryChanged?.Invoke(); // 通知UI更新
-            Debug.Log($"[InventoryManager] 已移除物品: {item.itemName}");
+            itemQuantities[itemID]--; // 數量-1
+            Debug.Log($"[InventoryManager] 已移除: {item.itemName} (ID: {itemID})。剩餘數量: {itemQuantities[itemID]}");
+
+            // (可選) 如果數量歸零了，您甚至可以從字典中移除它
+            // if (itemQuantities[itemID] == 0)
+            // {
+            //     itemQuantities.Remove(itemID);
+            // }
+
+            OnInventoryChanged?.Invoke();
         }
         else
         {
-            Debug.LogWarning($"[InventoryManager] 嘗試移除不存在的物品: {item.itemName}");
+            Debug.LogWarning($"[InventoryManager] 嘗試移除不存在或數量為0的物品: {item.itemName}");
         }
     }
 
     /// <summary>
-    /// 檢查背包中是否含有指定名稱的物品
-    /// 看起來應該是給 使用物品時 用
+    /// 【修改】檢查背包中是否 "至少有1個" 指定 ID 的物品
     /// </summary>
-    /// <param name="itemNameToCheck">要檢查的物品名稱</param>
-    /// <returns>如果找到返回 true，否則返回 false</returns>
-    public bool HasItem(string itemNameToCheck)
+    public bool HasItem(string itemIDToCheck)
     {
-        // 使用 System.Linq 的 Any 方法，可以很有效率地檢查 List 中是否有符合條件的項目
-        // 這行程式碼的意思是：「在 items 這個 List 中，是否有任何一個 item 的 itemName 等於我們要檢查的名稱？」
-        return items.Exists(item => item.itemName == itemNameToCheck);
+        // 檢查字典中是否有這個ID，並且其數量 > 0
+        return itemQuantities.ContainsKey(itemIDToCheck) && itemQuantities[itemIDToCheck] > 0;
+    }
+
+    /// <summary>
+    /// 【新功能】獲取指定物品 ID 的確切數量
+    /// </summary>
+    public int GetItemCount(string itemIDToCheck)
+    {
+        if (itemQuantities.ContainsKey(itemIDToCheck))
+        {
+            return itemQuantities[itemIDToCheck];
+        }
+        return 0; // 如果背包中沒有這個物品，返回 0
+    }
+
+    /// <summary>
+    /// 【新功能】(可選，供UI使用) 獲取所有已獲得物品的 ItemData 列表
+    /// </summary>
+    public List<ItemData> GetOwnedItemsData()
+    {
+        // 返回所有 "當前數量 > 0" 的物品的 ItemData 實例
+        return itemDatabase
+            .Where(pair => itemQuantities.ContainsKey(pair.Key) && itemQuantities[pair.Key] > 0)
+            .Select(pair => pair.Value)
+            .ToList();
     }
 }

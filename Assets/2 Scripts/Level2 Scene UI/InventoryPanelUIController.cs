@@ -268,7 +268,7 @@ public class InventoryPanelUIController : MonoBehaviour
     {
         if (itemSlots.Count == 0 || InventoryManager.Instance == null) return;
 
-        List<ItemData> currentItems = InventoryManager.Instance.items;
+        List<ItemData> currentItems = InventoryManager.Instance.GetOwnedItemsData();
         ItemData defaultItem = InventoryManager.Instance.defaultItem;
 
         for (int i = 0; i < itemSlots.Count; i++)
