@@ -27,6 +27,9 @@ public class MusicManager : MonoBehaviour
 
     private const string VOLUME_KEY = "MusicVolume"; // 【新增】用於 PlayerPrefs 的鍵
 
+    // 【新增】用來儲存淡入淡出的 Coroutine，避免重複呼叫衝突
+    private Coroutine volumeFadeCoroutine;
+
     private void Awake()
     {
         // 單例模式
@@ -107,6 +110,7 @@ public class MusicManager : MonoBehaviour
         Debug.Log($"音量已設定為: {masterVolume}");
     }
 
+    // --------- 以下為原本的 FadeMusic ---------
     private IEnumerator FadeMusic(AudioSource source, float duration, float targetVolume)
     {
         float currentTime = 0f;
@@ -129,5 +133,43 @@ public class MusicManager : MonoBehaviour
 
         if (targetVolume == 0f)
             source.Stop();
+    }
+
+    // --------- 【新增】專門給影片播放（VideoPlayerController、PlayVideo）用的控制方法 ---------
+    /// <summary>
+    /// 設定影片模式的靜音狀態
+    /// </summary>
+    /// <param name="isMuted">true=靜音, false=恢復原音量</param>
+    /// <param name="fadeDuration">淡入淡出時間</param>
+    public void SetVideoMute(bool isMuted, float fadeDuration = 0.5f)
+    {
+        if (currentAudioSource == null) return;
+
+        float targetVol = isMuted ? 0f : masterVolume / 100f;
+
+        // 如果有舊的淡出正在跑，先停止
+        if (volumeFadeCoroutine != null) StopCoroutine(volumeFadeCoroutine);
+
+        // 啟動新的淡出協程
+        volumeFadeCoroutine = StartCoroutine(FadeVolumeOnly(currentAudioSource, fadeDuration, targetVol));
+    }
+
+    /// <summary>
+    /// 【新增】只調整音量，不執行 Stop()，確保音樂在背景繼續走
+    /// </summary>
+    private IEnumerator FadeVolumeOnly(AudioSource source, float duration, float targetVolume)
+    {
+        float currentTime = 0f;
+        float startVolume = source.volume;
+
+        while (currentTime < duration)
+        {
+            currentTime += Time.deltaTime;
+            source.volume = Mathf.Lerp(startVolume, targetVolume, currentTime / duration);
+            yield return null;
+        }
+
+        source.volume = targetVolume;
+        // 這裡故意不寫 source.Stop()，讓音樂保持播放狀態但無聲
     }
 }

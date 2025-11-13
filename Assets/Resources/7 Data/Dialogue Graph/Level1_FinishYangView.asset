@@ -15,72 +15,10 @@ MonoBehaviour:
   nodes:
   - {fileID: 3488747997493058042}
   - {fileID: 6198979241984237551}
-  - {fileID: 3220081326436456269}
   - {fileID: 8541228804511560596}
   triggerType: 3
   initialVariables: []
   runtimeVariables: []
---- !u!114 &3220081326436456269
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5437ad9eab10596448e309fe06cda6bc, type: 3}
-  m_Name: Line
-  m_EditorClassIdentifier: 
-  graph: {fileID: 11400000}
-  position: {x: 360, y: -104}
-  ports:
-    keys:
-    - entry
-    - exit
-    values:
-    - _fieldName: entry
-      _node: {fileID: 3220081326436456269}
-      _typeQualifiedName: BaseNode, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
-        PublicKeyToken=null
-      connections:
-      - fieldName: exit
-        node: {fileID: 6198979241984237551}
-        reroutePoints: []
-      _direction: 0
-      _connectionType: 1
-      _typeConstraint: 0
-      _dynamic: 0
-    - _fieldName: exit
-      _node: {fileID: 3220081326436456269}
-      _typeQualifiedName: BaseNode, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
-        PublicKeyToken=null
-      connections:
-      - fieldName: entry
-        node: {fileID: 8541228804511560596}
-        reroutePoints: []
-      _direction: 1
-      _connectionType: 1
-      _typeConstraint: 0
-      _dynamic: 0
-  isImportant: 0
-  entry: {fileID: 0}
-  exit: {fileID: 0}
-  line:
-    characterID: Mr. White
-    expression: '"happy"'
-    position: 1
-    animation: 0
-    overrideName: 0
-    speakerName: 
-    isNarration: 1
-    content: "\u6309\u4E0Bshift\u9375\u53EF\u4EE5\u5207\u63DB\u9670\u3001\u967D\u8996\u91CE\u3002"
-    contentKey: 
-    voiceClip: {fileID: 0}
-    soundEffect: {fileID: 0}
-    onShowLine:
-      m_PersistentCalls:
-        m_Calls: []
 --- !u!114 &3488747997493058042
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -150,7 +88,7 @@ MonoBehaviour:
         PublicKeyToken=null
       connections:
       - fieldName: entry
-        node: {fileID: 3220081326436456269}
+        node: {fileID: 8541228804511560596}
         reroutePoints: []
       _direction: 1
       _connectionType: 1
@@ -187,7 +125,7 @@ MonoBehaviour:
   m_Name: Invoke Event
   m_EditorClassIdentifier: 
   graph: {fileID: 11400000}
-  position: {x: 808, y: 136}
+  position: {x: 488, y: 136}
   ports:
     keys:
     - entry
@@ -199,7 +137,7 @@ MonoBehaviour:
         PublicKeyToken=null
       connections:
       - fieldName: exit
-        node: {fileID: 3220081326436456269}
+        node: {fileID: 6198979241984237551}
         reroutePoints: []
       _direction: 0
       _connectionType: 1

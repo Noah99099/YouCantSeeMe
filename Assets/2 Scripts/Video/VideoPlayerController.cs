@@ -73,6 +73,12 @@ public class VideoPlayerController : MonoBehaviour
             Debug.LogError($"[VideoPlayerController] InputStackManager.PushMap 失敗: {e.Message}");
         }
 
+        // 【新增】開始播放影片時，將背景音樂靜音 (0.5秒淡出)
+        if (MusicManager.Instance != null)
+        {
+            MusicManager.Instance.SetVideoMute(true, 0.5f);
+        }
+
         videoPlayer.Play();
         Debug.Log("[VideoPlayerController] 影片開始播放！");
     }
@@ -97,6 +103,12 @@ public class VideoPlayerController : MonoBehaviour
         catch (System.Exception e)
         {
             Debug.LogError($"[VideoPlayerController] InputStackManager.PopMap 失敗: {e.Message}");
+        }
+
+        // 【新增】影片結束後，恢復背景音樂音量 (1秒淡入)
+        if (MusicManager.Instance != null)
+        {
+            MusicManager.Instance.SetVideoMute(false, 1.0f);
         }
 
         // 3. 【新】執行傳入的回調動作
