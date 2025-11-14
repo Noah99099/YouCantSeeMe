@@ -54,6 +54,7 @@ public class DialogueManager : MonoBehaviour
     private bool cameraHasBeenMoved = false;
     private DialogueGraph currentGraph;
     private BaseNode currentNode;
+    private List<NodePort> _currentChoicePorts;
 
     #region Unity生命週期與輸入
     private void Awake()
@@ -329,13 +330,41 @@ public class DialogueManager : MonoBehaviour
         else if (currentNode is ChoiceNode choiceNode)
         {
             isWaitingForChoice = true;
-            dialogueUI.ShowChoices(choiceNode.choiceKeys, OnChoiceMade);
+            _currentChoicePorts = new List<NodePort>();
+
+            // --- 【核心修正】 ---
+            // 我們必須在這裡就處理本地化
+            List<string> finalChoiceStrings = new List<string>();
+            for(int i = 0; i < choiceNode.choiceKeys.Count; i++) //
+            {
+                // 舊節點  假定 choiceKeys 永遠是 Key
+                finalChoiceStrings.Add(LocalizationManager.Instance.GetLocalizedText(choiceNode.choiceKeys[i]));
+                _currentChoicePorts.Add(choiceNode.GetOutputPort("choices " + i));
+            }
+
+            // 傳送 "已經本地化" 的文字列表
+            dialogueUI.ShowChoices(finalChoiceStrings, OnChoiceMade);
         }
         else if (currentNode is TimedChoiceNode timedChoiceNode)
         {
             isWaitingForChoice = true;
+
+            // 【修改】: 也為 TimedChoiceNode 填充 _currentChoicePorts 列表
+            _currentChoicePorts = new List<NodePort>();
+            // (假設 TimedChoiceNode 也有一個 'choices' 列表)
+            for(int i = 0; i < timedChoiceNode.choices.Count; i++) 
+            {
+                _currentChoicePorts.Add(timedChoiceNode.GetOutputPort("choices " + i));
+            }
+
             dialogueUI.ShowChoices(timedChoiceNode.choiceKeys, OnChoiceMade);
             dialogueUI.StartTimer(timedChoiceNode.timeLimit, OnTimerTimeout);
+        }
+        else if (currentNode is ConditionalChoiceNode condChoiceNode)
+        {
+            // 這是一個 "停止點" 節點，呼叫它的專屬處理邏輯
+            ProcessConditionalChoiceNode(condChoiceNode);
+            // 我們 "不" 呼叫 ProcessCurrentNode()，因為我們要等待玩家輸入
         }
         else if (currentNode is WaitNode waitNode)
         {
@@ -374,6 +403,7 @@ public class DialogueManager : MonoBehaviour
             else if (currentNode is CheckQuestNode checkQuestNode)      currentNode = ProcessCheckQuestNode(checkQuestNode);
             else if (currentNode is CheckSpecificItemsNode itemsNode)   currentNode = ProcessCheckSpecificItemsNode(itemsNode);
             else if (currentNode is CheckItemNode itemNode)             currentNode = ProcessCheckItemNode(itemNode);
+            else if (currentNode is PriorityRouterNode routerNode)    currentNode = ProcessPriorityRouterNode(routerNode);
             else
             {
                 // 未知節點，安全起見直接前進
@@ -526,6 +556,164 @@ public class DialogueManager : MonoBehaviour
             Debug.LogWarning($"CheckItemNode 錯誤：InventoryManager 不存在或 ItemData 未指定！");
         
         return node.GetNextNode(conditionResult);
+    }
+
+    /// <summary>
+    /// 【新節點邏輯】
+    /// 處理 PriorityRouterNode (條列式) 節點
+    /// </summary>
+    private BaseNode ProcessPriorityRouterNode(PriorityRouterNode node)
+    {
+        // 1. 依序 (i = 0, 1, 2...) 檢查節點上的所有條件
+        for (int i = 0; i < node.conditions.Count; i++)
+        {
+            PriorityCondition condition = node.conditions[i];
+            bool conditionResult = false;
+
+            // 2. 根據條件類型，執行不同的檢查
+            if (condition.checkType == ConditionType.CheckGraphVariable)
+            {
+                // --- 執行 "檢查圖形變數" 邏輯 (同 ConditionalNode) ---
+                float actualValue = (currentGraph as DialogueGraph).GetVariable(condition.variableName);
+                float compareValue = condition.valueToCompare;
+                switch (condition.comparison)
+                {
+                    case ComparisonType.EqualTo: conditionResult = actualValue == compareValue; break;
+                    case ComparisonType.NotEqualTo: conditionResult = actualValue != compareValue; break;
+                    case ComparisonType.GreaterThan: conditionResult = actualValue > compareValue; break;
+                    case ComparisonType.LessThan: conditionResult = actualValue < compareValue; break;
+                    case ComparisonType.GreaterThanOrEqualTo: conditionResult = actualValue >= compareValue; break;
+                    case ComparisonType.LessThanOrEqualTo: conditionResult = actualValue <= compareValue; break;
+                }
+            }
+            else if (condition.checkType == ConditionType.CheckInventoryItem)
+            {
+                // --- 執行 "檢查背包物品" 邏輯 (同 CheckItemNode) ---
+                if (InventoryManager.Instance != null && condition.itemToCheck != null)
+                {
+                    int actualQuantity = InventoryManager.Instance.GetItemCount(condition.itemToCheck.itemID);
+                    int requiredQuantity = condition.requiredQuantity;
+                    switch (condition.comparison)
+                    {
+                        case ComparisonType.EqualTo: conditionResult = actualQuantity == requiredQuantity; break;
+                        case ComparisonType.NotEqualTo: conditionResult = actualQuantity != requiredQuantity; break;
+                        case ComparisonType.GreaterThan: conditionResult = actualQuantity > requiredQuantity; break;
+                        case ComparisonType.LessThan: conditionResult = actualQuantity < requiredQuantity; break;
+                        case ComparisonType.GreaterThanOrEqualTo: conditionResult = actualQuantity >= requiredQuantity; break;
+                        case ComparisonType.LessThanOrEqualTo: conditionResult = actualQuantity <= requiredQuantity; break;
+                    }
+                }
+                // (如果 InventoryManager 不存在或物品未設定，conditionResult 保持 false)
+            }
+
+            // 3. 只要有一個條件滿足 (true)...
+            if (conditionResult)
+            {
+                // ...立即返回 "該條件" 對應的出口節點，並停止檢查
+                return node.GetNextNodeForCondition(i);
+            }
+        }
+
+        // 4. 如果迴圈跑完，所有條件都不滿足，則返回 "Else" 出口
+        return node.GetNextNodeElse();
+    }
+
+    /// <summary>
+    /// 【新節點邏輯】
+    /// 處理 ConditionalChoiceNode (動態選項) 節點
+    /// </summary>
+    private void ProcessConditionalChoiceNode(ConditionalChoiceNode node)
+    {
+        List<string> finalChoiceStrings = new List<string>(); 
+        _currentChoicePorts = new List<NodePort>(); 
+
+        // 1. 依序 (i = 0, 1, 2...) 檢查 "動態選項"
+        for (int i = 0; i < node.conditionalChoices.Count; i++)
+        {
+            ConditionalChoice choice = node.conditionalChoices[i];
+            bool conditionResult = false;
+
+            // --- (重用 PriorityRouterNode 的檢查邏輯) ---
+            if (choice.checkType == ConditionType.CheckGraphVariable)
+            {
+                // (省略檢查變數的邏輯...)
+                float actualValue = (currentGraph as DialogueGraph).GetVariable(choice.variableName);
+                float compareValue = choice.valueToCompare;
+                switch (choice.comparison)
+                {
+                    case ComparisonType.EqualTo: conditionResult = actualValue == compareValue; break;
+                    case ComparisonType.NotEqualTo: conditionResult = actualValue != compareValue; break;
+                    case ComparisonType.GreaterThan: conditionResult = actualValue > compareValue; break;
+                    case ComparisonType.LessThan: conditionResult = actualValue < compareValue; break;
+                    case ComparisonType.GreaterThanOrEqualTo: conditionResult = actualValue >= compareValue; break;
+                    case ComparisonType.LessThanOrEqualTo: conditionResult = actualValue <= compareValue; break;
+                }
+            }
+            else if (choice.checkType == ConditionType.CheckInventoryItem)
+            {
+                if (InventoryManager.Instance != null && choice.itemToCheck != null)
+                {
+                    // (省略檢查物品的邏輯...)
+                    int actualQuantity = InventoryManager.Instance.GetItemCount(choice.itemToCheck.itemID);
+                    int requiredQuantity = choice.requiredQuantity;
+                    switch (choice.comparison)
+                    {
+                        case ComparisonType.EqualTo: conditionResult = actualQuantity == requiredQuantity; break;
+                        case ComparisonType.NotEqualTo: conditionResult = actualQuantity != requiredQuantity; break;
+                        case ComparisonType.GreaterThan: conditionResult = actualQuantity > requiredQuantity; break;
+                        case ComparisonType.LessThan: conditionResult = actualQuantity < requiredQuantity; break;
+                        case ComparisonType.GreaterThanOrEqualTo: conditionResult = actualQuantity >= requiredQuantity; break;
+                        case ComparisonType.LessThanOrEqualTo: conditionResult = actualQuantity <= requiredQuantity; break;
+                    }
+                }
+            }
+            // --- (檢查邏輯結束) ---
+
+            if (conditionResult)
+            {
+                // --- 【核心修正】 ---
+                // 在這裡就決定好最終的文字
+                string stringToShow;
+                if (choice.useLocalization)
+                {
+                    // 如果使用本地化，"現在" 就去查找
+                    stringToShow = LocalizationManager.Instance.GetLocalizedText(choice.choiceKey);
+                }
+                else
+                {
+                    // 否則，直接使用內容
+                    stringToShow = choice.choiceContent;
+                }
+                
+                finalChoiceStrings.Add(stringToShow);
+                _currentChoicePorts.Add(node.GetOutputPort("conditionalChoices " + i));
+            }
+        }
+
+        // 2. 加入所有 "預設選項"
+        for (int j = 0; j < node.defaultChoices.Count; j++)
+        {
+            ConditionalChoice defaultChoice = node.defaultChoices[j];
+
+            // --- 【核心修正】 ---
+            // 預設選項也使用這個邏輯
+            string stringToShow;
+            if (defaultChoice.useLocalization)
+            {
+                stringToShow = LocalizationManager.Instance.GetLocalizedText(defaultChoice.choiceKey);
+            }
+            else
+            {
+                stringToShow = defaultChoice.choiceContent;
+            }
+                
+            finalChoiceStrings.Add(stringToShow);
+            _currentChoicePorts.Add(node.GetOutputPort("defaultChoices " + j));
+        }
+
+        // 3. 將這個 "最終組合" 的列表傳送給 UI 顯示
+        isWaitingForChoice = true;
+        dialogueUI.ShowChoices(finalChoiceStrings, OnChoiceMade); // 這裡傳送的是 "已經處理好" 的文字
     }
 
     public void Debug_PrintListeners()
@@ -730,21 +918,35 @@ public class DialogueManager : MonoBehaviour
 
     private void OnChoiceMade(int choiceIndex)
     {
-        // --- 核心修改：在做出選擇時，停止計時器 ---
         dialogueUI.StopTimer();
         isWaitingForChoice = false;
         dialogueUI.ClearChoices();
 
         BaseNode nextNode = null;
-        if (currentNode is ChoiceNode choiceNode)
+
+        // --- 【核心修改】---
+        // 檢查我們是否使用了新的 "出口列表" 系統
+        if (_currentChoicePorts != null && choiceIndex >= 0 && choiceIndex < _currentChoicePorts.Count)
         {
-            nextNode = choiceNode.GetNextNodeForChoice(choiceIndex);
+            // 從我們儲存的列表中，根據索引獲取正確的出口
+            NodePort selectedPort = _currentChoicePorts[choiceIndex];
+
+            if (selectedPort != null && selectedPort.IsConnected)
+            {
+                nextNode = selectedPort.Connection.node as BaseNode;
+            }
+
+            // 清除列表，為下一次對話做準備
+            _currentChoicePorts = null; 
         }
-        // 也處理 TimedChoiceNode 的情況
-        else if (currentNode is TimedChoiceNode timedChoiceNode)
+        else
         {
-            nextNode = timedChoiceNode.GetNextNodeForChoice(choiceIndex);
+            // (備用邏輯，以防萬一)
+            Debug.LogError($"[DialogueManager] OnChoiceMade 錯誤！ choiceIndex ({choiceIndex}) 超出了 _currentChoicePorts 的範圍，或列表為 null。");
         }
+
+        // (舊的 if (currentNode is...) 邏輯 已不再需要，
+        //  因為 _currentChoicePorts 已經儲存了正確的出口)
 
         currentNode = nextNode;
         ProcessCurrentNode();
@@ -959,6 +1161,7 @@ public class DialogueManager : MonoBehaviour
             else if (currentNode is CheckQuestNode checkQuestNode)      currentNode = ProcessCheckQuestNode(checkQuestNode);
             else if (currentNode is CheckSpecificItemsNode itemsNode)   currentNode = ProcessCheckSpecificItemsNode(itemsNode);
             else if (currentNode is CheckItemNode itemNode)             currentNode = ProcessCheckItemNode(itemNode);
+            else if (currentNode is PriorityRouterNode routerNode)    currentNode = ProcessPriorityRouterNode(routerNode);
             // 【修改】在 Skip 模式中，跳過 Wait 和 Camera
             else if (currentNode is WaitNode waitNode)                currentNode = waitNode.GetNextNode();
             else if (currentNode is CameraControlNode camNode)       currentNode = camNode.GetNextNode();

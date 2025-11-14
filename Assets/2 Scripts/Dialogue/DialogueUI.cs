@@ -469,18 +469,19 @@ public class DialogueUI : MonoBehaviour
         AnimateText(); 
     }
 
-    public void ShowChoices(List<string> choiceKeys, Action<int> onChoiceSelected)
+    public void ShowChoices(List<string> readyToDisplayStrings, Action<int> onChoiceSelected)
     {
         ClearChoices();
         choiceContainer.SetActive(true);
 
-        for (int i = 0; i < choiceKeys.Count; i++)
+        for (int i = 0; i < readyToDisplayStrings.Count; i++)
         {
             Button newButton = Instantiate(choiceButtonPrefab, choiceContainer.transform);
 
-            // 直接將選項文字設定到按鈕上
-            string localizedChoice = LocalizationManager.Instance.GetLocalizedText(choiceKeys[i]);
-            newButton.GetComponentInChildren<TextMeshProUGUI>().text = localizedChoice;
+            // --- 【核心修正】 ---
+            // 列表中的字串 "已經" 是最終文字，直接顯示它
+            newButton.GetComponentInChildren<TextMeshProUGUI>().text = readyToDisplayStrings[i];
+            // --- 修正結束 ---
 
             int choiceIndex = i;
             newButton.onClick.AddListener(() => onChoiceSelected(choiceIndex));
