@@ -15,7 +15,7 @@ public class PlateUseEffect : MonoBehaviour
     public GameObject magicCircle;
 
     private int usedPlateCount = 0;
-    private int totalPlates => plates.Length;
+    private int totalPlates => plates.Length; // 3
 
     //由每個盤子交互點上的InteractableObject執行方法
     public void UsePlate(int plateIndex)
@@ -37,7 +37,7 @@ public class PlateUseEffect : MonoBehaviour
                 plate.plateScript.enabled = true; //啟用ViewInteractableObject腳本
 
             usedPlateCount++; //總共使用盤子數+=1
-            CheckCompletion(); //檢查有沒有徹底完成盤子2-8
+            CheckCompletion(); //檢查有沒有徹底完成盤子2、4、6
         }
     }
 
@@ -53,10 +53,10 @@ public class PlateUseEffect : MonoBehaviour
 
     // 保持原有方法名稱的兼容性
     public void UsePlate_2() => UsePlate(0);
-    public void UsePlate_3() => UsePlate(1);
-    public void UsePlate_4() => UsePlate(2);
-    public void UsePlate_5() => UsePlate(3);
-    public void UsePlate_6() => UsePlate(4);
-    public void UsePlate_7() => UsePlate(5);
-    public void UsePlate_8() => UsePlate(6);
+    //public void UsePlate_3() => UsePlate(1);
+    public void UsePlate_4() => UsePlate(1);
+    //public void UsePlate_5() => UsePlate(3);
+    public void UsePlate_6() => UsePlate(2);
+    //public void UsePlate_7() => UsePlate(5);
+    //public void UsePlate_8() => UsePlate(6);
 }
