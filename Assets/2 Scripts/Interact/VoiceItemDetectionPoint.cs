@@ -20,8 +20,11 @@ public class VoiceItemDetectionPoint : MonoBehaviour
     [SerializeField] private GameObject destroyObj;
 
     private Transform playerTransform;
-    private bool isActivated = false; // �P�w�I�O�_�Q�E��
-    private ScreenGlitchEffect glitchController; // ��̯S�ı��
+    private bool isActivated = false;
+    private ScreenGlitchEffect glitchController;
+
+    // [!! 新增 !!] 波形圖控制器
+    private WaveformVisualizer waveformController;
 
     // ----- [!! 新增 !!] -----
     // 我們現在需要直接存取 FilmGrain "參數" 本身
@@ -47,12 +50,19 @@ public class VoiceItemDetectionPoint : MonoBehaviour
             Debug.LogError($"[VoiceItemDetectionPoint] �䤣�� Tag �� 'Player' ������I", this);
         }
 
-        // [�ק�] ���������������̱�� (�q PlayerInteraction ������)
+        // 從 PlayerInteraction 獲取全局參照
         if (PlayerInteraction.Instance != null && PlayerInteraction.Instance.glitchController != null)
         {
-            // ��� PlayerInteraction �W�� Glitch Controller �ޥ�
+            // 1. 獲取 Glitch Controller
             this.glitchController = PlayerInteraction.Instance.glitchController;
-            // ----- [!! 新增 !!] -----
+            // 2. [!! 新增 !!] 獲取 UI 波形圖控制器
+            this.waveformController = PlayerInteraction.Instance.waveformUI;
+            // 確保遊戲開始時 UI 是關閉的
+            if (this.waveformController != null)
+            {
+                this.waveformController.gameObject.SetActive(false);
+            }
+            // 3. 獲取 Volume Profile 參數
             // 既然拿到了 Controller，就從它的 Volume Profile 裡預先抓出 FilmGrain 參數
             if (this.glitchController.glitchVolume != null && this.glitchController.glitchVolume.profile != null)
             {
@@ -87,8 +97,10 @@ public class VoiceItemDetectionPoint : MonoBehaviour
     }
 
     /// <summary>
-    /// �� PlayerInteraction �I�s�A���տE���o�ӧP�w�I
+    /// 打開判定點
     /// </summary>
+    /// <param name="item">聲音物品</param>
+    /// <returns></returns>
     public bool ActivatePoint(VoiceItemData item)
     {
         if (item == requiredVoiceItem)
@@ -98,8 +110,16 @@ public class VoiceItemDetectionPoint : MonoBehaviour
 
             if (staticNoiseSource != null && !staticNoiseSource.isPlaying)
             {
-                staticNoiseSource.Play(); // �}�l��������
+                staticNoiseSource.Play();
             }
+
+            // [!! 新增 !!] 打開波形圖 UI
+            if (waveformController != null)
+            {
+                waveformController.gameObject.SetActive(true);
+                waveformController.ResetWave(); // 確保從平穩開始
+            }
+
             return true;
         }
         return false;
@@ -114,7 +134,7 @@ public class VoiceItemDetectionPoint : MonoBehaviour
 
         float distance = Vector3.Distance(transform.position, playerTransform.position);
 
-        // �֤��޿�G�Z���V��A�j�� (intensity) �V���� 1.0
+        // 距離越近，強度越高 (0 ~ 1)
         float intensity = Mathf.InverseLerp(maxDetectionDistance, minDetectionDistance, distance);
         intensity = Mathf.Clamp01(intensity);
 
@@ -123,42 +143,34 @@ public class VoiceItemDetectionPoint : MonoBehaviour
         // 因為 GlitchVolume (P=20, W=1) 會覆蓋 YinVolume (P=10, W=1)
         // 所以這裡的修改會 100% 顯示出來
         // 1. 應用到 FilmGrain
-        if (filmGrainEffect != null)
-        {
-            filmGrainEffect.intensity.value = intensity;
-        }
-        
-        // 2. 應用到 ChromaticAberration [!! 新增 !!]
-        if (chromaticAberrationEffect != null)
-        {
-            chromaticAberrationEffect.intensity.value = intensity;
-        }
-        // ----- [!! 結束新增 !!] -----
+        if (filmGrainEffect != null) filmGrainEffect.intensity.value = intensity;
 
-        // 2. ������������
-        if (staticNoiseSource != null)
-        {
-            staticNoiseSource.volume = intensity;
-        }
+        // 2. 應用到 ChromaticAberration [!! 新增 !!]
+        if (chromaticAberrationEffect != null) chromaticAberrationEffect.intensity.value = intensity;
+
+        // 3. 應用到聲音
+        if (staticNoiseSource != null) staticNoiseSource.volume = intensity;
+
+        // 4. [!! 新增 !!] 應用到波形圖 UI
+        if (waveformController != null) waveformController.SetIntensity(intensity);
     }
 
     /// <summary>
-    /// �����a���i�P�w�I��
+    /// 玩家走進判定點
     /// </summary>
+    /// <param name="other">玩家的碰撞體</param>
     private void OnTriggerEnter(Collider other)
     {
-        // �����O�E�����A�A�B�i�J���O���a
         if (isActivated && other.CompareTag("Player"))
         {
-            Debug.Log($"[VoiceItemDetectionPoint] ���a�w�i�J {gameObject.name} Ĳ�o�ϰ�C");
+            Debug.Log($"[VoiceItemDetectionPoint] 玩家已進入 {gameObject.name} 觸發範圍");
             isActivated = false;
 
-            // 1. ����S�ĩM�n��
+            // 1. 關閉所有效果
             if (glitchController != null)
             {
                 glitchController.StopGlitch(); // (這會將 Weight 設為 0)
             }
-            // ----- [!! 新增 !!] -----
             // 順手將參數也歸零，保持乾淨
             if (filmGrainEffect != null)
             {
@@ -168,26 +180,30 @@ public class VoiceItemDetectionPoint : MonoBehaviour
             {
                 chromaticAberrationEffect.intensity.value = 0f;
             }
-            // ----- [!! 結束新增 !!] -----
             if (staticNoiseSource != null)
             {
                 staticNoiseSource.Stop();
             }
 
-            // 2. ����ʵe (�z�w�[�]�n)
+            // [!! 新增 !!] 關閉波形圖 UI
+            if (waveformController != null)
+            {
+                waveformController.SetIntensity(0f); // 歸零
+                waveformController.gameObject.SetActive(false); // 隱藏物件
+            }
+
+            // 2. 播放影片/死亡邏輯
             if (playVideo != null)
             {
                 playVideo.PlayForDeceased();
             }
-            Debug.Log("[VoiceItemDetectionPoint] ����ʵe/�v��...");
+            //Debug.Log("[VoiceItemDetectionPoint] 播放結束...");
 
-            // 3. �q�� PlayerInteraction �y�{����
+            // 3. 完成聲音物品使用
             PlayerInteraction.Instance.CompleteVoiceItemUsage(requiredVoiceItem);
 
-            // 4. �T�Φ��P�w�I����
+            // 4. 關掉後刪除
             gameObject.SetActive(false);
-
-            // 5. �R���P�w�I
             Destroy(destroyObj);
         }
     }

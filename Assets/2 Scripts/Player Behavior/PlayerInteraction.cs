@@ -30,6 +30,9 @@ public class PlayerInteraction : MonoBehaviour
     [Tooltip("請將 Main Camera (或掛載 ScreenGlitchEffect 腳本的物件) 拖曳到此")]
     [SerializeField] public ScreenGlitchEffect glitchController; // [修改] 引用特效控制器
 
+    [Tooltip("UI 波形圖腳本")]
+    public WaveformVisualizer waveformUI;
+
     private GameObject currentVoiceItemModel;
 
     // ----- [新需求] 狀態管理 -----
