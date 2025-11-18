@@ -51,7 +51,7 @@ MonoBehaviour:
     overrideName: 0
     speakerName: 
     isNarration: 0
-    content: "\u9019\u662F\u76E4\u5B506"
+    content: "\u9019\u662F\u76E4\u5B507"
     contentKey: 
     voiceClip: {fileID: 0}
     soundEffect: {fileID: 0}
@@ -134,6 +134,7 @@ MonoBehaviour:
   - {fileID: -7008595233200737633}
   - {fileID: -2463170134674165492}
   - {fileID: 2374746507053564003}
+  - {fileID: 7694394491467391679}
   triggerType: 1
   initialVariables:
   - name: HasGet
@@ -154,7 +155,7 @@ MonoBehaviour:
   m_Name: Line
   m_EditorClassIdentifier: 
   graph: {fileID: 11400000}
-  position: {x: 584, y: 328}
+  position: {x: 904, y: 328}
   ports:
     keys:
     - entry
@@ -165,7 +166,7 @@ MonoBehaviour:
       _typeQualifiedName: BaseNode, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
         PublicKeyToken=null
       connections:
-      - fieldName: conditionalChoices 3
+      - fieldName: conditionalChoices 4
         node: {fileID: 3797796056210322669}
         reroutePoints: []
       _direction: 0
@@ -250,7 +251,7 @@ MonoBehaviour:
     overrideName: 0
     speakerName: 
     isNarration: 0
-    content: "\u9019\u662F\u76E4\u5B504"
+    content: "\u9019\u662F\u76E4\u5B505"
     contentKey: 
     voiceClip: {fileID: 0}
     soundEffect: {fileID: 0}
@@ -281,6 +282,7 @@ MonoBehaviour:
     - conditionalChoices 2
     - defaultChoices 0
     - conditionalChoices 3
+    - conditionalChoices 4
     values:
     - _fieldName: entry
       _node: {fileID: 3797796056210322669}
@@ -365,6 +367,18 @@ MonoBehaviour:
         PublicKeyToken=null
       connections:
       - fieldName: entry
+        node: {fileID: 7694394491467391679}
+        reroutePoints: []
+      _direction: 1
+      _connectionType: 1
+      _typeConstraint: 0
+      _dynamic: 1
+    - _fieldName: conditionalChoices 4
+      _node: {fileID: 3797796056210322669}
+      _typeQualifiedName: ConditionalChoice, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+        PublicKeyToken=null
+      connections:
+      - fieldName: entry
         node: {fileID: 2374746507053564003}
         reroutePoints: []
       _direction: 1
@@ -374,29 +388,38 @@ MonoBehaviour:
   isImportant: 0
   entry: {fileID: 0}
   conditionalChoices:
-  - choiceContent: "\u76E4\u5B502"
+  - choiceContent: "\u76E4\u5B503"
     choiceKey: 
     useLocalization: 0
     checkType: 1
-    itemToCheck: {fileID: 11400000, guid: 573a2fa061eb36b41abee47965959b0f, type: 2}
+    itemToCheck: {fileID: 11400000, guid: 5be04627085ae374b91c44370f4e2b21, type: 2}
     requiredQuantity: 1
     variableName: 
     valueToCompare: 0
     comparison: 0
-  - choiceContent: "\u76E4\u5B504"
+  - choiceContent: "\u76E4\u5B505"
     choiceKey: 
     useLocalization: 0
     checkType: 1
-    itemToCheck: {fileID: 11400000, guid: 4d86be849e71a4b4cbd0e68a5ae4558b, type: 2}
+    itemToCheck: {fileID: 11400000, guid: 2e9ccd14293f2d04d8eed8cdfb08fd77, type: 2}
     requiredQuantity: 1
     variableName: 
     valueToCompare: 0
     comparison: 0
-  - choiceContent: "\u76E4\u5B506"
+  - choiceContent: "\u76E4\u5B507"
     choiceKey: 
     useLocalization: 0
     checkType: 1
-    itemToCheck: {fileID: 11400000, guid: a7ca3b386a101bc438405b6559757d74, type: 2}
+    itemToCheck: {fileID: 11400000, guid: 9d9c541e324d7e74e869bfd725cc4624, type: 2}
+    requiredQuantity: 1
+    variableName: 
+    valueToCompare: 0
+    comparison: 0
+  - choiceContent: "\u76E4\u5B508"
+    choiceKey: 
+    useLocalization: 0
+    checkType: 1
+    itemToCheck: {fileID: 11400000, guid: 44c56e6ee59a8104892061cf8c9e1003, type: 2}
     requiredQuantity: 1
     variableName: 
     valueToCompare: 0
@@ -564,7 +587,65 @@ MonoBehaviour:
     overrideName: 0
     speakerName: 
     isNarration: 0
-    content: "\u9019\u662F\u76E4\u5B502"
+    content: "\u9019\u662F\u76E4\u5B503"
+    contentKey: 
+    voiceClip: {fileID: 0}
+    soundEffect: {fileID: 0}
+    onShowLine:
+      m_PersistentCalls:
+        m_Calls: []
+--- !u!114 &7694394491467391679
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5437ad9eab10596448e309fe06cda6bc, type: 3}
+  m_Name: Line
+  m_EditorClassIdentifier: 
+  graph: {fileID: 11400000}
+  position: {x: 584, y: 328}
+  ports:
+    keys:
+    - entry
+    - exit
+    values:
+    - _fieldName: entry
+      _node: {fileID: 7694394491467391679}
+      _typeQualifiedName: BaseNode, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+        PublicKeyToken=null
+      connections:
+      - fieldName: conditionalChoices 3
+        node: {fileID: 3797796056210322669}
+        reroutePoints: []
+      _direction: 0
+      _connectionType: 1
+      _typeConstraint: 0
+      _dynamic: 0
+    - _fieldName: exit
+      _node: {fileID: 7694394491467391679}
+      _typeQualifiedName: BaseNode, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+        PublicKeyToken=null
+      connections: []
+      _direction: 1
+      _connectionType: 1
+      _typeConstraint: 0
+      _dynamic: 0
+  isImportant: 0
+  entry: {fileID: 0}
+  exit: {fileID: 0}
+  line:
+    characterID: Mr. Black1
+    expression: '"happy"'
+    position: 0
+    animation: 0
+    overrideName: 0
+    speakerName: 
+    isNarration: 0
+    content: "\u9019\u662F\u76E4\u5B508"
     contentKey: 
     voiceClip: {fileID: 0}
     soundEffect: {fileID: 0}

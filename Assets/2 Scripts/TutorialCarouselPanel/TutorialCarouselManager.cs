@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro; // 記得引入 TextMeshPro
 using System.Collections; // 為了 IEnumator (雖然這個版本沒用到，但備用方案會用到)
+using UnityEngine.EventSystems;
 
 /// <summary>
 /// 專門管理教學指示 (Tutorial) 的 Carousel 腳本。
@@ -158,10 +159,17 @@ public class TutorialCarouselManager : MonoBehaviour
     /// </summary>
     private void Move(int direction)
     {
-        // 如果正在捲動，就忽略這次的點擊事件
+        // 1. 【保留鎖定】如果正在捲動，就忽略這次的點擊事件
+        // 這意味著：動畫沒播完之前，點另一個方向會「沒有反應」(這是預期行為)
         if (isScrolling) return;
-
         if (dots == null || dots.Length == 0) return;
+
+        // 2. 【新增】移除按鈕焦點
+        // 這可以解決按鈕點擊後一直亮著(Selected狀態)的問題
+        if (EventSystem.current != null)
+        {
+            EventSystem.current.SetSelectedGameObject(null);
+        }
 
         int newIndex = currentIndex + direction;
 
