@@ -3,14 +3,14 @@ using XNode;
 using System.Collections.Generic; // 引用 List
 
 /// <summary>
-/// 【新輔助類別】
+/// 【輔助類別】
 /// 用於定義 "一個" 優先級條件
 /// [System.Serializable] 讓我們可以在 Inspector 中編輯它
 /// </summary>
 [System.Serializable]
 public class PriorityCondition
 {
-    [Tooltip("此條件的類型 (檢查變數 或是 檢查物品)")]
+    [Tooltip("此條件的類型:\n- CheckGraphVariable: 檢查變數\n- CheckInventoryItem: 檢查背包有無此物品\n- CheckLastPickedItem: 檢查剛剛是否出示了此物品")]
     public ConditionType checkType;
 
     [Header("A: 檢查圖形變數")]
@@ -19,20 +19,22 @@ public class PriorityCondition
     [Tooltip("要比較的數值")]
     public float valueToCompare;
 
-    [Header("B: 檢查背包物品")]
-    [Tooltip("要檢查的物品 ItemData 資產")]
-    public ItemData itemToCheck;
-    [Tooltip("需要的物品數量")]
+    // --- 【修改】更新了標題與提示，表明這裡共用於兩種物品檢查 ---
+    [Header("B: 檢查物品 (背包 / 出示)")]
+    [Tooltip("要檢查的 ItemData。\n1. 如果是檢查背包：檢查是否擁有此物品。\n2. 如果是檢查出示：檢查剛剛選的是不是這個物品。")]
+    public ItemData itemToCheck; 
+    
+    [Tooltip("需要的物品數量 (僅用於 '檢查背包' 模式)")]
     public int requiredQuantity = 1;
     
     [Header("共用比較")]
-    [Tooltip("A 或 B 的比較方式 (例如：大於等於)")]
+    [Tooltip("A 或 B 的比較方式 (例如：大於等於)。\n注意：'檢查出示' 模式會忽略此欄位 (只檢查是否相等)。")]
     public ComparisonType comparison = ComparisonType.GreaterThanOrEqualTo;
 }
 
 
 /// <summary>
-/// 【新節點 - 核心】
+/// 【核心節點】
 /// 條列式優先級路由器。
 /// 會依序檢查列表，並執行第一個滿足條件的出口。
 /// </summary>

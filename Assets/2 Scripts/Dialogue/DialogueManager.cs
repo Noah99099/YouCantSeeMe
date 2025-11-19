@@ -331,18 +331,33 @@ public class DialogueManager : MonoBehaviour
         {
             isWaitingForChoice = true;
             _currentChoicePorts = new List<NodePort>();
-
-            // --- 【核心修正】 ---
-            // 我們必須在這裡就處理本地化
             List<string> finalChoiceStrings = new List<string>();
-            for(int i = 0; i < choiceNode.choiceKeys.Count; i++) //
+
+            // 1. 检查是否有本地化 Keys
+            bool useKeys = choiceNode.choiceKeys != null && choiceNode.choiceKeys.Count > 0;
+            
+            // 2. 决定要遍历哪个列表 (如果有 Keys 就用 Keys，否则用 choices)
+            int count = useKeys ? choiceNode.choiceKeys.Count : choiceNode.choices.Count;
+
+            for(int i = 0; i < count; i++)
             {
-                // 舊節點  假定 choiceKeys 永遠是 Key
-                finalChoiceStrings.Add(LocalizationManager.Instance.GetLocalizedText(choiceNode.choiceKeys[i]));
+                string textToShow;
+
+                if (useKeys)
+                {
+                    // 如果有 Key，就去本地化系统查找
+                    textToShow = LocalizationManager.Instance.GetLocalizedText(choiceNode.choiceKeys[i]);
+                }
+                else
+                {
+                    // 如果没有 Key，直接显示编辑器中输入的原始文字
+                    textToShow = choiceNode.choices[i];
+                }
+
+                finalChoiceStrings.Add(textToShow);
                 _currentChoicePorts.Add(choiceNode.GetOutputPort("choices " + i));
             }
 
-            // 傳送 "已經本地化" 的文字列表
             dialogueUI.ShowChoices(finalChoiceStrings, OnChoiceMade);
         }
         else if (currentNode is TimedChoiceNode timedChoiceNode)
@@ -403,6 +418,12 @@ public class DialogueManager : MonoBehaviour
             else if (currentNode is CheckQuestNode checkQuestNode)      currentNode = ProcessCheckQuestNode(checkQuestNode);
             else if (currentNode is CheckSpecificItemsNode itemsNode)   currentNode = ProcessCheckSpecificItemsNode(itemsNode);
             else if (currentNode is CheckItemNode itemNode)             currentNode = ProcessCheckItemNode(itemNode);
+            else if (currentNode is OpenInventoryNode openInvNode)
+            {
+                ProcessOpenInventoryNode(openInvNode);
+                // 不呼叫 ProcessCurrentNode()，因為要等待 UI 回調
+                return; 
+            }
             else if (currentNode is PriorityRouterNode routerNode)    currentNode = ProcessPriorityRouterNode(routerNode);
             else
             {
@@ -558,6 +579,23 @@ public class DialogueManager : MonoBehaviour
         return node.GetNextNode(conditionResult);
     }
 
+    private void ProcessOpenInventoryNode(OpenInventoryNode node)
+    {
+        if (DialogueItemPickerUI.Instance != null)
+        {
+            // 暫停對話輸入，顯示 UI
+            isWaitingForChoice = true; 
+            DialogueItemPickerUI.Instance.Show();
+        }
+        else
+        {
+            Debug.LogError("場景中找不到 DialogueItemPickerUI！請確保已建立並掛載腳本。");
+            // 如果沒 UI，直接跳過此節點
+            currentNode = node.GetNextNode();
+            ProcessCurrentNode();
+        }
+    }
+
     /// <summary>
     /// 【新節點邏輯】
     /// 處理 PriorityRouterNode (條列式) 節點
@@ -604,6 +642,23 @@ public class DialogueManager : MonoBehaviour
                     }
                 }
                 // (如果 InventoryManager 不存在或物品未設定，conditionResult 保持 false)
+            }
+            // 【新增】 檢查剛剛出示的物品
+            else if (condition.checkType == ConditionType.CheckLastPickedItem)
+            {
+                string pickedID = (currentGraph as DialogueGraph).lastPickedItemID;
+                
+                if (condition.itemToCheck != null)
+                {
+                    // 檢查 "剛剛選的 ID" 是否等於 "條件中設定的物品 ID"
+                    // (這裡比較簡單，通常只要相等就好，不需要大於小於)
+                    conditionResult = (pickedID == condition.itemToCheck.itemID);
+                }
+                else
+                {
+                    // 如果沒設定物品，可能是在檢查 "是否什麼都沒選" (空字串)
+                    conditionResult = string.IsNullOrEmpty(pickedID);
+                }
             }
 
             // 3. 只要有一個條件滿足 (true)...
@@ -747,6 +802,29 @@ public class DialogueManager : MonoBehaviour
             }
         }
         Debug.Log("-------------------------------------------");
+    }
+
+    /// <summary>
+    /// 當玩家在 DialogueItemPickerUI 選擇物品後呼叫此方法
+    /// </summary>
+    public void OnItemPicked(string itemID)
+    {
+        // 1. 儲存結果到 Graph 中
+        if (currentGraph is DialogueGraph graph)
+        {
+            graph.lastPickedItemID = itemID;
+            Debug.Log($"[DialogueManager] 玩家選擇了物品 ID: {itemID}");
+        }
+
+        // 2. 恢復對話狀態
+        isWaitingForChoice = false;
+
+        // 3. 前進到下一個節點 (OpenInventoryNode 的 exit)
+        if (currentNode is OpenInventoryNode)
+        {
+            currentNode = currentNode.GetNextNode();
+            ProcessCurrentNode();
+        }
     }
 
     private IEnumerator HandleWaitNode(WaitNode waitNode)

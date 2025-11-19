@@ -25,6 +25,9 @@ public class DialogueGraph : NodeGraph
     public List<Variable> initialVariables = new List<Variable>();
     [Tooltip("遊戲執行期間，實際會被修改的變數列表")]
     public List<Variable> runtimeVariables = new List<Variable>();
+    [Header("執行期間狀態")]
+    // 【新增】用來儲存玩家在 OpenInventoryNode 中選擇的物品 ID
+    public string lastPickedItemID;
 
     // --- 新增的重置方法 ---
     public void ResetVariables()
@@ -34,6 +37,7 @@ public class DialogueGraph : NodeGraph
         {
             runtimeVariables.Add(new Variable { name = initialVar.name, value = initialVar.value });
         }
+        lastPickedItemID = "";
     }
     // 根據名稱獲取變數的值
     public float GetVariable(string variableName)
