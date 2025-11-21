@@ -28,14 +28,17 @@ MonoBehaviour:
         node: {fileID: 7467462932406626442}
         reroutePoints: []
       _direction: 0
-      _connectionType: 1
+      _connectionType: 0
       _typeConstraint: 0
       _dynamic: 0
     - _fieldName: exit
       _node: {fileID: -8744740887137490342}
       _typeQualifiedName: BaseNode, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
         PublicKeyToken=null
-      connections: []
+      connections:
+      - fieldName: entry
+        node: {fileID: 4801289218468199390}
+        reroutePoints: []
       _direction: 1
       _connectionType: 1
       _typeConstraint: 0
@@ -86,7 +89,7 @@ MonoBehaviour:
         node: {fileID: -2616345306349551657}
         reroutePoints: []
       _direction: 0
-      _connectionType: 1
+      _connectionType: 0
       _typeConstraint: 0
       _dynamic: 0
     - _fieldName: exit
@@ -176,14 +179,17 @@ MonoBehaviour:
         node: {fileID: 7467462932406626442}
         reroutePoints: []
       _direction: 0
-      _connectionType: 1
+      _connectionType: 0
       _typeConstraint: 0
       _dynamic: 0
     - _fieldName: exit
       _node: {fileID: -5018590866743288480}
       _typeQualifiedName: BaseNode, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
         PublicKeyToken=null
-      connections: []
+      connections:
+      - fieldName: entry
+        node: {fileID: 4801289218468199390}
+        reroutePoints: []
       _direction: 1
       _connectionType: 1
       _typeConstraint: 0
@@ -307,7 +313,7 @@ MonoBehaviour:
         node: {fileID: -5596094194894360816}
         reroutePoints: []
       _direction: 0
-      _connectionType: 1
+      _connectionType: 0
       _typeConstraint: 0
       _dynamic: 0
     - _fieldName: exit
@@ -361,12 +367,70 @@ MonoBehaviour:
   - {fileID: 7467462932406626442}
   - {fileID: -5018590866743288480}
   - {fileID: -8744740887137490342}
-  - {fileID: 6606303912095381834}
   - {fileID: 8784777201540269310}
+  - {fileID: 1065228453627214247}
   triggerType: 0
   initialVariables: []
   runtimeVariables: []
-  lastPickedItemID: Plate5
+  lastPickedItemID: PINEAPPLE_001
+--- !u!114 &1065228453627214247
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5437ad9eab10596448e309fe06cda6bc, type: 3}
+  m_Name: Line
+  m_EditorClassIdentifier: 
+  graph: {fileID: 11400000}
+  position: {x: 1064, y: 968}
+  ports:
+    keys:
+    - entry
+    - exit
+    values:
+    - _fieldName: entry
+      _node: {fileID: 1065228453627214247}
+      _typeQualifiedName: BaseNode, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+        PublicKeyToken=null
+      connections:
+      - fieldName: exitElse
+        node: {fileID: 7467462932406626442}
+        reroutePoints: []
+      _direction: 0
+      _connectionType: 0
+      _typeConstraint: 0
+      _dynamic: 0
+    - _fieldName: exit
+      _node: {fileID: 1065228453627214247}
+      _typeQualifiedName: BaseNode, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+        PublicKeyToken=null
+      connections: []
+      _direction: 1
+      _connectionType: 1
+      _typeConstraint: 0
+      _dynamic: 0
+  isImportant: 0
+  entry: {fileID: 0}
+  exit: {fileID: 0}
+  line:
+    characterID: Li ChunMei
+    expression: '"happy"'
+    position: 0
+    animation: 0
+    overrideName: 0
+    speakerName: 
+    isNarration: 0
+    content: "\u5F88\u9AD8\u8208\u53EF\u4EE5\u5E6B\u5230\u4F60"
+    contentKey: 
+    voiceClip: {fileID: 0}
+    soundEffect: {fileID: 0}
+    onShowLine:
+      m_PersistentCalls:
+        m_Calls: []
 --- !u!114 &4801289218468199390
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -394,8 +458,17 @@ MonoBehaviour:
       - fieldName: choices 0
         node: {fileID: -2616345306349551657}
         reroutePoints: []
+      - fieldName: exit
+        node: {fileID: -5018590866743288480}
+        reroutePoints: []
+      - fieldName: exit
+        node: {fileID: -8744740887137490342}
+        reroutePoints: []
+      - fieldName: exit
+        node: {fileID: 8784777201540269310}
+        reroutePoints: []
       _direction: 0
-      _connectionType: 1
+      _connectionType: 0
       _typeConstraint: 0
       _dynamic: 0
     - _fieldName: exit
@@ -413,64 +486,6 @@ MonoBehaviour:
   isImportant: 0
   entry: {fileID: 0}
   exit: {fileID: 0}
---- !u!114 &6606303912095381834
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5437ad9eab10596448e309fe06cda6bc, type: 3}
-  m_Name: Line
-  m_EditorClassIdentifier: 
-  graph: {fileID: 11400000}
-  position: {x: 1064, y: 968}
-  ports:
-    keys:
-    - entry
-    - exit
-    values:
-    - _fieldName: entry
-      _node: {fileID: 6606303912095381834}
-      _typeQualifiedName: BaseNode, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
-        PublicKeyToken=null
-      connections:
-      - fieldName: exitElse
-        node: {fileID: 7467462932406626442}
-        reroutePoints: []
-      _direction: 0
-      _connectionType: 1
-      _typeConstraint: 0
-      _dynamic: 0
-    - _fieldName: exit
-      _node: {fileID: 6606303912095381834}
-      _typeQualifiedName: BaseNode, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
-        PublicKeyToken=null
-      connections: []
-      _direction: 1
-      _connectionType: 1
-      _typeConstraint: 0
-      _dynamic: 0
-  isImportant: 0
-  entry: {fileID: 0}
-  exit: {fileID: 0}
-  line:
-    characterID: Li ChunMei
-    expression: '"happy"'
-    position: 0
-    animation: 0
-    overrideName: 0
-    speakerName: 
-    isNarration: 0
-    content: "\u5F88\u9AD8\u8208\u53EF\u4EE5\u5E6B\u5230\u4F60"
-    contentKey: 
-    voiceClip: {fileID: 0}
-    soundEffect: {fileID: 0}
-    onShowLine:
-      m_PersistentCalls:
-        m_Calls: []
 --- !u!114 &7467462932406626442
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -522,7 +537,7 @@ MonoBehaviour:
         PublicKeyToken=null
       connections:
       - fieldName: entry
-        node: {fileID: 6606303912095381834}
+        node: {fileID: 1065228453627214247}
         reroutePoints: []
       _direction: 1
       _connectionType: 1
@@ -614,14 +629,17 @@ MonoBehaviour:
         node: {fileID: 7467462932406626442}
         reroutePoints: []
       _direction: 0
-      _connectionType: 1
+      _connectionType: 0
       _typeConstraint: 0
       _dynamic: 0
     - _fieldName: exit
       _node: {fileID: 8784777201540269310}
       _typeQualifiedName: BaseNode, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
         PublicKeyToken=null
-      connections: []
+      connections:
+      - fieldName: entry
+        node: {fileID: 4801289218468199390}
+        reroutePoints: []
       _direction: 1
       _connectionType: 1
       _typeConstraint: 0
