@@ -338,8 +338,14 @@ public class InventoryPanelUIController : MonoBehaviour
             bool isVoiceItemActive = (PlayerInteraction.Instance != null && PlayerInteraction.Instance.IsVoiceItemActive);
 
             // [修改] 根據您的需求設定按鈕可見性
-            if (isInteractionMode)
+            // 核心修改點在這裡：只有在交互模式 AND 物品有模型時，才考慮顯示「使用物品按鈕」
+            // **您原來的邏輯是：在交互模式下，使用物品按鈕永遠顯示**
+            // **新的邏輯是：在交互模式下，只有有建模的物品才顯示「使用物品按鈕」**
+
+            bool hasModel = (data.modelPrefab != null); // 判斷物品是否有建模，沒建模的目前只有資訊組合結果
+            if (isInteractionMode && hasModel)
             {
+                // 交互模式 + 物品有建模 → 顯示「使用物品按鈕」
                 useItemButton.gameObject.SetActive(true);
 
                 // 如果正在使用聲音物品，則禁用此按鈕
@@ -357,10 +363,7 @@ public class InventoryPanelUIController : MonoBehaviour
                 // (保持您原有的邏輯)
                 useItemButton.gameObject.SetActive(false);
             }
-
-            // (您原有的預覽按鈕邏輯保持不變)
-            bool hasModel = (data.modelPrefab != null);
-            previewItemButton.gameObject.SetActive(hasModel);
+            previewItemButton.gameObject.SetActive(hasModel); // 沒建模不顯示預覽按鈕，例如資訊組合結果
         }
     }
 

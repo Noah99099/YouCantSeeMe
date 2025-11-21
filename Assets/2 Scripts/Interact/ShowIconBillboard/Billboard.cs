@@ -8,11 +8,12 @@ using UnityEngine;
 /// </summary>
 public class Billboard : MonoBehaviour
 {
-    private Transform cam;
+    private Transform cam; // ¬Û¾÷¦ì¸m
+    private const string CameraTag = "PlayerCamera";
 
-    void Start()
+    private void Start()
     {
-        cam = Camera.main.transform;
+        cam = GameObject.FindGameObjectWithTag(CameraTag).transform;
     }
 
     void LateUpdate()

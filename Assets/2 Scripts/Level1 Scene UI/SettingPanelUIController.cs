@@ -178,11 +178,11 @@ public class SettingPanelUIController : MonoBehaviour
     }
 
     /// <summary>
-    /// 這是一個公開 (public) 方法，所以 Unity 的 Button 可以呼叫它。
+    /// 回到主選單
     /// </summary>
-    public void QuitGame() //buttons_mainMenuPanel[4]
+    public void BackToMenu() //對應 BackToMenu_Btn
     {
-        Application.Quit();
+        SceneLoader.Instance.LoadScene("StartScene");
     }
     #endregion
 

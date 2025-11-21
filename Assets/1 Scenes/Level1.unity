@@ -1331,6 +1331,7 @@ MonoBehaviour:
   waveformUI: {fileID: 1291810846}
   showDebugRay: 1
   _inventoryPanelController: {fileID: 1640733875}
+  playerCamera: {fileID: 330585545}
 --- !u!114 &44230912
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1903,7 +1904,7 @@ GameObject:
   - component: {fileID: 53566304}
   m_Layer: 0
   m_Name: ItemCamera
-  m_TagString: Untagged
+  m_TagString: GamePersistent
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -5085,7 +5086,7 @@ GameObject:
   - component: {fileID: 254457082}
   m_Layer: 5
   m_Name: Canvas_Inventory
-  m_TagString: Untagged
+  m_TagString: GamePersistent
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -5291,6 +5292,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c3835e834cf134b4db13426665890332, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  cam: {fileID: 330585546}
 --- !u!114 &255797033
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5702,7 +5704,7 @@ GameObject:
   - component: {fileID: 273982284}
   m_Layer: 6
   m_Name: ModelPreviewRoot
-  m_TagString: Untagged
+  m_TagString: GamePersistent
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -7475,17 +7477,17 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 330585546}
-  - component: {fileID: 330585550}
   - component: {fileID: 330585545}
   - component: {fileID: 330585544}
   - component: {fileID: 330585547}
   - component: {fileID: 330585548}
-  - component: {fileID: 330585549}
   - component: {fileID: 330585552}
+  - component: {fileID: 330585549}
   - component: {fileID: 330585553}
+  - component: {fileID: 330585550}
   m_Layer: 0
   m_Name: Main Camera
-  m_TagString: MainCamera
+  m_TagString: PlayerCamera
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -12100,6 +12102,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c3835e834cf134b4db13426665890332, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  cam: {fileID: 330585546}
 --- !u!212 &599681097
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -16334,7 +16337,7 @@ GameObject:
   - component: {fileID: 832575520}
   m_Layer: 0
   m_Name: YangVision Volume
-  m_TagString: Untagged
+  m_TagString: GamePersistent
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -16803,7 +16806,7 @@ GameObject:
   - component: {fileID: 855689775}
   m_Layer: 0
   m_Name: PlayerFollowCamera
-  m_TagString: Untagged
+  m_TagString: GamePersistent
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -17002,7 +17005,7 @@ GameObject:
   - component: {fileID: 868748905}
   m_Layer: 0
   m_Name: TutorialCarouselManager
-  m_TagString: Untagged
+  m_TagString: GamePersistent
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -17082,7 +17085,7 @@ GameObject:
   - component: {fileID: 888628244}
   m_Layer: 5
   m_Name: SettingCanvas
-  m_TagString: Untagged
+  m_TagString: GamePersistent
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -17272,7 +17275,7 @@ GameObject:
   - component: {fileID: 893405064}
   m_Layer: 5
   m_Name: Cross Hair Canvas
-  m_TagString: Untagged
+  m_TagString: GamePersistent
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -25462,7 +25465,7 @@ GameObject:
   - component: {fileID: 1244382186}
   m_Layer: 0
   m_Name: YinVisionVolume
-  m_TagString: Untagged
+  m_TagString: GamePersistent
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -30510,7 +30513,7 @@ GameObject:
   - component: {fileID: 1458715086}
   m_Layer: 0
   m_Name: DialogueAudioManager
-  m_TagString: Untagged
+  m_TagString: GamePersistent
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -32130,7 +32133,7 @@ GameObject:
   - component: {fileID: 1530991768}
   m_Layer: 0
   m_Name: InventoryManager
-  m_TagString: Untagged
+  m_TagString: GamePersistent
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -35071,7 +35074,7 @@ GameObject:
   - component: {fileID: 1640733880}
   m_Layer: 0
   m_Name: GameManager
-  m_TagString: Untagged
+  m_TagString: GamePersistent
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -35476,7 +35479,7 @@ GameObject:
   - component: {fileID: 1683159261}
   m_Layer: 0
   m_Name: ClueCombinationManager
-  m_TagString: Untagged
+  m_TagString: GamePersistent
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -36752,7 +36755,7 @@ GameObject:
   - component: {fileID: 1728009663}
   m_Layer: 5
   m_Name: UICanvas
-  m_TagString: Untagged
+  m_TagString: GamePersistent
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -38435,7 +38438,7 @@ GameObject:
   - component: {fileID: 1807143287}
   m_Layer: 0
   m_Name: DialogueManager
-  m_TagString: Untagged
+  m_TagString: GamePersistent
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -39551,7 +39554,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1640733874}
         m_TargetAssemblyTypeName: SettingPanelUIController, Assembly-CSharp
-        m_MethodName: QuitGame
+        m_MethodName: BackToMenu
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -40917,7 +40920,7 @@ GameObject:
   - component: {fileID: 1907719043}
   m_Layer: 5
   m_Name: MapCanvas
-  m_TagString: Untagged
+  m_TagString: GamePersistent
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -41325,7 +41328,7 @@ GameObject:
   - component: {fileID: 1932228159}
   m_Layer: 5
   m_Name: TutorialCarousel_Canvas
-  m_TagString: Untagged
+  m_TagString: GamePersistent
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -50159,10 +50162,10 @@ SceneRoots:
   - {fileID: 1857212052}
   - {fileID: 1877293738}
   - {fileID: 1844930722}
+  - {fileID: 1201664232}
   - {fileID: 189574481}
   - {fileID: 405240681}
   - {fileID: 407544344}
   - {fileID: 2002494054}
   - {fileID: 52907493}
   - {fileID: 1948699524}
-  - {fileID: 1201664232}

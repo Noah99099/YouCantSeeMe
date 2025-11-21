@@ -16,15 +16,16 @@ public class TeleportTrigger : MonoBehaviour
     {
         if (other.CompareTag(playerTag))
         {
-            // 呼叫 SceneLoader 載入場景
-            if (sceneLoader != null)
-            {
-                sceneLoader.LoadScene(sceneName);
-            }
-            else
-            {
-                Debug.LogWarning("SceneLoader 尚未指定！");
-            }
+            //// 呼叫 SceneLoader 載入場景
+            //if (sceneLoader != null)
+            //{
+            //    sceneLoader.LoadScene(sceneName);
+            //}
+            //else
+            //{
+            //    Debug.LogWarning("SceneLoader 尚未指定！");
+            //}
+            SceneLoader.Instance.LoadScene(sceneName);
         }
     }
 }

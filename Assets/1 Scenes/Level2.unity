@@ -2577,105 +2577,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   interactiveInYang: 1
   interactiveInYin: 1
---- !u!1 &614373235
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 614373239}
-  - component: {fileID: 614373238}
-  - component: {fileID: 614373236}
-  - component: {fileID: 614373237}
-  m_Layer: 0
-  m_Name: PlayVideoTest
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &614373236
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 614373235}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b174f91f7ecea8549ab7cf0034de549d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  videoController: {fileID: 614373237}
-  clip: {fileID: 32900000, guid: 5ccc220e456365540aa5fd11324f0d04, type: 3}
-  targetRole: {fileID: 0}
---- !u!114 &614373237
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 614373235}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8ec1c7b34301ec74a801612db1b14ea6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  renderTexture: {fileID: 8400000, guid: e8a627dab1ceb8549838fa4b551ea95a, type: 2}
-  targetImage: {fileID: 1063867040}
---- !u!328 &614373238
-VideoPlayer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 614373235}
-  m_Enabled: 1
-  m_VideoClip: {fileID: 32900000, guid: 5b4695c8fac2caa408c4d18a18609adc, type: 3}
-  m_TargetCameraAlpha: 1
-  m_TargetCamera3DLayout: 0
-  m_TargetCamera: {fileID: 0}
-  m_TargetTexture: {fileID: 8400000, guid: e8a627dab1ceb8549838fa4b551ea95a, type: 2}
-  m_TimeReference: 0
-  m_TargetMaterialRenderer: {fileID: 0}
-  m_TargetMaterialProperty: <noninit>
-  m_RenderMode: 2
-  m_AspectRatio: 2
-  m_DataSource: 0
-  m_TimeUpdateMode: 2
-  m_PlaybackSpeed: 1
-  m_AudioOutputMode: 2
-  m_TargetAudioSources:
-  - {fileID: 0}
-  m_DirectAudioVolumes:
-  - 1
-  m_Url: 
-  m_EnabledAudioTracks: 01
-  m_DirectAudioMutes: 00
-  m_ControlledAudioTrackCount: 1
-  m_PlayOnAwake: 0
-  m_SkipOnDrop: 1
-  m_Looping: 0
-  m_WaitForFirstFrame: 1
-  m_FrameReadyEventEnabled: 0
-  m_VideoShaders: []
---- !u!4 &614373239
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 614373235}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &616342466
 GameObject:
   m_ObjectHideFlags: 0
@@ -6531,7 +6432,7 @@ GameObject:
   - component: {fileID: 1077852929}
   m_Layer: 5
   m_Name: VideoCanva
-  m_TagString: Untagged
+  m_TagString: GamePersistent
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -12048,7 +11949,7 @@ GameObject:
   - component: {fileID: 1169928873}
   m_Layer: 5
   m_Name: TutorialCarousel_Canvas
-  m_TagString: Untagged
+  m_TagString: GamePersistent
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -13177,6 +13078,8 @@ GameObject:
   - component: {fileID: 1449680382}
   - component: {fileID: 1449680381}
   - component: {fileID: 1449680380}
+  - component: {fileID: 1449680386}
+  - component: {fileID: 1449680385}
   m_Layer: 0
   m_Name: BulletWarhead_DiningRoom_DetectPos
   m_TagString: Untagged
@@ -13200,7 +13103,7 @@ MonoBehaviour:
   staticNoiseSource: {fileID: 956390083}
   maxDetectionDistance: 10
   minDetectionDistance: 1
-  playVideo: {fileID: 614373236}
+  playVideo: {fileID: 1449680385}
   destroyObj: {fileID: 1449680379}
 --- !u!65 &1449680381
 BoxCollider:
@@ -13289,6 +13192,35 @@ Transform:
   - {fileID: 956390084}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1449680385
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1449680379}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b174f91f7ecea8549ab7cf0034de549d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  videoController: {fileID: 1449680386}
+  clip: {fileID: 32900000, guid: 5ccc220e456365540aa5fd11324f0d04, type: 3}
+  targetRole: {fileID: 0}
+--- !u!114 &1449680386
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1449680379}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8ec1c7b34301ec74a801612db1b14ea6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  renderTexture: {fileID: 8400000, guid: e8a627dab1ceb8549838fa4b551ea95a, type: 2}
+  targetImage: {fileID: 1063867040}
 --- !u!1 &1491452565
 GameObject:
   m_ObjectHideFlags: 0
@@ -15176,6 +15108,8 @@ GameObject:
   - component: {fileID: 1857073734}
   - component: {fileID: 1857073733}
   - component: {fileID: 1857073732}
+  - component: {fileID: 1857073738}
+  - component: {fileID: 1857073737}
   m_Layer: 0
   m_Name: BulletWarhead_Kitchen_DetectPos
   m_TagString: Untagged
@@ -15199,7 +15133,7 @@ MonoBehaviour:
   staticNoiseSource: {fileID: 821473413}
   maxDetectionDistance: 10
   minDetectionDistance: 1
-  playVideo: {fileID: 614373236}
+  playVideo: {fileID: 1857073737}
   destroyObj: {fileID: 1857073731}
 --- !u!65 &1857073733
 BoxCollider:
@@ -15288,6 +15222,35 @@ Transform:
   - {fileID: 821473414}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1857073737
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1857073731}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b174f91f7ecea8549ab7cf0034de549d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  videoController: {fileID: 1857073738}
+  clip: {fileID: 32900000, guid: 5ccc220e456365540aa5fd11324f0d04, type: 3}
+  targetRole: {fileID: 0}
+--- !u!114 &1857073738
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1857073731}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8ec1c7b34301ec74a801612db1b14ea6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  renderTexture: {fileID: 8400000, guid: e8a627dab1ceb8549838fa4b551ea95a, type: 2}
+  targetImage: {fileID: 1063867040}
 --- !u!1001 &1899909359
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -15485,7 +15448,7 @@ MonoBehaviour:
   staticNoiseSource: {fileID: 1085600980}
   maxDetectionDistance: 10
   minDetectionDistance: 1
-  playVideo: {fileID: 614373236}
+  playVideo: {fileID: 0}
   destroyObj: {fileID: 1932750619}
 --- !u!65 &1932750621
 BoxCollider:
@@ -15668,7 +15631,7 @@ GameObject:
   - component: {fileID: 1962172036}
   m_Layer: 0
   m_Name: TutorialCarouselManager
-  m_TagString: Untagged
+  m_TagString: GamePersistent
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -17618,7 +17581,6 @@ SceneRoots:
   - {fileID: 1857073736}
   - {fileID: 1449680384}
   - {fileID: 1716769452}
-  - {fileID: 614373239}
   - {fileID: 1652720895}
   - {fileID: 1932750624}
   - {fileID: 631288157}

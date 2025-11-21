@@ -45,8 +45,9 @@ public class PlayerInteraction : MonoBehaviour
     [Header("案件紀錄簿-物品 腳本引用")]
     [SerializeField] private InventoryPanelUIController _inventoryPanelController;
 
-    private Camera playerCamera;
-    
+    // 使用 [SerializeField] 更為專業，它在 Inspector 可見，但保持 private
+    [SerializeField] private Camera playerCamera;
+
     private GameObject currentInteractableObject = null;
     private InteractableObject currentInteractable; // 用於存儲當前可交互物件 腳本
 
@@ -69,7 +70,11 @@ public class PlayerInteraction : MonoBehaviour
             return;
         }
 
-        playerCamera = Camera.main;
+        // 確保攝影機已經在 Inspector 中拖曳賦值
+        if (playerCamera == null)
+        {
+            Debug.LogError("Player Camera is not assigned in the Inspector!");
+        }
         IsVoiceItemActive = false; // 初始化狀態：沒有使用聲音物品
 
         if (staticNoiseSource != null) // 初始不播放「獲得聲音物品雜音」

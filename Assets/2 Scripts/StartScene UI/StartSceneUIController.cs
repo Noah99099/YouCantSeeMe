@@ -147,14 +147,15 @@ public class StartSceneUIController : MonoBehaviour
 
     public void StartGame() //buttons_mainMenuPanel[0]
     {
-        if (loader != null)
-        {
-            loader.LoadScene("Level1"); //切換到下一場景
-        }
-        else
-        {
-            Debug.LogError("SceneLoader not found in scene!");
-        }
+        //if (loader != null)
+        //{
+        //    loader.LoadScene("Level1"); //切換到下一場景
+        //}
+        //else
+        //{
+        //    Debug.LogError("SceneLoader not found in scene!");
+        //}
+        SceneLoader.Instance.LoadScene("Level1");
     }
 
     public void OpenSettingPanel() //buttons_mainMenuPanel[2]
