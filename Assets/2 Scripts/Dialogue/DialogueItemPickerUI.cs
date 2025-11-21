@@ -47,15 +47,33 @@ public class DialogueItemPickerUI : MonoBehaviour
 
         if (InventoryManager.Instance == null) return;
 
-        // 1. 獲取玩家擁有的物品
+        // 獲取玩家擁有的物品
         List<ItemData> ownedItems = InventoryManager.Instance.GetOwnedItemsData();
 
         foreach (ItemData item in ownedItems)
         {
             Button btn = Instantiate(itemButtonPrefab, gridContent);
-            // 設定文字 (假設按鈕下有 TMP)
-            btn.GetComponentInChildren<TextMeshProUGUI>().text = item.itemName; 
             
+            // --- 設定 Icon ---
+            // 1. 尋找名叫 "Icon" 的子物件
+            Transform iconTrans = btn.transform.Find("Icon");
+            if (iconTrans != null)
+            {
+                Image iconImg = iconTrans.GetComponent<Image>();
+                if (iconImg != null)
+                {
+                    // 2. 設定圖片 (itemImage 是您 ItemData 裡的變數名稱)
+                    iconImg.sprite = item.itemImage; 
+                    
+                    // 3. (選用) 保持圖片比例，避免拉伸變形
+                    iconImg.preserveAspect = true; 
+                }
+            }
+            else
+            {
+                Debug.LogWarning($"在 Prefab {itemButtonPrefab.name} 中找不到名為 'Icon' 的 Image 物件！");
+            }
+
             // 設定點擊事件
             string itemID = item.itemID;
             btn.onClick.AddListener(() => OnItemClicked(itemID));

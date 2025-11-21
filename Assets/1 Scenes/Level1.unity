@@ -5292,7 +5292,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c3835e834cf134b4db13426665890332, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cam: {fileID: 330585546}
 --- !u!114 &255797033
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5652,6 +5651,7 @@ GameObject:
   m_Component:
   - component: {fileID: 273113980}
   - component: {fileID: 273113979}
+  - component: {fileID: 273113981}
   m_Layer: 0
   m_Name: Post-Processing Volume
   m_TagString: Untagged
@@ -5691,6 +5691,18 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &273113981
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 273113978}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9bb31470f5085584092d6c96f3c87920, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &273982281
 GameObject:
   m_ObjectHideFlags: 0
@@ -7932,7 +7944,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3245ec927659c4140ac4f8d17403cc18, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_HorizontalFit: 0
+  m_HorizontalFit: 2
   m_VerticalFit: 2
 --- !u!114 &337999042
 MonoBehaviour:
@@ -7947,17 +7959,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Padding:
-    m_Left: 0
-    m_Right: 0
-    m_Top: 0
-    m_Bottom: 0
+    m_Left: 10
+    m_Right: 10
+    m_Top: 10
+    m_Bottom: 10
   m_ChildAlignment: 0
   m_StartCorner: 0
   m_StartAxis: 0
-  m_CellSize: {x: 100, y: 100}
+  m_CellSize: {x: 120, y: 120}
   m_Spacing: {x: 10, y: 10}
   m_Constraint: 1
-  m_ConstraintCount: 2
+  m_ConstraintCount: 5
 --- !u!1 &338750933
 GameObject:
   m_ObjectHideFlags: 0
@@ -12102,7 +12114,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c3835e834cf134b4db13426665890332, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cam: {fileID: 330585546}
 --- !u!212 &599681097
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -12279,8 +12290,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -22, y: -10.895007}
-  m_SizeDelta: {x: 657.1888, y: 631.4493}
+  m_AnchoredPosition: {x: -22, y: 0}
+  m_SizeDelta: {x: 657.1888, y: 547.0275}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &602815774
 MonoBehaviour:
@@ -21592,7 +21603,6 @@ GameObject:
   - component: {fileID: 1102710601}
   - component: {fileID: 1102710604}
   - component: {fileID: 1102710603}
-  - component: {fileID: 1102710602}
   m_Layer: 5
   m_Name: ItemPanel
   m_TagString: Untagged
@@ -21618,25 +21628,9 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 561.0798, y: 139.55984}
-  m_SizeDelta: {x: 689.0003, y: 584.7902}
+  m_AnchoredPosition: {x: 561.0798, y: 163.8754}
+  m_SizeDelta: {x: 689.0003, y: 536.159}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &1102710602
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1102710600}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a5d2bd8a2e6789847b78a47b017d40d2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  panelRoot: {fileID: 1102710600}
-  gridContent: {fileID: 602815773}
-  itemButtonPrefab: {fileID: 0}
-  closeButton: {fileID: 2015546205}
 --- !u!114 &1102710603
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -43738,6 +43732,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1994111268}
   - component: {fileID: 1994111267}
+  - component: {fileID: 1994111269}
   m_Layer: 5
   m_Name: DialogueUI
   m_TagString: Untagged
@@ -43804,6 +43799,23 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1994111269
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1994111266}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a5d2bd8a2e6789847b78a47b017d40d2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  panelRoot: {fileID: 1102710600}
+  gridContent: {fileID: 337999040}
+  itemButtonPrefab: {fileID: 8547769393484918792, guid: f04371f447369e04383fd8eb637a4b32,
+    type: 3}
+  closeButton: {fileID: 2015546205}
 --- !u!1 &1998735093
 GameObject:
   m_ObjectHideFlags: 0
@@ -44083,7 +44095,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 349, y: 296}
+  m_AnchoredPosition: {x: 352, y: 269}
   m_SizeDelta: {x: 50.0315, y: 54.2789}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2015546205
