@@ -195,16 +195,46 @@ public class VoiceItemDetectionPoint : MonoBehaviour
             // 2. 播放影片/死亡邏輯
             if (playVideo != null)
             {
-                playVideo.PlayForDeceased();
+                // [!! 核心修改點 !!] 傳入一個「影片播完後」的回調 Action
+                System.Action onVideoFinishedAction = () =>
+                {
+                    Debug.Log($"[VoiceItemDetectionPoint] 影片播放完畢，執行銷毀物件和關閉偵測點。");
+
+                    // 3. 完成聲音物品使用 (這步可以移到回調裡，確保發生在影片結束後)
+                    PlayerInteraction.Instance.CompleteVoiceItemUsage(requiredVoiceItem);
+
+                    // 4. [!! 核心修改點 !!] 影片播完後，刪除指定物件
+                    if (destroyObj != null)
+                    {
+                        Destroy(destroyObj);
+                    }
+                    else
+                    {
+                        Debug.LogWarning("[VoiceItemDetectionPoint] destroyObj 為空，跳過銷毀步驟。");
+                    }
+
+                    // 5. 關掉後刪除 (通常是偵測點本身)
+                    gameObject.SetActive(false);
+
+                    // 備註: 如果您是想 Destroy(gameObject)，請使用 Destroy(gameObject);
+                };
+
+                // [!! 調用新的 PlayWithoutRole 方法 !!]
+                playVideo.PlayWithoutRole(onVideoFinishedAction); //開始播放影片
             }
-            //Debug.Log("[VoiceItemDetectionPoint] 播放結束...");
-
-            // 3. 完成聲音物品使用
-            PlayerInteraction.Instance.CompleteVoiceItemUsage(requiredVoiceItem);
-
-            // 4. 關掉後刪除
-            gameObject.SetActive(false);
-            Destroy(destroyObj);
+            else
+            {
+                // 如果沒有影片，則立即執行銷毀邏輯 (與舊邏輯一致)
+                if (PlayerInteraction.Instance != null)
+                {
+                    PlayerInteraction.Instance.CompleteVoiceItemUsage(requiredVoiceItem);
+                }
+                if (destroyObj != null)
+                {
+                    Destroy(destroyObj);
+                }
+                gameObject.SetActive(false);
+            }
         }
     }
 }
