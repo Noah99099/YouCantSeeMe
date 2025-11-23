@@ -3,7 +3,7 @@ using XNode;
 public class LineNode : BaseNode
 {
     // LineNode 需要一個入口和一個出口
-    [Input(connectionType = ConnectionType.Multiple)] public BaseNode entry;
+    [Input(connectionType = ConnectionType.Override)] public BaseNode entry;
     [Output(connectionType = ConnectionType.Override)] public BaseNode exit;
 
     public DialogueLine line;
