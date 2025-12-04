@@ -7,9 +7,10 @@ public class PrepareToYinView : MonoBehaviour
 {
     // 統一事件
     public static event Action YangAction;
+    [Tooltip("結束陽視野調查事件的collider")]
     public GameObject finishYangCollider;
     //門牌、密碼鎖、門片
-    private int num_Luck = 0; //門片
+    private int num_Lock = 0; //門片
     private int num_Gate = 0; //門片
     private int num_HNum = 0; //門牌
 
@@ -17,7 +18,7 @@ public class PrepareToYinView : MonoBehaviour
 
     public void InvokeYangAction_Lock() //給密碼鎖用
     {
-        num_Luck += 1;
+        num_Lock += 1;
         YangAction?.Invoke();
     }
 
@@ -52,7 +53,7 @@ public class PrepareToYinView : MonoBehaviour
 
     private void Check() 
     {       
-        if (num_Luck >= 1 && num_Gate >= 1 && num_HNum >= 1) // 門牌、門片、密碼至少一次交互
+        if (num_Lock >= 1 && num_Gate >= 1 && num_HNum >= 1) // 門牌、門片、密碼至少一次交互
         {
             Debug.Log("[PrepareToYinView] 打開判定點");
             finishYangCollider.SetActive(true);

@@ -1,3 +1,4 @@
+// DoorController.cs
 using UnityEngine;
 
 public class DoorController : MonoBehaviour

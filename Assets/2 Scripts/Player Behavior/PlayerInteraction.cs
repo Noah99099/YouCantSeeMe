@@ -297,17 +297,30 @@ public class PlayerInteraction : MonoBehaviour
         Ray ray = new Ray(playerCamera.transform.position, playerCamera.transform.forward);
         Debug.Log($"[HandleInteraction] Raycasting from {ray.origin} toward {ray.direction}, Range={interactionRange}");
 
-        if (Physics.Raycast(ray, out RaycastHit hit, interactionRange, interactionLayer))
+        if (Physics.Raycast(ray, out RaycastHit hit, interactionRange, interactionLayer)) // Raycast 檢測所有相關圖層 (Obstacle, Interactable)
         {
             GameObject hitObject = hit.collider.gameObject;
-            Debug.Log($"[HandleInteraction] Ray hit object: {hitObject.name}, Layer: {LayerMask.LayerToName(hitObject.layer)}");
+            //Debug.Log($"[HandleInteraction] Ray hit object: {hitObject.name}, Layer: {LayerMask.LayerToName(hitObject.layer)}");
 
             // 檢查物件的所有交互腳本狀態
-            var comps = hitObject.GetComponents<MonoBehaviour>();
-            Debug.Log($"[HandleInteraction] Components on {hitObject.name}: {string.Join(", ", comps.Select(c => c.GetType().Name))}");
+            //var comps = hitObject.GetComponents<MonoBehaviour>();
+            //Debug.Log($"[HandleInteraction] Components on {hitObject.name}: {string.Join(", ", comps.Select(c => c.GetType().Name))}");
+            int hitLayer = hitObject.layer; //*
 
+            // 【第一優先級：阻擋/非交互判定】
+            // 如果擊中的物件是距離最近的，且屬於 Obstacle 圖層，
+            // 根據要求，Obstacle 圖層物件一定沒有交互腳本，因此直接視為障礙物。
+            if (hitLayer == LayerMask.NameToLayer("Obstacle"))
+            {
+                Debug.Log($"[HandleInteraction] 擊中 Obstacle 圖層障礙物 ({hitObject.name})，阻擋後方交互。");
+                // 遇到障礙物，不執行任何後續邏輯，直接返回。
+                return;
+            }
 
-            if (hitObject.TryGetComponent<InteractableItem>(out var itemToPickUp)) //獲得物件，進物品背包
+            // 【第二優先級：Interactable 圖層判定】
+            // 只有當最近的物件不屬於 Default 層，才會執行這裡的交互邏輯。
+            // 這意味著擊中的物件一定是 Interactable 層的目標。
+            else if(hitObject.TryGetComponent<InteractableItem>(out var itemToPickUp)) //獲得物件，進物品背包
             {
                 Debug.Log($"Picked up: {itemToPickUp.itemData.itemName}");
                 InventoryManager.Instance.AddItem(itemToPickUp.itemData);
@@ -418,6 +431,15 @@ public class PlayerInteraction : MonoBehaviour
                 }
                 HidePrompt();
                 return;
+            }
+            else if (hitObject.TryGetComponent<DrawerAnimatorController>(out var drawerController))
+            {
+                Debug.Log($"[HandleInteraction] 偵測到可互動抽屜: {hitObject.name}，觸發開關動畫。");
+
+                // 呼叫 DrawerAnimatorController 腳本中的 Interact 函式
+                drawerController.Interact();
+                // 抽屜互動通常不需要隱藏提示（因為抽屜仍然存在）
+                // 如果需要，可以加上 HidePrompt();
             }
 
             // ------------------ 未命中任何類型 ------------------
