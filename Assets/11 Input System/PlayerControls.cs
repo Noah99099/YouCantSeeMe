@@ -1764,6 +1764,34 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             ""id"": ""20b3cd46-937b-442a-b667-399ac5fb116d"",
             ""actions"": [],
             ""bindings"": []
+        },
+        {
+            ""name"": ""Keypad"",
+            ""id"": ""9fa3fd96-561f-465d-987b-592812f0416a"",
+            ""actions"": [
+                {
+                    ""name"": ""CloseKeypad"",
+                    ""type"": ""Button"",
+                    ""id"": ""53df1486-6d14-4b57-a9fc-86bf8d1ddea1"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""f1775cb8-4016-43ac-b0b0-1de09f9fda45"",
+                    ""path"": ""<Keyboard>/escape"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""CloseKeypad"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                }
+            ]
         }
     ],
     ""controlSchemes"": [
@@ -1846,6 +1874,9 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         m_Map_CloseMap = m_Map.FindAction("CloseMap", throwIfNotFound: true);
         // Tutorial
         m_Tutorial = asset.FindActionMap("Tutorial", throwIfNotFound: true);
+        // Keypad
+        m_Keypad = asset.FindActionMap("Keypad", throwIfNotFound: true);
+        m_Keypad_CloseKeypad = m_Keypad.FindAction("CloseKeypad", throwIfNotFound: true);
     }
 
     ~@PlayerControls()
@@ -1862,6 +1893,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         UnityEngine.Debug.Assert(!m_Loading.enabled, "This will cause a leak and performance issues, PlayerControls.Loading.Disable() has not been called.");
         UnityEngine.Debug.Assert(!m_Map.enabled, "This will cause a leak and performance issues, PlayerControls.Map.Disable() has not been called.");
         UnityEngine.Debug.Assert(!m_Tutorial.enabled, "This will cause a leak and performance issues, PlayerControls.Tutorial.Disable() has not been called.");
+        UnityEngine.Debug.Assert(!m_Keypad.enabled, "This will cause a leak and performance issues, PlayerControls.Keypad.Disable() has not been called.");
     }
 
     /// <summary>
@@ -3426,6 +3458,102 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
     /// Provides a new <see cref="TutorialActions" /> instance referencing this action map.
     /// </summary>
     public TutorialActions @Tutorial => new TutorialActions(this);
+
+    // Keypad
+    private readonly InputActionMap m_Keypad;
+    private List<IKeypadActions> m_KeypadActionsCallbackInterfaces = new List<IKeypadActions>();
+    private readonly InputAction m_Keypad_CloseKeypad;
+    /// <summary>
+    /// Provides access to input actions defined in input action map "Keypad".
+    /// </summary>
+    public struct KeypadActions
+    {
+        private @PlayerControls m_Wrapper;
+
+        /// <summary>
+        /// Construct a new instance of the input action map wrapper class.
+        /// </summary>
+        public KeypadActions(@PlayerControls wrapper) { m_Wrapper = wrapper; }
+        /// <summary>
+        /// Provides access to the underlying input action "Keypad/CloseKeypad".
+        /// </summary>
+        public InputAction @CloseKeypad => m_Wrapper.m_Keypad_CloseKeypad;
+        /// <summary>
+        /// Provides access to the underlying input action map instance.
+        /// </summary>
+        public InputActionMap Get() { return m_Wrapper.m_Keypad; }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Enable()" />
+        public void Enable() { Get().Enable(); }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Disable()" />
+        public void Disable() { Get().Disable(); }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.enabled" />
+        public bool enabled => Get().enabled;
+        /// <summary>
+        /// Implicitly converts an <see ref="KeypadActions" /> to an <see ref="InputActionMap" /> instance.
+        /// </summary>
+        public static implicit operator InputActionMap(KeypadActions set) { return set.Get(); }
+        /// <summary>
+        /// Adds <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
+        /// </summary>
+        /// <param name="instance">Callback instance.</param>
+        /// <remarks>
+        /// If <paramref name="instance" /> is <c>null</c> or <paramref name="instance"/> have already been added this method does nothing.
+        /// </remarks>
+        /// <seealso cref="KeypadActions" />
+        public void AddCallbacks(IKeypadActions instance)
+        {
+            if (instance == null || m_Wrapper.m_KeypadActionsCallbackInterfaces.Contains(instance)) return;
+            m_Wrapper.m_KeypadActionsCallbackInterfaces.Add(instance);
+            @CloseKeypad.started += instance.OnCloseKeypad;
+            @CloseKeypad.performed += instance.OnCloseKeypad;
+            @CloseKeypad.canceled += instance.OnCloseKeypad;
+        }
+
+        /// <summary>
+        /// Removes <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
+        /// </summary>
+        /// <remarks>
+        /// Calling this method when <paramref name="instance" /> have not previously been registered has no side-effects.
+        /// </remarks>
+        /// <seealso cref="KeypadActions" />
+        private void UnregisterCallbacks(IKeypadActions instance)
+        {
+            @CloseKeypad.started -= instance.OnCloseKeypad;
+            @CloseKeypad.performed -= instance.OnCloseKeypad;
+            @CloseKeypad.canceled -= instance.OnCloseKeypad;
+        }
+
+        /// <summary>
+        /// Unregisters <param cref="instance" /> and unregisters all input action callbacks via <see cref="KeypadActions.UnregisterCallbacks(IKeypadActions)" />.
+        /// </summary>
+        /// <seealso cref="KeypadActions.UnregisterCallbacks(IKeypadActions)" />
+        public void RemoveCallbacks(IKeypadActions instance)
+        {
+            if (m_Wrapper.m_KeypadActionsCallbackInterfaces.Remove(instance))
+                UnregisterCallbacks(instance);
+        }
+
+        /// <summary>
+        /// Replaces all existing callback instances and previously registered input action callbacks associated with them with callbacks provided via <param cref="instance" />.
+        /// </summary>
+        /// <remarks>
+        /// If <paramref name="instance" /> is <c>null</c>, calling this method will only unregister all existing callbacks but not register any new callbacks.
+        /// </remarks>
+        /// <seealso cref="KeypadActions.AddCallbacks(IKeypadActions)" />
+        /// <seealso cref="KeypadActions.RemoveCallbacks(IKeypadActions)" />
+        /// <seealso cref="KeypadActions.UnregisterCallbacks(IKeypadActions)" />
+        public void SetCallbacks(IKeypadActions instance)
+        {
+            foreach (var item in m_Wrapper.m_KeypadActionsCallbackInterfaces)
+                UnregisterCallbacks(item);
+            m_Wrapper.m_KeypadActionsCallbackInterfaces.Clear();
+            AddCallbacks(instance);
+        }
+    }
+    /// <summary>
+    /// Provides a new <see cref="KeypadActions" /> instance referencing this action map.
+    /// </summary>
+    public KeypadActions @Keypad => new KeypadActions(this);
     private int m_鍵鼠SchemeIndex = -1;
     /// <summary>
     /// Provides access to the input control scheme.
@@ -3848,5 +3976,20 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
     /// <seealso cref="TutorialActions.RemoveCallbacks(ITutorialActions)" />
     public interface ITutorialActions
     {
+    }
+    /// <summary>
+    /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "Keypad" which allows adding and removing callbacks.
+    /// </summary>
+    /// <seealso cref="KeypadActions.AddCallbacks(IKeypadActions)" />
+    /// <seealso cref="KeypadActions.RemoveCallbacks(IKeypadActions)" />
+    public interface IKeypadActions
+    {
+        /// <summary>
+        /// Method invoked when associated input action "CloseKeypad" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnCloseKeypad(InputAction.CallbackContext context);
     }
 }

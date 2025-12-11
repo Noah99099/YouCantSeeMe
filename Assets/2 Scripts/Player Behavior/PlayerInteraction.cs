@@ -5,6 +5,8 @@ using UnityEngine.EventSystems;
 using System.Linq;
 using System.Collections; // 為了 Coroutine
 using UnityEngine.Rendering.Universal;
+// 【新增此行：讓您可以直接使用 _Player, _Keypad 等常量】
+using static InputActionMaps;
 
 /// <summary>
 /// 與場景物件交互一律寫這裡
@@ -20,6 +22,11 @@ public class PlayerInteraction : MonoBehaviour
 
     [Header("UI 提示")]
     [SerializeField] private TextMeshProUGUI pickupPromptText;
+
+    [Header("提供接口的UI提示")]
+    [Tooltip("它們不會在該腳本中使用")]
+    public GameObject crossHair;
+    public GameObject titleUI;
 
     // ----- [新需求] 聲音物品 -----
     [Header("聲音物品設定")]
@@ -127,6 +134,16 @@ public class PlayerInteraction : MonoBehaviour
         {
             HidePrompt(); // 確保在使用聲音物品時不顯示任何提示
             return;
+        }
+
+        // ***** 【新增：檢查 Keypad 交互狀態】 *****
+        // 假設 InputStackManager.Instance.CurrentMap 可以取得當前的 Action Map 名稱
+        // 並且在 Keypad 模式下，它會是 InputActionMaps._Keypad
+        if (InputStackManager.Instance != null &&
+            InputStackManager.Instance.CurrentMap == _Keypad)
+        {
+            HidePrompt(); // 確保在密碼鎖交互期間不顯示世界中的交互提示
+            return; // 不執行 ContinuousCheck()
         }
 
         // [!! 解決方案 !!]
@@ -280,6 +297,16 @@ public class PlayerInteraction : MonoBehaviour
                 }
                 return;
             }
+            else if (currentInteractableObject.TryGetComponent<KeypadLock>(out var keypad) && keypad.IsLocked) //按鍵密碼鎖
+            {
+                if (pickupPromptText != null)
+                {
+                    // 假設您有 GetInteractionPrompt() 方法
+                    pickupPromptText.text = $"按 [滑鼠左鍵] 交互 {keypad.objectName}";
+                    pickupPromptText.gameObject.SetActive(true);
+                }
+                return;
+            }
         }
 
         HidePrompt();
@@ -300,11 +327,6 @@ public class PlayerInteraction : MonoBehaviour
         if (Physics.Raycast(ray, out RaycastHit hit, interactionRange, interactionLayer)) // Raycast 檢測所有相關圖層 (Obstacle, Interactable)
         {
             GameObject hitObject = hit.collider.gameObject;
-            //Debug.Log($"[HandleInteraction] Ray hit object: {hitObject.name}, Layer: {LayerMask.LayerToName(hitObject.layer)}");
-
-            // 檢查物件的所有交互腳本狀態
-            //var comps = hitObject.GetComponents<MonoBehaviour>();
-            //Debug.Log($"[HandleInteraction] Components on {hitObject.name}: {string.Join(", ", comps.Select(c => c.GetType().Name))}");
             int hitLayer = hitObject.layer; //*
 
             // 【第一優先級：阻擋/非交互判定】
@@ -393,6 +415,17 @@ public class PlayerInteraction : MonoBehaviour
                 {
                     // true 代表是交互模式
                     _inventoryPanelController.OpenPanel(true);
+                }
+                HidePrompt();
+            }
+            else if (hitObject.TryGetComponent<KeypadLock>(out var keypad)) //進互輸入按鍵密碼模式 
+            {
+                // 呼叫 KeypadLock 專屬的交互方法
+                if (keypad.IsLocked)
+                {
+                    Debug.Log($"[HandleInteraction] 觸發密碼鎖交互: {hitObject.name}");
+                    keypad.EnterInteractionState(); // *** 直接呼叫 KeypadLock 的方法 ***
+                    return;
                 }
                 HidePrompt();
             }

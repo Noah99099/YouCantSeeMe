@@ -92,7 +92,13 @@ public class VoiceSlotUI : MonoBehaviour, ISelectHandler, IDeselectHandler, IPoi
     /// </summary>
     public void OnSelect(BaseEventData eventData)
     {
-        _onVoiceSlotSelectedCallback?.Invoke(this);
+        // [!! 核心修正 !!] 僅在手把模式下執行 OnSelect 邏輯，避免滑鼠點擊後的重複觸發。
+        if (InputDeviceManager.Instance != null &&
+            InputDeviceManager.Instance.CurrentInputType == InputDeviceManager.InputType.Gamepad)
+        {
+            _onVoiceSlotSelectedCallback?.Invoke(this);
+        }
+        // 鍵鼠點擊後，雖然會觸發 OnSelect，但因為不在 Gamepad 模式，所以不會重複更新右側面板。
     }
 
     /// <summary>

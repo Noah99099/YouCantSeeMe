@@ -25,9 +25,15 @@ public class VoicePanelUIController : MonoBehaviour
     [SerializeField] private Transform slotsContainer; // 掛載 VoiceSlot prefab 的那個 Content 物件
 
     [Header("聲音面板 (右側)")]
+    // [!! 新增 !!]
+    [SerializeField] private ScrollRect descScrollRect; // 將 itemDescText 的父物件 ScrollRect 拖曳到此
+    [SerializeField] private Scrollbar descScrollbar; // 將 ScrollRect 下的 Scrollbar Vertical 拖曳到此
+    // [!! 新增 !!] 請將 ScrollRect 下的 Viewport 物件拖曳到此
+    [SerializeField] private RectTransform descViewport;
+
     [SerializeField] private TMP_Text itemNameText; // 標題
     [SerializeField] private TMP_Text itemDescText; // 使用前後的文本組件是同一個
-    [SerializeField] private Button useItemButton; // 使用聲音物品
+    [SerializeField] private Button useItemButton; // 使用聲音物品按鈕
 
     private void Awake()
     {
@@ -288,6 +294,52 @@ public class VoicePanelUIController : MonoBehaviour
                     useItemButton.interactable = true; // 啟用它
                 }
             }
+        }
+        // [!! 核心修改 !!] 無論文本是 After 還是 Before，都執行滾動條檢查
+        CheckAndControlDescScrollbar();
+    }
+
+    /// <summary>
+    /// 計算 itemDescText 的實際行數，並決定是否顯示 Scrollbar。
+    /// 判斷邏輯：當文本行數超過設定的閾值 (e.g., 11 行) 時，才啟用滾動。
+    /// </summary>
+    private void CheckAndControlDescScrollbar()
+    {
+        if (itemDescText == null || descScrollRect == null || descScrollbar == null || descViewport == null)
+        {
+            Debug.LogWarning("[VoicePanelUIController] 滾動控制組件缺失，請檢查 Inspector 連結是否完整。");
+            return;
+        }
+
+        // 1. 刷新文本網格 (確保 itemDescText.preferredHeight 是最新的)
+        itemDescText.ForceMeshUpdate();
+
+        // 2. [!! 關鍵修正 !!] 強制佈局重建
+        // 確保 ContentSizeFitter (在步驟一中新增的) 立即更新 itemDescText 的高度。
+        LayoutRebuilder.ForceRebuildLayoutImmediate(itemDescText.rectTransform);
+
+        // 3. 獲取文本的總高度 (Preferred Height) 和可視區域高度 (Viewport Height)
+        float preferredHeight = itemDescText.preferredHeight;
+        float viewportHeight = descViewport.rect.height;
+
+        // 4. 進行高度判斷 (Viewport 的高度即是您設定的 11 行的高度閾值)
+        // 增加一個微小的容錯邊界 (e.g., 1.0f)
+        bool shouldScroll = preferredHeight > viewportHeight + 1.0f;
+
+        // 5. 控制 Scrollbar 的顯示
+        descScrollbar.gameObject.SetActive(shouldScroll);
+        descScrollRect.vertical = shouldScroll;
+        print("Scrollbar顯示成功");
+
+        if (shouldScroll)
+        {
+            // Debug Log 檢查 (用於確認邏輯是否正確)
+            Debug.Log($"[ScrollCheck] 文本太長 ({preferredHeight:F1} > {viewportHeight:F1})，滾動條顯示成功！");
+        }
+        else
+        {
+            // 如果不需要滾動，確保位置在頂部
+            descScrollRect.verticalNormalizedPosition = 1f;
         }
     }
 

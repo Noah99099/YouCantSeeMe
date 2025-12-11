@@ -1,3 +1,4 @@
+// VoiceItemData.cs
 using UnityEngine;
 
 // 這個屬性讓我們可以直接在 Project 視窗中右鍵 Create -> Inventory -> VoiceItem

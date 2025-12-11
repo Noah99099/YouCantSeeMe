@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq; // 用於 PeekOrDefault 等擴充
 using UnityEngine;
 using UnityEngine.InputSystem;
+// 【新增此行：讓您可以直接使用 _Player, _Keypad 等常量】
+using static InputActionMaps;
 
 /// <summary>
 /// 管理 Unity Input System 的 InputActionMap 啟用狀態的堆疊式管理器。
@@ -199,6 +201,12 @@ public class InputStackManager : MonoBehaviour
         mapStack.Clear();
         Debug.Log("輸入棧已清空。");
     }
+
+    /// <summary>
+    /// 暴露當前棧頂的 Action Map 名稱，方便外部存取。
+    /// 這是 GetCurrentMapName() 的簡化存取器。
+    /// </summary>
+    public string CurrentMap => GetCurrentMapName();
 
     /// <summary>
     /// 獲取當前在棧頂的 Action Map 名稱。

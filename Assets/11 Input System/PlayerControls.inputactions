@@ -1678,6 +1678,34 @@
             "id": "20b3cd46-937b-442a-b667-399ac5fb116d",
             "actions": [],
             "bindings": []
+        },
+        {
+            "name": "Keypad",
+            "id": "9fa3fd96-561f-465d-987b-592812f0416a",
+            "actions": [
+                {
+                    "name": "CloseKeypad",
+                    "type": "Button",
+                    "id": "53df1486-6d14-4b57-a9fc-86bf8d1ddea1",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "f1775cb8-4016-43ac-b0b0-1de09f9fda45",
+                    "path": "<Keyboard>/escape",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "CloseKeypad",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
         }
     ],
     "controlSchemes": [
