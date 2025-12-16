@@ -177,7 +177,27 @@ public class PlayerInteraction : MonoBehaviour
         {
             currentInteractableObject = hit.collider.gameObject;
 
-            if (currentInteractableObject.TryGetComponent<InteractableItem>(out var item)) // 檢查是否是 InteractableItem（獲得物品）
+            // **因為判定不到所以把InteractableObject往前移**
+            if (currentInteractableObject.TryGetComponent<InteractableObject>(out var interactable)) // 檢查是否是 InteractableObject（需物品的交互點）
+            {
+                currentInteractable = interactable;
+                print("偵測到 InteractableObject腳本");
+                if (pickupPromptText != null)
+                {
+                    // 如果是手把模式，更換UI文本提示
+                    if (InputDeviceManager.Instance.CurrentInputType == InputDeviceManager.InputType.Gamepad)
+                    {
+                        pickupPromptText.text = $"按 [叉] 與 {interactable.objectName} 交互";
+                    }
+                    else //鍵鼠
+                    {
+                        pickupPromptText.text = $"按 [滑鼠左鍵] 與 {interactable.objectName} 交互";
+                    }
+                    pickupPromptText.gameObject.SetActive(true);
+                }
+                return;
+            }
+            else if (currentInteractableObject.TryGetComponent<InteractableItem>(out var item)) // 檢查是否是 InteractableItem（獲得物品）
             {
                 if (pickupPromptText != null)
                 {
@@ -223,24 +243,6 @@ public class PlayerInteraction : MonoBehaviour
                     else //鍵鼠
                     {
                         pickupPromptText.text = "按 [滑鼠左鍵] 按下按鈕";
-                    }
-                    pickupPromptText.gameObject.SetActive(true);
-                }
-                return;
-            }
-            else if (currentInteractableObject.TryGetComponent<InteractableObject>(out var interactable)) // 檢查是否是 InteractableObject（需物品的交互點）
-            {
-                currentInteractable = interactable;
-                if (pickupPromptText != null)
-                {
-                    // 如果是手把模式，更換UI文本提示
-                    if (InputDeviceManager.Instance.CurrentInputType == InputDeviceManager.InputType.Gamepad)
-                    {
-                        pickupPromptText.text = $"按 [叉] 與 {interactable.objectName} 交互";
-                    }
-                    else //鍵鼠
-                    {
-                        pickupPromptText.text = $"按 [滑鼠左鍵] 與 {interactable.objectName} 交互";
                     }
                     pickupPromptText.gameObject.SetActive(true);
                 }
@@ -342,6 +344,21 @@ public class PlayerInteraction : MonoBehaviour
             // 【第二優先級：Interactable 圖層判定】
             // 只有當最近的物件不屬於 Default 層，才會執行這裡的交互邏輯。
             // 這意味著擊中的物件一定是 Interactable 層的目標。
+
+            // **因為判定不到所以把InteractableObject往前移**
+            else if (hitObject.TryGetComponent<InteractableObject>(out var interactable)) //使用物件
+            {
+                Debug.Log($"Interacting with: {interactable.objectName}"); //這裡沒有打開案件紀錄簿
+                // 設定交互目標
+                CurrentTarget = interactable;
+                // 打開背包（交互模式）
+                if (_inventoryPanelController != null)
+                {
+                    // true 代表是交互模式
+                    _inventoryPanelController.OpenPanel(true);
+                }
+                HidePrompt();
+            }
             else if(hitObject.TryGetComponent<InteractableItem>(out var itemToPickUp)) //獲得物件，進物品背包
             {
                 Debug.Log($"Picked up: {itemToPickUp.itemData.itemName}");
@@ -405,19 +422,7 @@ public class PlayerInteraction : MonoBehaviour
                 Destroy(hitObject);
                 HidePrompt();
             }
-            else if (hitObject.TryGetComponent<InteractableObject>(out var interactable)) //使用物件
-            {
-                Debug.Log($"Interacting with: {interactable.objectName}"); //這裡沒有打開案件紀錄簿
-                // 設定交互目標
-                CurrentTarget = interactable;
-                // 打開背包（交互模式）
-                if (_inventoryPanelController != null)
-                {
-                    // true 代表是交互模式
-                    _inventoryPanelController.OpenPanel(true);
-                }
-                HidePrompt();
-            }
+            
             else if (hitObject.TryGetComponent<KeypadLock>(out var keypad)) //進互輸入按鍵密碼模式 
             {
                 // 呼叫 KeypadLock 專屬的交互方法
