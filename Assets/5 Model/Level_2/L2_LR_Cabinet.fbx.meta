@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: aaf7916fac8d03a40b03c35afbad1edd
+guid: 564ca1eeaed4cb14896aa48ede8fe359
 ModelImporter:
   serializedVersion: 22200
   internalIDToNameTable: []
@@ -7,8 +7,18 @@ ModelImporter:
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
-      name: Plate__Baked
-    second: {fileID: 2100000, guid: 86492539c4488e24fac4430905215c56, type: 2}
+      name: DarkWood
+    second: {fileID: 2100000, guid: 42b326aab26070641b15340272642376, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Glass
+    second: {fileID: 2100000, guid: 93c16e34a8a163e4f9f7fc1722990300, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MetalGold
+    second: {fileID: 2100000, guid: 1816953eba652a8469feda85dac80338, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0
@@ -106,7 +116,7 @@ ModelImporter:
   humanoidOversampling: 1
   avatarSetup: 0
   addHumanoidExtraRootOnlyWhenUsingAvatar: 1
-  importBlendShapeDeformPercent: 1
+  importBlendShapeDeformPercent: 0
   remapMaterialsIfMaterialImportModeIsNone: 0
   additionalBone: 0
   userData: 
