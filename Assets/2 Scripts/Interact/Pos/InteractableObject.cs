@@ -1,8 +1,9 @@
+// InteractableObject.cs
 using UnityEngine;
 
 public class InteractableObject : MonoBehaviour
 {
-    [Header("功能：使用物品判定點")]
+    [Header("功能：單一物品放置判定點")]
     [Header("交互物件設置")]
     public string objectName = "物件"; // 物件名稱
     public ItemData requiredItem; // 需要的物品

@@ -14,7 +14,11 @@ using static InputActionMaps;
 public class PlayerInteraction : MonoBehaviour
 {
     public static PlayerInteraction Instance { get; private set; } // 添加單例模式
-    public InteractableObject CurrentTarget { get; set; } // 玩家正在交互的物件
+    public InteractableObject CurrentTarget { get; set; } // 玩家正在交互的物件。單一物品放置判定點
+    // ***** [修正 1: 新增變數] *****
+    // 因為 CurrentTarget 是 InteractableObject 類型，無法存儲新的 ItemPlacementSpot
+    // 所以我們需要一個專門存儲 "多物品放置點" 的變數
+    public ItemPlacementSpot CurrentPlacementSpot { get; set; }
 
     [Header("互動設定")]
     [SerializeField] private float interactionRange = 3f;
@@ -177,8 +181,7 @@ public class PlayerInteraction : MonoBehaviour
         {
             currentInteractableObject = hit.collider.gameObject;
 
-            // **因為判定不到所以把InteractableObject往前移**
-            if (currentInteractableObject.TryGetComponent<InteractableObject>(out var interactable)) // 檢查是否是 InteractableObject（需物品的交互點）
+            if (currentInteractableObject.TryGetComponent<InteractableObject>(out var interactable)) // 檢查是否是 InteractableObject（單一物品放置判定點）
             {
                 currentInteractable = interactable;
                 print("偵測到 InteractableObject腳本");
@@ -192,6 +195,29 @@ public class PlayerInteraction : MonoBehaviour
                     else //鍵鼠
                     {
                         pickupPromptText.text = $"按 [滑鼠左鍵] 與 {interactable.objectName} 交互";
+                    }
+                    pickupPromptText.gameObject.SetActive(true);
+                }
+                return;
+            }
+            // ***** [修正 2: 補上 ContinuousCheck 的新腳本偵測] *****
+            // 2. 新腳本 ItemPlacementSpot
+            else if (currentInteractableObject.TryGetComponent<ItemPlacementSpot>(out var spot))
+            {
+                // 檢查是否符合當前視野 (陰陽眼)
+                // 假設你有 ViewManager 或類似的東西存儲 currentViewType，這裡先假設它存在
+                // 如果沒有 ViewManager，暫時拿掉 ViewType 檢查，或傳入預設值
+                // 這裡示範如何顯示提示：
+                if (pickupPromptText != null)
+                {
+                    // 如果是手把模式，更換UI文本提示
+                    if (InputDeviceManager.Instance.CurrentInputType == InputDeviceManager.InputType.Gamepad)
+                    {
+                        pickupPromptText.text = $"按 [叉] 與 {spot.spotName} 交互";
+                    }
+                    else //鍵鼠
+                    {
+                        pickupPromptText.text = $"按 [滑鼠左鍵] 與 {spot.spotName} 交互";
                     }
                     pickupPromptText.gameObject.SetActive(true);
                 }
@@ -346,7 +372,7 @@ public class PlayerInteraction : MonoBehaviour
             // 這意味著擊中的物件一定是 Interactable 層的目標。
 
             // **因為判定不到所以把InteractableObject往前移**
-            else if (hitObject.TryGetComponent<InteractableObject>(out var interactable)) //使用物件
+            else if (hitObject.TryGetComponent<InteractableObject>(out var interactable)) //使用物件（單一物品放置判定點）
             {
                 Debug.Log($"Interacting with: {interactable.objectName}"); //這裡沒有打開案件紀錄簿
                 // 設定交互目標
@@ -357,6 +383,20 @@ public class PlayerInteraction : MonoBehaviour
                     // true 代表是交互模式
                     _inventoryPanelController.OpenPanel(true);
                 }
+                HidePrompt();
+            }
+            // ***** [修正 3: HandleInteraction 邏輯修正] *****
+            // 2. 新腳本 ItemPlacementSpot
+            else if (hitObject.TryGetComponent<ItemPlacementSpot>(out var spot))
+            {
+                Debug.Log($"Interacting with Spot: {spot.spotName}");
+
+                CurrentPlacementSpot = spot; // 設定新目標
+                CurrentTarget = null;        // 清空舊目標
+
+                // 同樣打開背包供玩家選擇物品
+                if (_inventoryPanelController != null) _inventoryPanelController.OpenPanel(true);
+
                 HidePrompt();
             }
             else if(hitObject.TryGetComponent<InteractableItem>(out var itemToPickUp)) //獲得物件，進物品背包
@@ -505,24 +545,40 @@ public class PlayerInteraction : MonoBehaviour
             return;
         }
 
-        if (CurrentTarget == null)
+        // ***** [修正 4: 支援兩種判定點邏輯] *****
+
+        // 情況 A: 目標是舊腳本 (InteractableObject)
+        if (CurrentTarget != null)
         {
-            Debug.LogWarning("[PlayerInteraction] 沒有交互目標，無法使用物品");
-            CloseInventoryAndExitInteraction();
-            return;
+            bool success = CurrentTarget.UseItem(item);
+            if (success)
+            {
+                InventoryManager.Instance.RemoveItem(item);
+                Debug.Log($"[PlayerInteraction] 舊腳本判定：{item.itemName} 使用成功");
+            }
+            else
+            {
+                Debug.Log($"[PlayerInteraction] 舊腳本判定：{item.itemName} 錯誤");
+            }
         }
-
-        bool success = CurrentTarget.UseItem(item); // 呼叫 InteractableObject（交互點） 的邏輯
-
-        if (success)
+        // 情況 B: 目標是新腳本 (ItemPlacementSpot)
+        else if (CurrentPlacementSpot != null)
         {
-            // 使用成功才消耗物品
-            InventoryManager.Instance.RemoveItem(item);
-            Debug.Log($"[PlayerInteraction] {item.itemName} 使用成功並消耗");
+            // 呼叫 ItemPlacementSpot 的 TryPlaceItem
+            bool success = CurrentPlacementSpot.TryPlaceItem(item);
+            if (success)
+            {
+                InventoryManager.Instance.RemoveItem(item);
+                Debug.Log($"[PlayerInteraction] 新腳本判定：{item.itemName} 放置成功");
+            }
+            else
+            {
+                Debug.Log($"[PlayerInteraction] 新腳本判定：{item.itemName} 不可放置於此");
+            }
         }
         else
         {
-            Debug.Log($"[PlayerInteraction] {item.itemName} 使用失敗，未消耗");
+            Debug.LogWarning("[PlayerInteraction] 沒有任何交互目標，無法使用物品");
         }
 
         // 無論成功或失敗都關閉背包 + 退出交互模式
@@ -547,7 +603,9 @@ public class PlayerInteraction : MonoBehaviour
         }
 
         // 清空交互目標仍然是 PlayerInteraction 的職責
+        // 清空所有類型的交互目標
         CurrentTarget = null;
+        CurrentPlacementSpot = null; // [新增] 也要清空這個
 
         Debug.Log($"[PlayerInteraction] CloseInventoryAndExitInteraction end. CurrentTarget={(CurrentTarget != null ? CurrentTarget.name : "null")}");
     }
