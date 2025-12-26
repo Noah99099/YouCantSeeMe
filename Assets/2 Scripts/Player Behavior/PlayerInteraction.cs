@@ -184,7 +184,6 @@ public class PlayerInteraction : MonoBehaviour
             if (currentInteractableObject.TryGetComponent<InteractableObject>(out var interactable)) // 檢查是否是 InteractableObject（單一物品放置判定點）
             {
                 currentInteractable = interactable;
-                print("偵測到 InteractableObject腳本");
                 if (pickupPromptText != null)
                 {
                     // 如果是手把模式，更換UI文本提示
@@ -402,6 +401,8 @@ public class PlayerInteraction : MonoBehaviour
             else if(hitObject.TryGetComponent<InteractableItem>(out var itemToPickUp)) //獲得物件，進物品背包
             {
                 Debug.Log($"Picked up: {itemToPickUp.itemData.itemName}");
+                // [新增這行] 在銷毀前，觸發該物品設定好的事件
+                itemToPickUp.TriggerPickUpEvent();
                 InventoryManager.Instance.AddItem(itemToPickUp.itemData);
                 Destroy(hitObject);
                 HidePrompt();
@@ -545,12 +546,24 @@ public class PlayerInteraction : MonoBehaviour
             return;
         }
 
-        // ***** [修正 4: 支援兩種判定點邏輯] *****
+        // 1. 【關鍵修改】先將目標暫存起來 (Cache references)
+        // 因為 CloseInventoryAndExitInteraction() 會把 CurrentTarget 清空，
+        // 所以我們必須在清空前先把引用抓出來。
+        var targetInteractable = CurrentTarget;
+        var targetSpot = CurrentPlacementSpot;
+
+        // 2. 【關鍵修改】先關閉背包與交互狀態
+        // 這會將 Input State 重置回 "Gameplay"
+        // 無論成功或失敗都關閉背包 + 退出交互模式
+        CloseInventoryAndExitInteraction();
+
+        // 3. 【關鍵修改】使用暫存的變數執行邏輯
+        // 這樣如果這裡觸發了對話 (Input set to Dialogue)，就不會再被上面的 Close 覆蓋回去
 
         // 情況 A: 目標是舊腳本 (InteractableObject)
-        if (CurrentTarget != null)
+        if (targetInteractable != null)
         {
-            bool success = CurrentTarget.UseItem(item);
+            bool success = targetInteractable.UseItem(item);
             if (success)
             {
                 InventoryManager.Instance.RemoveItem(item);
@@ -559,13 +572,14 @@ public class PlayerInteraction : MonoBehaviour
             else
             {
                 Debug.Log($"[PlayerInteraction] 舊腳本判定：{item.itemName} 錯誤");
+                // 此時觸發 onWrongItemUsed -> 對話開啟 -> Input 鎖定為 Dialogue -> 成功！
             }
         }
         // 情況 B: 目標是新腳本 (ItemPlacementSpot)
-        else if (CurrentPlacementSpot != null)
+        else if (targetSpot != null)
         {
             // 呼叫 ItemPlacementSpot 的 TryPlaceItem
-            bool success = CurrentPlacementSpot.TryPlaceItem(item);
+            bool success = targetSpot.TryPlaceItem(item);
             if (success)
             {
                 InventoryManager.Instance.RemoveItem(item);
@@ -580,9 +594,6 @@ public class PlayerInteraction : MonoBehaviour
         {
             Debug.LogWarning("[PlayerInteraction] 沒有任何交互目標，無法使用物品");
         }
-
-        // 無論成功或失敗都關閉背包 + 退出交互模式
-        CloseInventoryAndExitInteraction();
     }
 
     /// <summary>

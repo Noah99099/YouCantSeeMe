@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 2662205681799549814}
   - component: {fileID: 8764610930838003083}
   - component: {fileID: -5124636255316394059}
+  - component: {fileID: -7122390332944461105}
   m_Layer: 3
   m_Name: testHotMeal1
   m_TagString: Untagged
@@ -123,3 +124,39 @@ MonoBehaviour:
   sharedCollider: {fileID: 0}
   yangCollider: {fileID: 0}
   yinCollider: {fileID: 8764610930838003083}
+--- !u!114 &-7122390332944461105
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3477236445398991173}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c648754e6f289043a53450a2641108e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  objectName: "\u71B1\u83DC"
+  requiredItem: {fileID: 11400000, guid: 694d723fb45a0634183c2633b0d9141e, type: 2}
+  destroyOnUse: 1
+  interactiveInYang: 0
+  interactiveInYin: 1
+  onCorrectItemUsed:
+    m_PersistentCalls:
+      m_Calls: []
+  onWrongItemUsed:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 888450008753159330, guid: ec228de73963d3145a0a18291fd5ffab,
+          type: 3}
+        m_TargetAssemblyTypeName: TodaysMenuStory, Assembly-CSharp
+        m_MethodName: WronSeasonings
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2

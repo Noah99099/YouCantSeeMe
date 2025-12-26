@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 666145591932488321}
   - component: {fileID: 8750081009987781713}
   - component: {fileID: -7401321590444033574}
+  - component: {fileID: 8879911038787417127}
   m_Layer: 3
   m_Name: testWrongVeg
   m_TagString: Untagged
@@ -123,3 +124,17 @@ MonoBehaviour:
   sharedCollider: {fileID: 0}
   yangCollider: {fileID: 0}
   yinCollider: {fileID: 8750081009987781713}
+--- !u!114 &8879911038787417127
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2891618221644422505}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b4d06a04543aaca4d8ba109f4044dad6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemData: {fileID: 11400000, guid: f58cfbbb6643c124e9b6c84a3cf97897, type: 2}
+  InteractionEnabled: 1

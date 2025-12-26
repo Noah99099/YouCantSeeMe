@@ -66,6 +66,8 @@ public class ItemPlacementSpot : MonoBehaviour
             {
                 Collider col = GetComponent<Collider>();
                 if (col != null) col.enabled = false;
+
+                Destroy(gameObject); // 直接銷毀判定點，反正生成模型的位置是另外開的
             }
 
             return true; // 告訴系統消耗物品
