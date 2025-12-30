@@ -35,11 +35,17 @@ public class ViewManager : MonoBehaviour
     //private InputAction viewAction;
     //private InputAction startGameAction;
 
-    // Spine動畫名稱常量
-    private const string BLINK_IDLE_ANIM = "blink_idle";
-    private const string BLINK_ANIM = "blink";
-    private const string OPEN_ANIM = "open";
-    private const string OPEN_IDLE_ANIM = "open_idle";
+    // Spine動畫名稱常量-舊版
+    //private const string BLINK_IDLE_ANIM = "blink_idle";
+    //private const string BLINK_ANIM = "blink";
+    //private const string OPEN_ANIM = "open";
+    //private const string OPEN_IDLE_ANIM = "open_idle";
+
+    // Spine動畫名稱常量-新版
+    private const string BLINK_IDLE_ANIM = "Yang_Idle";
+    private const string BLINK_ANIM = "YingYoYang";
+    private const string OPEN_ANIM = "YangToYang"; //在創建的時候取錯名了
+    private const string OPEN_IDLE_ANIM = "Yin_Idle";
 
     // 新增: 防止動畫重複執行
     private bool isAnimating = false;
@@ -62,7 +68,7 @@ public class ViewManager : MonoBehaviour
         //yangUI.SetActive(true);
         //yinUI.SetActive(false);
 
-        // 初始化Spine動畫為陽視野(閉眼)
+        // 初始化Spine動畫為陽視野(閉眼 / 灰眼球)
         if (spineUI != null)
         {
             spineUI.AnimationState.SetAnimation(0, BLINK_IDLE_ANIM, true);
@@ -82,13 +88,13 @@ public class ViewManager : MonoBehaviour
     {
         if (isAnimating) return;
 
-        if (CurrentView == ViewType.Yang) //當前陽視野(閉眼)
+        if (CurrentView == ViewType.Yang) //當前陽視野(閉眼 / 灰眼球)
         {
-            StartCoroutine(SwitchToYinView()); //閉眼到張眼
+            StartCoroutine(SwitchToYinView()); //閉眼到張眼 / 灰到彩
         }
-        else  //當前陰視野(張眼)
+        else  //當前陰視野(張眼 / 彩眼球)
         {
-            StartCoroutine(SwitchToYangView()); //張眼到閉眼
+            StartCoroutine(SwitchToYangView()); //張眼到閉眼 / 彩到灰
         }
     }
 
