@@ -1,0 +1,175 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1001 &6427898382207286024
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: -8702639250201058429, guid: 14893a3791bddf34f97726ac41e4c454,
+        type: 3}
+      propertyPath: m_Layer
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 14893a3791bddf34f97726ac41e4c454,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 14893a3791bddf34f97726ac41e4c454,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 14893a3791bddf34f97726ac41e4c454,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 14893a3791bddf34f97726ac41e4c454,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 14893a3791bddf34f97726ac41e4c454,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 14893a3791bddf34f97726ac41e4c454,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 14893a3791bddf34f97726ac41e4c454,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 14893a3791bddf34f97726ac41e4c454,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 14893a3791bddf34f97726ac41e4c454,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 14893a3791bddf34f97726ac41e4c454,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -7567329763832824366, guid: 14893a3791bddf34f97726ac41e4c454,
+        type: 3}
+      propertyPath: m_Layer
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 14893a3791bddf34f97726ac41e4c454,
+        type: 3}
+      propertyPath: m_Name
+      value: L2_KR_Beef
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 14893a3791bddf34f97726ac41e4c454,
+        type: 3}
+      propertyPath: m_Layer
+      value: 3
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 14893a3791bddf34f97726ac41e4c454,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 5036950981260886179}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 14893a3791bddf34f97726ac41e4c454,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 3159803896842265780}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 14893a3791bddf34f97726ac41e4c454,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 5140264030756673207}
+  m_SourcePrefab: {fileID: 100100000, guid: 14893a3791bddf34f97726ac41e4c454, type: 3}
+--- !u!1 &6193877015843096153 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 14893a3791bddf34f97726ac41e4c454,
+    type: 3}
+  m_PrefabInstance: {fileID: 6427898382207286024}
+  m_PrefabAsset: {fileID: 0}
+--- !u!65 &5036950981260886179
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6193877015843096153}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.26353684, y: 0.08289641, z: 0.2598198}
+  m_Center: {x: 0, y: 0.03418681, z: 0}
+--- !u!114 &3159803896842265780
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6193877015843096153}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c38a68473c147542b20d6560c0f35c1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sharedCollider: {fileID: 0}
+  yangCollider: {fileID: 0}
+  yinCollider: {fileID: 5036950981260886179}
+--- !u!114 &5140264030756673207
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6193877015843096153}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c648754e6f289043a53450a2641108e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  objectName: "\u8525\u7206\u725B\u8089"
+  requiredItem: {fileID: 11400000, guid: 694d723fb45a0634183c2633b0d9141e, type: 2}
+  destroyOnUse: 1
+  interactiveInYang: 0
+  interactiveInYin: 1
+  onCorrectItemUsed:
+    m_PersistentCalls:
+      m_Calls: []
+  onWrongItemUsed:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 888450008753159330, guid: ec228de73963d3145a0a18291fd5ffab,
+          type: 3}
+        m_TargetAssemblyTypeName: TodaysMenuStory, Assembly-CSharp
+        m_MethodName: WronSeasonings
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
