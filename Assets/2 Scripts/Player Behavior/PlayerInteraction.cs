@@ -153,7 +153,9 @@ public class PlayerInteraction : MonoBehaviour
         // [!! 解決方案 !!]
         // 如果玩家正在與一個物件交互（即 CurrentTarget != null，通常意味著物品欄已打開）
         // 則也應該隱藏提示並跳過交互檢測
-        if (CurrentTarget != null)
+        // 【修改這裡】：同時檢查 CurrentTarget 或 CurrentPlacementSpot
+        // 只要其中一個有值（代表正在交互/打開背包中），就隱藏提示文字並退出
+        if (CurrentTarget != null || CurrentPlacementSpot != null)
         {
             HidePrompt(); // 確保在物品欄打開時，隱藏世界中的交互提示
             return; // 不執行 ContinuousCheck()

@@ -14,7 +14,10 @@ public class InventoryGridEditor : MonoBehaviour
     [SerializeField] private GameObject slotPrefab; // 格子預製體
     [SerializeField, Range(0, 500)] private int slotCount = 40; // 格子數量
     [SerializeField] private int columns = 8; // 每橫行數
-    [SerializeField] private float spacing = 10f; // 間距
+
+    // --- 修改處 1：將原本的 float 改為 Vector2，以便區分 X 和 Y ---
+    // X 代表水平間距，Y 代表垂直間距
+    [SerializeField] private Vector2 spacing = new Vector2(10f, 10f);
 
     // 移除 contentRect，假設此腳本就在 Content 物件上
     private RectTransform gridRect;
@@ -63,7 +66,9 @@ public class InventoryGridEditor : MonoBehaviour
         }
 
         // --- 2. 設置網格佈局 ---
-        gridLayout.spacing = new Vector2(spacing, spacing);
+        // --- 修改處 2：直接將 Vector2 賦值給 gridLayout.spacing ---
+        gridLayout.spacing = spacing;
+
         gridLayout.constraint = GridLayoutGroup.Constraint.FixedColumnCount;
         gridLayout.constraintCount = columns;
 
