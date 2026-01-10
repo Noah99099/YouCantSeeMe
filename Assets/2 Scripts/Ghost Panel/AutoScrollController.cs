@@ -16,17 +16,32 @@ public class AutoScrollController : MonoBehaviour
     public float waitAtBottomTime = 2f; // 底部停留
     public float fadeDuration = 1f;      // 淡入淡出的持續時間
 
-    private void Start()
+    private Coroutine mainRoutine; // 用來追蹤當前的協程
+
+    private void OnEnable()
     {
-        StartCoroutine(ScrollRoutine());
+        // 強制重置所有 UI 狀態，防止被上次關閉時的狀態干擾
+        StopAllCoroutines();
+
+        contentCanvasGroup.alpha = 0f;
+        arrowUp.SetActive(false);
+        arrowDown.SetActive(false);
+        scrollRect.verticalNormalizedPosition = 1f;
+
+        // 啟動主循環
+        mainRoutine = StartCoroutine(ScrollRoutine());
+    }
+
+    private void OnDisable()
+    {
+        // 物件關閉時強制停止，避免後台出錯
+        StopAllCoroutines();
     }
 
     IEnumerator ScrollRoutine()
     {
-        // 初始狀態確保是隱藏的
-        contentCanvasGroup.alpha = 0f;
-        arrowUp.SetActive(false);
-        arrowDown.SetActive(false);
+        // 關鍵：等待 0.1 秒或 1 幀，確保 Layout 組件已經計算出正確的 Content 高度
+        yield return new WaitForEndOfFrame();
 
         while (true)
         {
@@ -37,14 +52,14 @@ public class AutoScrollController : MonoBehaviour
             // 在淡入開始時，先根據位置設定好初始箭頭（此時應只有下箭頭）
             UpdateArrows(1f);
             yield return StartCoroutine(FadeCanvas(0f, 1f, fadeDuration));
-
             contentCanvasGroup.alpha = 1f;
 
             // 3. --- 頂部停留 ---
             yield return new WaitForSeconds(waitAtTopTime);
 
             // 4. --- 自動滾動過程 ---
-            while (scrollRect.verticalNormalizedPosition > 0f)
+            // 修改判斷條件：改用 >= 0 且手動限制範圍，防止數值溢出
+            while (scrollRect.verticalNormalizedPosition > 0.001f)
             {
                 scrollRect.verticalNormalizedPosition -= scrollSpeed * Time.deltaTime;
                 UpdateArrows(scrollRect.verticalNormalizedPosition);
@@ -59,6 +74,7 @@ public class AutoScrollController : MonoBehaviour
             // 6. --- 淡出 (1 -> 0) ---
             // 淡出的同時關閉箭頭，視覺上更乾淨
             yield return StartCoroutine(FadeCanvas(1f, 0f, fadeDuration));
+            contentCanvasGroup.alpha = 0f; // 強制設為 0
 
             arrowUp.SetActive(false);
             arrowDown.SetActive(false);
@@ -75,8 +91,9 @@ public class AutoScrollController : MonoBehaviour
         while (elapsedTime < duration)
         {
             elapsedTime += Time.deltaTime;
-            // 使用 Lerp 根據時間流逝計算當前的 alpha 值
-            contentCanvasGroup.alpha = Mathf.Lerp(startAlpha, endAlpha, elapsedTime / duration);
+            // 使用更穩定的平滑插值
+            float t = Mathf.Clamp01(elapsedTime / duration);
+            contentCanvasGroup.alpha = Mathf.Lerp(startAlpha, endAlpha, t);
             yield return null;
         }
         contentCanvasGroup.alpha = endAlpha;
@@ -86,15 +103,18 @@ public class AutoScrollController : MonoBehaviour
     {
         // 如果內容正在淡出（Alpha 變低），我們可以選擇讓箭頭跟著消失
         // 或者單純在 FadeCanvas 結束後統一關閉
+        // 增加容錯區間
+        bool isAtTop = normPos >= 0.95f;
+        bool isAtBottom = normPos <= 0.05f;
 
         // 頂部 (接近 1)
-        if (normPos >= 0.99f)
+        if (isAtTop)
         {
             arrowUp.SetActive(false);
             arrowDown.SetActive(true);
         }
         // 底部 (接近 0)
-        else if (normPos <= 0.01f)
+        else if (isAtBottom)
         {
             arrowUp.SetActive(true);
             arrowDown.SetActive(false);

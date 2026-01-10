@@ -6,7 +6,7 @@ using UnityEngine.UI;
 public class SwitchInventoryPageButton : MonoBehaviour
 {
     [SerializeField] private Button[] buttons; // 四個按鈕
-    [SerializeField] private Sprite normalSprite;
+    [SerializeField] private Sprite[] normalSprites; // 修改：每個按鈕的原始圖片
     [SerializeField] private Sprite[] selectedSprites;    // 每個按鈕的選中顏色
     [SerializeField] private GameObject[] panels; // 這裡放 案件紀錄簿的所有面板
 
@@ -92,12 +92,16 @@ public class SwitchInventoryPageButton : MonoBehaviour
             var img = buttons[i].GetComponent<Image>();
             if (i == index)
             {
-                img.sprite = selectedSprites[i];
+                // 選中狀態：使用對應的選中圖片
+                if (i < selectedSprites.Length)
+                    img.sprite = selectedSprites[i];
                 buttons[i].interactable = false;
             }
             else
             {
-                img.sprite = normalSprite;
+                // 非選中狀態：使用對應的原始圖片 (修改處)
+                if (i < normalSprites.Length)
+                    img.sprite = normalSprites[i];
                 buttons[i].interactable = true;
             }
         }

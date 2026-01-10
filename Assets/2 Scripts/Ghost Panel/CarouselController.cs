@@ -12,6 +12,10 @@ public class CarouselController : MonoBehaviour
     public Transform paginationPanel; // 小圈圈父物件
     public GameObject dotPrefab;      // 小圈圈Prefab
 
+    [Header("顏色設定")]
+    public Color activeColor = Color.yellow;   // 當前圖片對應的小圈圈顏色
+    public Color inactiveColor = new Color(1, 1, 1, 0.5f); // 其他小圈圈顏色 (預設半透明白)
+
     [HideInInspector]
     public int currentIndex = 0; // 當前顯示圖片的索引
 
@@ -74,6 +78,6 @@ public class CarouselController : MonoBehaviour
         if (dots == null) return;
 
         for (int i = 0; i < dots.Length; i++)
-            dots[i].color = (i == currentIndex) ? Color.white : Color.gray;
+            dots[i].color = (i == currentIndex) ? activeColor : inactiveColor;
     }
 }
