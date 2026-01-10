@@ -5,6 +5,10 @@ public class CookingPuzzleManager : MonoBehaviour
 {
     public static CookingPuzzleManager Instance { get; private set; }
 
+    [Header("--- 菜單物件 (Menu) ---")]
+    public GameObject menu1;
+    public GameObject menu2;
+
     [Header("--- 階段一設定 ---")]
     [Header("判定點 (Spot 1-6)")] // 冷盤*1、熱菜*2、主菜*2、酒水*1
     // 這裡我們只需要知道這幾個點"是否完成"，不需要管它們具體是哪個腳本
@@ -57,6 +61,10 @@ public class CookingPuzzleManager : MonoBehaviour
 
     private void InitializePuzzle()
     {
+        // 初始化菜單狀態：階段一 menu1 開, menu2 關
+        SetMenuState(menu1, true);
+        SetMenuState(menu2, false);
+
         // 1. 隱藏階段二的判定點
         foreach (var spot in stage2SpotsRoots) spot.SetActive(false);
 
@@ -71,6 +79,22 @@ public class CookingPuzzleManager : MonoBehaviour
         if (foodObj_Drink) foodObj_Drink.SetActive(false);
         if (foodObj_Soup) foodObj_Soup.SetActive(false);
         if (foodObj_Dessert) foodObj_Dessert.SetActive(false);
+    }
+
+    // 封裝一個方法來同時控制 物件顯示 與 視野腳本開關
+    private void SetMenuState(GameObject menuObj, bool isActive)
+    {
+        if (menuObj == null) return;
+
+        menuObj.SetActive(isActive);
+        var handler = menuObj.GetComponent<ViewMeshHandler>();
+        if (handler != null)
+        {
+            handler.enabled = isActive;
+            // 如果是在執行中切換，手動觸發一次當前視野更新
+            if (isActive && ViewManager.Instance != null)
+                handler.OnViewChanged(ViewManager.Instance.CurrentView);
+        }
     }
 
     // ==========================================
@@ -148,6 +172,10 @@ public class CookingPuzzleManager : MonoBehaviour
     // 由紙條 a 的拾取事件呼叫
     public void StartStage2()
     {
+        // 進入階段二：關閉 menu1, 開啟 menu2
+        SetMenuState(menu1, false);
+        SetMenuState(menu2, true);
+
         Debug.Log("開啟階段二！");
         foreach (var spot in stage2SpotsRoots) spot.SetActive(true);
     }

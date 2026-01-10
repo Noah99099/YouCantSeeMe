@@ -24,6 +24,7 @@ public class ViewMeshHandler : MonoBehaviour, IViewInteractable
         if (ViewManager.Instance != null)
         {
             ViewManager.OnViewChanged += OnViewChanged;
+            // 只有在腳本啟用的情況下才初始化
             OnViewChanged(ViewManager.Instance.CurrentView); // 初始化狀態
         }
     }
@@ -42,6 +43,9 @@ public class ViewMeshHandler : MonoBehaviour, IViewInteractable
 
     public void OnViewChanged(ViewType view)
     {
+        // 關鍵：如果腳本被關閉(例如在非所屬階段)，則不執行切換邏輯
+        if (!this.enabled) return;
+
         switch (view)
         {
             case ViewType.Yang:
