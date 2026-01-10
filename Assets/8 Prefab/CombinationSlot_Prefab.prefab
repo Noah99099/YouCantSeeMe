@@ -67,8 +67,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: "\u4E00\u4E8C\u4E09\u56DB\u4E94\u516D\u4E03\u516B\u4E5D\u5341\n\u4E00\u4E8C\u4E09\u56DB\u4E94\u516D\u4E03\u516B\u4E5D\u5341\n\u4E00\u4E8C\u4E09\u56DB\u4E94\u516D\u4E03\u516B\u4E5D\u5341\n\u4E00\u4E8C\u4E09\u56DB\u4E94\u516D\u4E03\u516B\u4E5D\u5341"
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: d78ff118ccfb0784bbfa5cab8f26fc23, type: 2}
-  m_sharedMaterial: {fileID: 5902295712911225513, guid: d78ff118ccfb0784bbfa5cab8f26fc23,
+  m_fontAsset: {fileID: 11400000, guid: 86ad8a74bd15fe54cb7babbae7c7face, type: 2}
+  m_sharedMaterial: {fileID: -1846312470534999700, guid: 86ad8a74bd15fe54cb7babbae7c7face,
     type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
@@ -349,6 +349,9 @@ MonoBehaviour:
   iconImage: {fileID: 5512085189219652056}
   hintText: {fileID: 7935231652498125445}
   clickButton: {fileID: 7532060866841039979}
-  itemBorderColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
-  memoryBorderColor: {r: 1, g: 0, b: 0, a: 1}
-  soundBorderColor: {r: 0, g: 0, b: 1, a: 1}
+  colorItem: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
+  colorMemory: {r: 1, g: 0, b: 0, a: 1}
+  colorSound: {r: 0, g: 0, b: 1, a: 1}
+  colorDefaultBorder: {r: 1, g: 1, b: 1, a: 1}
+  colorDefaultIcon: {r: 1, g: 1, b: 1, a: 1}
+  colorFilledIcon: {r: 1, g: 1, b: 1, a: 1}
