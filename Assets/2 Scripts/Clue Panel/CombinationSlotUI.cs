@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using System;
+using UnityEngine.ProBuilder.Shapes;
 
 /// <summary>
 /// 管理右側單一個「填入物品格子」
@@ -9,16 +10,20 @@ using System;
 public class CombinationSlotUI : MonoBehaviour
 {
     [Header("UI 引用")]
-    public Image borderImage;     // 外框 (黃/紅/藍)
+    public UnityEngine.Sprite spriteRed; // 用於 Item
+    public UnityEngine.Sprite spriteGreen; // 用於 Memory
+    public UnityEngine.Sprite spriteBlue; // 用於 Sound
+    public Image outFrame;        // 外框 (素材 A/B/C)
+    //public Image borderImage;     // 外框 (黃/紅/藍)
     public Image iconImage;       // 內框 (顯示物品圖標)
     public TMP_Text hintText;     // 提示文本
-    public Button clickButton;
+    public Button clickButton; // 綁定在 OutFrame 上的按鈕
 
     [Header("顏色配置")]
-    public Color colorItem = Color.yellow; // 外框
-    public Color colorMemory = Color.red; // 外框
-    public Color colorSound = Color.blue; // 外框
-    public Color colorDefaultBorder = Color.white;
+    //public Color colorItem = Color.yellow; // 外框
+    //public Color colorMemory = Color.red; // 外框
+    //public Color colorSound = Color.blue; // 外框
+    //public Color colorDefaultBorder = Color.white;
     public Color colorDefaultIcon = Color.white; // 內框(空)的顏色
     public Color colorFilledIcon = Color.white;  // 內框(有圖)的顏色
 
@@ -34,6 +39,7 @@ public class CombinationSlotUI : MonoBehaviour
     {
         if (clickButton != null)
         {
+            clickButton.onClick.RemoveAllListeners(); //跟著加，不確定對不對
             clickButton.onClick.AddListener(OnSlotClicked);
         }
     }
@@ -60,10 +66,10 @@ public class CombinationSlotUI : MonoBehaviour
         // 設置外框顏色
         switch (RequiredClueType)
         {
-            case EClueType.Item: borderImage.color = colorItem; break;
-            case EClueType.Memory: borderImage.color = colorMemory; break;
-            case EClueType.Sound: borderImage.color = colorSound; break;
-            default: borderImage.color = colorDefaultBorder; break;
+            case EClueType.Item: outFrame.sprite = spriteRed; break;
+            case EClueType.Memory: outFrame.sprite = spriteGreen; break;
+            case EClueType.Sound: outFrame.sprite = spriteBlue; break;
+            //default: borderImage.color = colorDefaultBorder; break;
         }
 
         // 檢查是否有存檔 (或上一次) 填入的線索

@@ -8,7 +8,7 @@ using UnityEngine.UI;
 public class GridItemUI : MonoBehaviour
 {
     public Image icon;
-    public Image border; // 用於顯示外框 (黃/紅/藍)
+    public Image border; // 現在直接在 Inspector 指定素材 A/B/C，不再動態改顏色
     public Button button;
 
     private IClue _clue;
@@ -21,10 +21,20 @@ public class GridItemUI : MonoBehaviour
     {
         _clue = clue;
         _onClickCallback = onClickCallback;
-        icon.sprite = clue.ClueIcon;
-        border.color = borderColor;
-        button.onClick.RemoveAllListeners(); // 移除舊的監聽
-        button.onClick.AddListener(OnClick);
+
+        // 設置圖標
+        if (icon != null)
+        {
+            icon.sprite = clue.ClueIcon;
+        }
+        // border.color = borderColor;
+
+        // 設置按鈕點擊事件
+        if (button != null)
+        {
+            button.onClick.RemoveAllListeners();
+            button.onClick.AddListener(OnClick);
+        }
     }
 
     private void OnClick()

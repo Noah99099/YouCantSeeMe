@@ -108,6 +108,11 @@ public class TutorialCarouselManager : MonoBehaviour
         {
             // 你需要一個簡單的 Prefab (GameObject + Image)
             GameObject imgObj = Instantiate(imagePrefab, contentRect);
+
+            // 【修正】強制設定圖片大小符合當前的 ScrollRect 視窗
+            RectTransform rt = imgObj.GetComponent<RectTransform>();
+            rt.sizeDelta = new Vector2(scrollRect.viewport.rect.width, scrollRect.viewport.rect.height);
+
             Image img = imgObj.GetComponent<Image>();
             if (img != null)
             {
@@ -117,13 +122,14 @@ public class TutorialCarouselManager : MonoBehaviour
             }
         }
 
-        // 建議: 在 contentRect (Content 物件) 上掛載一個 HorizontalLayoutGroup
-        // 並設定 Child Alignment, Spacing, Padding，這樣圖片會自動排好。
-
-        // --- 解決方案：在這裡加入 ---
-        // 強制 contentRect 立即重新計算其排版和大小
-        // (記得你的腳本頂部要有 using UnityEngine.UI;)
+        // 【修正】必須先強制刷新父層，再刷新子層，最後才設定位置
+        Canvas.ForceUpdateCanvases();
         LayoutRebuilder.ForceRebuildLayoutImmediate(contentRect);
+
+        currentIndex = 0;
+        // 確保在刷新完 Layout 後再設回 0
+        scrollRect.horizontalNormalizedPosition = 0f;
+        UpdateUIForCurrentIndex();
         // --- 結束 ---
 
         // 4. 建立新的 Dots
