@@ -9,11 +9,11 @@ public class SimpleFirstPersonController : MonoBehaviour
     // --- 這部分是從 FirstPersonController 複製過來的公開變數 ---
     [Header("Player")]
     [Tooltip("Move speed of the character in m/s")]
-    public float MoveSpeed = 4.0f;
+    public float MoveSpeed = 4.0f; //移動
     [Tooltip("Sprint speed of the character in m/s")]
-    public float SprintSpeed = 6.0f;
+    public float SprintSpeed = 6.0f; //衝刺
     [Tooltip("Rotation speed of the character")]
-    public float RotationSpeed = 1.0f;
+    public float RotationSpeed = 1.0f; //旋轉
     [Tooltip("Acceleration and deceleration")]
     public float SpeedChangeRate = 10.0f;
 
