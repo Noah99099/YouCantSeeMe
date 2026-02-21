@@ -137,7 +137,8 @@ public class InventoryPanelUIController : MonoBehaviour
         if (IsInventoryPanelOpen) return; // 防止重複打開
 
         isInteractionMode = inInteractionMode; // 儲存打開模式
-        inventoryPanel.SetActive(true); // 打開案件紀錄簿-物品
+        // inventoryPanel.SetActive(true); // 打開案件紀錄簿-物品。刪除這行，交給按鈕腳本處理預設顯示(SwitchInventoryPageButton)
+        _switchInventoryPage.ResetAndShowDefaultTab(); // 新增這行：命令分頁器打開並顯示第一頁
         titleUI.SetActive(false); // 關掉右下提示
         crossHair.SetActive(false); // 關掉準心
 
@@ -168,11 +169,14 @@ public class InventoryPanelUIController : MonoBehaviour
         EventSystem.current.SetSelectedGameObject(null); // 清除UI焦點
 
         // 關閉案件紀錄簿的所有面板 - 物品、預覽物品建模、鬼、聲音、組合線索
-        inventoryPanel.SetActive(false);
+        //inventoryPanel.SetActive(false);        
+        //ghostPanel.SetActive(false);
+        //voicePanel.SetActive(false);
+        //cluePanel.SetActive(false);
+
+        _switchInventoryPage.HideAllTabs(); // 新增這行：命令分頁器關閉所有東西(SwitchInventoryPageButton管的4個頁面)
         modelPreviewPanel.SetActive(false);
-        ghostPanel.SetActive(false);
-        voicePanel.SetActive(false);
-        cluePanel.SetActive(false);
+
         titleUI.SetActive(true); // 右下提示打開
         crossHair.SetActive(true); // 打開準心
 

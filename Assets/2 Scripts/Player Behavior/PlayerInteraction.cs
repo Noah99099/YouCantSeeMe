@@ -60,7 +60,7 @@ public class PlayerInteraction : MonoBehaviour
     [SerializeField] private Camera playerCamera;
 
     private GameObject currentInteractableObject = null;
-    private InteractableObject currentInteractable; // 用於存儲當前可交互物件 腳本
+    private InteractableObject currentInteractable; // 用於存儲當前可交互物件 腳本，基本沒用到
 
     // ----- [!! 新增 !!] -----
     // 我們需要快取 (Cache) 這兩個效果參數
@@ -164,7 +164,10 @@ public class PlayerInteraction : MonoBehaviour
 
         ContinuousCheck();
     }
-    
+
+    // ==========================================
+    // 瘦身後的 ContinuousCheck (處理UI提示)
+    // ==========================================
     private void ContinuousCheck()
     {
         // [新需求] (已在 Update() 中檢查，但雙重保險)
@@ -172,7 +175,7 @@ public class PlayerInteraction : MonoBehaviour
 
         Ray ray = new Ray(playerCamera.transform.position, playerCamera.transform.forward);
         currentInteractableObject = null;
-        currentInteractable = null; // 重置當前可交互物件
+        //currentInteractable = null; // 重置當前可交互物件
 
         if (showDebugRay)
         {
@@ -183,155 +186,14 @@ public class PlayerInteraction : MonoBehaviour
         {
             currentInteractableObject = hit.collider.gameObject;
 
-            if (currentInteractableObject.TryGetComponent<InteractableObject>(out var interactable)) // 檢查是否是 InteractableObject（單一物品放置判定點）
-            {
-                currentInteractable = interactable;
-                if (pickupPromptText != null)
-                {
-                    // 如果是手把模式，更換UI文本提示
-                    if (InputDeviceManager.Instance.CurrentInputType == InputDeviceManager.InputType.Gamepad)
-                    {
-                        pickupPromptText.text = $"按 [叉] 與 {interactable.objectName} 交互";
-                    }
-                    else //鍵鼠
-                    {
-                        pickupPromptText.text = $"按 [滑鼠左鍵] 與 {interactable.objectName} 交互";
-                    }
-                    pickupPromptText.gameObject.SetActive(true);
-                }
-                return;
-            }
-            // ***** [修正 2: 補上 ContinuousCheck 的新腳本偵測] *****
-            // 2. 新腳本 ItemPlacementSpot
-            else if (currentInteractableObject.TryGetComponent<ItemPlacementSpot>(out var spot))
-            {
-                // 檢查是否符合當前視野 (陰陽眼)
-                // 假設你有 ViewManager 或類似的東西存儲 currentViewType，這裡先假設它存在
-                // 如果沒有 ViewManager，暫時拿掉 ViewType 檢查，或傳入預設值
-                // 這裡示範如何顯示提示：
-                if (pickupPromptText != null)
-                {
-                    // 如果是手把模式，更換UI文本提示
-                    if (InputDeviceManager.Instance.CurrentInputType == InputDeviceManager.InputType.Gamepad)
-                    {
-                        pickupPromptText.text = $"按 [叉] 與 {spot.spotName} 交互";
-                    }
-                    else //鍵鼠
-                    {
-                        pickupPromptText.text = $"按 [滑鼠左鍵] 與 {spot.spotName} 交互";
-                    }
-                    pickupPromptText.gameObject.SetActive(true);
-                }
-                return;
-            }
-            else if (currentInteractableObject.TryGetComponent<InteractableItem>(out var item)) // 檢查是否是 InteractableItem（獲得物品）
+            // 【關鍵魔法】：不管你是抽屜還是密碼鎖，只要你有實作 IInteractable，我就理你！
+            if (currentInteractableObject.TryGetComponent<IInteractable>(out var interactable))
             {
                 if (pickupPromptText != null)
                 {
-                    // 如果是手把模式，更換UI文本提示
-                    if (InputDeviceManager.Instance.CurrentInputType == InputDeviceManager.InputType.Gamepad) 
-                    {
-                        pickupPromptText.text = $"按 [叉] 拾取 {item.itemData.itemName}";
-                    }
-                    else //鍵鼠
-                    {
-                        pickupPromptText.text = $"按 [滑鼠左鍵] 拾取 {item.itemData.itemName}";
-                    }    
-                    pickupPromptText.gameObject.SetActive(true);
-                }
-                return;
-            }
-            else if (currentInteractableObject.TryGetComponent<InteractableVoiceItem>(out var voice)) // 檢查是否是 InteractableVoiceItem（需聲音物品的交互物件）
-            {
-                if (pickupPromptText != null)
-                {
-                    // 如果是手把模式，更換UI文本提示
-                    if (InputDeviceManager.Instance.CurrentInputType == InputDeviceManager.InputType.Gamepad)
-                    {
-                        pickupPromptText.text = $"按 [叉] 與 {voice.voiceItemData.itemName} 交互";
-                    }
-                    else //鍵鼠
-                    {
-                        pickupPromptText.text = $"按 [滑鼠左鍵] 與 {voice.voiceItemData.itemName} 交互";
-                    }
-                    pickupPromptText.gameObject.SetActive(true);
-                }
-                return;
-            }
-            else if (currentInteractableObject.TryGetComponent<PasswordButton>(out var button)) // 檢查是否是 PasswordButton（密碼鎖）
-            {
-                if (pickupPromptText != null)
-                {
-                    // 如果是手把模式，更換UI文本提示
-                    if (InputDeviceManager.Instance.CurrentInputType == InputDeviceManager.InputType.Gamepad)
-                    {
-                        pickupPromptText.text = "按 [叉] 按下按鈕";
-                    }
-                    else //鍵鼠
-                    {
-                        pickupPromptText.text = "按 [滑鼠左鍵] 按下按鈕";
-                    }
-                    pickupPromptText.gameObject.SetActive(true);
-                }
-                return;
-            }
-            else if (currentInteractableObject.TryGetComponent<InteractableRole>(out var role)) // 檢查是否是 InteractableRole（解鎖 Carousel）
-            {
-                if (pickupPromptText != null)
-                {
-                    // 如果是手把模式，更換UI文本提示
-                    if (InputDeviceManager.Instance.CurrentInputType == InputDeviceManager.InputType.Gamepad)
-                    {
-                        pickupPromptText.text = $"按 [叉] 與 {role.objectName} 交互";
-                    }
-                    else //鍵鼠
-                    {
-                        pickupPromptText.text = $"按 [滑鼠左鍵] 與 {role.objectName} 交互";
-                    }
-                    pickupPromptText.gameObject.SetActive(true);
-                }
-                return;
-            }
-            else if (currentInteractableObject.TryGetComponent<CaseRecordBook>(out var book)) // 檢查是否是 案件紀錄簿，後續的功能才能啟用
-            {
-                if (pickupPromptText != null)
-                {
-                    // 如果是手把模式，更換UI文本提示
-                    if (InputDeviceManager.Instance.CurrentInputType == InputDeviceManager.InputType.Gamepad)
-                    {
-                        pickupPromptText.text = $"按 [叉] 拾取 {book.itemName}";
-                    }
-                    else //鍵鼠
-                    {
-                        pickupPromptText.text = $"按 [滑鼠左鍵] 拾取 {book.itemName}";
-                    }
-                    pickupPromptText.gameObject.SetActive(true);
-                }
-                return;
-            }
-            else if (currentInteractableObject.TryGetComponent<Map>(out var map)) // 檢查是否是 平面圖
-            {
-                if (pickupPromptText != null)
-                {
-                    // 如果是手把模式，更換UI文本提示
-                    if (InputDeviceManager.Instance.CurrentInputType == InputDeviceManager.InputType.Gamepad)
-                    {
-                        pickupPromptText.text = $"按 [叉] 拾取 {map.itemName}";
-                    }
-                    else //鍵鼠
-                    {
-                        pickupPromptText.text = $"按 [滑鼠左鍵] 拾取 {map.itemName}";
-                    }
-                    pickupPromptText.gameObject.SetActive(true);
-                }
-                return;
-            }
-            else if (currentInteractableObject.TryGetComponent<KeypadLock>(out var keypad) && keypad.IsLocked) //按鍵密碼鎖
-            {
-                if (pickupPromptText != null)
-                {
-                    // 假設您有 GetInteractionPrompt() 方法
-                    pickupPromptText.text = $"按 [滑鼠左鍵] 交互 {keypad.objectName}";
+                    bool isGamepad = InputDeviceManager.Instance.CurrentInputType == InputDeviceManager.InputType.Gamepad;
+                    // 直接跟物件要提示文字
+                    pickupPromptText.text = interactable.GetInteractPrompt(isGamepad);
                     pickupPromptText.gameObject.SetActive(true);
                 }
                 return;
@@ -341,195 +203,53 @@ public class PlayerInteraction : MonoBehaviour
         HidePrompt();
     }
 
+
+    // ==========================================
+    // 瘦身後的 HandleInteraction (處理實際點擊)
+    // ==========================================
     public void HandleInteraction()
     {
         // [新需求] 如果正在使用聲音物品，則完全阻止交互
-        if (IsVoiceItemActive)
-        {
-            Debug.Log("[PlayerInteraction] 正在使用聲音物品，交互已禁用。");
-            return;
-        }
+        if (IsVoiceItemActive) return;
 
         Ray ray = new Ray(playerCamera.transform.position, playerCamera.transform.forward);
-        Debug.Log($"[HandleInteraction] Raycasting from {ray.origin} toward {ray.direction}, Range={interactionRange}");
 
         if (Physics.Raycast(ray, out RaycastHit hit, interactionRange, interactionLayer)) // Raycast 檢測所有相關圖層 (Obstacle, Interactable)
         {
             GameObject hitObject = hit.collider.gameObject;
-            int hitLayer = hitObject.layer; //*
 
-            // 【第一優先級：阻擋/非交互判定】
-            // 如果擊中的物件是距離最近的，且屬於 Obstacle 圖層，
-            // 根據要求，Obstacle 圖層物件一定沒有交互腳本，因此直接視為障礙物。
-            if (hitLayer == LayerMask.NameToLayer("Obstacle"))
+            // 1. 擋住射線的障礙物
+            if (hitObject.layer == LayerMask.NameToLayer("Obstacle")) return;
+
+            // 2. 【關鍵魔法】：呼叫目標自己的 Interact 邏輯
+            if (hitObject.TryGetComponent<IInteractable>(out var interactable))
             {
-                Debug.Log($"[HandleInteraction] 擊中 Obstacle 圖層障礙物 ({hitObject.name})，阻擋後方交互。");
-                // 遇到障礙物，不執行任何後續邏輯，直接返回。
-                return;
-            }
-
-            // 【第二優先級：Interactable 圖層判定】
-            // 只有當最近的物件不屬於 Default 層，才會執行這裡的交互邏輯。
-            // 這意味著擊中的物件一定是 Interactable 層的目標。
-
-            // **因為判定不到所以把InteractableObject往前移**
-            else if (hitObject.TryGetComponent<InteractableObject>(out var interactable)) //使用物件（單一物品放置判定點）
-            {
-                Debug.Log($"Interacting with: {interactable.objectName}"); //這裡沒有打開案件紀錄簿
-                // 設定交互目標
-                CurrentTarget = interactable;
-                // 打開背包（交互模式）
-                if (_inventoryPanelController != null)
-                {
-                    // true 代表是交互模式
-                    _inventoryPanelController.OpenPanel(true);
-                }
+                // 把自己(PlayerInteraction)傳過去，這樣物件才知道是誰觸發的
+                interactable.Interact(this);
                 HidePrompt();
             }
-            // ***** [修正 3: HandleInteraction 邏輯修正] *****
-            // 2. 新腳本 ItemPlacementSpot
-            else if (hitObject.TryGetComponent<ItemPlacementSpot>(out var spot))
+            else
             {
-                Debug.Log($"Interacting with Spot: {spot.spotName}");
-
-                CurrentPlacementSpot = spot; // 設定新目標
-                CurrentTarget = null;        // 清空舊目標
-
-                // 同樣打開背包供玩家選擇物品
-                if (_inventoryPanelController != null) _inventoryPanelController.OpenPanel(true);
-
-                HidePrompt();
+                Debug.LogWarning($"[HandleInteraction] {hitObject.name} 在交互層，但沒有實作 IInteractable 介面！");
             }
-            else if(hitObject.TryGetComponent<InteractableItem>(out var itemToPickUp)) //獲得物件，進物品背包
-            {
-                Debug.Log($"Picked up: {itemToPickUp.itemData.itemName}");
-                // [新增這行] 在銷毀前，觸發該物品設定好的事件
-                itemToPickUp.TriggerPickUpEvent();
-                InventoryManager.Instance.AddItem(itemToPickUp.itemData);
-                Destroy(hitObject);
-                HidePrompt();
-            }
-            else if (hitObject.TryGetComponent<InteractableVoiceItem>(out var voiceItem)) //獲得物件，進聲音面板
-            {
-                Debug.Log($"Pressed button: {voiceItem.voiceItemData.itemName}");
-                // 新增一次雜音
-                
-                // [修改] 交互成功，觸發花屏特效
-                StartCoroutine(PlayGlitchEffectOnce());
-
-                VoiceItemManager.Instance.AddItem(voiceItem.voiceItemData);
-
-                // 獲得聲音物件觸發的對話
-                if (voiceItem.voiceItemData.voiceItemID == "BulletWarhead_Kitchen") //廚房的子彈
-                {
-                    // 觸發對話事件！
-                    DialogueManager.Instance.TriggerDialogueByEvent("BulletWarhead_Kitchen");
-                }
-                else if (voiceItem.voiceItemData.voiceItemID == "BulletWarhead_DiningRoom") //飯廳的子彈
-                {
-                    DialogueManager.Instance.TriggerDialogueByEvent("BulletWarhead_DiningRoom");
-                }
-
-                Destroy(hitObject);
-                HidePrompt();
-            }
-            else if (hitObject.TryGetComponent<InteractableRole>(out var roleUnlock)) //獲得個別Role的Carousel
-            {
-                Debug.Log($"與 {roleUnlock.objectName} 交互 → 解鎖 Carousel");
-                roleUnlock.Interact();
-                HidePrompt();
-            }
-            else if (hitObject.TryGetComponent<PasswordButton>(out var button)) //密碼鎖
-            {
-                Debug.Log($"Pressed button: {button.Value}");
-                button.OnPress();
-                HidePrompt();
-            }
-            else if (hitObject.TryGetComponent<CaseRecordBook>(out var book)) //案件紀錄簿
-            {
-                Debug.Log($"拾取了關鍵物品: {book.itemName}！");
-
-                book.Collect();
-
-                // 銷毀物件並隱藏提示
-                Destroy(hitObject);
-                HidePrompt();
-            }
-            else if (hitObject.TryGetComponent<Map>(out var map)) //平面圖
-            {
-                Debug.Log($"拾取了關鍵物品: {map.itemName}！");
-
-                map.Collect();
-
-                // 銷毀物件並隱藏提示
-                Destroy(hitObject);
-                HidePrompt();
-            }
-            
-            else if (hitObject.TryGetComponent<KeypadLock>(out var keypad)) //進互輸入按鍵密碼模式 
-            {
-                // 呼叫 KeypadLock 專屬的交互方法
-                if (keypad.IsLocked)
-                {
-                    Debug.Log($"[HandleInteraction] 觸發密碼鎖交互: {hitObject.name}");
-                    keypad.EnterInteractionState(); // *** 直接呼叫 KeypadLock 的方法 ***
-                    return;
-                }
-                HidePrompt();
-            }
-            else if (hitObject.TryGetComponent<InteractionTrigger>(out var trigger)) // 交互後執行對話(單視野)
-            {
-                Debug.Log($"[HandleInteraction] InteractionTrigger detected on {hitObject.name}");
-                if (trigger.dialogueGraph == null)
-                    Debug.LogWarning($"[HandleInteraction] InteractionTrigger on {hitObject.name} has NO DialogueGraph assigned!");
-                else
-                    Debug.Log($"[HandleInteraction] DialogueGraph assigned: {trigger.dialogueGraph.name}");
-
-                if (DialogueManager.Instance == null)
-                {
-                    Debug.LogError("[HandleInteraction] DialogueManager.Instance is NULL — cannot start dialogue!");
-                }
-                else
-                {
-                    Debug.Log("[HandleInteraction] Calling DialogueManager.Instance.StartConversation()");
-                    trigger.Interact();
-                }
-                HidePrompt();
-                return;
-            }
-            else if (hitObject.TryGetComponent<BothViewInteractionTrigger>(out var bothTrigger)) // 交互後執行對話(雙視野)
-            {
-                Debug.Log($"[HandleInteraction] InteractionTrigger detected on {hitObject.name}");
-
-                if (DialogueManager.Instance == null)
-                {
-                    Debug.LogError("[HandleInteraction] DialogueManager.Instance is NULL — cannot start dialogue!");
-                }
-                else
-                {
-                    Debug.Log("[HandleInteraction] Calling DialogueManager.Instance.StartConversation()");
-                    bothTrigger.Interact();
-                }
-                HidePrompt();
-                return;
-            }
-            else if (hitObject.TryGetComponent<DrawerAnimatorController>(out var drawerController))
-            {
-                Debug.Log($"[HandleInteraction] 偵測到可互動抽屜: {hitObject.name}，觸發開關動畫。");
-
-                // 呼叫 DrawerAnimatorController 腳本中的 Interact 函式
-                drawerController.Interact();
-                // 抽屜互動通常不需要隱藏提示（因為抽屜仍然存在）
-                // 如果需要，可以加上 HidePrompt();
-            }
-
-            // ------------------ 未命中任何類型 ------------------
-            Debug.LogWarning($"[HandleInteraction] Hit {hitObject.name}, but it has no recognized Interactable component!");
         }
-        else
-        {
-            Debug.Log("No interactable object detected upon interaction press.");
-        }
+    }
+
+    // ==========================================
+    // 新增：提供給「需要打開背包的物件」呼叫的公開方法
+    // ==========================================
+    public void OpenInventoryForTarget(InteractableObject target)
+    {
+        CurrentTarget = target;
+        CurrentPlacementSpot = null;
+        if (_inventoryPanelController != null) _inventoryPanelController.OpenPanel(true);
+    }
+
+    public void OpenInventoryForSpot(ItemPlacementSpot spot)
+    {
+        CurrentPlacementSpot = spot;
+        CurrentTarget = null;
+        if (_inventoryPanelController != null) _inventoryPanelController.OpenPanel(true);
     }
 
     #region ===== 使用案件紀錄簿-物品的方法 =====
@@ -735,7 +455,7 @@ public class PlayerInteraction : MonoBehaviour
     /// <summary>
     /// [新] 拾取聲音物品時觸發一次花屏
     /// </summary>
-    private IEnumerator PlayGlitchEffectOnce()
+    public IEnumerator PlayGlitchEffectOnce()
     {
         if (glitchController == null) yield break;
 

@@ -2,7 +2,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using UnityEngine.Events;
 
-public class ItemPlacementSpot : MonoBehaviour
+public class ItemPlacementSpot : MonoBehaviour, IInteractable
 {
     [Header("功能：多物品放置判定點")]
     [Header("判定設置")]
@@ -39,6 +39,21 @@ public class ItemPlacementSpot : MonoBehaviour
         return view == ViewType.Yang ? interactiveInYang : interactiveInYin;
     }
 
+    #region ** IInteractable要求內容 **
+    // 2. 實作提示文字
+    public string GetInteractPrompt(bool isGamepad)
+    {
+        return isGamepad ? $"按 [叉] 與 {spotName} 交互" : $"按 [滑鼠左鍵] 與 {spotName} 交互";
+    }
+
+    // 3. 實作互動行為
+    public void Interact(PlayerInteraction player)
+    {
+        Debug.Log($"[ItemPlacementSpot] 玩家與{spotName}交互");
+        player.OpenInventoryForSpot(this);
+    }
+    #endregion
+
     /// <summary>
     /// 嘗試放置物品
     /// </summary>
@@ -67,7 +82,10 @@ public class ItemPlacementSpot : MonoBehaviour
                 Collider col = GetComponent<Collider>();
                 if (col != null) col.enabled = false;
 
-                Destroy(gameObject); // 直接銷毀判定點，反正生成模型的位置是另外開的
+                // 關閉這個腳本組件，確保不會再被其他邏輯誤觸
+                this.enabled = false;
+
+                //Destroy(gameObject); // 直接銷毀判定點，反正生成模型的位置是另外開的。確保生成的模型不會跟著陪葬
             }
 
             return true; // 告訴系統消耗物品

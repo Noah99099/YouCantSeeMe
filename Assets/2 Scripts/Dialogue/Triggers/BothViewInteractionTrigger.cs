@@ -4,8 +4,11 @@ using UnityEngine;
 
 // 這個元件需要一個碰撞體才能被點擊
 [RequireComponent(typeof(Collider))]
-public class BothViewInteractionTrigger : MonoBehaviour
+public class BothViewInteractionTrigger : MonoBehaviour, IInteractable
 {
+    [Tooltip("名稱，目前用到的有大門和門牌")]
+    public string itemName = "";
+
     [Header("陰陽視野下要觸發的對話圖形")]
     [Tooltip("當 ViewManager 處於 'Yang' 視野時要觸發的對話")]
     public DialogueGraph yangDialogueGraph;
@@ -13,8 +16,23 @@ public class BothViewInteractionTrigger : MonoBehaviour
     [Tooltip("當 ViewManager 處於 'Yin' 視野時要觸發的對話")]
     public DialogueGraph yinDialogueGraph;
 
+    #region ** IInteractable要求內容 **
+    // 2. 實作提示文字
+    public string GetInteractPrompt(bool isGamepad)
+    {
+        return isGamepad ? $"按 [叉] 與 {itemName} 交互" : $"按 [滑鼠左鍵] 與 {itemName} 交互";
+    }
+
+    // 3. 實作互動行為
+    public void Interact(PlayerInteraction player)
+    {
+        Debug.Log($"[BothViewInteractionTrigger] 玩家與{itemName}交互");
+        Interact(); // 執行它原本的邏輯
+    }
+    #endregion
+
     /// <summary>
-    /// 這個方法可以被例如點擊事件 (OnMouseDown) 或其他互動系統呼叫。
+    /// 執行純對話邏輯 (由 IInteractable 介面觸發)
     /// </summary>
     public void Interact()
     {

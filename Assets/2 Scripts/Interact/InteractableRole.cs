@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-public class InteractableRole : MonoBehaviour
+public class InteractableRole : MonoBehaviour, IInteractable
 {
     [Header("功能：鬼視野結束後獲得情報")]
     [Header("要解鎖的角色")]
@@ -12,6 +12,21 @@ public class InteractableRole : MonoBehaviour
     public string objectName = "神秘物品"; // 提示顯示用(PromptText)
     [Header("解鎖後要刪掉的物件")]
     public GameObject[] objects;
+
+    #region ** IInteractable要求內容 **
+    // 2. 實作提示文字
+    public string GetInteractPrompt(bool isGamepad)
+    {
+        return isGamepad ? $"按 [叉] 與 {objectName} 對話" : $"按 [滑鼠左鍵] 與 {objectName} 對話";
+    }
+
+    // 3. 實作互動行為
+    public void Interact(PlayerInteraction player)
+    {
+        Debug.Log($"[InteractableRole] 玩家與{objectName}交互");
+        Interact(); // 執行它原本的邏輯
+    }
+    #endregion
 
     /// <summary>
     /// 執行交互（由 PlayerInteraction 呼叫）
@@ -59,18 +74,24 @@ public class InteractableRole : MonoBehaviour
         // 而是直接使用「全局單例」 RolePastManager.Instance
         if (RolePastManager.Instance != null && targetRole != null && unlockCarousel != null)
         {
-            // [!!] 修改這一行 [!!]
+            // 執行解鎖
             RolePastManager.Instance.AddCarouselToRole(targetRole, unlockCarousel);
+            Debug.Log($"已解鎖 {targetRole.roleName} 的 Carousel: {unlockCarousel.name}");
 
-            Debug.Log($"已解K {targetRole.roleName} 的 Carousel: {unlockCarousel.name}");
+            // ***** 【UX 修正】：關閉碰撞體，防止玩家在影片播放前重複狂點 *****
+            Collider col = GetComponent<Collider>();
+            if (col != null) col.enabled = false;
         }   
     }
 
-    public void DestoryObjectsAfterVideo() 
+    public void DestroyObjectsAfterVideo() 
     {
         for (int i = 0; i < objects.Length; i++)
         {
-            Destroy(objects[i]); // 解鎖後刪掉的物件
+            if (objects[i] != null) // 加個 null 檢查比較安全
+            {
+                Destroy(objects[i]); // 解鎖後刪掉的物件
+            }
         }
     }
 }

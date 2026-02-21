@@ -5,8 +5,9 @@ using System.Linq;
 using static InputStackManager;
 using UnityEngine.InputSystem;
 using UnityEngine.EventSystems;
+using static UnityEngine.Rendering.DebugUI;
 
-public class KeypadLock : MonoBehaviour
+public class KeypadLock : MonoBehaviour, IInteractable
 {
     // ***** 【新增：單例實例】 *****
     public static KeypadLock Instance { get; private set; }
@@ -23,6 +24,7 @@ public class KeypadLock : MonoBehaviour
     [Header("畫面 UI 引用")]
     [Tooltip("包含 UI Button 的整個 UI 面板")]
     [SerializeField] private GameObject _uiKeypadRoot; // UI_Keypad_Root (Canvas/Panel)
+    private PlayerInteraction _currentPlayer; // 通過腳本關掉準心
 
     // ***** 【新增：UI 密碼鎖 Prefab 與錨點】 *****
     [Tooltip("包含 KeypadButton.cs 的 3D 密碼鎖模型 Prefab")]
@@ -104,6 +106,22 @@ public class KeypadLock : MonoBehaviour
         SetLayer(_sceneLockedKeypad, _interactableLayerName);
     }
 
+    #region ** IInteractable要求內容 **
+    // 2. 實作提示文字
+    public string GetInteractPrompt(bool isGamepad)
+    {
+        return isGamepad ? "按 [叉] 按下按鈕" : "按 [滑鼠左鍵] 按下按鈕";
+    }
+
+    // 3. 實作互動行為
+    public void Interact(PlayerInteraction player)
+    {
+        Debug.Log($"[KeypadLock] 玩家正在與 {objectName} 交互，準備打開背包...");
+        _currentPlayer = player; // <--- 記下是誰來互動的
+        EnterInteractionState(); // 執行它原本的邏輯
+    }
+    #endregion
+
     // ----- 核心狀態切換 (供 PlayerInteraction.cs 呼叫) -----
 
     /// <summary>
@@ -138,8 +156,8 @@ public class KeypadLock : MonoBehaviour
         Debug.Log("進入密碼輸入畫面。");
 
         // 5.關掉UI
-        PlayerInteraction.Instance.crossHair.SetActive(false);
-        PlayerInteraction.Instance.titleUI.SetActive(false);
+        _currentPlayer.crossHair.SetActive(false);
+        _currentPlayer.titleUI.SetActive(false);
     }
 
     /// <summary>
@@ -227,8 +245,8 @@ public class KeypadLock : MonoBehaviour
         enabled = false;
 
         // 5.打開UI
-        PlayerInteraction.Instance.crossHair.SetActive(true);
-        PlayerInteraction.Instance.titleUI.SetActive(true);
+        _currentPlayer.crossHair.SetActive(true);
+        _currentPlayer.titleUI.SetActive(true);
     }
 
     /// <summary>
@@ -257,8 +275,8 @@ public class KeypadLock : MonoBehaviour
         Debug.Log("密碼鎖：強制退出輸入，Player Map 已恢復。");
 
         // 4.打開UI
-        PlayerInteraction.Instance.crossHair.SetActive(true);
-        PlayerInteraction.Instance.titleUI.SetActive(true);
+        _currentPlayer.crossHair.SetActive(true);
+        _currentPlayer.titleUI.SetActive(true);
     }
 
     // ----- 輔助方法 -----

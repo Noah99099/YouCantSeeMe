@@ -2,7 +2,7 @@
 using UnityEngine;
 using UnityEngine.Events; // 引用 UnityEvent
 
-public class InteractableObject : MonoBehaviour
+public class InteractableObject : MonoBehaviour, IInteractable
 {
     [Header("功能：單一物品放置判定點")]
     [Header("交互物件設置")]
@@ -28,6 +28,22 @@ public class InteractableObject : MonoBehaviour
     {
         return view == ViewType.Yang ? interactiveInYang : interactiveInYin;
     }
+
+    #region ** IInteractable要求內容 **
+
+    public string GetInteractPrompt(bool isGamepad)
+    {
+        return isGamepad ? $"按 [叉] 與 {objectName} 交互" : $"按 [滑鼠左鍵] 與 {objectName} 交互";
+    }
+
+    public void Interact(PlayerInteraction player)
+    {
+        Debug.Log($"[InteractableObject] 玩家正在與 {objectName} 交互，準備打開背包...");
+
+        // 呼叫玩家身上的方法，把「自己(this)」傳過去當作目標，並且打開背包
+        player.OpenInventoryForTarget(this);
+    }
+    #endregion
 
     /// <summary>
     /// 嘗試使用物品

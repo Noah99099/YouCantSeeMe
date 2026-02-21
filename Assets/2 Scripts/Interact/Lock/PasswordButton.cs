@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PasswordButton : MonoBehaviour
+public class PasswordButton : MonoBehaviour, IInteractable
 {
     [SerializeField]
     [Tooltip("對應的數字")] private int buttonValue;
@@ -26,6 +26,21 @@ public class PasswordButton : MonoBehaviour
     {
         originalPosition = transform.localPosition;
     }
+
+    #region ** IInteractable要求內容 **
+    // 2. 實作提示文字
+    public string GetInteractPrompt(bool isGamepad)
+    {
+        return isGamepad ? "按 [叉] 與 按鈕 交互" : "按 [滑鼠左鍵] 與 按鈕 交互";
+    }
+
+    // 3. 實作互動行為
+    public void Interact(PlayerInteraction player)
+    {
+        Debug.Log($"Pressed button: {Value}");
+        OnPress(); // 執行它原本的邏輯
+    }
+    #endregion
 
     public void OnPress()
     {

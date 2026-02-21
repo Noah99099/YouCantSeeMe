@@ -65,7 +65,7 @@ public class PlayVideo : MonoBehaviour
 
             // 2. 將 targetRole 的 DestoryObjectsAfterVideo() 加入回調鏈 (影片結束後執行)
             // C# 的 += 允許我們將多個 Action 合併
-            combinedFinishAction += targetRole.DestoryObjectsAfterVideo;
+            combinedFinishAction += targetRole.DestroyObjectsAfterVideo;
         }
         else if (triggerRole && targetRole == null)
         {
