@@ -17,10 +17,20 @@ public class SimpleFirstPersonController : MonoBehaviour
     [Tooltip("Acceleration and deceleration")]
     public float SpeedChangeRate = 10.0f;
 
-    // ----- Gravity variables (已移除 JumpHeight 和 JumpTimeout) -----
+    // ----- Gravity variables (已移除 JumpHeight 和 JumpTimeout) -----  
     [Space(10)]
-    [Tooltip("The character uses its own gravity value. The engine default is -9.81f")]
+    [Header("Gravity & Falling")]
+
+    [TextArea(2, 3)]
+    public string GravityNotes = "測試無重力懸空時，請將 Gravity 與 GroundedGravity 歸0。";
+    [Space(10)]
+
+    [Tooltip("角色在空中的重力加速度。Unity預設是 -9.81f")]
     public float Gravity = -15.0f;
+    [Tooltip("角色在平地時的垂直吸附力(建議維持負數，例如 -2f，避免走斜坡時浮空)")]
+    public float GroundedGravity = -2.0f;
+    [Tooltip("最大下墜速度 (數值請填正數)。當玩家往下掉時，速度不會超過這個值")]
+    public float MaxFallSpeed = 20.0f;
     [Tooltip("Time required to pass before entering the fall state. Useful for walking down stairs")]
     public float FallTimeout = 0.15f;
 
@@ -47,7 +57,7 @@ public class SimpleFirstPersonController : MonoBehaviour
     private float _rotationVelocity; //旋轉速度
     private float _cinemachineTargetPitch; //攝影機目標俯仰
     private float _verticalVelocity; //垂直速度
-    private float _terminalVelocity = 53.0f; //終端速度
+    //private float _terminalVelocity = 53.0f; //終端速度
 
     private float _fallTimeoutDelta;
     private const float _threshold = 0.01f;
@@ -87,9 +97,10 @@ public class SimpleFirstPersonController : MonoBehaviour
         {
             _fallTimeoutDelta = FallTimeout;
 
+            // 當碰到地板時，將垂直速度設為我們自定義的平地吸附力
             if (_verticalVelocity < 0.0f)
             {
-                _verticalVelocity = -2f;
+                _verticalVelocity = GroundedGravity;
             }
 
             // 已移除所有 Jump 相關的判斷式
@@ -102,9 +113,15 @@ public class SimpleFirstPersonController : MonoBehaviour
             }
         }
 
-        if (_verticalVelocity < _terminalVelocity)
+        // 處理重力加速度與最大下墜速度的限制
+        // 因為往下掉的速度是負值，所以我們要確保它不會小於 -MaxFallSpeed
+        if (_verticalVelocity > -MaxFallSpeed)
         {
             _verticalVelocity += Gravity * Time.deltaTime;
+        }
+        else
+        {
+            _verticalVelocity = -MaxFallSpeed;
         }
     }
 

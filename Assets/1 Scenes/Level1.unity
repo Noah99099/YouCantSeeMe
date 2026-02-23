@@ -1365,7 +1365,7 @@ MonoBehaviour:
     m_Bits: 136
   pickupPromptText: {fileID: 639838745}
   crossHair: {fileID: 1028121333}
-  titleUI: {fileID: 0}
+  titleUI: {fileID: 2064934363}
   cornerAnchor: {fileID: 929232816}
   staticNoiseSource: {fileID: 1132654243}
   glitchController: {fileID: 330585553}
@@ -1406,7 +1406,11 @@ MonoBehaviour:
   SprintSpeed: 6
   RotationSpeed: 0.8
   SpeedChangeRate: 10
+  GravityNotes: "\u6E2C\u8A66\u7121\u91CD\u529B\u61F8\u7A7A\u6642\uFF0C\u8ACB\u5C07
+    Gravity \u8207 GroundedGravity \u6B780\u3002"
   Gravity: -15
+  GroundedGravity: -2
+  MaxFallSpeed: 20
   FallTimeout: 0.15
   Grounded: 1
   GroundedOffset: -0.14

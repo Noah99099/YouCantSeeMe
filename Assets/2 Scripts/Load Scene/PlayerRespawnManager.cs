@@ -22,9 +22,8 @@ public class PlayerRespawnManager : MonoBehaviour
         }
     }
 
-    // ***** 新增: 在 Start 中訂閱 SceneLoader 的事件 *****
-    // 使用 Start 是為了確保 SceneLoader.Instance 已經在它的 Awake 中被賦值
-    private void Start()
+    // ***** 修正 1: 將訂閱時機從 Start 改為 OnEnable，確保一定能接到事件 *****
+    private void OnEnable()
     {
         if (SceneLoader.Instance != null)
         {
@@ -33,6 +32,15 @@ public class PlayerRespawnManager : MonoBehaviour
         else
         {
             Debug.LogError("PlayerRespawnManager 找不到 SceneLoader 的實例！");
+        }
+    }
+
+    // ***** 修正 2: 在 OnDisable 中取消訂閱，對應 OnEnable *****
+    private void OnDisable()
+    {
+        if (SceneLoader.Instance != null)
+        {
+            SceneLoader.Instance.OnSceneLoadComplete -= HandleSceneLoadComplete;
         }
     }
 
@@ -148,11 +156,26 @@ public class PlayerRespawnManager : MonoBehaviour
             Debug.LogWarning("使用第一個找到的重生點");
         }
 
-        // 移動玩家到重生點
+        // ***** 修正 3: 關閉 CharacterController 後再移動座標 *****
         if (targetSpawnPoint != null)
         {
-            player.transform.position = targetSpawnPoint.transform.position;
-            player.transform.rotation = targetSpawnPoint.transform.rotation;
+            CharacterController cc = player.GetComponent<CharacterController>();
+
+            // 如果玩家身上有 CharacterController，必須先 Disable 才能修改座標
+            if (cc != null)
+            {
+                cc.enabled = false;
+                player.transform.position = targetSpawnPoint.transform.position;
+                player.transform.rotation = targetSpawnPoint.transform.rotation;
+                cc.enabled = true; // 移動完後重新啟動
+            }
+            else
+            {
+                // 防呆機制：如果沒有 CharacterController 就直接移動
+                player.transform.position = targetSpawnPoint.transform.position;
+                player.transform.rotation = targetSpawnPoint.transform.rotation;
+            }
+
             Debug.Log($"玩家已重生在: {targetSpawnPoint.pointID}");
         }
         else
