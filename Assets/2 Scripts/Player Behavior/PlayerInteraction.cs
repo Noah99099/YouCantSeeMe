@@ -133,10 +133,28 @@ public class PlayerInteraction : MonoBehaviour
 
     private void Update()
     {
-        // [新需求] 如果正在使用聲音物品，則完全跳過交互檢測
+        // 1. 如果正在使用聲音物品，跳過交互檢測
         if (IsVoiceItemActive)
         {
             HidePrompt(); // 確保在使用聲音物品時不顯示任何提示
+            return;
+        }
+
+        // 2. 【關鍵修正】：如果玩家不在正常遊玩模式 (例如：打開了密碼鎖、案件紀錄簿、組合線索等)
+        // 只要 CurrentMap 不是 _Player，就代表玩家正在操作介面，此時不應該顯示世界提示
+        if (InputStackManager.Instance != null && InputStackManager.Instance.CurrentMap != _Player)
+        {
+            HidePrompt();
+            return;
+        }
+
+        // 3. 【關鍵修正】：雙重保險。明確檢查背包面板是否為開啟狀態，或是正在與特定物件交互
+        bool isInventoryOpen = _inventoryPanelController != null && _inventoryPanelController.IsInventoryPanelOpen;
+        bool isInteractingWithTarget = CurrentTarget != null || CurrentPlacementSpot != null;
+
+        if (isInventoryOpen || isInteractingWithTarget)
+        {
+            HidePrompt();
             return;
         }
 
