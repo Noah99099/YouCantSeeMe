@@ -41,10 +41,32 @@ public class AutoScrollController : MonoBehaviour
     IEnumerator ScrollRoutine()
     {
         // 關鍵：等待 0.1 秒或 1 幀，確保 Layout 組件已經計算出正確的 Content 高度
+        // 確保 Layout 已經計算出正確的高度（非常重要！）
         yield return new WaitForEndOfFrame();
 
         while (true)
         {
+            // --- 判定：內容是否超出可視範圍？ ---
+            // content 總高度 <= scrollRect 視窗高度
+            if (scrollRect.content.rect.height <= scrollRect.viewport.rect.height)
+            {
+                // 情況 A: 內容沒超出範圍，直接顯示後待命
+                scrollRect.verticalNormalizedPosition = 1f;
+                arrowUp.SetActive(false);
+                arrowDown.SetActive(false);
+
+                // 如果你希望沒超出時也要有淡入效果，保留這行
+                yield return StartCoroutine(FadeCanvas(0f, 1f, fadeDuration));
+                contentCanvasGroup.alpha = 1f;
+
+                // 在這裡「卡住」協程，直到內容變動或物件重啟
+                // 或者你可以選擇 yield break 結束協程
+                yield return new WaitUntil(() => scrollRect.content.rect.height > scrollRect.viewport.rect.height);
+                // 一旦內容變多了，會跳出 WaitUntil 繼續往下執行循環
+            }
+
+            // --- 情況 B: 內容超出範圍，執行原有的滾動邏輯 ---
+
             // 1. --- 初始位置歸位 (隱藏狀態下先回到頂部) ---
             scrollRect.verticalNormalizedPosition = 1f;
 
@@ -101,6 +123,14 @@ public class AutoScrollController : MonoBehaviour
 
     void UpdateArrows(float normPos)
     {
+        // 如果內容沒超出範圍，不顯示任何箭頭
+        if (scrollRect.content.rect.height <= scrollRect.viewport.rect.height)
+        {
+            arrowUp.SetActive(false);
+            arrowDown.SetActive(false);
+            return;
+        }
+
         // 如果內容正在淡出（Alpha 變低），我們可以選擇讓箭頭跟著消失
         // 或者單純在 FadeCanvas 結束後統一關閉
         // 增加容錯區間
