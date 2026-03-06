@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 971b7cbdc5e10144095a56b4b5ec4d98
+guid: 95332163bbc11914381c4a4cc24c20aa
 ModelImporter:
   serializedVersion: 22200
   internalIDToNameTable: []
@@ -12,13 +12,9 @@ ModelImporter:
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
-      name: Terrazzo
-    second: {fileID: 2100000, guid: 6865b95b74a580645bef62e412a3be42, type: 2}
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: Wall
-    second: {fileID: 2100000, guid: 63e6bb92d3057c74ea310a292b3b3ba2, type: 2}
+      name: Glass
+    second: {fileID: -876546973899608171, guid: 0a3195d52561fff4da08fafef3f1ce8e,
+      type: 3}
   materials:
     materialImportMode: 2
     materialName: 0
@@ -56,14 +52,14 @@ ModelImporter:
     useSRGBMaterialColor: 1
     sortHierarchyByName: 1
     importPhysicalCameras: 1
-    importVisibility: 1
-    importBlendShapes: 1
-    importCameras: 1
-    importLights: 1
+    importVisibility: 0
+    importBlendShapes: 0
+    importCameras: 0
+    importLights: 0
     nodeNameCollisionStrategy: 1
     fileIdsGeneration: 2
     swapUVChannels: 0
-    generateSecondaryUV: 0
+    generateSecondaryUV: 1
     useFileUnits: 1
     keepQuads: 0
     weldVertices: 1
@@ -93,7 +89,7 @@ ModelImporter:
     blendShapeNormalImportMode: 1
     normalSmoothingSource: 0
   referencedClips: []
-  importAnimation: 1
+  importAnimation: 0
   humanDescription:
     serializedVersion: 3
     human: []
@@ -112,7 +108,7 @@ ModelImporter:
     skeletonHasParents: 1
   lastHumanDescriptionAvatarSource: {instanceID: 0}
   autoGenerateAvatarMappingIfUnspecified: 1
-  animationType: 2
+  animationType: 0
   humanoidOversampling: 1
   avatarSetup: 0
   addHumanoidExtraRootOnlyWhenUsingAvatar: 1
