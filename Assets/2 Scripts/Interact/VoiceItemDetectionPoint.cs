@@ -12,8 +12,8 @@ public class VoiceItemDetectionPoint : MonoBehaviour
     [SerializeField] private AudioSource staticNoiseSource;
 
     [Header("距離設置")]
-    [SerializeField] private float maxDetectionDistance = 20.0f;
-    [SerializeField] private float minDetectionDistance = 1.0f;
+    [SerializeField] private float maxDetectionDistance = 20.0f; // 這是效果開始產生的最遠距離
+    [SerializeField] private float minDetectionDistance = 1.0f; // 這是效果達到最大值（100% 強度）的距離
 
     [Header("影片和刪除物品")]
     [SerializeField] private PlayVideo playVideo;

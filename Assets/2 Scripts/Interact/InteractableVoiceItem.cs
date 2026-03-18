@@ -8,6 +8,10 @@ public class InteractableVoiceItem : MonoBehaviour, IInteractable
     // 在 Inspector 中，將你為這個物件建立的 VoiceItemData 資源檔拖曳到這裡
     public VoiceItemData voiceItemData;
 
+    // [新增] 用來存放額外獲得的普通物品
+    [Header("可選功能：同時獲得普通物品 (若無則留空)")]
+    public ItemData optionalItemData;
+
     [HideInInspector] public bool InteractionEnabled = true;
 
     #region ** IInteractable要求內容 **
@@ -31,6 +35,14 @@ public class InteractableVoiceItem : MonoBehaviour, IInteractable
         if (VoiceItemManager.Instance != null)
         {
             VoiceItemManager.Instance.AddItem(voiceItemData);
+        }
+
+        // [新增] 第 2.5 步：如果有放入 ItemData，就加進普通背包
+        if (optionalItemData != null)
+        {
+            // 這裡需要替換成你遊戲中實際的「普通背包管理器」
+            InventoryManager.Instance.AddItem(optionalItemData);
+            Debug.Log($"[InteractableVoiceItem] 額外獲得了普通物品: {optionalItemData.itemName}");
         }
 
         // 第 3 步：觸發對應的對話 (完美解耦寫法！)
