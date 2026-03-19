@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 350e67d0831b78943818d6e91a37a8d4
+guid: 2c64bb8401e10df4d973dd4dcbbacac3
 ModelImporter:
   serializedVersion: 22200
   internalIDToNameTable: []
@@ -7,28 +7,13 @@ ModelImporter:
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
-      name: Brown Polished Oak Wood
-    second: {fileID: 2100000, guid: 99c3ab6a45bfd624288491583be3b663, type: 2}
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: Glass
-    second: {fileID: 2100000, guid: 93c16e34a8a163e4f9f7fc1722990300, type: 2}
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: Light
-    second: {fileID: 2100000, guid: 01d78b95112dabe42bfeec237691f245, type: 2}
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: MetalSilver
+      name: Metal
     second: {fileID: 2100000, guid: 759f7b144af54c142854ecda1abac700, type: 2}
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
-      name: Silver
-    second: {fileID: 2100000, guid: 759f7b144af54c142854ecda1abac700, type: 2}
+      name: Plastic
+    second: {fileID: 2100000, guid: 66c02f0eddb1c054d855ee7fbb740ee8, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0
@@ -126,7 +111,7 @@ ModelImporter:
   humanoidOversampling: 1
   avatarSetup: 0
   addHumanoidExtraRootOnlyWhenUsingAvatar: 1
-  importBlendShapeDeformPercent: 0
+  importBlendShapeDeformPercent: 1
   remapMaterialsIfMaterialImportModeIsNone: 0
   additionalBone: 0
   userData: 
