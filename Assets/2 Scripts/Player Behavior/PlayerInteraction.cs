@@ -400,8 +400,10 @@ public class PlayerInteraction : MonoBehaviour
             if (currentVoiceItemModel != null) Destroy(currentVoiceItemModel);
 
             currentVoiceItemModel = Instantiate(voiceItem.voiceItem, cornerAnchor);
-            currentVoiceItemModel.transform.localPosition = Vector3.zero;
-            currentVoiceItemModel.transform.localRotation = Quaternion.identity;
+
+            // [!! 核心修改 !!] 套用 ScriptableObject 裡的偏移量
+            currentVoiceItemModel.transform.localPosition = voiceItem.positionOffset;
+            currentVoiceItemModel.transform.localEulerAngles = voiceItem.rotationOffset;
 
             // 根據 ScriptableObject 中定義的 itemScale 來設定模型的本地縮放
             currentVoiceItemModel.transform.localScale = Vector3.one * voiceItem.itemScale;
@@ -460,7 +462,8 @@ public class PlayerInteraction : MonoBehaviour
             VoiceItemManager.Instance.MarkItemAsUsed(voiceItem);
 
             // [!!] 通知 CCM，並告知類型是「Sound」[!!]
-            ClueCombinationManager.Instance?.CheckForNewPuzzleUnlocks(false, EClueType.Sound);
+            // 建議保留在 VoiceItemManager.cs 就好
+            // ClueCombinationManager.Instance?.CheckForNewPuzzleUnlocks(false, EClueType.Sound);
         }
 
         // [修改] 確保花屏特效停止

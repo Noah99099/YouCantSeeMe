@@ -222,6 +222,20 @@ public class VoicePanelUIController : MonoBehaviour
                 itemSlots[i].Setup(null, defaultItem, HandleSlotSelected);
             }
         }
+
+        // [!! 抓蟲修復：新增這段 !!]
+        // 當左側格子刷新完畢後，強制右側面板也同步讀取最新狀態
+        if (currentSelectedSlot != null)
+        {
+            // 如果目前有選中的格子，就重新讀取它的最新狀態 (這樣就會切換到使用後文本)
+            UpdateRightPanel(currentSelectedSlot.CurrentVoiceItemData);
+        }
+        else
+        {
+            // 如果沒有選中的格子，就顯示預設空白狀態
+            UpdateRightPanel(null);
+        }
+        // [!! 新增結束 !!]
     }
 
     /// <summary>

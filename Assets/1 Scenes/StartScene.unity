@@ -3330,7 +3330,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 7.609314, y: 0.3}
+  m_AnchoredPosition: {x: 7.6093445, y: 0.3000002}
   m_SizeDelta: {x: 35.2185, y: 6.2025}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1042979526
@@ -4061,7 +4061,7 @@ GameObject:
   - component: {fileID: 1301992811}
   - component: {fileID: 1301992810}
   m_Layer: 5
-  m_Name: GamepadSen_Text
+  m_Name: Speed_Text
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4106,7 +4106,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\u624B\u67C4\u9748\u654F\u5EA6"
+  m_text: "\u79FB\u52D5\u901F\u5EA6"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 86ad8a74bd15fe54cb7babbae7c7face, type: 2}
   m_sharedMaterial: {fileID: -1846312470534999700, guid: 86ad8a74bd15fe54cb7babbae7c7face,
@@ -4173,7 +4173,7 @@ MonoBehaviour:
   m_margin: {x: 0, y: 0, z: 0, w: 0}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
-  m_hasFontAssetChanged: 1
+  m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
 --- !u!222 &1301992811
@@ -5297,10 +5297,10 @@ GameObject:
   m_Component:
   - component: {fileID: 1724102669}
   - component: {fileID: 1724102671}
-  - component: {fileID: 1724102670}
+  - component: {fileID: 1724102673}
   - component: {fileID: 1724102672}
   m_Layer: 5
-  m_Name: Sensitive Gamepad
+  m_Name: Move Speed
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5328,22 +5328,6 @@ RectTransform:
   m_AnchoredPosition: {x: 230.9363, y: -221.12}
   m_SizeDelta: {x: 649.8724, y: 28.4099}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &1724102670
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1724102668}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7a8ce6cc841fa704f936b6914a4583c8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  sensitivitySlider: {fileID: 1724102671}
-  sensitivityManagerPrefab: {fileID: 239026835516045829, guid: e6eef4317235d32429d943723995d980,
-    type: 3}
-  sensitivityType: 1
 --- !u!114 &1724102671
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5409,6 +5393,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   targetSlider: {fileID: 1724102671}
   valueText: {fileID: 1183470586}
+--- !u!114 &1724102673
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1724102668}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 84cb4738192ee204f8e329ea569c6495, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  speedSlider: {fileID: 1724102671}
 --- !u!1 &1735222604
 GameObject:
   m_ObjectHideFlags: 0

@@ -70,6 +70,10 @@ public class SimpleFirstPersonController : MonoBehaviour
     {
         _controller = GetComponent<CharacterController>();
         _fallTimeoutDelta = FallTimeout;
+
+        // [新增這一行] 遊戲開始時，去公佈欄讀取場景 1 設定的移動速度
+        // 如果找不到記錄，就維持原本的 MoveSpeed 預設值
+        MoveSpeed = PlayerPrefs.GetFloat("PlayerMoveSpeed", MoveSpeed);
     }
 
     private void Update()

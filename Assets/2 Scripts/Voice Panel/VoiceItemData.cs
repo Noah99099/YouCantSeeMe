@@ -18,6 +18,11 @@ public class VoiceItemData : ScriptableObject
     // 1.0 = 原始大小, 0.5 = 50%, 2.0 = 200%
     public float itemScale = 1.0f;
 
+    // [!! 新增 !!] 用來個別微調每個物品的位置與旋轉
+    [Header("模型生成微調 (相對於 cornerAnchor)")]
+    public Vector3 positionOffset = Vector3.zero;
+    public Vector3 rotationOffset = Vector3.zero;
+
     [Header("右側文字顯示")]
     public string titleText;       // 顯示在 InfoText1
 

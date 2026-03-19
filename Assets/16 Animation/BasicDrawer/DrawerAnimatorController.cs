@@ -24,7 +24,7 @@ public class DrawerAnimatorController : MonoBehaviour, IInteractable
     // 2. 實作提示文字
     public string GetInteractPrompt(bool isGamepad)
     {
-        return isGamepad ? "按 [叉] 開關抽屜" : "按 [滑鼠左鍵] 開關抽屜";
+        return isGamepad ? "按 [叉] 開關抽屜" : ""; // 按 [滑鼠左鍵] 開關抽屜
     }
 
     // 3. 實作互動行為
