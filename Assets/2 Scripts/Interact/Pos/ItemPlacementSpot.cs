@@ -14,14 +14,15 @@ public class ItemPlacementSpot : MonoBehaviour, IInteractable
     [Header("生成設置")]
     // 核心修改2：指定物品生成的位置 (如果為空，則默認生成在當前物件位置)
     public Transform spawnRoot;
-    public bool disableColliderAfterPlaced = true; // 放置成功後是否關閉碰撞體(避免重複放置)
+
+    [Tooltip("放置成功後是否直接刪除這個判定點物件")]
+    public bool destroyAfterPlaced = true;
 
     [Header("視野下互動設定")]
     public bool interactiveInYang = true;
     public bool interactiveInYin = false;
 
     [Header("事件")]
-    // 成功時傳出 ItemData，方便你做更細緻的處理 (例如播放特定音效)
     public UnityEvent<ItemData> onCorrectItemPlaced;
     public UnityEvent onWrongItemUsed;
 
@@ -67,17 +68,15 @@ public class ItemPlacementSpot : MonoBehaviour, IInteractable
         {
             Debug.Log($"[ItemPlacementSpot] 在 {spotName} 成功放置了 {item.itemName}");
 
-            // 1. 生成物品模型
-            PlaceItemModel(item);
-
-            // 2. 標記為已占用
+            // 1. 生成物品模型、標記為已占用
+            PlaceItemModel(item); 
             isOccupied = true;
 
-            // 3. 觸發成功事件
+            // 2. 觸發成功事件 (通知 Manager)
             onCorrectItemPlaced?.Invoke(item);
 
             // 4. 根據設定關閉碰撞體 (讓準心不再顯示交互圖示)
-            if (disableColliderAfterPlaced)
+            if (destroyAfterPlaced)
             {
                 Collider col = GetComponent<Collider>();
                 if (col != null) col.enabled = false;
@@ -87,6 +86,12 @@ public class ItemPlacementSpot : MonoBehaviour, IInteractable
 
                 //Destroy(gameObject); // 直接銷毀判定點，反正生成模型的位置是另外開的。確保生成的模型不會跟著陪葬
             }
+
+            // 3. 徹底刪除這個判定點物件
+            //if (destroyAfterPlaced)
+            //{
+            //    Destroy(gameObject);
+            //}
 
             return true; // 告訴系統消耗物品
         }
@@ -115,9 +120,7 @@ public class ItemPlacementSpot : MonoBehaviour, IInteractable
         // 生成模型
         GameObject placedObj = Instantiate(item.modelPrefab, targetTransform.position, targetTransform.rotation);
 
-        // 建議將生成的物品設為 spawnRoot 的子物件，保持場景整潔
+        // 【修正】直接將生成的模型設為 targetTransform (也就是 spawnRoot) 的子物件
         placedObj.transform.SetParent(targetTransform);
-
-        // (可選) 如果生成的模型本身有 Collider，可能需要在這裡移除或設為 Trigger，避免擋住射線
     }
 }

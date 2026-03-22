@@ -95,6 +95,12 @@ public class VideoPlayerController : MonoBehaviour
         if (targetImage != null)
             targetImage.gameObject.SetActive(false);
 
+        // 【新增】清空 RenderTexture，避免下一支影片播放前出現殘影
+        if (renderTexture != null)
+        {
+            renderTexture.Release();
+        }
+
         // 2. 播放完畢後，恢復玩家輸入
         try
         {

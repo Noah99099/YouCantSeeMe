@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 
+[RequireComponent(typeof(AudioSource))]
 public class PasswordLockManager : MonoBehaviour
 {
     public static PasswordLockManager Instance { get; private set; }
@@ -42,6 +43,9 @@ public class PasswordLockManager : MonoBehaviour
         {
             Instance = this;
         }
+
+        // 【新增這行】把同一物件上的 AudioSource 抓進變數裡
+        audioSource = GetComponent<AudioSource>();
 
         ResetLock();
     }

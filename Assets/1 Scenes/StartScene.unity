@@ -1238,7 +1238,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -540, y: 49}
+  m_AnchoredPosition: {x: -518, y: 95}
   m_SizeDelta: {x: 470.0416, y: 243.119}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &302642603
@@ -7520,6 +7520,11 @@ PrefabInstance:
       propertyPath: sceneMusics.Array.data[2].audioSource
       value: 
       objectReference: {fileID: 7834127433194234769}
+    - target: {fileID: 6142483398971127505, guid: 681276822ebd15d4bb819c74645f8fe0,
+        type: 3}
+      propertyPath: m_Volume
+      value: 0.8
+      objectReference: {fileID: 0}
     - target: {fileID: 6399207914568603355, guid: 681276822ebd15d4bb819c74645f8fe0,
         type: 3}
       propertyPath: m_LocalPosition.x

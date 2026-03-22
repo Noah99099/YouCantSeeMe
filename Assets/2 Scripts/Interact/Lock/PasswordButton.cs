@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+// 【新增這行】確保掛載腳本時，Unity 會自動幫你加 AudioSource
+[RequireComponent(typeof(AudioSource))]
 public class PasswordButton : MonoBehaviour, IInteractable
 {
     [SerializeField]
@@ -25,6 +27,9 @@ public class PasswordButton : MonoBehaviour, IInteractable
     private void Start()
     {
         originalPosition = transform.localPosition;
+
+        // 【新增這行】把同一物件上的 AudioSource 抓進變數裡
+        audioSource = GetComponent<AudioSource>();
     }
 
     #region ** IInteractable要求內容 **
