@@ -125,6 +125,14 @@ public class StartSceneUIController : MonoBehaviour
     public void NavigatePage(int direction)
     {
         currentPageIndex = Mathf.Clamp(currentPageIndex + direction, 0, 3);
+
+        // --- 補充優化：取消點擊(選取)紀錄，避免滑鼠懸停狀態失效 ---
+        // 只有在鍵鼠模式下才清空選擇。手把模式的焦點會由後續的 UpdateUIState 重新指派。
+        if (InputDeviceManager.Instance.CurrentInputType == InputDeviceManager.InputType.KeyboardMouse)
+        {
+            EventSystem.current.SetSelectedGameObject(null);
+        }
+
         UpdateUIState();
     }
 
