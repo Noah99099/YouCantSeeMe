@@ -6518,7 +6518,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 739, y: 353}
+  m_AnchoredPosition: {x: 655, y: -338}
   m_SizeDelta: {x: 1115, y: 1139}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1742725762
@@ -8177,6 +8177,16 @@ PrefabInstance:
       propertyPath: m_Volume
       value: 0.8
       objectReference: {fileID: 0}
+    - target: {fileID: 6142483398971127505, guid: 681276822ebd15d4bb819c74645f8fe0,
+        type: 3}
+      propertyPath: m_audioClip
+      value: 
+      objectReference: {fileID: 8300000, guid: 948ab48b64677e248ac55b1a590dfb17, type: 3}
+    - target: {fileID: 6142483398971127505, guid: 681276822ebd15d4bb819c74645f8fe0,
+        type: 3}
+      propertyPath: m_PlayOnAwake
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6399207914568603355, guid: 681276822ebd15d4bb819c74645f8fe0,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -8232,6 +8242,16 @@ PrefabInstance:
       propertyPath: m_audioClip
       value: 
       objectReference: {fileID: 8300000, guid: 52b1d15b162650144988e7087a91482e, type: 3}
+    - target: {fileID: 7791103009390819603, guid: 681276822ebd15d4bb819c74645f8fe0,
+        type: 3}
+      propertyPath: m_audioClip
+      value: 
+      objectReference: {fileID: 8300000, guid: 51626606ceac04245b240ddde6ec8809, type: 3}
+    - target: {fileID: 7791103009390819603, guid: 681276822ebd15d4bb819c74645f8fe0,
+        type: 3}
+      propertyPath: m_PlayOnAwake
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8430279348817373550, guid: 681276822ebd15d4bb819c74645f8fe0,
         type: 3}
       propertyPath: m_Name
