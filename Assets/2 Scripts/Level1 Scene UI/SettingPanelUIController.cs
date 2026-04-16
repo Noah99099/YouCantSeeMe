@@ -4,6 +4,7 @@ using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using TMPro; // 新增：使用 TextMeshPro 命名空間
 
 public class SettingPanelUIController : MonoBehaviour
 {
@@ -14,6 +15,17 @@ public class SettingPanelUIController : MonoBehaviour
     public GameObject titleUI;
     [Header("準心")]
     public GameObject crossHair;
+
+    [Header("標題文字 (TMP)")]
+    [Tooltip("顯示目前頁面名稱的 TextMeshPro")]
+    public TextMeshProUGUI title; // 新增：名為 Title 的 TMP
+
+    [Header("面板背景圖片")]
+    [Tooltip("遊戲設置頁的背景圖片")]
+    public GameObject bg_gameSetting;
+    [Tooltip("操作說明頁的背景圖片")]
+    public GameObject bg_operation;
+
     [Header("設定分頁")]
     public GameObject setting;
     [Header("操作說明分頁")]
@@ -23,8 +35,8 @@ public class SettingPanelUIController : MonoBehaviour
     [Header("設定Slider與提示圖片")]
     public Slider[] sliders_settingPanel; // 範例為4個
     public Image[] images_hint; // 對應Slider的提示圖
-    [Header("操作說明ScrollRect")]
-    public ScrollRect operation_scrollRect;
+    //[Header("操作說明ScrollRect")]
+    //public ScrollRect operation_scrollRect;
 
     private void OnEnable()
     {
@@ -32,9 +44,8 @@ public class SettingPanelUIController : MonoBehaviour
         if (InputProvider.InputActions == null) return; // 防呆
         InputProvider.InputActions.Setting.CloseSetting.performed += OnCloseSettingPanel;
 
-        // 預設顯示 'setting' 分頁
-        setting.SetActive(true);
-        operation.SetActive(false);
+        // 預設初始化：顯示遊戲設置頁
+        ResetToDefaultPage();
 
         // **根據目前使用的輸入裝置
         if (InputDeviceManager.Instance != null)
@@ -63,6 +74,21 @@ public class SettingPanelUIController : MonoBehaviour
     {
         // 持續檢查當前選取的 Slider 並更新提示圖片
         HandleSliderHintImages();
+    }
+
+    /// <summary>
+    /// 將面板恢復到預設狀態 (遊戲設置頁)
+    /// </summary>
+    private void ResetToDefaultPage()
+    {
+        setting.SetActive(true);
+        operation.SetActive(false);
+
+        if (bg_gameSetting != null) bg_gameSetting.SetActive(true);
+        if (bg_operation != null) bg_operation.SetActive(false);
+
+        // 更新標題文字為［遊戲設置］
+        if (title != null) title.text = "遊戲設置";
     }
 
     /// <summary>
@@ -122,10 +148,12 @@ public class SettingPanelUIController : MonoBehaviour
 
         // 2. 清除 EventSystem 的選取
         EventSystem.current.SetSelectedGameObject(null); //清除手把UI焦點避免出錯
-        
-        // 恢復分頁的預設狀態
+
+        // 恢復分頁與背景的預設狀態 (遊戲設置頁)
         setting.SetActive(true);
         operation.SetActive(false);
+        if (bg_gameSetting != null) bg_gameSetting.SetActive(true);
+        if (bg_operation != null) bg_operation.SetActive(false);
 
         settingPanel.SetActive(false);
         titleUI.SetActive(true);
@@ -138,8 +166,14 @@ public class SettingPanelUIController : MonoBehaviour
     /// </summary>
     public void OnButtonGameSettingsClicked()
     {
+        // 開啟遊戲設定內容，顯示遊戲設定背景
         setting.SetActive(true);
         operation.SetActive(false);
+        if (bg_gameSetting != null) bg_gameSetting.SetActive(true);
+        if (bg_operation != null) bg_operation.SetActive(false);
+
+        // 更新標題文字為［遊戲設置］
+        if (title != null) title.text = "遊戲設置";
 
         // 手把模式下，將焦點轉移到第一個 Slider 上
         if (InputDeviceManager.Instance.CurrentInputType == InputDeviceManager.InputType.Gamepad)
@@ -156,15 +190,21 @@ public class SettingPanelUIController : MonoBehaviour
     /// </summary>
     public void OnButtonOperationClicked()
     {
+        // 開啟操作說明內容，顯示操作說明背景
         setting.SetActive(false);
         operation.SetActive(true);
+        if (bg_gameSetting != null) bg_gameSetting.SetActive(false);
+        if (bg_operation != null) bg_operation.SetActive(true);
 
-        // 手把模式下，將焦點轉移到 operation_scrollRect
+        // 更新標題文字為［操作指示］
+        if (title != null) title.text = "操作指示";
+
+        // 手把模式下，既然移除了 ScrollRect，將焦點留在「操作說明」按鈕上避免失焦
         if (InputDeviceManager.Instance.CurrentInputType == InputDeviceManager.InputType.Gamepad)
         {
-            if (operation_scrollRect != null)
+            if (buttons_settingPanel.Length > 1 && buttons_settingPanel[1] != null)
             {
-                EventSystem.current.SetSelectedGameObject(operation_scrollRect.gameObject);
+                EventSystem.current.SetSelectedGameObject(buttons_settingPanel[1].gameObject);
             }
         }
     }
