@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections; // 新增這行以使用協程
 
 public class Level1_BypassManager : MonoBehaviour
 {
@@ -39,11 +40,13 @@ public class Level1_BypassManager : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Alpha1))
         {
             Debug.Log("【測試捷徑已啟用】 - 正在跳過 Level 1 進入流程...");
-            PerformBypass();
+            // 改為啟動協程
+            StartCoroutine(PerformBypassCoroutine());
         }
     }
 
-    private void PerformBypass()
+    // 將原本的 void PerformBypass() 改為 IEnumerator
+    private IEnumerator PerformBypassCoroutine()
     {
         // 執行前置檢查
         if (prepareToYinViewInstance == null || doorController == null || 
@@ -52,7 +55,7 @@ public class Level1_BypassManager : MonoBehaviour
             num5 == null || num6 == null || num7 == null || num8 == null || num9 == null)
         {
             Debug.LogError("BypassManager: 有關鍵參考物件遺失，請檢查 Inspector 設定！");
-            return;
+            yield break; // 協程中使用 yield break 提早結束
         }
 
         // --- 1. 模擬前三個交互，觸發 PrepareToYinView 的 Check() ---
@@ -60,6 +63,12 @@ public class Level1_BypassManager : MonoBehaviour
         prepareToYinViewInstance.InvokeYangAction_Lock();
         prepareToYinViewInstance.InvokeYangAction_Gate();
         prepareToYinViewInstance.InvokeYangAction_HNum();
+
+        // 【關鍵修改】：等待 PrepareToYinView 的協程跑完！
+        // 讀取 prepareToYinViewInstance 中設定的等待時間，並加上一點緩衝 (0.1秒) 確保事件順利觸發
+        float waitTime = prepareToYinViewInstance.delayAfterBlink + 0.1f;
+        Debug.Log($"【BypassManager】等待 {waitTime} 秒，讓眨眼與解鎖事件順利完成...");
+        yield return new WaitForSeconds(waitTime);
 
         // --- 2. 模擬密碼鎖正確輸入，直接開門 ---
         doorController.OpenDoor();

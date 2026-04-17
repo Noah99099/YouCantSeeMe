@@ -92,7 +92,7 @@ MonoBehaviour:
         PublicKeyToken=null
       connections:
       - fieldName: entry
-        node: {fileID: 3495192174402122105}
+        node: {fileID: 6956130137423620389}
         reroutePoints: []
       _direction: 1
       _connectionType: 1
@@ -129,7 +129,7 @@ MonoBehaviour:
   m_Name: Line
   m_EditorClassIdentifier: 
   graph: {fileID: 11400000}
-  position: {x: 792, y: -200}
+  position: {x: 824, y: -616}
   ports:
     keys:
     - entry
@@ -139,10 +139,7 @@ MonoBehaviour:
       _node: {fileID: 3495192174402122105}
       _typeQualifiedName: BaseNode, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
         PublicKeyToken=null
-      connections:
-      - fieldName: exit
-        node: {fileID: 3416368472388945167}
-        reroutePoints: []
+      connections: []
       _direction: 0
       _connectionType: 1
       _typeConstraint: 0
@@ -151,10 +148,7 @@ MonoBehaviour:
       _node: {fileID: 3495192174402122105}
       _typeQualifiedName: BaseNode, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
         PublicKeyToken=null
-      connections:
-      - fieldName: entry
-        node: {fileID: 6956130137423620389}
-        reroutePoints: []
+      connections: []
       _direction: 1
       _connectionType: 1
       _typeConstraint: 0
@@ -312,7 +306,7 @@ MonoBehaviour:
   m_Name: Invoke Event
   m_EditorClassIdentifier: 
   graph: {fileID: 11400000}
-  position: {x: 1202.9669, y: 95.29337}
+  position: {x: 952, y: 184}
   ports:
     keys:
     - entry
@@ -324,7 +318,7 @@ MonoBehaviour:
         PublicKeyToken=null
       connections:
       - fieldName: exit
-        node: {fileID: 3495192174402122105}
+        node: {fileID: 3416368472388945167}
         reroutePoints: []
       _direction: 0
       _connectionType: 1
