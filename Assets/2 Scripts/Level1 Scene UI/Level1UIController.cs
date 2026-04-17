@@ -290,6 +290,17 @@ public class Level1UIController : MonoBehaviour
         {
             _mapPanelUIController.OpenMap(); // 打開平面圖
             Debug.Log($"[{this.name}] 已請求打開平面圖。");
+            
+            // 透過單例呼叫 BigMapController 的置中方法
+            if (BigMapController.Instance != null)
+            {
+                BigMapController.Instance.CenterMapOnPlayer();
+            }
+            else
+            {
+                Debug.LogWarning("找不到 BigMapController 單例，無法執行地圖置中！");
+            }
+            // ==================================
         }
         else
         {
