@@ -5,5 +5,7 @@ using UnityEngine;
 public class CarouselData : ScriptableObject
 {
     public Sprite[] images;   // 輪播圖片
+
+    [TextArea(4, 10)]
     public string[] texts;    // 對應文字*2 (TextMeshPro)
 }
