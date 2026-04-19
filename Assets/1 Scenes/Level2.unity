@@ -28146,7 +28146,7 @@ PrefabInstance:
     - target: {fileID: -8679921383154817045, guid: 15d14fe63131174448bbb93e6c0a205e,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: -1.9422
+      value: -1.948
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 15d14fe63131174448bbb93e6c0a205e,
         type: 3}
@@ -33796,6 +33796,33 @@ Light:
   m_UseViewFrustumForShadowCasterCull: 1
   m_ShadowRadius: 0
   m_ShadowAngle: 0
+--- !u!1 &887737655 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: -5208803016458513391, guid: 971b7cbdc5e10144095a56b4b5ec4d98,
+    type: 3}
+  m_PrefabInstance: {fileID: 2012774842}
+  m_PrefabAsset: {fileID: 0}
+--- !u!65 &887737656
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 887737655}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 2.9085298, y: 51.61973, z: 250.20425}
+  m_Center: {x: -0.0000038146973, y: -24.355608, z: 90.261635}
 --- !u!1001 &888510930
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -74931,6 +74958,10 @@ PrefabInstance:
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: -5208803016458513391, guid: 971b7cbdc5e10144095a56b4b5ec4d98,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 887737656}
     - targetCorrespondingSourceObject: {fileID: -1807970279642858887, guid: 971b7cbdc5e10144095a56b4b5ec4d98,
         type: 3}
       insertIndex: -1
