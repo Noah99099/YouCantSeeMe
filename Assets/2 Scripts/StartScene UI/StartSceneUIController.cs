@@ -74,6 +74,10 @@ public class StartSceneUIController : MonoBehaviour
             }
         }
 
+        // 新增 默認箭頭不顯示
+        leftArrowButton.gameObject.SetActive(false);
+        rightArrowButton.gameObject.SetActive(false);
+
         UpdateUIState();
         SetFocusForCurrentDevice(InputDeviceManager.Instance.CurrentInputType);
     }
@@ -141,17 +145,21 @@ public class StartSceneUIController : MonoBehaviour
     /// </summary>
     private void UpdateUIState()
     {
-        // 1. 處理箭頭顯示 (第一頁沒左箭頭，最後一頁沒右箭頭)
-        if (leftArrowButton != null) leftArrowButton.gameObject.SetActive(currentPageIndex > 0);
-        if (rightArrowButton != null) rightArrowButton.gameObject.SetActive(currentPageIndex < 3);
+        // 核心修改*：判斷目前是否應該顯示互動 UI (滑鼠懸停 或 手把模式)
+        bool isUIActive = isHoveringCenter || InputDeviceManager.Instance.CurrentInputType == InputDeviceManager.InputType.Gamepad;
+
+        // 1. 處理箭頭顯示：必須在 isUIActive 為 true 的前提下，才判斷頁數
+        // (第一頁沒左箭頭，最後一頁沒右箭頭)
+        if (leftArrowButton != null) leftArrowButton.gameObject.SetActive(isUIActive && currentPageIndex > 0);
+        if (rightArrowButton != null) rightArrowButton.gameObject.SetActive(isUIActive && currentPageIndex < 3);
 
         // 2. 處理中間內容顯示
         for (int i = 0; i < pageCenterGroups.Length; i++)
         {
             if (pageCenterGroups[i] == null) continue;
 
-            bool shouldShow = (i == currentPageIndex) &&
-                              (isHoveringCenter || InputDeviceManager.Instance.CurrentInputType == InputDeviceManager.InputType.Gamepad);
+            // 結合當前頁數與 UI 觸發狀態
+            bool shouldShow = (i == currentPageIndex) && isUIActive;
 
             if (shouldShow)
             {
