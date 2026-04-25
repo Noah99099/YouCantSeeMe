@@ -28,11 +28,19 @@ public class TeleportListButton : MonoBehaviour
     // 按鈕點擊事件 (在 Inspector 連結)
     public void OnClickTeleport()
     {
-        if (pointData.isUnlocked && BigMapController.Instance != null)
+        // --- 新增 Debug Log ---
+        Debug.Log($"[Teleport] 點擊了按鈕，PointData 是否為空: {pointData == null}");
+        
+        if (pointData != null)
+        {
+            Debug.Log($"[Teleport] 傳送點解鎖狀態: {pointData.isUnlocked}");
+            Debug.Log($"[Teleport] BigMapController 實例是否存在: {BigMapController.Instance != null}");
+        }
+
+        if (pointData != null && pointData.isUnlocked && BigMapController.Instance != null)
         {
             BigMapController.Instance.TeleportToPoint(pointData);
-            // 傳送後通常會關閉地圖面板
-            // TeleportListPanelManager.Instance.TogglePanel(false); 
+            Debug.Log("<color=cyan>[Teleport] 成功呼叫傳送方法！</color>");
         }
     }
 }

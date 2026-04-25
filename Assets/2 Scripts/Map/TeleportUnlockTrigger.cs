@@ -6,22 +6,25 @@ public class TeleportUnlockTrigger : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        // 判定玩家進入且該點尚未解鎖 
         if (other.CompareTag("Player") && pointData != null && !pointData.isUnlocked)
         {
-            // 1. 執行存檔邏輯
+            // 1. 解鎖
             if (MapSaveManager.Instance != null)
-            {
                 MapSaveManager.Instance.UnlockPoint(pointData.pointID);
-            }
 
-            // 2. 呼叫提示面板控制 (請確保 TeleportHintManager 檔案名稱與類別名一致)
-            if (TeleportHintManager.Instance != null)
+            // 2. 檢查 Manager 是否存在
+            Debug.Log($"[Hint] 準備顯示提示。RightHintManager.Instance 是否存在: {RightHintManager.Instance != null}");
+
+            if (RightHintManager.Instance != null)
             {
-                TeleportHintManager.Instance.ShowUnlockHint(pointData.pointName);
+                RightHintManager.Instance.ShowHint($"已解鎖{pointData.pointName}傳送點，地圖即可查看");
+            }
+            else
+            {
+                // 如果這裡是 Null，代表你場景中的 RightHintManager 物件沒打開，或是腳本沒掛好
+                Debug.LogError("[Hint] 找不到 RightHintManager！請檢查 Hierarchy 中該物件是否為啟用狀態。");
             }
 
-            // 3. 停用此觸發器，避免重複觸發
             this.enabled = false; 
         }
     }
