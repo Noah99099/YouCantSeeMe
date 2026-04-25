@@ -129,4 +129,21 @@ public class BigMapController : MonoBehaviour
         // 請改成：
         playerIcon.localRotation = Quaternion.Euler(0, 0, -playerTransform.eulerAngles.y + iconRotationOffset);
     }
+    // 在 BigMapController.cs 加入
+    // 在 BigMapController.cs 結尾處修正
+    public void TeleportToPoint(TeleportPointData targetData)
+    {
+        if (targetData == null) return;
+
+        // 1. 移動玩家座標
+        playerTransform.position = targetData.targetPosition;
+
+        // 2. 關閉地圖介面 (如果需要的話可以取消下行註解)
+        gameObject.SetActive(false); 
+
+        // 3. 呼叫正確的方法名：UpdateFloor (原本寫錯成 UpdateFloorBasedOnY)
+        UpdateFloor(); 
+        
+        Debug.Log($"已快速傳送至: {targetData.pointName}");
+    }
 }
