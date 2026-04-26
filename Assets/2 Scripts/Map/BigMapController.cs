@@ -129,21 +129,45 @@ public class BigMapController : MonoBehaviour
         // 請改成：
         playerIcon.localRotation = Quaternion.Euler(0, 0, -playerTransform.eulerAngles.y + iconRotationOffset);
     }
-    // 在 BigMapController.cs 加入
     // 在 BigMapController.cs 結尾處修正
     public void TeleportToPoint(TeleportPointData targetData)
     {
-        if (targetData == null) return;
+        if (targetData == null || playerTransform == null) return;
 
-        // 1. 移動玩家座標
+        // 1. 處理 CharacterController
+        CharacterController cc = playerTransform.GetComponent<CharacterController>();
+        if (cc != null) cc.enabled = false;
+
+        // 2. 執行傳送
         playerTransform.position = targetData.targetPosition;
+        Physics.SyncTransforms();
 
-        // 2. 關閉地圖介面 (如果需要的話可以取消下行註解)
-        gameObject.SetActive(false); 
+        if (cc != null) cc.enabled = true;
 
-        // 3. 呼叫正確的方法名：UpdateFloor (原本寫錯成 UpdateFloorBasedOnY)
+        // 3. 更新樓層狀態
         UpdateFloor(); 
         
-        Debug.Log($"已快速傳送至: {targetData.pointName}");
+        // 4. 【完美融入團隊架構】：呼叫專屬的關閉方法
+        CloseMapProperly();
+
+        Debug.Log($"<color=green>[Teleport] 傳送成功：{targetData.pointName}</color>");
+    }
+
+    /// <summary>
+    /// 負責與組員的系統串接，安全地關閉地圖與切換輸入狀態
+    /// </summary>
+    private void CloseMapProperly()
+    {
+        // 步驟 A：利用組員的 InputStackManager 退出地圖模式
+        // 當 PopMap 執行後，組員的 UpdateCursorStateBasedOnTopMap() 就會自動把滑鼠隱藏並鎖定了！
+        if (InputStackManager.Instance != null && InputStackManager.Instance.CurrentMap == InputActionMaps._Map)
+        {
+            InputStackManager.Instance.PopMap();
+        }
+
+        // 步驟 B：呼叫負責關閉地圖的 UI 邏輯
+        // 【請根據你們專案的實際情況，選擇以下其中一種做法】
+        // 做法 3：觸發組員寫在 Player 身上或 Manager 身上的 "ToggleMap" 邏輯
+        // 如果你們是按 M 鍵開關地圖，可以找找負責按 M 鍵的那個腳本，去呼叫它的關閉函式。
     }
 }

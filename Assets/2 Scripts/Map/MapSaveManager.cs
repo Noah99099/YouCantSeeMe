@@ -1,6 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
-using System.Linq; // 需要這個來轉換 List
+using System.Linq;
 
 public class MapSaveManager : MonoBehaviour
 {
@@ -11,59 +11,55 @@ public class MapSaveManager : MonoBehaviour
 
     private void Awake()
     {
-        // 單例模式 + 跨場景存活
+        // 因為都在同一個場景，移除 DontDestroyOnLoad
         if (Instance == null)
         {
             Instance = this;
-            DontDestroyOnLoad(gameObject); // 讓這個物件在切換場景時不會死亡
-            
             InitializeTeleportData(); // 遊戲啟動時自動載入所有資料
         }
         else
         {
-            Destroy(gameObject); // 確保全遊戲只有一個 MapSaveManager
+            Destroy(gameObject); 
         }
     }
 
-    // 自動從 Resources 抓取所有傳送點，並讀取存檔
+    // 自動從 Resources 抓取所有傳送點，並強制初始化狀態
     private void InitializeTeleportData()
     {
-        // 抓取 Resources/TeleportPoints 資料夾下所有的 TeleportPointData
         TeleportPointData[] loadedPoints = Resources.LoadAll<TeleportPointData>("TeleportPoints");
         
         if (loadedPoints.Length > 0)
         {
             allTeleportPoints = loadedPoints.ToList();
             Debug.Log($"<color=cyan>[MapSaveManager] 成功載入 {allTeleportPoints.Count} 個傳送點資料</color>");
+            
+            // 【關鍵修改】：每次遊戲啟動時，強制把所有 ScriptableObject 的狀態重置為 false
+            ResetAllProgress(); 
         }
         else
         {
             Debug.LogError("[MapSaveManager] 找不到任何傳送點！請確認它們放在 Resources/TeleportPoints 資料夾下。");
         }
-
-        // 讀取本地解鎖狀態
-        LoadMapProgress();
     }
 
-    // 解鎖傳送點並存檔
+    // 解鎖傳送點 (移除了 PlayerPrefs，只改記憶體中的狀態)
     public void UnlockPoint(string id)
     {
         TeleportPointData point = allTeleportPoints.Find(p => p.pointID == id);
         if (point != null && !point.isUnlocked)
         {
             point.isUnlocked = true;
-            PlayerPrefs.SetInt("Teleport_" + id, 1);
-            PlayerPrefs.Save();
-            Debug.Log($"<color=green>傳送點 {point.pointName} 已解鎖並存檔</color>");
+            Debug.Log($"<color=green>傳送點 {point.pointName} 已解鎖 (僅限本次遊戲)</color>");
         }
     }
 
-    // 載入所有傳送點狀態
-    public void LoadMapProgress()
+    // 將所有傳送點重置為未解鎖 (避免編輯器殘留資料)
+    private void ResetAllProgress()
     {
         foreach (var point in allTeleportPoints)
         {
-            point.isUnlocked = PlayerPrefs.GetInt("Teleport_" + point.pointID, 0) == 1;
+            point.isUnlocked = false;
         }
+        Debug.Log("[MapSaveManager] 遊戲開始，所有傳送點狀態已重置為未解鎖。");
     }
 }
