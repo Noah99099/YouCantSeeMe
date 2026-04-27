@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class PlateUseEffect : MonoBehaviour
 {
-    // ±¾¸ü¦bPlateEventManagerª«¥ó¤W
+    // é€™è£¡æ›è¼‰åœ¨ PlateEventManager ç‰©ä»¶ä¸Š
     [System.Serializable]
     public class PlateData
     {
@@ -10,34 +10,34 @@ public class PlateUseEffect : MonoBehaviour
         public MonoBehaviour plateScript;
     }
 
-    [Header("½L¤l°t¸m")]
+    [Header("ç›¤å­é…ç½®")]
     public PlateData[] plates = new PlateData[7];
     public GameObject magicCircle;
 
     private int usedPlateCount = 0;
-    private int totalPlates => plates.Length; // 4
+    private int totalPlates => plates.Length; // é è¨ˆéœ€è¦çš„ç¸½ç›¤æ•¸
 
-    //¥Ñ¨C­Ó½L¤l¥æ¤¬ÂI¤WªºInteractableObject°õ¦æ¤èªk
+    // ç”±æ¯å€‹ç›¤å­æ§½ä½ä¸Šæ›è¼‰çš„ InteractableObject äº‹ä»¶å‘¼å«æ­¤æ–¹æ³•
     public void UsePlate(int plateIndex)
     {
         if (plateIndex < 0 || plateIndex >= plates.Length)
         {
-            Debug.LogError($"µL®Äªº½L¤l¯Á¤Ş: {plateIndex}");
+            Debug.LogError($"ç„¡æ•ˆçš„ç›¤å­ç´¢å¼•: {plateIndex}");
             return;
         }
 
         var plate = plates[plateIndex];
         if (plate == null) return;
 
-        // ¨¾¤î­«½Æ¿E¬¡
+        // é˜²æ­¢é‡è¤‡è§¸ç™¼
         if (plate.plateObject != null && !plate.plateObject.activeInHierarchy)
         {
-            plate.plateObject.SetActive(true); //Åã¥Ü½L¤l
+            plate.plateObject.SetActive(true); // é¡¯ç¤ºç›¤å­
             if (plate.plateScript != null)
-                plate.plateScript.enabled = true; //±Ò¥ÎViewInteractableObject¸}¥»
+                plate.plateScript.enabled = true; // é–‹å•Ÿ ViewInteractableObject è…³æœ¬
 
-            usedPlateCount++; //Á`¦@¨Ï¥Î½L¤l¼Æ+=1
-            CheckCompletion(); //ÀË¬d¦³¨S¦³¹ı©³§¹¦¨½L¤l3¡B5¡B7¡B8
+            usedPlateCount++; // å·²ä½¿ç”¨ç›¤å­æ•¸é‡ += 1
+            CheckCompletion(); // æª¢æŸ¥æ˜¯å¦é›†é½Šç›¤å­ (ä¾‹å¦‚ï¼š3ã€5ã€7ã€8 è™Ÿä½)
         }
     }
 
@@ -45,18 +45,21 @@ public class PlateUseEffect : MonoBehaviour
     {
         if (usedPlateCount >= totalPlates)
         {
-            Debug.Log("©Ò¦³½L¤l¦¬¶°§¹¦¨¡I¥´¶}Å]ªk°}");
+            Debug.Log("æ‰€æœ‰ç›¤å­çš†å·²æ”¾ç½®å®Œæˆï¼é–‹å•Ÿé­”æ³•é™£ã€‚");
             magicCircle.SetActive(true);
+            
+            // é€šçŸ¥ç‡ˆå…‰ç³»çµ±è§£è¬å®Œæˆ
+            KanWu.Systems.LightSystemManager.Instance.NotifyPuzzleSolved();
+            
+            // ä»»å‹™å®Œæˆå¾ŒéŠ·æ¯€æ­¤ç®¡ç†ç‰©ä»¶æˆ–è…³æœ¬
             Destroy(gameObject);
         }
     }
 
-    // «O«ù­ì¦³¤èªk¦WºÙªº­İ®e©Ê
-    //public void UsePlate_2() => UsePlate(0);
+    // ä¿ç•™åŸæœ¬é€é Inspector äº‹ä»¶ç¶å®šçš„èˆŠæ–¹æ³•åç¨±ï¼Œä»¥ç›¸å®¹ç¾æœ‰çš„ Event èª¿ç”¨
+    // æ³¨æ„ï¼šé€™è£¡çš„ç´¢å¼• index èˆ‡ä¸‹æ–¹æ–¹æ³•åç¨±çš„æ•¸å­—å¯èƒ½ä¸ä¸€è‡´ï¼Œè«‹åœ¨ Inspector é‡æ–°ç¢ºèª
     public void UsePlate_3() => UsePlate(0);
-    //public void UsePlate_4() => UsePlate(1);
     public void UsePlate_5() => UsePlate(1);
-    //public void UsePlate_6() => UsePlate(2);
     public void UsePlate_7() => UsePlate(2);
     public void UsePlate_8() => UsePlate(3);
 }

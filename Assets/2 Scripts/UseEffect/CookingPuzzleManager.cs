@@ -5,47 +5,47 @@ public class CookingPuzzleManager : MonoBehaviour
 {
     public static CookingPuzzleManager Instance { get; private set; }
 
-    [Header("--- µæ³æª«¥ó (Menu) ---")]
+    [Header("--- èœå–®ç‹€æ…‹ (Menu) ---")]
     public GameObject menu1;
     public GameObject menu2;
 
-    [Header("--- ¶¥¬q¤@³]©w ---")]
-    [Header("§P©wÂI (Spot 1-6)")] // §N½L*1¡B¼öµæ*2¡B¥Dµæ*2¡B°s¤ô*1
-    // ³o¸Ì§Ú­Ì¥u»İ­nª¾¹D³o´X­ÓÂI"¬O§_§¹¦¨"¡A¤£»İ­nºŞ¥¦­Ì¨ãÅé¬O­ş­Ó¸}¥»
-    // µy«á·|¦b Inspector ¤¤³z¹L Event ¸j©w¨Ó©I¥s Manager ªº¤èªk
-    public GameObject[] stage1SpotsObjects; // ¥Î©ó³Ì«á²M°£³õ´º
+    [Header("--- ç¬¬ä¸€éšæ®µè¨­å®š ---")]
+    [Header("åˆ¤å®šé» (Spot 1-6)")] // å†·ç›¤*1ã€ç†±èœ*2ã€ä¸»é£Ÿ*2ã€é£²æ–™*1
+    // é€™è£¡æˆ‘å€‘åªéœ€è¦å¾—çŸ¥é€™äº›é»"æ˜¯å¦å¡«æ»¿"ï¼Œä¸éœ€è¦ç®¡å…¶å…§å®¹æ˜¯ä»€éº¼ã€‚
+    // é‚è¼¯æœƒåœ¨ Inspector ä¸­é€é Event ç¶å®šä¾†å‘¼å« Manager çš„æ–¹æ³•ã€‚
+    public GameObject[] stage1SpotsObjects; // ç”¨æ–¼æœ€å¾Œæ¸…é™¤ä½¿ç”¨
 
-    [Header("¹w¥ı°t¸m¦nªº®Æ²zª«¥ó (»İ¦bInspector©Ô¤J)")]
-    public GameObject foodObj_ColdMeal; // (³æ¤@ª««~©ñ¸m§P©wÂI)
-    public GameObject foodObj_Drink; // °s¤ô ¯S§O­«­n¡A¦]¬°­n¹ï¥¦¥[½Õ¨ı®Æ-¦w¯vÃÄ (³æ¤@ª««~©ñ¸m§P©wÂI)
-    public GameObject[] foodObj_HotMealsAndMainDishs; // ¦@4­Ó¡A¼öµæ*2+¥Dµæ*2¡C¥Î©ó³Ì«á²M°£ (¦hª««~©ñ¸m§P©wÂI)
+    [Header("é å…ˆæ”¾ç½®çš„æ–™ç†æ¨¡å‹ (éœ€åœ¨ Inspector æ‹–å…¥)")]
+    public GameObject foodObj_ColdMeal; // (å†·ç›¤æ¨¡å‹åˆ¤å®šé»)
+    public GameObject foodObj_Drink; // é£²æ–™ ç‰¹åˆ¥æå‡ºæ˜¯å› ç‚ºéœ€è¦å°å…¶é€²è¡ŒåŠ å·¥-èª¿å‘³ (å†·ç›¤æ¨¡å‹åˆ¤å®šé»)
+    public GameObject[] foodObj_HotMealsAndMainDishs; // å…±4å€‹ï¼Œç†±èœ*2+ä¸»é£Ÿ*2ã€‚ç”¨æ–¼æœ€å¾Œæ¸…é™¤ (å¤šå€‹æ¨¡å‹åˆ¤å®šé»)
 
-    [Header("¯È±ø¼úÀy (Stage 1 Complete)")]
+    [Header("å®Œæˆå¾Œçµ¦äºˆ (Stage 1 Complete)")]
     public GameObject infoPaper_1;
 
-    [Header("--- ¶¥¬q¤G³]©w ---")]
-    [Header("§P©wÂI (Spot 7-11)")] // ½­µæ*1¡B´ö«~*1¡B¥D­¹*1¡B²¢«~*1¡B¤ôªG*1
-    public GameObject[] stage2SpotsRoots; // ¥Î©ó±±¨î SetActive ©M³Ì«á²M°£
+    [Header("--- ç¬¬äºŒéšæ®µè¨­å®š ---")]
+    [Header("åˆ¤å®šé» (Spot 7-11)")] // æ¿ƒæ¹¯*1ã€ç”œé»*1ã€ä¸»é¤*1ã€é…èœ*1ã€æ°´æœ*1
+    public GameObject[] stage2SpotsRoots; // ç”¨æ–¼é–‹å•Ÿ SetActive èˆ‡æœ€å¾Œæ¸…é™¤
 
-    public GameObject foodObj_Soup; // ­n¥[½Õ¨ı®Æ-¬rÃÄ
-    public GameObject foodObj_Dessert; // ­n¥[½Õ¨ı®Æ-¨~ªG
-    public GameObject[] foodObj_VegStableFruits; // ¦@3­Ó¡A½­µæ¡B¥D­¹¡B¤ôªG¡C¥Î©ó³Ì«á²M°£¡C
+    public GameObject foodObj_Soup; // éœ€è¦åŠ å·¥-æ’’é¹½
+    public GameObject foodObj_Dessert; // éœ€è¦åŠ å·¥-æ·‹é†¬
+    public GameObject[] foodObj_VegStableFruits; // å…±3å€‹ï¼Œé’èœã€ä¸»é¤ã€æ°´æœã€‚ç”¨æ–¼æœ€å¾Œæ¸…é™¤ã€‚
 
-    [Header("¯È±ø¼úÀy (Stage 2 Complete)")]
+    [Header("å®Œæˆå¾Œçµ¦äºˆ (Stage 2 Complete)")]
     public GameObject infoPaper_2;
     public GameObject infoPaper_3;
 
-    // ----- ¤º³¡ª¬ºA°lÂÜ -----
+    // ----- å…§éƒ¨ç‹€æ…‹è®Šæ•¸ -----
 
-    // ¶¥¬q¤@¶i«× (»İ­n 6 ­Ó®Æ²z + 1 ­Ó½Õ¨ı)
+    // éšæ®µä¸€é€²åº¦ (éœ€è¦ 6 å€‹ç‰©ç† + 1 å€‹åŠ å·¥)
     private bool spot1_Done, spot2_Done, spot3_Done, spot4_Done, spot5_Done, spot6_Done;
     private bool foodF_Seasoned;
 
-    // ¶¥¬q¤G¶i«× (»İ­n 5 ­Ó®Æ²z + 2 ­Ó½Õ¨ı)
+    // éšæ®µäºŒé€²åº¦ (éœ€è¦ 5 å€‹ç‰©ç† + 2 å€‹åŠ å·¥)
     private bool spot7_Done, spot8_Done, spot9_Done, spot10_Done, spot11_Done;
     private bool foodH_Seasoned, foodJ_Seasoned;
 
-    // ¶¥¬qª¬ºA
+    // éšæ®µç‹€æ…‹
     private bool isStage1Complete = false;
     private bool isStage2Complete = false;
 
@@ -61,27 +61,27 @@ public class CookingPuzzleManager : MonoBehaviour
 
     private void InitializePuzzle()
     {
-        // ªì©l¤Æµæ³æª¬ºA¡G¶¥¬q¤@ menu1 ¶}, menu2 Ãö
+        // åˆå§‹åŒ–èœå–®ç‹€æ…‹ï¼šé–‹å•Ÿç¬¬ä¸€éšæ®µ menu1ï¼Œé—œé–‰ menu2
         SetMenuState(menu1, true);
         SetMenuState(menu2, false);
 
-        // 1. ÁôÂÃ¶¥¬q¤Gªº§P©wÂI
+        // 1. éš±è—ç¬¬äºŒéšæ®µçš„æ‰€æœ‰åˆ¤å®šé»
         foreach (var spot in stage2SpotsRoots) spot.SetActive(false);
 
-        // 2. ÁôÂÃ©Ò¦³¼úÀy¯È±ø
+        // 2. éš±è—æ‰€æœ‰è³‡è¨Šç´™æ¢
         if (infoPaper_1) infoPaper_1.SetActive(false);
         if (infoPaper_2) infoPaper_2.SetActive(false);
         if (infoPaper_3) infoPaper_3.SetActive(false);
 
-        // 3. ½T«O¹w¸m®Æ²z¤]¬OÁôÂÃªº (ÁöµM§A»¡³õ´º¤w¸gÁôÂÃ¡A¦ı³o¸ÌÂù­««OÀI)
-        // ª`·N¡G³o¸Ì¥u½T«OÅŞ¿è¤WªºÁôÂÃ¡Aµø³¥¸}¥»·|±µ¤â³Ñ¤Uªº
+        // 3. ç¢ºä¿é è¨­æ–™ç†æ¨¡å‹æ˜¯éš±è—çš„ (é›–ç„¶åœ¨ç·¨è¼¯å™¨å¯èƒ½å·²ç¶“éš±è—ï¼Œä½†é€™è£¡åšä¿éšª)
+        // æ³¨æ„ï¼šé€™è£¡åªç¢ºä¿é‚è¼¯ä¸Šçš„éš±è—ï¼Œå¯¦éš›é–‹å•Ÿæœƒç”±äº‹ä»¶è§¸ç™¼
         if (foodObj_ColdMeal) foodObj_ColdMeal.SetActive(false);
         if (foodObj_Drink) foodObj_Drink.SetActive(false);
         if (foodObj_Soup) foodObj_Soup.SetActive(false);
         if (foodObj_Dessert) foodObj_Dessert.SetActive(false);
     }
 
-    // «Ê¸Ë¤@­Ó¤èªk¨Ó¦P®É±±¨î ª«¥óÅã¥Ü »P µø³¥¸}¥»¶}Ãö
+    // å°è£ä¸€å€‹æ–¹æ³•ä¾†åŒæ™‚æ§åˆ¶ éŠæˆ²ç‰©ä»¶ èˆ‡ è¦–åœ–è™•ç†å™¨ é–‹é—œ
     private void SetMenuState(GameObject menuObj, bool isActive)
     {
         if (menuObj == null) return;
@@ -91,47 +91,47 @@ public class CookingPuzzleManager : MonoBehaviour
         if (handler != null)
         {
             handler.enabled = isActive;
-            // ¦pªG¬O¦b°õ¦æ¤¤¤Á´«¡A¤â°ÊÄ²µo¤@¦¸·í«eµø³¥§ó·s
+            // å¦‚æœæ˜¯åœ¨éŠæˆ²ä¸­åˆ‡æ›ï¼Œæ‰‹å‹•è§¸ç™¼ä¸€æ¬¡è¦–åœ–æ›´æ–°
             if (isActive && ViewManager.Instance != null)
                 handler.OnViewChanged(ViewManager.Instance.CurrentView);
         }
     }
 
     // ==========================================
-    // ¹ï¥~±µ¤f¡G¨Ñ Spot ©M Food ªº Event ©I¥s
+    // å¤–éƒ¨äº‹ä»¶å°æ¥ï¼šç”± Spot èˆ‡ Food çš„ Event å‘¼å«
     // ==========================================
 
-    #region ¶¥¬q¤@ÅŞ¿è
+    #region ç¬¬ä¸€éšæ®µé‚è¼¯
 
-    // ·í Spot 1 (InteractableObject) ¦¨¥\©ñ¸m §N½L
+    // ç•¶ Spot 1 (InteractableObject) æˆåŠŸæ”¾ç½® å†·ç›¤
     public void OnSpot1Filled()
     {
         spot1_Done = true;
-        if (foodObj_ColdMeal) foodObj_ColdMeal.SetActive(true); // Åã¥Ü®Æ²z-§N½L
+        if (foodObj_ColdMeal) foodObj_ColdMeal.SetActive(true); // é¡¯ç¤ºæ–™ç†-å†·ç›¤
         CheckStage1();
     }
 
-    // ·í Spot 2-5 (ItemPlacementSpot) ¦¨¥\©ñ¸m B,C,D,E
-    // ³o¨Ç¬O¥Í¦¨ªº¡A©Ò¥H¤£»İ­n§Ú­Ì¤â°Ê SetActive¡A¸}¥»¦Û¤v·|¥Í¦¨
-    public void OnSpot2Filled() { spot2_Done = true; CheckStage1(); } // ¼öµæ1
-    public void OnSpot3Filled() { spot3_Done = true; CheckStage1(); } // ¼öµæ2
-    public void OnSpot4Filled() { spot4_Done = true; CheckStage1(); } // ¥D­¹1
-    public void OnSpot5Filled() { spot5_Done = true; CheckStage1(); } // ¥D­¹2
+    // ç•¶ Spot 2-5 (ItemPlacementSpot) æˆåŠŸæ”¾ç½® B,C,D,E
+    // é€™äº›æ˜¯ç”Ÿæˆç‰©ä»¶ï¼Œæ‰€ä»¥ä¸éœ€è¦æˆ‘å€‘ SetActiveï¼Œç‰©ä»¶è‡ªå·±æœƒç”Ÿæˆ
+    public void OnSpot2Filled() { spot2_Done = true; CheckStage1(); } // ç†±èœ1
+    public void OnSpot3Filled() { spot3_Done = true; CheckStage1(); } // ç†±èœ2
+    public void OnSpot4Filled() { spot4_Done = true; CheckStage1(); } // ä¸»é£Ÿ1
+    public void OnSpot5Filled() { spot5_Done = true; CheckStage1(); } // ä¸»é£Ÿ2
 
-    // ·í Spot 6 (InteractableObject) ¦¨¥\©ñ¸m °s¤ô
+    // ç•¶ Spot 6 (InteractableObject) æˆåŠŸæ”¾ç½® é£²æ–™
     public void OnSpot6Filled()
     {
-        print("¦¨¥\");
+        print("æ”¾ç½®æˆåŠŸ");
         spot6_Done = true;
-        if (foodObj_Drink) foodObj_Drink.SetActive(true); // Åã¥Ü®Æ²z-°s¤ô¡AÅıª±®a¥i¥H¹ï¥¦½Õ¨ı-¦w¯vÃÄ
+        if (foodObj_Drink) foodObj_Drink.SetActive(true); // é¡¯ç¤ºæ–™ç†-é£²æ–™ï¼Œæ­¤æ™‚ç©å®¶å¯ä»¥å°å…¶é€²è¡ŒåŠ å·¥-æ·‹ç³–æ¼¿
         CheckStage1();
     }
 
-    // ·í¹ï ®Æ²z-°s¤ô (InteractableObject) ¨Ï¥Î ½Õ¨ı®Æ-¦w¯vÃÄ
+    // å° æ–™ç†-é£²æ–™ (InteractableObject) ä½¿ç”¨ åŠ å·¥ç‰©ä»¶-ç³–æ¼¿å¾Œ
     public void OnFoodDrinkSeasoned()
     {
         foodF_Seasoned = true;
-        Debug.Log("®Æ²z °s¤ô ½Õ¨ı§¹¦¨¡I");
+        Debug.Log("æ–™ç† é£²æ–™ åŠ å·¥å®Œæˆï¼");
         CheckStage1();
     }
 
@@ -148,66 +148,66 @@ public class CookingPuzzleManager : MonoBehaviour
     private void CompleteStage1()
     {
         isStage1Complete = true;
-        Debug.Log("¶¥¬q¤@§¹¦¨¡I²M°£³õ´º¡A¥Í¦¨¸ê°T¯È±ø1");
+        Debug.Log("éšæ®µä¸€å®Œæˆï¼æ¸…é™¤ç‰©ä»¶ï¼Œç”Ÿæˆè³‡è¨Šç´™æ¢1");
 
-        // 1. ²M°£¶¥¬q¤@ªº§P©wÂI (¥]§t·s¥Í¦¨ªº¼Ò«¬ ©M ÂÂ§P©wÂIª«¥ó)
+        // 1. æ¸…é™¤éšæ®µä¸€çš„æ‰€æœ‰åˆ¤å®šé» (åŒ…æ‹¬ç”¢ç”Ÿçš„æ¨¡å‹ èˆ‡ è§¸ç™¼åˆ¤å®šé»ç‰©ä»¶)
         foreach (var spot in stage1SpotsObjects) if (spot) Destroy(spot);
 
-        // 2. ²M°£¹w¸mªº®Æ²zª«¥ó
+        // 2. æ¸…é™¤é è¨­æ–™ç†æ¨¡å‹
         if (foodObj_ColdMeal) Destroy(foodObj_ColdMeal);
-        if (foodObj_Drink) Destroy(foodObj_Drink); // §Y¨Ï½Õ¨ı¹L¤]­n²M°£
-        foreach (var food in foodObj_HotMealsAndMainDishs) if (food) Destroy(food); // ²M°£¨º¨Ç¥i¯à¤â°Ê©ñ¸mªº´İ¯dª«(¦pªG¦³ªº¸Ü)
+        if (foodObj_Drink) Destroy(foodObj_Drink); // å°±ç®—åŠ å·¥éä¹Ÿè¦æ¸…é™¤
+        foreach (var food in foodObj_HotMealsAndMainDishs) if (food) Destroy(food); // æ¸…é™¤é‚£äº›åŸæœ¬åœ¨é ç½®ä½å­ä¸Šçš„æ¨¡å‹(å¦‚æœæœ‰)
 
-        // 3. Åã¥Ü¸ê°T¯È±ø1
+        // 3. é¡¯ç¤ºè³‡è¨Šç´™æ¢1
         if (infoPaper_1) infoPaper_1.SetActive(true);
 
-        // ª`·N¡G¶¥¬q¤Gªº¶}±Ò¬O³z¹L¡uª±®a¾ß°_¯È±ø a¡v¨ÓÄ²µo
-        // §A»İ­n¦b ¯È±ø a ªº InteractableItem (©ÎÃş¦ü¸}¥») ªº Event ¤¤©I¥s StartStage2()
+        // æ³¨æ„ï¼šéšæ®µäºŒçš„é–‹å•Ÿæ˜¯é€éç©å®¶æ’¿èµ·ã€Œç´™æ¢ aã€å¾Œè§¸ç™¼
+        // ä½ éœ€è¦åœ¨ ç´™æ¢ a çš„ InteractableItem (æ‹¾èµ·äº‹ä»¶) çš„ Event ä¸­å‘¼å« StartStage2()
     }
 
     #endregion
 
-    #region ¶¥¬q¤GÅŞ¿è
+    #region ç¬¬äºŒéšæ®µé‚è¼¯
 
-    // ¥Ñ¯È±ø a ªº¬B¨ú¨Æ¥ó©I¥s
+    // ç”±ç´™æ¢ a çš„æ‹¾èµ·äº‹ä»¶å‘¼å«
     public void StartStage2()
     {
-        // ¶i¤J¶¥¬q¤G¡GÃö³¬ menu1, ¶}±Ò menu2
+        // é€²å…¥éšæ®µäºŒï¼šé—œé–‰ menu1, é–‹å•Ÿ menu2
         SetMenuState(menu1, false);
         SetMenuState(menu2, true);
 
-        Debug.Log("¶}±Ò¶¥¬q¤G¡I");
+        Debug.Log("å•Ÿå‹•éšæ®µäºŒï¼");
         foreach (var spot in stage2SpotsRoots) spot.SetActive(true);
     }
 
     public void OnSpot7Filled() 
     {
         spot7_Done = true;
-        if (foodObj_VegStableFruits[0]) foodObj_VegStableFruits[0].SetActive(true); // Åã¥Ü½­µæ
+        if (foodObj_VegStableFruits[0]) foodObj_VegStableFruits[0].SetActive(true); // é¡¯ç¤ºé’èœ
         CheckStage2(); 
     }
     public void OnSpot8Filled()
     {
         spot8_Done = true;
-        if (foodObj_Soup) foodObj_Soup.SetActive(true); // Åã¥ÜH¨Ñ½Õ¨ı
+        if (foodObj_Soup) foodObj_Soup.SetActive(true); // é¡¯ç¤ºå¾Œä¾›åŠ å·¥
         CheckStage2();
     }
     public void OnSpot9Filled() 
     { 
         spot9_Done = true;
-        if (foodObj_VegStableFruits[1]) foodObj_VegStableFruits[1].SetActive(true); // Åã¥Ü¥D­¹
+        if (foodObj_VegStableFruits[1]) foodObj_VegStableFruits[1].SetActive(true); // é¡¯ç¤ºä¸»é¤
         CheckStage2(); 
     }
     public void OnSpot10Filled()
     {
         spot10_Done = true;
-        if (foodObj_Dessert) foodObj_Dessert.SetActive(true); // Åã¥ÜJ¨Ñ½Õ¨ı
+        if (foodObj_Dessert) foodObj_Dessert.SetActive(true); // é¡¯ç¤ºå¾Œä¾›åŠ å·¥
         CheckStage2();
     }
     public void OnSpot11Filled() 
     {
         spot11_Done = true;
-        if (foodObj_VegStableFruits[2]) foodObj_VegStableFruits[2].SetActive(true); // Åã¥Ü¤ôªG
+        if (foodObj_VegStableFruits[2]) foodObj_VegStableFruits[2].SetActive(true); // é¡¯ç¤ºæ°´æœ
         CheckStage2(); 
     }
 
@@ -227,19 +227,22 @@ public class CookingPuzzleManager : MonoBehaviour
     private void CompleteStage2()
     {
         isStage2Complete = true;
-        Debug.Log("¶¥¬q¤G§¹¦¨¡I²M°£³õ´º¡A¥Í¦¨¯È±ø b, c");
+        Debug.Log("éšæ®µäºŒå®Œæˆï¼æ¸…é™¤ç‰©ä»¶ï¼Œç”Ÿæˆç´™æ¢ b, c");
 
-        // 1. ²M°£¶¥¬q¤Gªº§P©wÂI
+        // 1. æ¸…é™¤éšæ®µäºŒçš„æ‰€æœ‰åˆ¤å®šé»
         foreach (var spot in stage2SpotsRoots) if (spot) Destroy(spot);
 
-        // 2. ²M°£¹w¸m®Æ²z
+        // 2. æ¸…é™¤æ–™ç†æ¨¡å‹
         if (foodObj_Soup) Destroy(foodObj_Soup);
         if (foodObj_Dessert) Destroy(foodObj_Dessert);
         foreach (var food in foodObj_VegStableFruits) if (food) Destroy(food);
 
-        // 3. Åã¥Ü¸ê°T¯È±ø2¡B3
+        // 3. é¡¯ç¤ºè³‡è¨Šç´™æ¢2ã€3
         if (infoPaper_2) infoPaper_2.SetActive(true);
         if (infoPaper_3) infoPaper_3.SetActive(true);
+        
+        // è§¸ç™¼è§£è¬æˆåŠŸçš„ç‡ˆå…‰æˆ–ç’°å¢ƒå›é¥‹
+        KanWu.Systems.LightSystemManager.Instance.NotifyPuzzleSolved();
     }
 
     #endregion
