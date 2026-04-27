@@ -1,60 +1,60 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class MapPanelUIController : MonoBehaviour
 {
-    [Tooltip("¥­­±¹Ï­±ªO")]
+    [Tooltip("å¹³é¢åœ–é¢æ¿")]
     public GameObject mapPanel;
-    [Tooltip("¥k¤U¨¤ªº´£¥Üµø³¥¹Ï¼Ğ")]
+    [Tooltip("å³ä¸‹è§’çš„æç¤ºè¦–é‡åœ–æ¨™")]
     public GameObject titleUI;
-    [Header("·Ç¤ß")]
+    [Header("æº–å¿ƒ")]
     public GameObject crossHair;
+    [Header("æŒ‰éµæç¤º")]
+    public GameObject keyHint;
 
     private void OnEnable()
     {
-        // *** ÃöÁä­×§ï: ¨Ï¥Î¨Ó¦Û Level1UIController ªº¦@¨É¹ê¨Ò ***
-        if (InputProvider.InputActions == null) return; // ¨¾§b
+        // *** é—œéµä¿®æ”¹: ä½¿ç”¨ä¾†è‡ª Level1UIController çš„å…±äº«å¯¦ä¾‹ ***
+        if (InputProvider.InputActions == null) return; // é˜²å‘†
         InputProvider.InputActions.Map.CloseMap.performed += OnCloseMapPanel;
     }
 
     private void OnDisable()
     {
-        // *** ÃöÁä­×§ï: ²¾°£ playerControls.Setting.Disable(); ***
-        if (InputProvider.InputActions == null) return; // ¨¾§b
+        // *** é—œéµä¿®æ”¹: ç§»é™¤ playerControls.Setting.Disable(); ***
+        if (InputProvider.InputActions == null) return; // é˜²å‘†
         InputProvider.InputActions.Map.CloseMap.performed -= OnCloseMapPanel;
     }
 
-    private void OnCloseMapPanel(InputAction.CallbackContext context) //µù¥U¤èªk
+    private void OnCloseMapPanel(InputAction.CallbackContext context) //è¨»å†Šæ–¹æ³•
     {
         CloseMap();
     }
 
     /// <summary>
-    /// ±q¥~³¡©I¥s¦¹¤èªk¨Ó¥´¶}¥­­±¹Ï¡C
+    /// å¾å¤–éƒ¨å‘¼å«æ­¤æ–¹æ³•ä¾†æ‰“é–‹å¹³é¢åœ–ã€‚
     /// </summary>
-    public void OpenMap() // ¥´¶}¥­­±¹Ï
+    public void OpenMap() // æ‰“é–‹å¹³é¢åœ–
     {
-        mapPanel.SetActive(true); // ¥´¶}¥­­±¹Ï
-        titleUI.SetActive(false); // Ãö±¼¥k¤U´£¥Ü
-        crossHair.SetActive(false); // Ãö±¼·Ç¤ß
+        mapPanel.SetActive(true); // æ‰“é–‹å¹³é¢åœ–
+        titleUI.SetActive(false); // é—œæ‰å³ä¸‹æç¤º
+        crossHair.SetActive(false); // é—œæ‰æº–å¿ƒ
+        keyHint.SetActive(false); // é—œæ‰æŒ‰éµæç¤º
 
-        // ***** ·s¼W¡G¦b³o¸Ì¶°¤¤©I¥s PushMap *****
-        // ³o½T«O¤F¥u­n³o­Ó­±ªO³Q¥´¶}¡A¥¦´N¤@©w·|¥¿½T¦a Push Map
+        // ***** æ–°å¢ï¼šåœ¨é€™è£¡é›†ä¸­å‘¼å« PushMap *****
+        // é€™ç¢ºä¿äº†åªè¦é€™å€‹é¢æ¿è¢«æ‰“é–‹ï¼Œå®ƒå°±ä¸€å®šæœƒæ­£ç¢ºåœ° Push Map
         InputStackManager.Instance.PushMap(InputActionMaps._Map);
 
-        Debug.Log("[MapPanelUIController] OpenMap() °õ¦æ¡C");
+        Debug.Log("[MapPanelUIController] OpenMap() åŸ·è¡Œã€‚");
     }
 
-    public void CloseMap() // Ãö±¼¥­­±¹Ï
+    public void CloseMap() // é—œæ‰å¹³é¢åœ–
     {
-        mapPanel.SetActive(false); // Ãö±¼¥­­±¹Ï
-        titleUI.SetActive(true); // ¥´¶}¥k¤U´£¥Ü
-        crossHair.SetActive(true); // ¥´¶}·Ç¤ß
-
-        // ***** ·s¼W¡G¦b³o¸Ì¶°¤¤©I¥s PopMap *****
-        // ³o½T«O¤F¥u­n³o­Ó­±ªO³QÃö±¼¡A¥¦´N¤@©w·|¥¿½T¦a Pop Map
+        mapPanel.SetActive(false); // é—œæ‰å¹³é¢åœ–
+        titleUI.SetActive(true); // æ‰“é–‹å³ä¸‹æç¤º
+        crossHair.SetActive(true); // æ‰“é–‹æº–å¿ƒ
+        keyHint.SetActive(true); // æ‰“é–‹æŒ‰éµæç¤º
+        // ***** æ–°å¢ï¼šåœ¨é€™è£¡é›†ä¸­å‘¼å« PopMap *****
         InputStackManager.Instance.PopMap();
-
-        Debug.Log("[MapPanelUIController] CloseMap() °õ¦æ¡C");
     }
 }

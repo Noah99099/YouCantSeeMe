@@ -33,6 +33,9 @@ public class BigMapController : MonoBehaviour
     public List<FloorData> floors; 
     private FloorData currentFloor;
 
+    [Header("UI 控制器參照")]
+    public MapPanelUIController mapPanelController;
+
     /// <summary>
     /// 將地圖視角強制對焦在玩家圖示上
     /// </summary>
@@ -134,40 +137,30 @@ public class BigMapController : MonoBehaviour
     {
         if (targetData == null || playerTransform == null) return;
 
-        // 1. 處理 CharacterController
+        // 1. 處理 CharacterController (防止傳送失效)
         CharacterController cc = playerTransform.GetComponent<CharacterController>();
         if (cc != null) cc.enabled = false;
 
         // 2. 執行傳送
         playerTransform.position = targetData.targetPosition;
-        Physics.SyncTransforms();
+        Physics.SyncTransforms(); // 強制同步物理座標
 
         if (cc != null) cc.enabled = true;
 
-        // 3. 更新樓層狀態
+        // 3. 更新樓層狀態 (確保下次打開地圖時圖片是對的)
         UpdateFloor(); 
-        
-        // 4. 【完美融入團隊架構】：呼叫專屬的關閉方法
-        CloseMapProperly();
 
-        Debug.Log($"<color=green>[Teleport] 傳送成功：{targetData.pointName}</color>");
-    }
-
-    /// <summary>
-    /// 負責與組員的系統串接，安全地關閉地圖與切換輸入狀態
-    /// </summary>
-    private void CloseMapProperly()
-    {
-        // 步驟 A：利用組員的 InputStackManager 退出地圖模式
-        // 當 PopMap 執行後，組員的 UpdateCursorStateBasedOnTopMap() 就會自動把滑鼠隱藏並鎖定了！
-        if (InputStackManager.Instance != null && InputStackManager.Instance.CurrentMap == InputActionMaps._Map)
+        // --- 【完美融入團隊架構：關閉地圖與處理滑鼠】 ---
+        if (mapPanelController != null)
         {
-            InputStackManager.Instance.PopMap();
+            // 呼叫組員寫好的方法：自動關閉UI、開準心、PopMap(鎖定滑鼠)
+            mapPanelController.CloseMap();
         }
-
-        // 步驟 B：呼叫負責關閉地圖的 UI 邏輯
-        // 【請根據你們專案的實際情況，選擇以下其中一種做法】
-        // 做法 3：觸發組員寫在 Player 身上或 Manager 身上的 "ToggleMap" 邏輯
-        // 如果你們是按 M 鍵開關地圖，可以找找負責按 M 鍵的那個腳本，去呼叫它的關閉函式。
+        else
+        {
+            Debug.LogError("[Teleport] 傳送成功，但找不到 mapPanelController，無法自動關閉地圖！請檢查 Inspector。");
+        }
+        
+        Debug.Log($"<color=green>[Teleport] 傳送成功並關閉地圖：{targetData.pointName}</color>");
     }
 }
