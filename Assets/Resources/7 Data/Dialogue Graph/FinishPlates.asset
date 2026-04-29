@@ -67,10 +67,7 @@ MonoBehaviour:
       _node: {fileID: -1147893219023362021}
       _typeQualifiedName: BaseNode, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
         PublicKeyToken=null
-      connections:
-      - fieldName: entry
-        node: {fileID: 2647953017115429779}
-        reroutePoints: []
+      connections: []
       _direction: 1
       _connectionType: 1
       _typeConstraint: 0
@@ -86,7 +83,7 @@ MonoBehaviour:
     overrideName: 0
     speakerName: 
     isNarration: 0
-    content: "\u6211\u8A18\u5F97\u524D\u8F29\u8AAA\u904E\u9032\u5230\u6848\u4EF6\u73FE\u5834\u5F8C\u6709\u6771\u897F\u8981\u62FF\uFF0C\u662F\u4E0D\u662F\u5728\u65C1\u908A\u6AC3\u5B50\u4E0A\u3002"
+    content: "\u6210\u529F\u89E3\u958B\u4E86\uFF01\u51FA\u4F86\u5427\u9B3C\u9B42\uFF01"
     contentKey: 
     voiceClip: {fileID: 0}
     soundEffect: {fileID: 0}
@@ -103,57 +100,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6f06bfe50d942a64aaa8b08b2dd4c147, type: 3}
-  m_Name: ToLevel2
+  m_Name: FinishPlates
   m_EditorClassIdentifier: 
   nodes:
   - {fileID: -4762553000041691351}
   - {fileID: -1147893219023362021}
-  - {fileID: 2647953017115429779}
-  triggerType: 0
+  triggerType: 2
   initialVariables: []
   runtimeVariables: []
   lastPickedItemID: 
---- !u!114 &2647953017115429779
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c7ce8e7e764e4054f87ae863bec30614, type: 3}
-  m_Name: Invoke Event
-  m_EditorClassIdentifier: 
-  graph: {fileID: 11400000}
-  position: {x: 271.8933, y: -17.00669}
-  ports:
-    keys:
-    - entry
-    - exit
-    values:
-    - _fieldName: entry
-      _node: {fileID: 2647953017115429779}
-      _typeQualifiedName: BaseNode, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
-        PublicKeyToken=null
-      connections:
-      - fieldName: exit
-        node: {fileID: -1147893219023362021}
-        reroutePoints: []
-      _direction: 0
-      _connectionType: 1
-      _typeConstraint: 0
-      _dynamic: 0
-    - _fieldName: exit
-      _node: {fileID: 2647953017115429779}
-      _typeQualifiedName: BaseNode, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
-        PublicKeyToken=null
-      connections: []
-      _direction: 1
-      _connectionType: 1
-      _typeConstraint: 0
-      _dynamic: 0
-  isImportant: 0
-  entry: {fileID: 0}
-  exit: {fileID: 0}
-  eventID: StartDialogue_Door

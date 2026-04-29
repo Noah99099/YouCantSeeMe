@@ -1,5 +1,6 @@
 using UnityEngine;
 
+[RequireComponent(typeof(AudioSource))] // 確保物件上有 AudioSource
 public class PlateUseEffect : MonoBehaviour
 {
     // 這裡掛載在 PlateEventManager 物件上
@@ -13,6 +14,13 @@ public class PlateUseEffect : MonoBehaviour
     [Header("盤子配置")]
     public PlateData[] plates = new PlateData[7];
     public GameObject magicCircle;
+
+    [Header("音效設定")]
+    [SerializeField, Tooltip("解謎成功時的音效")]
+    private AudioClip successSound;
+    [SerializeField, Range(0f, 1f)]
+    private float soundVolume = 1f;
+    [SerializeField] private AudioSource audioSource;
 
     private int usedPlateCount = 0;
     private int totalPlates => plates.Length; // 預計需要的總盤數
@@ -47,12 +55,29 @@ public class PlateUseEffect : MonoBehaviour
         {
             Debug.Log("所有盤子皆已放置完成！開啟魔法陣。");
             magicCircle.SetActive(true);
-            
+
+            // 通知對話系統播放對話
+            DialogueManager.Instance.TriggerDialogueByEvent("FinishPlates");
+
             // 通知燈光系統解謎完成
             KanWu.Systems.LightSystemManager.Instance.NotifyPuzzleSolved();
-            
-            // 任務完成後銷毀此管理物件或腳本
-            Destroy(gameObject);
+
+            // 處理音效播放與銷毀
+            if (successSound != null && audioSource != null)
+            {
+                audioSource.PlayOneShot(successSound, soundVolume);
+
+                // 為了避免音效被切斷，先關閉此腳本的功能防止重複觸發
+                this.enabled = false;
+
+                // 延遲銷毀物件，等待時間為音效的長度
+                Destroy(gameObject, successSound.length);
+            }
+            else
+            {
+                // 如果沒有設定音效，則直接銷毀
+                Destroy(gameObject);
+            }
         }
     }
 
