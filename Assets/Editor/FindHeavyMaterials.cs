@@ -1,36 +1,59 @@
 using UnityEngine;
 using UnityEditor;
+using System.Collections.Generic;
 
 public class FindHeavyMaterials
 {
-    [MenuItem("Tools/Find Heavy Materials")]
-    static void FindMaterials()
+    [MenuItem("Tools/Find Heavy Materials (Advanced)")]
+    static void Find()
     {
         string[] guids = AssetDatabase.FindAssets("t:Material");
 
-        foreach (string guid in guids)
+        List<string> results = new List<string>();
+
+        for (int i = 0; i < guids.Length; i++)
         {
-            string path = AssetDatabase.GUIDToAssetPath(guid);
+            string path = AssetDatabase.GUIDToAssetPath(guids[i]);
             Material mat = AssetDatabase.LoadAssetAtPath<Material>(path);
 
             if (mat == null) continue;
 
-            string[] keywords = mat.shaderKeywords;
+            EditorUtility.DisplayProgressBar("Scanning Materials", path, (float)i / guids.Length);
 
-            bool hasParallax = System.Array.Exists(keywords, k => k == "_PARALLAXMAP");
-            bool hasDetail = System.Array.Exists(keywords, k => k == "_DETAIL_MULX2");
-            bool hasOcclusion = System.Array.Exists(keywords, k => k == "_OCCLUSIONMAP");
+            int score = 0;
 
-            if (hasParallax || hasDetail || hasOcclusion)
+            // Parallax
+            if (mat.HasProperty("_ParallaxMap") && mat.GetTexture("_ParallaxMap") != null)
+                score += 3;
+
+            // Detail
+            if (mat.HasProperty("_DetailAlbedoMap") && mat.GetTexture("_DetailAlbedoMap") != null)
+                score += 2;
+
+            // Normal
+            if (mat.HasProperty("_BumpMap") && mat.GetTexture("_BumpMap") != null)
+                score += 1;
+
+            // BaseMap size
+            if (mat.HasProperty("_BaseMap"))
             {
-                Debug.Log(
-                    $"[Heavy Material] {path}\n" +
-                    $"Parallax: {hasParallax}, Detail: {hasDetail}, Occlusion: {hasOcclusion}",
-                    mat
-                );
+                Texture tex = mat.GetTexture("_BaseMap");
+                if (tex is Texture2D t2d && t2d.width >= 2048)
+                    score += 2;
+            }
+
+            // Transparent
+            if (mat.renderQueue >= 3000)
+                score += 3;
+
+            if (score >= 3)
+            {
+                results.Add($"[Score:{score}] {path}");
             }
         }
 
-        Debug.Log("Scan Complete");
+        EditorUtility.ClearProgressBar();
+
+        Debug.Log("===== Heavy Materials =====\n" + string.Join("\n", results));
     }
 }
