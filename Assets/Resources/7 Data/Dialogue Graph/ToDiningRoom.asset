@@ -86,7 +86,7 @@ MonoBehaviour:
     overrideName: 0
     speakerName: 
     isNarration: 0
-    content: "\u6211\u8A18\u5F97\u524D\u8F29\u8AAA\u904E\u9032\u5230\u6848\u4EF6\u73FE\u5834\u5F8C\u6709\u6771\u897F\u8981\u62FF\uFF0C\u662F\u4E0D\u662F\u5728\u65C1\u908A\u6AC3\u5B50\u4E0A\u3002"
+    content: "\u54C7\u2014\u5C4D\u6A6B\u904D\u91CE\uFF0C\u6293\u7DCA\u6642\u9593\u4F86\u8ABF\u67E5\u3002"
     contentKey: 
     voiceClip: {fileID: 0}
     soundEffect: {fileID: 0}
@@ -103,7 +103,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6f06bfe50d942a64aaa8b08b2dd4c147, type: 3}
-  m_Name: ToLevel2
+  m_Name: ToDiningRoom
   m_EditorClassIdentifier: 
   nodes:
   - {fileID: -4762553000041691351}
@@ -126,7 +126,7 @@ MonoBehaviour:
   m_Name: Invoke Event
   m_EditorClassIdentifier: 
   graph: {fileID: 11400000}
-  position: {x: 271.8933, y: -17.00669}
+  position: {x: 280, y: 56}
   ports:
     keys:
     - entry
@@ -156,4 +156,4 @@ MonoBehaviour:
   isImportant: 0
   entry: {fileID: 0}
   exit: {fileID: 0}
-  eventID: StartDialogue_Door
+  eventID: StartDialogue_ToDining

@@ -84,7 +84,7 @@ public class ItemPlacementSpot : MonoBehaviour, IInteractable
                 // 關閉這個腳本組件，確保不會再被其他邏輯誤觸
                 this.enabled = false;
 
-                //Destroy(gameObject); // 直接銷毀判定點，反正生成模型的位置是另外開的。確保生成的模型不會跟著陪葬
+                Destroy(gameObject); // 直接銷毀判定點，反正生成模型的位置是另外開的。確保生成的模型不會跟著陪葬
             }
 
             // 3. 徹底刪除這個判定點物件
