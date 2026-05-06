@@ -1,0 +1,50 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: Shared_Shader
+  m_EditorClassIdentifier: 
+  m_GroupName: Shared_Shader
+  m_Data:
+    m_SerializedData: []
+  m_GUID: 85251e8ba87f47e4a985f121116cdb41
+  m_SerializeEntries:
+  - m_GUID: 0a3195d52561fff4da08fafef3f1ce8e
+    m_Address: Glass
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 36f51ed4a07172844b2e3bbf7c6496e2
+    m_Address: DesolveSprite
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 8b38f1b540224b843859ad8001e364ef
+    m_Address: RealMetal_Water
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a55d5c1c20ca302439907414e3c769bc
+    m_Address: RealMetal
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b7287184b5d6fd24ea264ceadd5468e0
+    m_Address: Diamond
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: 74c1f74c9bec0d84db80ad88178024d3, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: 7ee77937205f52645ab2cd610f47c097, type: 2}
+    - {fileID: 11400000, guid: 827aae025e274eb41bbfd08a26862de4, type: 2}
