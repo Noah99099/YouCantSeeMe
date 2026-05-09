@@ -1706,6 +1706,34 @@
                     "isPartOfComposite": false
                 }
             ]
+        },
+        {
+            "name": "ViewImagePanel",
+            "id": "9dd452c4-6661-4907-bf5a-0600ff59f148",
+            "actions": [
+                {
+                    "name": "Close",
+                    "type": "Button",
+                    "id": "d99cb0b6-4f3f-4e13-9a97-76e573d73af8",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "870bccee-4254-414d-a798-86e740342f09",
+                    "path": "<Keyboard>/escape",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";鍵鼠",
+                    "action": "Close",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
         }
     ],
     "controlSchemes": [

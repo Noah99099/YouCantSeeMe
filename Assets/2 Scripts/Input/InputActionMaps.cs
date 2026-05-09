@@ -19,5 +19,6 @@ public static class InputActionMaps
     public const string _Map = "Map"; //Player - Map，平面圖
     public const string _Tutorial = "Tutorial"; //Player - Tutorial，教學分頁圖
     public const string _Keypad = "Keypad"; //Player - Keypad，近距離按鍵密碼鎖交互
+    public const string _ViewImagePanel = "ViewImagePanel"; //Player - ViewImagePanel，對應物件的陰陽UI圖片顯示
     // ... 在此處加入您所有的 Action Map 名稱
 }

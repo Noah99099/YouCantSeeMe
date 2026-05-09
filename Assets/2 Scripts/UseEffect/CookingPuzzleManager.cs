@@ -243,6 +243,9 @@ public class CookingPuzzleManager : MonoBehaviour
         
         // 觸發解謎成功的燈光或環境回饋
         KanWu.Systems.LightSystemManager.Instance.NotifyPuzzleSolved();
+
+        // 【新增】解除對應空氣牆
+        KanWu.Systems.WallSystemManager.Instance.NotifyPuzzleSolved();
     }
 
     #endregion

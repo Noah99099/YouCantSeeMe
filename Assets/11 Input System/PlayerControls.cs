@@ -1792,6 +1792,34 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""isPartOfComposite"": false
                 }
             ]
+        },
+        {
+            ""name"": ""ViewImagePanel"",
+            ""id"": ""9dd452c4-6661-4907-bf5a-0600ff59f148"",
+            ""actions"": [
+                {
+                    ""name"": ""Close"",
+                    ""type"": ""Button"",
+                    ""id"": ""d99cb0b6-4f3f-4e13-9a97-76e573d73af8"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""870bccee-4254-414d-a798-86e740342f09"",
+                    ""path"": ""<Keyboard>/escape"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";鍵鼠"",
+                    ""action"": ""Close"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                }
+            ]
         }
     ],
     ""controlSchemes"": [
@@ -1877,6 +1905,9 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         // Keypad
         m_Keypad = asset.FindActionMap("Keypad", throwIfNotFound: true);
         m_Keypad_CloseKeypad = m_Keypad.FindAction("CloseKeypad", throwIfNotFound: true);
+        // ViewImagePanel
+        m_ViewImagePanel = asset.FindActionMap("ViewImagePanel", throwIfNotFound: true);
+        m_ViewImagePanel_Close = m_ViewImagePanel.FindAction("Close", throwIfNotFound: true);
     }
 
     ~@PlayerControls()
@@ -1894,6 +1925,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         UnityEngine.Debug.Assert(!m_Map.enabled, "This will cause a leak and performance issues, PlayerControls.Map.Disable() has not been called.");
         UnityEngine.Debug.Assert(!m_Tutorial.enabled, "This will cause a leak and performance issues, PlayerControls.Tutorial.Disable() has not been called.");
         UnityEngine.Debug.Assert(!m_Keypad.enabled, "This will cause a leak and performance issues, PlayerControls.Keypad.Disable() has not been called.");
+        UnityEngine.Debug.Assert(!m_ViewImagePanel.enabled, "This will cause a leak and performance issues, PlayerControls.ViewImagePanel.Disable() has not been called.");
     }
 
     /// <summary>
@@ -3554,6 +3586,102 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
     /// Provides a new <see cref="KeypadActions" /> instance referencing this action map.
     /// </summary>
     public KeypadActions @Keypad => new KeypadActions(this);
+
+    // ViewImagePanel
+    private readonly InputActionMap m_ViewImagePanel;
+    private List<IViewImagePanelActions> m_ViewImagePanelActionsCallbackInterfaces = new List<IViewImagePanelActions>();
+    private readonly InputAction m_ViewImagePanel_Close;
+    /// <summary>
+    /// Provides access to input actions defined in input action map "ViewImagePanel".
+    /// </summary>
+    public struct ViewImagePanelActions
+    {
+        private @PlayerControls m_Wrapper;
+
+        /// <summary>
+        /// Construct a new instance of the input action map wrapper class.
+        /// </summary>
+        public ViewImagePanelActions(@PlayerControls wrapper) { m_Wrapper = wrapper; }
+        /// <summary>
+        /// Provides access to the underlying input action "ViewImagePanel/Close".
+        /// </summary>
+        public InputAction @Close => m_Wrapper.m_ViewImagePanel_Close;
+        /// <summary>
+        /// Provides access to the underlying input action map instance.
+        /// </summary>
+        public InputActionMap Get() { return m_Wrapper.m_ViewImagePanel; }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Enable()" />
+        public void Enable() { Get().Enable(); }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Disable()" />
+        public void Disable() { Get().Disable(); }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.enabled" />
+        public bool enabled => Get().enabled;
+        /// <summary>
+        /// Implicitly converts an <see ref="ViewImagePanelActions" /> to an <see ref="InputActionMap" /> instance.
+        /// </summary>
+        public static implicit operator InputActionMap(ViewImagePanelActions set) { return set.Get(); }
+        /// <summary>
+        /// Adds <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
+        /// </summary>
+        /// <param name="instance">Callback instance.</param>
+        /// <remarks>
+        /// If <paramref name="instance" /> is <c>null</c> or <paramref name="instance"/> have already been added this method does nothing.
+        /// </remarks>
+        /// <seealso cref="ViewImagePanelActions" />
+        public void AddCallbacks(IViewImagePanelActions instance)
+        {
+            if (instance == null || m_Wrapper.m_ViewImagePanelActionsCallbackInterfaces.Contains(instance)) return;
+            m_Wrapper.m_ViewImagePanelActionsCallbackInterfaces.Add(instance);
+            @Close.started += instance.OnClose;
+            @Close.performed += instance.OnClose;
+            @Close.canceled += instance.OnClose;
+        }
+
+        /// <summary>
+        /// Removes <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
+        /// </summary>
+        /// <remarks>
+        /// Calling this method when <paramref name="instance" /> have not previously been registered has no side-effects.
+        /// </remarks>
+        /// <seealso cref="ViewImagePanelActions" />
+        private void UnregisterCallbacks(IViewImagePanelActions instance)
+        {
+            @Close.started -= instance.OnClose;
+            @Close.performed -= instance.OnClose;
+            @Close.canceled -= instance.OnClose;
+        }
+
+        /// <summary>
+        /// Unregisters <param cref="instance" /> and unregisters all input action callbacks via <see cref="ViewImagePanelActions.UnregisterCallbacks(IViewImagePanelActions)" />.
+        /// </summary>
+        /// <seealso cref="ViewImagePanelActions.UnregisterCallbacks(IViewImagePanelActions)" />
+        public void RemoveCallbacks(IViewImagePanelActions instance)
+        {
+            if (m_Wrapper.m_ViewImagePanelActionsCallbackInterfaces.Remove(instance))
+                UnregisterCallbacks(instance);
+        }
+
+        /// <summary>
+        /// Replaces all existing callback instances and previously registered input action callbacks associated with them with callbacks provided via <param cref="instance" />.
+        /// </summary>
+        /// <remarks>
+        /// If <paramref name="instance" /> is <c>null</c>, calling this method will only unregister all existing callbacks but not register any new callbacks.
+        /// </remarks>
+        /// <seealso cref="ViewImagePanelActions.AddCallbacks(IViewImagePanelActions)" />
+        /// <seealso cref="ViewImagePanelActions.RemoveCallbacks(IViewImagePanelActions)" />
+        /// <seealso cref="ViewImagePanelActions.UnregisterCallbacks(IViewImagePanelActions)" />
+        public void SetCallbacks(IViewImagePanelActions instance)
+        {
+            foreach (var item in m_Wrapper.m_ViewImagePanelActionsCallbackInterfaces)
+                UnregisterCallbacks(item);
+            m_Wrapper.m_ViewImagePanelActionsCallbackInterfaces.Clear();
+            AddCallbacks(instance);
+        }
+    }
+    /// <summary>
+    /// Provides a new <see cref="ViewImagePanelActions" /> instance referencing this action map.
+    /// </summary>
+    public ViewImagePanelActions @ViewImagePanel => new ViewImagePanelActions(this);
     private int m_鍵鼠SchemeIndex = -1;
     /// <summary>
     /// Provides access to the input control scheme.
@@ -3991,5 +4119,20 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnCloseKeypad(InputAction.CallbackContext context);
+    }
+    /// <summary>
+    /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "ViewImagePanel" which allows adding and removing callbacks.
+    /// </summary>
+    /// <seealso cref="ViewImagePanelActions.AddCallbacks(IViewImagePanelActions)" />
+    /// <seealso cref="ViewImagePanelActions.RemoveCallbacks(IViewImagePanelActions)" />
+    public interface IViewImagePanelActions
+    {
+        /// <summary>
+        /// Method invoked when associated input action "Close" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnClose(InputAction.CallbackContext context);
     }
 }

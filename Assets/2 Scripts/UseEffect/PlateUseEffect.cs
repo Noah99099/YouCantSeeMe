@@ -62,6 +62,9 @@ public class PlateUseEffect : MonoBehaviour
             // 通知燈光系統解謎完成
             KanWu.Systems.LightSystemManager.Instance.NotifyPuzzleSolved();
 
+            // 【新增】通知空氣牆系統解謎完成
+            KanWu.Systems.WallSystemManager.Instance.NotifyPuzzleSolved();
+
             // 處理音效播放與銷毀
             if (successSound != null && audioSource != null)
             {
