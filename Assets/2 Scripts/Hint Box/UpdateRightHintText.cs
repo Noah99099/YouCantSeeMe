@@ -2,6 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// 在宅邸用腳本，大門不用
+/// </summary>
 public class UpdateRightHintText : MonoBehaviour
 {
     [Header("基本生成設定")]
@@ -15,11 +18,14 @@ public class UpdateRightHintText : MonoBehaviour
     [Header("提示一覽")]
     public string text_1; // 拿完玄關結束
     public string text_2; // 拿完2個道具對話結束後的提示
+    public string text_3; // 第一次往飯廳走
+    public string text_4; // 與5個證物立牌交互後
+    public string text_5; // 證物立牌調查對話結束
 
 
     // 開放一個方法給 Button 的 OnClick 呼叫
 
-    public void StartDialouge() // 拿完玄關結束
+    public void StartDialouge() // 拿完玄關結束，請拿取平面圖和案件紀錄簿
     {
         if (hintPrefab == null || uiCanvas == null)
         {
@@ -43,7 +49,7 @@ public class UpdateRightHintText : MonoBehaviour
         //Destroy(destroyOjb_StartDialouge); // 刪除:StartDialouge，一進玄關的對話管理器
     }
 
-    public void GetTwoThings() //拿完2個道具對話結束後的提示
+    public void GetTwoThings() //拿完2個道具對話結束後的提示，請前往案發現場—飯廳
     {
         if (hintPrefab == null || uiCanvas == null)
         {
@@ -64,5 +70,42 @@ public class UpdateRightHintText : MonoBehaviour
         }
 
         Destroy(destroyOjb_GetTwoThings); // 刪除:GetTwoThings，獲得平面圖和紀錄簿對話的管理器和對話
+    }
+
+    public void InvestigationDining() //第一次往飯廳走，調查死者死因
+    {
+        if (hintPrefab == null || uiCanvas == null)
+        {
+            Debug.LogError("HintSpawner: Prefab 或 Canvas 尚未綁定！");
+            return;
+        }
+
+        // 1. 在指定的 Canvas 下生成 Prefab 複製品
+        GameObject newHint = Instantiate(hintPrefab, uiCanvas);
+
+        // 2. 獲取它身上的 SelfDestroyHint 腳本
+        SelfDestroyHint hintScript = newHint.GetComponent<SelfDestroyHint>();
+
+        if (hintScript != null)
+        {
+            // 3. 傳入文字並啟動動畫與銷毀流程 (預設 2 秒)
+            hintScript.InitAndShow(text_3);
+        }
+    }
+
+    public void AfterEvidenceMarker() // 與5個證物立牌交互後，獲得死因調查結果
+    {
+        if (hintPrefab == null || uiCanvas == null) return;
+        GameObject newHint = Instantiate(hintPrefab, uiCanvas);
+        SelfDestroyHint hintScript = newHint.GetComponent<SelfDestroyHint>();
+        if (hintScript != null) hintScript.InitAndShow(text_4);
+    }
+
+    public void AfterMarkerConclusion() // 證物立牌調查對話結束，解開飯廳的法陣
+    {
+        if (hintPrefab == null || uiCanvas == null) return;
+        GameObject newHint = Instantiate(hintPrefab, uiCanvas);
+        SelfDestroyHint hintScript = newHint.GetComponent<SelfDestroyHint>();
+        if (hintScript != null) hintScript.InitAndShow(text_5);
     }
 }
