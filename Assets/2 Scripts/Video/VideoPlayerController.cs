@@ -75,9 +75,10 @@ public class VideoPlayerController : MonoBehaviour
         }
 
         // 【新增】開始播放影片時，將背景音樂靜音 (0.5秒淡出)
-        if (MusicManager.Instance != null)
+        // 【修改】MusicManager -> AudioManager
+        if (AudioManager.Instance != null)
         {
-            MusicManager.Instance.SetVideoMute(true, 0.5f);
+            AudioManager.Instance.SetVideoMute(true, 0.5f);
         }
 
         videoPlayer.Play();
@@ -113,9 +114,10 @@ public class VideoPlayerController : MonoBehaviour
         }
 
         // 【新增】影片結束後，恢復背景音樂音量 (1秒淡入)
-        if (MusicManager.Instance != null)
+        // 【修改】MusicManager -> AudioManager
+        if (AudioManager.Instance != null)
         {
-            MusicManager.Instance.SetVideoMute(false, 1.0f);
+            AudioManager.Instance.SetVideoMute(false, 1.0f);
         }
 
         // 3. 【新】執行傳入的回調動作

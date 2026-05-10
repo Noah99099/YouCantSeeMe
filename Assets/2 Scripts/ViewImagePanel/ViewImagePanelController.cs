@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.InputSystem;
 using static InputActionMaps; // 使用您定義的常數
+using UnityEngine.EventSystems; // 新增這行
 
 public class ViewImagePanelController : MonoBehaviour
 {
@@ -101,6 +102,14 @@ public class ViewImagePanelController : MonoBehaviour
         }
 
         panelRoot.SetActive(false);
+
+        // ==========================================
+        // 【關鍵修復】：強制清空 EventSystem 的 UI 焦點，避免吞掉下一次的滑鼠點擊
+        // ==========================================
+        if (EventSystem.current != null)
+        {
+            EventSystem.current.SetSelectedGameObject(null);
+        }
     }
 
     private void OnCloseAction(InputAction.CallbackContext context)
