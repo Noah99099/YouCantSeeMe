@@ -10,21 +10,25 @@ public class MagicCircleGlitch : MonoBehaviour
     [SerializeField] private AudioSource staticNoiseSource;
 
     // 將原本的 public 改為 private，因為我們將透過程式自動抓取
-    private ScreenGlitchEffect glitchController;
+    // [暫時註解] 先不使用花屏特效
+    // private ScreenGlitchEffect glitchController;
 
     [Tooltip("法陣對應的鬼魂 ")]
     [SerializeField] public GameObject ghost;
 
     // ----- [!! 新增 !!] -----
     // 我們需要快取 (Cache) 這兩個效果參數
-    private FilmGrain filmGrainEffect;
-    private ChromaticAberration chromaticAberrationEffect;
+    // [暫時註解] 先不使用花屏特效
+    // private FilmGrain filmGrainEffect;
+    // private ChromaticAberration chromaticAberrationEffect;
 
     private void Start()
     {
         ghost.SetActive(false);
 
         // 動態尋找 Tag 為 "PlayerCamera" 的物件，並獲取上面的 ScreenGlitchEffect 腳本
+        // [暫時註解] 先不使用花屏特效
+        /*
         GameObject playerCamera = GameObject.FindGameObjectWithTag("PlayerCamera");
         if (playerCamera != null)
         {
@@ -34,6 +38,7 @@ public class MagicCircleGlitch : MonoBehaviour
         {
             Debug.LogWarning("找不到 Tag 為 'PlayerCamera' 的物件！請確認 Main Camera 的 Tag 設定是否正確。");
         }
+        */
     }
 
     public void InteractMagicCircle() 
@@ -47,16 +52,19 @@ public class MagicCircleGlitch : MonoBehaviour
     public IEnumerator PlayGlitchEffectOnce()
     {
         // 防呆：如果沒抓到腳本，就不執行後續特效
-        if (glitchController == null) yield break;
+        // [暫時註解] 避免因為花屏腳本被註解而觸發 yield break，導致後續的聲音和鬼魂出不來
+        // if (glitchController == null) yield break;
 
-        Debug.Log("播放花屏特效 (1秒)");
+        Debug.Log("播放花屏特效 (1秒)(目前花屏特效已註解)");
         // ----- [!! 修改 !!] -----
         // 1. 手動將強度設為 1.0 (或你想要的最大值)
-        if (filmGrainEffect != null) filmGrainEffect.intensity.value = 1.0f;
-        if (chromaticAberrationEffect != null) chromaticAberrationEffect.intensity.value = 1.0f;
+        // [暫時註解]
+        //if (filmGrainEffect != null) filmGrainEffect.intensity.value = 1.0f;
+        //if (chromaticAberrationEffect != null) chromaticAberrationEffect.intensity.value = 1.0f;
 
         // 2. 開啟 Volume (Weight = 1)
-        glitchController.PlayOneShotGlitch();
+        // [暫時註解]
+        //glitchController.PlayOneShotGlitch();
 
         // 3. 播放聲音
         StartCoroutine(PlayNoiseForDuration(1f));
@@ -68,11 +76,13 @@ public class MagicCircleGlitch : MonoBehaviour
         yield return new WaitForSeconds(1.0f);
 
         // 5. 關閉 Volume (Weight = 0)
-        glitchController.StopGlitch();
+        // [暫時註解]
+        //glitchController.StopGlitch();
 
         // 6. 手動將強度歸零 (清理狀態)
-        if (filmGrainEffect != null) filmGrainEffect.intensity.value = 0.0f;
-        if (chromaticAberrationEffect != null) chromaticAberrationEffect.intensity.value = 0.0f;
+        // [暫時註解]
+        //if (filmGrainEffect != null) filmGrainEffect.intensity.value = 0.0f;
+        //if (chromaticAberrationEffect != null) chromaticAberrationEffect.intensity.value = 0.0f;
         // ----- [!! 結束修改 !!] -----
         Debug.Log("花屏特效結束");
     }

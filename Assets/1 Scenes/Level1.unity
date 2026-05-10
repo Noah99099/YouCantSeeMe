@@ -8919,7 +8919,7 @@ Camera:
     height: 1
   near clip plane: 0.1
   far clip plane: 5000
-  field of view: 60
+  field of view: 50
   orthographic: 0
   orthographic size: 10
   m_Depth: -1
@@ -21282,7 +21282,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &781674959
 RectTransform:
   m_ObjectHideFlags: 0
@@ -23082,7 +23082,7 @@ MonoBehaviour:
   m_LookAt: {fileID: 0}
   m_Follow: {fileID: 1478000492}
   m_Lens:
-    FieldOfView: 60
+    FieldOfView: 50
     OrthographicSize: 10
     NearClipPlane: 0.1
     FarClipPlane: 5000
@@ -44430,7 +44430,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1557061693
 RectTransform:
   m_ObjectHideFlags: 0
@@ -61377,6 +61377,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2127601368}
+  - component: {fileID: 2127601369}
   m_Layer: 5
   m_Name: Operation
   m_TagString: Untagged
@@ -61407,6 +61408,22 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: -100.98932}
   m_SizeDelta: {x: 2028, y: 1131}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &2127601369
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2127601367}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ab24821855a4ab845aba6c8fe20431de, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  uiElement1: {fileID: 781674958}
+  uiElement2: {fileID: 1557061692}
+  hasMap: 0
+  hasBook: 0
 --- !u!1 &2132151851
 GameObject:
   m_ObjectHideFlags: 0
