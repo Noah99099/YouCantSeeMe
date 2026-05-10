@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.Video;
 using System; // 確保有引用 System
+using System.Collections; // 【新增】為了使用 Coroutine (協程) 來處理延遲
 
 public class PlayVideo : MonoBehaviour
 {
@@ -11,6 +12,14 @@ public class PlayVideo : MonoBehaviour
     [Header("影片播放完畢後要觸發的角色")]
     [Tooltip("指定播放完畢後要執行 Interact() 的 InteractableRole 物件")]
     public InteractableRole targetRole;
+
+    [Header("【新增】影片結束後的對話設定 (情況1)")]
+    [Tooltip("影片播放並銷毀物件後，是否要接續對話？")]
+    public bool triggerDialogueAfterVideo = false;
+    [Tooltip("要觸發的對話 ID")]
+    public string dialogueID = "";
+    [Tooltip("影片結束後，延遲幾秒才開始對話？")]
+    public float delayBeforeDialogue = 0.5f;
 
     /// <summary>
     /// 【供 Inspector/外部調用 - 情況 1】
@@ -66,6 +75,13 @@ public class PlayVideo : MonoBehaviour
             // 2. 將 targetRole 的 DestoryObjectsAfterVideo() 加入回調鏈 (影片結束後執行)
             // C# 的 += 允許我們將多個 Action 合併
             combinedFinishAction += targetRole.DestroyObjectsAfterVideo;
+
+            // 【新增】3. 如果有開啟對話功能，將「觸發延遲對話」的動作加入回調鏈
+            if (triggerDialogueAfterVideo && !string.IsNullOrEmpty(dialogueID))
+            {
+                // 使用匿名函式將協程啟動方法包進 Action 裡
+                combinedFinishAction += () => StartCoroutine(WaitAndTriggerDialogueRoutine());
+            }
         }
         else if (triggerRole && targetRole == null)
         {
@@ -79,5 +95,31 @@ public class PlayVideo : MonoBehaviour
         }
 
         videoController.PlayVideo(clip, combinedFinishAction);
+    }
+
+    /// <summary>
+    /// 【新增】處理延遲並觸發對話的協程
+    /// </summary>
+    private IEnumerator WaitAndTriggerDialogueRoutine()
+    {
+        // 1. 視情況等待 n 秒
+        if (delayBeforeDialogue > 0f)
+        {
+            Debug.Log($"[PlayVideo] 影片結束，等待 {delayBeforeDialogue} 秒後觸發對話...");
+            yield return new WaitForSeconds(delayBeforeDialogue);
+        }
+
+        // 2. 呼叫對話系統
+        Debug.Log($"[PlayVideo] 準備觸發對話 ID: {dialogueID}");
+
+        // 為了避免 DialogueManager 不存在時報錯，加上 null 檢查
+        if (DialogueManager.Instance != null)
+        {
+            DialogueManager.Instance.TriggerDialogueByEvent(dialogueID);
+        }
+        else
+        {
+            Debug.LogError("[PlayVideo] 找不到 DialogueManager.Instance，無法觸發對話！");
+        }
     }
 }
