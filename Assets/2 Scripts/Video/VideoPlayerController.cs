@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Video;
 using System; // 【新】為了使用 System.Action
+using System.Collections;
 
 public class VideoPlayerController : MonoBehaviour
 {
@@ -130,6 +131,25 @@ public class VideoPlayerController : MonoBehaviour
         if (PuzzleUnlockAnimator.Instance != null)
         {
             PuzzleUnlockAnimator.Instance.OnVideoPlaybackFinished();
+        }
+    }
+
+    /// <summary>
+    /// 提供給外部調用，由 Controller 宿主代為執行對話延遲，避免調用者被銷毀時協程中斷。
+    /// </summary>
+    public void StartDelayedDialogue(float delay, string dialogueID)
+    {
+        StartCoroutine(DelayedDialogueRoutine(delay, dialogueID));
+    }
+
+    private IEnumerator DelayedDialogueRoutine(float delay, string dialogueID)
+    {
+        if (delay > 0) yield return new WaitForSeconds(delay);
+
+        if (DialogueManager.Instance != null && !string.IsNullOrEmpty(dialogueID))
+        {
+            Debug.Log($"[VideoPlayerController] 延遲結束，觸發對話: {dialogueID}");
+            DialogueManager.Instance.TriggerDialogueByEvent(dialogueID);
         }
     }
 }

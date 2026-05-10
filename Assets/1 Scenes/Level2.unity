@@ -39130,7 +39130,6 @@ GameObject:
   - component: {fileID: 1194165037}
   - component: {fileID: 1194165036}
   - component: {fileID: 1194165035}
-  - component: {fileID: 1194165034}
   - component: {fileID: 1194165033}
   m_Layer: 0
   m_Name: WetRod_Storehouse_DetectPos
@@ -39151,26 +39150,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b174f91f7ecea8549ab7cf0034de549d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  videoController: {fileID: 1194165034}
+  videoController: {fileID: 1349293302}
   clip: {fileID: 32900000, guid: 161a15b9b4c052149aff4feffdc08155, type: 3}
   targetRole: {fileID: 0}
-  triggerDialogueAfterVideo: 0
-  dialogueID: 
-  delayBeforeDialogue: 0.5
---- !u!114 &1194165034
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1194165032}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8ec1c7b34301ec74a801612db1b14ea6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  renderTexture: {fileID: 8400000, guid: e8a627dab1ceb8549838fa4b551ea95a, type: 2}
-  targetImage: {fileID: 1063867040}
+  triggerDialogueAfterVideo: 1
+  dialogueID: AfterUseWetRod
+  delayBeforeDialogue: 0.2
 --- !u!114 &1194165035
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -44360,6 +44345,97 @@ Transform:
   - {fileID: 200720627}
   m_Father: {fileID: 621919388}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1349293301
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1349293303}
+  - component: {fileID: 1349293302}
+  - component: {fileID: 1349293304}
+  - component: {fileID: 1349293306}
+  - component: {fileID: 1349293305}
+  m_Layer: 0
+  m_Name: VideoDialogueManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1349293302
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1349293301}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8ec1c7b34301ec74a801612db1b14ea6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  renderTexture: {fileID: 8400000, guid: e8a627dab1ceb8549838fa4b551ea95a, type: 2}
+  targetImage: {fileID: 1063867040}
+--- !u!4 &1349293303
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1349293301}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1349293304
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1349293301}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fd9b2a1d9ec5db146a84466b9d2140a3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  eventID: AfterUseDiningBullet
+  graphToTrigger: {fileID: 11400000, guid: 4759f9bc5febd254fa1238eaa08fec6e, type: 2}
+--- !u!114 &1349293305
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1349293301}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fd9b2a1d9ec5db146a84466b9d2140a3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  eventID: AfterUseWetRod
+  graphToTrigger: {fileID: 11400000, guid: 126fcee056e6c794c8c8c4db6d5323df, type: 2}
+--- !u!114 &1349293306
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1349293301}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fd9b2a1d9ec5db146a84466b9d2140a3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  eventID: AfterUseKitchenBullet
+  graphToTrigger: {fileID: 11400000, guid: 6c1b6d271ef00da41b8301b6a6c97a90, type: 2}
 --- !u!1001 &1349734058
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -47363,7 +47439,6 @@ GameObject:
   - component: {fileID: 1449680382}
   - component: {fileID: 1449680381}
   - component: {fileID: 1449680380}
-  - component: {fileID: 1449680386}
   - component: {fileID: 1449680385}
   m_Layer: 0
   m_Name: BulletWarhead_DiningRoom_DetectPos
@@ -47489,26 +47564,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b174f91f7ecea8549ab7cf0034de549d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  videoController: {fileID: 1449680386}
+  videoController: {fileID: 1349293302}
   clip: {fileID: 32900000, guid: 4c72b13661028bc4cb2c56e4d3fb6bc7, type: 3}
   targetRole: {fileID: 0}
-  triggerDialogueAfterVideo: 0
-  dialogueID: 
-  delayBeforeDialogue: 0.5
---- !u!114 &1449680386
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1449680379}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8ec1c7b34301ec74a801612db1b14ea6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  renderTexture: {fileID: 8400000, guid: e8a627dab1ceb8549838fa4b551ea95a, type: 2}
-  targetImage: {fileID: 1063867040}
+  triggerDialogueAfterVideo: 1
+  dialogueID: AfterUseDiningBullet
+  delayBeforeDialogue: 0.2
 --- !u!4 &1451302618 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3709103538569825824, guid: 9e09713ab2e3c8c408e2f75104a2d52d,
@@ -65197,7 +65258,6 @@ GameObject:
   - component: {fileID: 1857073734}
   - component: {fileID: 1857073733}
   - component: {fileID: 1857073732}
-  - component: {fileID: 1857073738}
   - component: {fileID: 1857073737}
   m_Layer: 0
   m_Name: BulletWarhead_Kitchen_DetectPos
@@ -65323,26 +65383,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b174f91f7ecea8549ab7cf0034de549d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  videoController: {fileID: 1857073738}
+  videoController: {fileID: 1349293302}
   clip: {fileID: 32900000, guid: 27cb03b6a323a994f98bb28b78d0130c, type: 3}
   targetRole: {fileID: 0}
-  triggerDialogueAfterVideo: 0
-  dialogueID: 
+  triggerDialogueAfterVideo: 1
+  dialogueID: AfterUseKitchenBullet
   delayBeforeDialogue: 0.5
---- !u!114 &1857073738
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1857073731}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8ec1c7b34301ec74a801612db1b14ea6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  renderTexture: {fileID: 8400000, guid: e8a627dab1ceb8549838fa4b551ea95a, type: 2}
-  targetImage: {fileID: 1063867040}
 --- !u!1001 &1858685976
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -79992,6 +80038,7 @@ SceneRoots:
   - {fileID: 253357254}
   - {fileID: 879545991}
   - {fileID: 146398587}
+  - {fileID: 1349293303}
   - {fileID: 1696600603}
   - {fileID: 7474358686120263169}
   - {fileID: 89017975984639607}

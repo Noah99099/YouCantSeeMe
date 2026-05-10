@@ -1,7 +1,6 @@
 using UnityEngine;
 using UnityEngine.Video;
 using System; // 確保有引用 System
-using System.Collections; // 【新增】為了使用 Coroutine (協程) 來處理延遲
 
 public class PlayVideo : MonoBehaviour
 {
@@ -9,22 +8,21 @@ public class PlayVideo : MonoBehaviour
     public VideoPlayerController videoController;
     public VideoClip clip;
 
-    [Header("影片播放完畢後要觸發的角色")]
+    [Header("情況 1：影片播放完畢後要觸發的角色")]
     [Tooltip("指定播放完畢後要執行 Interact() 的 InteractableRole 物件")]
     public InteractableRole targetRole;
 
-    [Header("【新增】影片結束後的對話設定 (情況1)")]
-    [Tooltip("影片播放並銷毀物件後，是否要接續對話？")]
+    [Header("通用對話設定 (情況 1 & 2 共用)")]
+    [Tooltip("影片播完後是否觸發對話？")]
     public bool triggerDialogueAfterVideo = false;
-    [Tooltip("要觸發的對話 ID")]
+    [Tooltip("對話系統中的事件 ID")]
     public string dialogueID = "";
-    [Tooltip("影片結束後，延遲幾秒才開始對話？")]
-    public float delayBeforeDialogue = 0.5f;
+    [Tooltip("影片結束後幾秒開始對話？")]
+    public float delayBeforeDialogue = 1.0f;
 
     /// <summary>
     /// 【供 Inspector/外部調用 - 情況 1】
-    /// 播放影片，並在播放前後觸發 targetRole 的邏輯。
-    /// 此方法無參數，可被 Inspector 的 UnityEvent 調用。
+    /// 供 Inspector 或外部調用，包含角色 Interact 與 DestoryObjects 邏輯。
     /// </summary>
     public void PlayWithRole()
     {
@@ -36,8 +34,7 @@ public class PlayVideo : MonoBehaviour
 
     /// <summary>
     /// 【供 VoiceItemDetectionPoint 調用 - 情況 2/通用】
-    /// 播放影片，只執行單純播放邏輯，並在影片結束後執行傳入的回調。
-    /// 此方法通常用於沒有 targetRole 或是銷毀邏輯在外部的情況。
+    /// 供 VoiceItemDetectionPoint 等調用，僅包含傳入的自定義回調 (如銷毀偵測點)。
     /// </summary>
     /// <param name="onFinishedAction">影片播放完畢後要執行的動作，例如銷毀物件。</param>
     public void PlayWithoutRole(Action onFinishedAction = null)
@@ -63,9 +60,9 @@ public class PlayVideo : MonoBehaviour
             return;
         }
 
-        Action combinedFinishAction = onFinishedAction; // 預設加入外部回調
+        Action combinedFinishAction = onFinishedAction; // 預設加入外部回調，初始化回調鏈
 
-        // 處理 targetRole 邏輯
+        // 處理 targetRole 邏輯，情況 1
         if (triggerRole && targetRole != null)
         {
             // 1. 「立刻」觸發 Interact() 來解鎖物品/回憶
@@ -75,51 +72,15 @@ public class PlayVideo : MonoBehaviour
             // 2. 將 targetRole 的 DestoryObjectsAfterVideo() 加入回調鏈 (影片結束後執行)
             // C# 的 += 允許我們將多個 Action 合併
             combinedFinishAction += targetRole.DestroyObjectsAfterVideo;
-
-            // 【新增】3. 如果有開啟對話功能，將「觸發延遲對話」的動作加入回調鏈
-            if (triggerDialogueAfterVideo && !string.IsNullOrEmpty(dialogueID))
-            {
-                // 使用匿名函式將協程啟動方法包進 Action 裡
-                combinedFinishAction += () => StartCoroutine(WaitAndTriggerDialogueRoutine());
-            }
         }
-        else if (triggerRole && targetRole == null)
+
+        // --- 處理通用對話邏輯 ---
+        if (triggerDialogueAfterVideo && !string.IsNullOrEmpty(dialogueID))
         {
-            Debug.LogWarning("[PlayVideo] 已設定要觸發 Role，但 targetRole 為空！");
+            // 關鍵：將對話任務交給 videoController 執行。
+            // 即使本物件 (PlayVideo 所在的 GameObject) 被 Destroy，對話依然會計時並彈出。
+            combinedFinishAction += () => videoController.StartDelayedDialogue(delayBeforeDialogue, dialogueID);
         }
-
-        // 3. 呼叫 PlayVideo
-        if (combinedFinishAction == null)
-        {
-            Debug.LogWarning($"[PlayVideo] {gameObject.name} 沒有任何後續回調，只播放影片。");
-        }
-
         videoController.PlayVideo(clip, combinedFinishAction);
-    }
-
-    /// <summary>
-    /// 【新增】處理延遲並觸發對話的協程
-    /// </summary>
-    private IEnumerator WaitAndTriggerDialogueRoutine()
-    {
-        // 1. 視情況等待 n 秒
-        if (delayBeforeDialogue > 0f)
-        {
-            Debug.Log($"[PlayVideo] 影片結束，等待 {delayBeforeDialogue} 秒後觸發對話...");
-            yield return new WaitForSeconds(delayBeforeDialogue);
-        }
-
-        // 2. 呼叫對話系統
-        Debug.Log($"[PlayVideo] 準備觸發對話 ID: {dialogueID}");
-
-        // 為了避免 DialogueManager 不存在時報錯，加上 null 檢查
-        if (DialogueManager.Instance != null)
-        {
-            DialogueManager.Instance.TriggerDialogueByEvent(dialogueID);
-        }
-        else
-        {
-            Debug.LogError("[PlayVideo] 找不到 DialogueManager.Instance，無法觸發對話！");
-        }
     }
 }

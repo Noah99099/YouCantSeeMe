@@ -1,188 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &-4254841501754217948
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: aebb8b754ef506440ac6fe38fc33b510, type: 3}
-  m_Name: Conditional
-  m_EditorClassIdentifier: 
-  graph: {fileID: 11400000}
-  position: {x: -104, y: -168}
-  ports:
-    keys:
-    - entry
-    - exitTrue
-    - exitFalse
-    values:
-    - _fieldName: entry
-      _node: {fileID: -4254841501754217948}
-      _typeQualifiedName: BaseNode, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
-        PublicKeyToken=null
-      connections:
-      - fieldName: exit
-        node: {fileID: 6360063128405416585}
-        reroutePoints: []
-      _direction: 0
-      _connectionType: 0
-      _typeConstraint: 0
-      _dynamic: 0
-    - _fieldName: exitTrue
-      _node: {fileID: -4254841501754217948}
-      _typeQualifiedName: BaseNode, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
-        PublicKeyToken=null
-      connections:
-      - fieldName: entry
-        node: {fileID: 5379856954746443884}
-        reroutePoints: []
-      _direction: 1
-      _connectionType: 0
-      _typeConstraint: 0
-      _dynamic: 0
-    - _fieldName: exitFalse
-      _node: {fileID: -4254841501754217948}
-      _typeQualifiedName: BaseNode, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
-        PublicKeyToken=null
-      connections:
-      - fieldName: entry
-        node: {fileID: 7721334725553705200}
-        reroutePoints: []
-      _direction: 1
-      _connectionType: 0
-      _typeConstraint: 0
-      _dynamic: 0
-  isImportant: 0
-  entry: {fileID: 0}
-  exitTrue: {fileID: 0}
-  exitFalse: {fileID: 0}
-  variableName: HasGet
-  comparison: 0
-  valueToCompare: 0
---- !u!114 &-854256003780988859
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c7ce8e7e764e4054f87ae863bec30614, type: 3}
-  m_Name: Invoke Event
-  m_EditorClassIdentifier: 
-  graph: {fileID: 11400000}
-  position: {x: 888, y: -216}
-  ports:
-    keys:
-    - entry
-    - exit
-    values:
-    - _fieldName: entry
-      _node: {fileID: -854256003780988859}
-      _typeQualifiedName: BaseNode, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
-        PublicKeyToken=null
-      connections:
-      - fieldName: exit
-        node: {fileID: 3019596475781195174}
-        reroutePoints: []
-      _direction: 0
-      _connectionType: 1
-      _typeConstraint: 0
-      _dynamic: 0
-    - _fieldName: exit
-      _node: {fileID: -854256003780988859}
-      _typeQualifiedName: BaseNode, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
-        PublicKeyToken=null
-      connections: []
-      _direction: 1
-      _connectionType: 1
-      _typeConstraint: 0
-      _dynamic: 0
-  isImportant: 0
-  entry: {fileID: 0}
-  exit: {fileID: 0}
-  eventID: FirstGetVoiceItem
---- !u!114 &11400000
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6f06bfe50d942a64aaa8b08b2dd4c147, type: 3}
-  m_Name: GetVoiceItem
-  m_EditorClassIdentifier: 
-  nodes:
-  - {fileID: 6360063128405416585}
-  - {fileID: -4254841501754217948}
-  - {fileID: 5379856954746443884}
-  - {fileID: 3019596475781195174}
-  - {fileID: 7721334725553705200}
-  - {fileID: -854256003780988859}
-  triggerType: 2
-  initialVariables:
-  - name: HasGet
-    value: 0
-  runtimeVariables:
-  - name: HasGet
-    value: 1
-  lastPickedItemID: 
---- !u!114 &3019596475781195174
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 162f442e20c248d4fa6c340c232c5e37, type: 3}
-  m_Name: Set Variable
-  m_EditorClassIdentifier: 
-  graph: {fileID: 11400000}
-  position: {x: 616, y: -216}
-  ports:
-    keys:
-    - entry
-    - exit
-    values:
-    - _fieldName: entry
-      _node: {fileID: 3019596475781195174}
-      _typeQualifiedName: BaseNode, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
-        PublicKeyToken=null
-      connections:
-      - fieldName: exit
-        node: {fileID: 5379856954746443884}
-        reroutePoints: []
-      _direction: 0
-      _connectionType: 0
-      _typeConstraint: 0
-      _dynamic: 0
-    - _fieldName: exit
-      _node: {fileID: 3019596475781195174}
-      _typeQualifiedName: BaseNode, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
-        PublicKeyToken=null
-      connections:
-      - fieldName: entry
-        node: {fileID: -854256003780988859}
-        reroutePoints: []
-      _direction: 1
-      _connectionType: 0
-      _typeConstraint: 0
-      _dynamic: 0
-  isImportant: 0
-  entry: {fileID: 0}
-  exit: {fileID: 0}
-  variableName: HasGet
-  value: 1
---- !u!114 &5379856954746443884
+--- !u!114 &-3241255239053784452
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -195,31 +13,31 @@ MonoBehaviour:
   m_Name: Line
   m_EditorClassIdentifier: 
   graph: {fileID: 11400000}
-  position: {x: 152, y: -344}
+  position: {x: 552, y: -344}
   ports:
     keys:
     - entry
     - exit
     values:
     - _fieldName: entry
-      _node: {fileID: 5379856954746443884}
+      _node: {fileID: -3241255239053784452}
       _typeQualifiedName: BaseNode, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
         PublicKeyToken=null
       connections:
-      - fieldName: exitTrue
-        node: {fileID: -4254841501754217948}
+      - fieldName: exit
+        node: {fileID: -1947778063175933254}
         reroutePoints: []
       _direction: 0
       _connectionType: 1
       _typeConstraint: 0
       _dynamic: 0
     - _fieldName: exit
-      _node: {fileID: 5379856954746443884}
+      _node: {fileID: -3241255239053784452}
       _typeQualifiedName: BaseNode, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
         PublicKeyToken=null
       connections:
       - fieldName: entry
-        node: {fileID: 3019596475781195174}
+        node: {fileID: 5458524993082709067}
         reroutePoints: []
       _direction: 1
       _connectionType: 1
@@ -236,14 +54,75 @@ MonoBehaviour:
     overrideName: 0
     speakerName: 
     isNarration: 0
-    content: "\u5443...\u597D\u4E0D\u8212\u670D\uFF0C\u4E0D\u7BA1\u4EC0\u9EBC\u6642\u5019\u90FD\u7FD2\u6163\u4E0D\u4E86\u63A5\u89F8\u5230\u8072\u97F3\u7269\u54C1\u7684\u6642\u5019\u3002"
+    content: "\u62D6\u5B8C\u5F8C\u9084\u6709\u69CD\u8072\uFF0C\u9019\u662F\u5728\u5E79\u561B\uFF1F"
     contentKey: 
     voiceClip: {fileID: 0}
     soundEffect: {fileID: 0}
     onShowLine:
       m_PersistentCalls:
         m_Calls: []
---- !u!114 &6360063128405416585
+--- !u!114 &-1947778063175933254
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5437ad9eab10596448e309fe06cda6bc, type: 3}
+  m_Name: Line
+  m_EditorClassIdentifier: 
+  graph: {fileID: 11400000}
+  position: {x: 232, y: -344}
+  ports:
+    keys:
+    - entry
+    - exit
+    values:
+    - _fieldName: entry
+      _node: {fileID: -1947778063175933254}
+      _typeQualifiedName: BaseNode, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+        PublicKeyToken=null
+      connections:
+      - fieldName: exit
+        node: {fileID: 5675799221110808612}
+        reroutePoints: []
+      _direction: 0
+      _connectionType: 1
+      _typeConstraint: 0
+      _dynamic: 0
+    - _fieldName: exit
+      _node: {fileID: -1947778063175933254}
+      _typeQualifiedName: BaseNode, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+        PublicKeyToken=null
+      connections:
+      - fieldName: entry
+        node: {fileID: -3241255239053784452}
+        reroutePoints: []
+      _direction: 1
+      _connectionType: 1
+      _typeConstraint: 0
+      _dynamic: 0
+  isImportant: 0
+  entry: {fileID: 0}
+  exit: {fileID: 0}
+  line:
+    characterID: Mr. White
+    expression: '"happy"'
+    position: 1
+    animation: 0
+    overrideName: 0
+    speakerName: 
+    isNarration: 0
+    content: "\u70BA\u4EC0\u9EBC\u6709\u62D6\u5614\u2014\u6771\u897F\u7684\u8072\u97F3\uFF0C\u54B3\u54B3\u3002"
+    contentKey: 
+    voiceClip: {fileID: 0}
+    soundEffect: {fileID: 0}
+    onShowLine:
+      m_PersistentCalls:
+        m_Calls: []
+--- !u!114 &-1409412912219471446
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -256,18 +135,18 @@ MonoBehaviour:
   m_Name: Start
   m_EditorClassIdentifier: 
   graph: {fileID: 11400000}
-  position: {x: -344, y: -168}
+  position: {x: -328, y: -200}
   ports:
     keys:
     - exit
     values:
     - _fieldName: exit
-      _node: {fileID: 6360063128405416585}
+      _node: {fileID: -1409412912219471446}
       _typeQualifiedName: BaseNode, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
         PublicKeyToken=null
       connections:
       - fieldName: entry
-        node: {fileID: -4254841501754217948}
+        node: {fileID: 5675799221110808612}
         reroutePoints: []
       _direction: 1
       _connectionType: 1
@@ -275,7 +154,29 @@ MonoBehaviour:
       _dynamic: 0
   isImportant: 0
   exit: {fileID: 0}
---- !u!114 &7721334725553705200
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6f06bfe50d942a64aaa8b08b2dd4c147, type: 3}
+  m_Name: AfterUseKitchenBullet
+  m_EditorClassIdentifier: 
+  nodes:
+  - {fileID: -1409412912219471446}
+  - {fileID: 5675799221110808612}
+  - {fileID: -1947778063175933254}
+  - {fileID: -3241255239053784452}
+  - {fileID: 5458524993082709067}
+  triggerType: 2
+  initialVariables: []
+  runtimeVariables: []
+  lastPickedItemID: 
+--- !u!114 &5458524993082709067
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -288,26 +189,26 @@ MonoBehaviour:
   m_Name: Line
   m_EditorClassIdentifier: 
   graph: {fileID: 11400000}
-  position: {x: 136, y: 376}
+  position: {x: 888, y: -344}
   ports:
     keys:
     - entry
     - exit
     values:
     - _fieldName: entry
-      _node: {fileID: 7721334725553705200}
+      _node: {fileID: 5458524993082709067}
       _typeQualifiedName: BaseNode, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
         PublicKeyToken=null
       connections:
-      - fieldName: exitFalse
-        node: {fileID: -4254841501754217948}
+      - fieldName: exit
+        node: {fileID: -3241255239053784452}
         reroutePoints: []
       _direction: 0
       _connectionType: 1
       _typeConstraint: 0
       _dynamic: 0
     - _fieldName: exit
-      _node: {fileID: 7721334725553705200}
+      _node: {fileID: 5458524993082709067}
       _typeQualifiedName: BaseNode, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
         PublicKeyToken=null
       connections: []
@@ -326,7 +227,68 @@ MonoBehaviour:
     overrideName: 0
     speakerName: 
     isNarration: 0
-    content: "\u5641...\u597D\u6688...\u982D\u597D\u75DB..."
+    content: "\u6C92\u6709\u5176\u4ED6\u4EBA\u55CE\uFF1F"
+    contentKey: 
+    voiceClip: {fileID: 0}
+    soundEffect: {fileID: 0}
+    onShowLine:
+      m_PersistentCalls:
+        m_Calls: []
+--- !u!114 &5675799221110808612
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5437ad9eab10596448e309fe06cda6bc, type: 3}
+  m_Name: Line
+  m_EditorClassIdentifier: 
+  graph: {fileID: 11400000}
+  position: {x: -88, y: -344}
+  ports:
+    keys:
+    - entry
+    - exit
+    values:
+    - _fieldName: entry
+      _node: {fileID: 5675799221110808612}
+      _typeQualifiedName: BaseNode, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+        PublicKeyToken=null
+      connections:
+      - fieldName: exit
+        node: {fileID: -1409412912219471446}
+        reroutePoints: []
+      _direction: 0
+      _connectionType: 1
+      _typeConstraint: 0
+      _dynamic: 0
+    - _fieldName: exit
+      _node: {fileID: 5675799221110808612}
+      _typeQualifiedName: BaseNode, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+        PublicKeyToken=null
+      connections:
+      - fieldName: entry
+        node: {fileID: -1947778063175933254}
+        reroutePoints: []
+      _direction: 1
+      _connectionType: 1
+      _typeConstraint: 0
+      _dynamic: 0
+  isImportant: 0
+  entry: {fileID: 0}
+  exit: {fileID: 0}
+  line:
+    characterID: Mr. White
+    expression: '"happy"'
+    position: 1
+    animation: 0
+    overrideName: 0
+    speakerName: 
+    isNarration: 0
+    content: "\u5614\u2014\u9019\u6BB5\u807D\u5230\u4E86\u5947\u602A\u7684\u5614\u2014\u8072\u97F3\u3002"
     contentKey: 
     voiceClip: {fileID: 0}
     soundEffect: {fileID: 0}
