@@ -21,6 +21,10 @@ public class UpdateRightHintText : MonoBehaviour
     public string text_3; // 第一次往飯廳走
     public string text_4; // 與5個證物立牌交互後
     public string text_5; // 證物立牌調查對話結束
+    public string text_newsBuild; // 拿起客廳桌子上的報紙後
+    public string text_news1; // 拿起樓梯旁小桌子的報紙後
+    public string text_news2; // 拿起飯廳櫃子上的報紙後
+    public string text_news3; // 拿起飯廳桌上的報紙後
 
 
     // 開放一個方法給 Button 的 OnClick 呼叫
@@ -107,5 +111,37 @@ public class UpdateRightHintText : MonoBehaviour
         GameObject newHint = Instantiate(hintPrefab, uiCanvas);
         SelfDestroyHint hintScript = newHint.GetComponent<SelfDestroyHint>();
         if (hintScript != null) hintScript.InitAndShow(text_5);
+    }
+
+    public void AfterNewsBuild() // 拿起客廳桌子上的報紙後，獲得劉氏集團建案完工報導
+    {
+        if (hintPrefab == null || uiCanvas == null) return;
+        GameObject newHint = Instantiate(hintPrefab, uiCanvas);
+        SelfDestroyHint hintScript = newHint.GetComponent<SelfDestroyHint>();
+        if (hintScript != null) hintScript.InitAndShow(text_newsBuild);
+    }
+
+    public void AfterNews1() // 拿起樓梯旁小桌子的報紙後，獲得劉宅命案報導-1
+    {
+        if (hintPrefab == null || uiCanvas == null) return;
+        GameObject newHint = Instantiate(hintPrefab, uiCanvas);
+        SelfDestroyHint hintScript = newHint.GetComponent<SelfDestroyHint>();
+        if (hintScript != null) hintScript.InitAndShow(text_news1);
+    }
+
+    public void AfterNews2() // 拿起飯廳櫃子上的報紙後，獲得劉宅命案報導-2
+    {
+        if (hintPrefab == null || uiCanvas == null) return;
+        GameObject newHint = Instantiate(hintPrefab, uiCanvas);
+        SelfDestroyHint hintScript = newHint.GetComponent<SelfDestroyHint>();
+        if (hintScript != null) hintScript.InitAndShow(text_news2);
+    }
+    
+    public void AfterNews3() // 拿起飯廳桌上的報紙後，獲得劉宅命案報導-3
+    {
+        if (hintPrefab == null || uiCanvas == null) return;
+        GameObject newHint = Instantiate(hintPrefab, uiCanvas);
+        SelfDestroyHint hintScript = newHint.GetComponent<SelfDestroyHint>();
+        if (hintScript != null) hintScript.InitAndShow(text_news3);
     }
 }
