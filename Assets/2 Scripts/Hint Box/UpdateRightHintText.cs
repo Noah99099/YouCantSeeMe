@@ -4,6 +4,7 @@ using UnityEngine;
 
 /// <summary>
 /// 在宅邸用腳本，大門不用
+/// 跳出右上提示框
 /// </summary>
 public class UpdateRightHintText : MonoBehaviour
 {
@@ -25,6 +26,8 @@ public class UpdateRightHintText : MonoBehaviour
     public string text_news1; // 拿起樓梯旁小桌子的報紙後
     public string text_news2; // 拿起飯廳櫃子上的報紙後
     public string text_news3; // 拿起飯廳桌上的報紙後
+    public string text_afterGhost1; // 鬼視野+對話完全結束後的2個通知
+    public string text_afterGhost2;
 
 
     // 開放一個方法給 Button 的 OnClick 呼叫
@@ -144,4 +147,46 @@ public class UpdateRightHintText : MonoBehaviour
         SelfDestroyHint hintScript = newHint.GetComponent<SelfDestroyHint>();
         if (hintScript != null) hintScript.InitAndShow(text_news3);
     }
+
+    #region = 鬼視野+對話完全結束後的2個通知，請繼續調查飯廳四周與廚房、獲得走廊盡頭人的姿勢差異 =
+    public void AfterGhost() // 鬼視野+對話完全結束後的2個通知，請繼續調查飯廳四周與廚房、獲得走廊盡頭人的姿勢差異
+    {
+        // 使用協程來依序播放兩個提示
+        StartCoroutine(ShowGhostHintsCoroutine());
+    }
+    private IEnumerator ShowGhostHintsCoroutine()
+    {
+        if (hintPrefab == null || uiCanvas == null)
+        {
+            Debug.LogError("HintSpawner: Prefab 或 Canvas 尚未綁定！");
+            yield break;
+        }
+
+        // --- 播放第一個提示 ---
+        GameObject hint1 = Instantiate(hintPrefab, uiCanvas);
+        SelfDestroyHint script1 = hint1.GetComponent<SelfDestroyHint>();
+
+        float waitTime = 3.0f; // 預設等待時間防呆
+
+        if (script1 != null)
+        {
+            script1.InitAndShow(text_afterGhost1);
+            // 動態取得第一個提示框的總生命週期時間 (滑入時間 + 停留時間 + 滑出時間)
+            waitTime = script1.slideInDuration + script1.displayDuration + script1.slideOutDuration;
+        }
+
+        // 等待第一個提示框播完動畫並自動銷毀
+        // 額外加 0.1 秒緩衝，確保畫面順暢交接
+        yield return new WaitForSeconds(waitTime + 0.1f);
+
+        // --- 播放第二個提示 ---
+        GameObject hint2 = Instantiate(hintPrefab, uiCanvas);
+        SelfDestroyHint script2 = hint2.GetComponent<SelfDestroyHint>();
+
+        if (script2 != null)
+        {
+            script2.InitAndShow(text_afterGhost2);
+        }
+    }
+    #endregion
 }

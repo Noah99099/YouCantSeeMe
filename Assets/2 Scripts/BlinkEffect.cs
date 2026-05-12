@@ -1,5 +1,6 @@
 using UnityEngine;
 using DG.Tweening; // 必須引入 DOTween 的命名空間
+using System;      // 【新增】為了使用 Action
 
 public class BlinkEffect : MonoBehaviour
 {
@@ -24,6 +25,7 @@ public class BlinkEffect : MonoBehaviour
     }
 
     // 呼叫此方法來觸發眨眼
+    // 該方法只適用Level1
     public void PlayBlink()
     {
         // 1. 防止連續點擊造成動畫衝突，播放前先清掉眼皮上正在進行的 Tween 動畫
@@ -47,5 +49,38 @@ public class BlinkEffect : MonoBehaviour
         // 5. 睜眼動作 (回到初始位置)
         blinkSequence.Append(topLid.DOAnchorPosY(topLidOpenY, blinkDuration).SetEase(blinkEase))
                      .Join(bottomLid.DOAnchorPosY(bottomLidOpenY, blinkDuration).SetEase(blinkEase));
+    }
+
+    // 該方法只適用Level2
+    // 【修改】加入 onComplete 回調參數
+    public void BlinkAfterVideo(Action onComplete = null)
+    {
+        // 1. 防止連續點擊造成動畫衝突，播放前先清掉眼皮上正在進行的 Tween 動畫
+        topLid.DOKill();
+        bottomLid.DOKill();
+
+        // 2. 建立一個 DOTween 序列 (Sequence) 來串接動作
+        Sequence blinkSequence = DOTween.Sequence();
+
+        // 計算閉眼時的目的地 (上眼皮往下，下眼皮往上)
+        float topClosedPos = topLidOpenY - closedYOffset;
+        float bottomClosedPos = bottomLidOpenY + closedYOffset;
+
+        // 3. 閉眼動作 (Join 表示兩個動畫同時進行)
+        blinkSequence.Append(topLid.DOAnchorPosY(topClosedPos, blinkDuration).SetEase(blinkEase))
+                     .Join(bottomLid.DOAnchorPosY(bottomClosedPos, blinkDuration).SetEase(blinkEase));
+
+        // 4. 閉眼停留短暫時間
+        blinkSequence.AppendInterval(keepClosedDuration);
+
+        // 5. 睜眼動作 (回到初始位置)
+        blinkSequence.Append(topLid.DOAnchorPosY(topLidOpenY, blinkDuration).SetEase(blinkEase))
+                     .Join(bottomLid.DOAnchorPosY(bottomLidOpenY, blinkDuration).SetEase(blinkEase));
+
+        // 【新增】動畫全部完成後，執行回調
+        if (onComplete != null)
+        {
+            blinkSequence.OnComplete(() => onComplete.Invoke());
+        }
     }
 }

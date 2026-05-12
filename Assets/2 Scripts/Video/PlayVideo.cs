@@ -12,6 +12,10 @@ public class PlayVideo : MonoBehaviour
     [Tooltip("指定播放完畢後要執行 Interact() 的 InteractableRole 物件")]
     public InteractableRole targetRole;
 
+    [Header("過場效果設定")]
+    [Tooltip("影片播完後是否觸發眨眼過場？ (會在恢復輸入前執行)")]
+    public bool triggerBlinkAfterVideo = false;
+
     [Header("通用對話設定 (情況 1 & 2 共用)")]
     [Tooltip("影片播完後是否觸發對話？")]
     public bool triggerDialogueAfterVideo = false;
@@ -81,6 +85,6 @@ public class PlayVideo : MonoBehaviour
             // 即使本物件 (PlayVideo 所在的 GameObject) 被 Destroy，對話依然會計時並彈出。
             combinedFinishAction += () => videoController.StartDelayedDialogue(delayBeforeDialogue, dialogueID);
         }
-        videoController.PlayVideo(clip, combinedFinishAction);
+        videoController.PlayVideo(clip, combinedFinishAction, triggerBlinkAfterVideo);
     }
 }
