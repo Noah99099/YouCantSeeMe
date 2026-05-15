@@ -1,0 +1,111 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-1035096549404357209
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 44f0fd5df9313364fa37f9e95fa03c43, type: 3}
+  m_Name: Start
+  m_EditorClassIdentifier: 
+  graph: {fileID: 11400000}
+  position: {x: -236.66667, y: -235.5}
+  ports:
+    keys:
+    - exit
+    values:
+    - _fieldName: exit
+      _node: {fileID: -1035096549404357209}
+      _typeQualifiedName: BaseNode, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+        PublicKeyToken=null
+      connections:
+      - fieldName: entry
+        node: {fileID: 4527988402731153003}
+        reroutePoints: []
+      _direction: 1
+      _connectionType: 1
+      _typeConstraint: 0
+      _dynamic: 0
+  isImportant: 0
+  exit: {fileID: 0}
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6f06bfe50d942a64aaa8b08b2dd4c147, type: 3}
+  m_Name: TheShow2
+  m_EditorClassIdentifier: 
+  nodes:
+  - {fileID: -1035096549404357209}
+  - {fileID: 4527988402731153003}
+  triggerType: 2
+  initialVariables: []
+  runtimeVariables: []
+  lastPickedItemID: 
+--- !u!114 &4527988402731153003
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5437ad9eab10596448e309fe06cda6bc, type: 3}
+  m_Name: Line
+  m_EditorClassIdentifier: 
+  graph: {fileID: 11400000}
+  position: {x: 56, y: -280}
+  ports:
+    keys:
+    - entry
+    - exit
+    values:
+    - _fieldName: entry
+      _node: {fileID: 4527988402731153003}
+      _typeQualifiedName: BaseNode, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+        PublicKeyToken=null
+      connections:
+      - fieldName: exit
+        node: {fileID: -1035096549404357209}
+        reroutePoints: []
+      _direction: 0
+      _connectionType: 1
+      _typeConstraint: 0
+      _dynamic: 0
+    - _fieldName: exit
+      _node: {fileID: 4527988402731153003}
+      _typeQualifiedName: BaseNode, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+        PublicKeyToken=null
+      connections: []
+      _direction: 1
+      _connectionType: 1
+      _typeConstraint: 0
+      _dynamic: 0
+  isImportant: 0
+  entry: {fileID: 0}
+  exit: {fileID: 0}
+  line:
+    characterID: Mr. White
+    expression: '"None"'
+    position: 1
+    animation: 0
+    overrideName: 0
+    speakerName: 
+    isNarration: 1
+    content: "\u5730\u7344\u8655\u7406\u9B3C\u9B42\u7684\u91CF\u80FD\u4E5F\u51FA\u73FE\u4E0D\u8DB3\uFF0C\u65BC\u662F\u95BB\u7F85\u738B\u8207\u5341\u6BBF\u95BB\u738B\u6C7A\u5B9A\u5C0D\u73FE\u884C\u7684\u5730\u7344\u67B6\u69CB\u9032\u884C\u653F\u7B56\u6539\u9769\u3002"
+    contentKey: 
+    voiceClip: {fileID: 8300000, guid: 7d09d50bbf1437346bd72edffcfc2d16, type: 3}
+    soundEffect: {fileID: 0}
+    onShowLine:
+      m_PersistentCalls:
+        m_Calls: []
