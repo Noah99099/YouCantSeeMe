@@ -15,9 +15,26 @@ public class PaperShadowDirector : MonoBehaviour
     [Tooltip("演出結束後需要重新開啟的場景對話腳本")]
     public GameObject targetSceneObject;   // 結束後要開啟的場景空物件
 
-    [Header("時間控制項目")]
-    public float imgHoldTime = 2.0f; // 圖片停留時間
-    public float imgFadeTime = 1.0f; // 圖片淡化時間
+    [Header("玩家控制設定")]
+    [Tooltip("自動獲取，不需手動拖曳")]
+    public SimpleFirstPersonController playerController;
+    private float originalRotationSpeed = 1.0f; // 儲存玩家原本的旋轉速度
+
+    [Header("時間控制項目 - 1. 圖片1、2")]
+    public float img12HoldTime = 2.0f;
+    public float img12FadeTime = 1.0f;
+
+    [Header("時間控制項目 - 2. 圖片3~6 (分鏡8-11)")]
+    public float img36HoldTime = 2.0f;
+    public float img36FadeTime = 1.0f;
+
+    [Header("時間控制項目 - 3. 圖片7、8 (配合蓋章音效)")]
+    public float img78HoldTime = 2.0f;
+    public float img78FadeTime = 1.0f;
+
+    [Header("時間控制項目 - 4. 圖片9 (過場黑幕)")]
+    public float img9HoldTime = 2.0f;
+    public float img9FadeTime = 1.0f;
 
     [Header("音樂控制")]
     [Tooltip("演出專用的 AudioSource，用來播放演出背景音")]
@@ -138,6 +155,12 @@ public class PaperShadowDirector : MonoBehaviour
 
         yield return StartDialogue("StartGame");
 
+        // 【新增】恢復玩家視角旋轉
+        if (playerController != null)
+        {
+            playerController.RotationSpeed = originalRotationSpeed;
+        }
+
         if (mainCanvas != null) Destroy(mainCanvas.gameObject);
         Debug.Log("已成功跳過演出並清理資源");
     }
@@ -165,10 +188,11 @@ public class PaperShadowDirector : MonoBehaviour
             StartCoroutine(helper.FadeAudioSource(performanceAudioSource, 1f, audioFadeDuration));
         }
 
-        yield return helper.Wait(imgHoldTime);
-        yield return helper.FadeCanvasGroup(images[0], 0, imgFadeTime);
-        yield return helper.Wait(imgHoldTime);
-        yield return helper.FadeCanvasGroup(images[1], 0, imgFadeTime);
+        // 使用 圖片1、2 的專屬時間控制
+        yield return helper.Wait(img12HoldTime);
+        yield return helper.FadeCanvasGroup(images[0], 0, img12FadeTime);
+        yield return helper.Wait(img12HoldTime);
+        yield return helper.FadeCanvasGroup(images[1], 0, img12FadeTime);
 
         // [修改] 關掉後直接刪除
         Destroy(images[0].gameObject);
@@ -179,97 +203,108 @@ public class PaperShadowDirector : MonoBehaviour
         helper.PlaySpine(animNames[2], true); // 動畫3 (過渡)
 
         // ================== 分鏡 1 ==================
-        helper.PlaySpine(animNames[3], true); // 動畫4 (循環)
+        helper.PlaySpine(animNames[3], true); // 動畫4 (不用播完，先循環放著)
         yield return StartDialogue("TheShow1");
         otherUIObject.SetActive(false);
 
-        // 對話結束處理
+        // 【修正】只要"TheShow1"結束 -> 動畫4 播放到底，暫停
+        helper.StopCurrentLoopAndClearQueue();
+        yield return helper.WaitForCurrentAnimation();
+
+        // 播放 動畫5(過渡)
         yield return helper.PlaySpineAndWait(animNames[4]); // 動畫5
+        // 播放 動畫6 到底，暫停
         yield return helper.PlaySpineAndWait(animNames[5]); // 動畫6
+        // 播放 動畫7(過渡)
         yield return helper.PlaySpineAndWait(animNames[6]); // 動畫7
 
         // ================== 分鏡 2 ==================
         yield return StartDialogue("TheShow2");
         otherUIObject.SetActive(false);
         yield return helper.PlaySpineAndWait(animNames[7]); // 動畫8
-        yield return helper.PlaySpineAndWait(animNames[8]); // 動畫9
+        yield return helper.PlaySpineAndWait(animNames[8]); // 動畫9(過渡)
 
         // ================== 分鏡 3 ==================
         yield return StartDialogue("TheShow3");
         otherUIObject.SetActive(false);
         yield return helper.PlaySpineAndWait(animNames[9]); // 動畫10
-        yield return helper.PlaySpineAndWait(animNames[10]); // 動畫11
+        yield return helper.PlaySpineAndWait(animNames[10]); // 動畫11(過渡)
 
         // ================== 分鏡 4 ==================
         yield return StartDialogue("TheShow4");
         otherUIObject.SetActive(false);
         yield return helper.PlaySpineAndWait(animNames[11]); // 動畫12
-        yield return helper.PlaySpineAndWait(animNames[12]); // 動畫13
+        yield return helper.PlaySpineAndWait(animNames[12]); // 動畫13(過渡)
 
         // ================== 分鏡 5 ==================
-        yield return helper.PlaySpineAndWait(animNames[13]); // 動畫14
-        yield return helper.PlaySpineAndWait(animNames[14]); // 動畫15
+        yield return helper.PlaySpineAndWait(animNames[13]); // 動畫14 到底
+        yield return helper.PlaySpineAndWait(animNames[14]); // 動畫15(過渡)
 
-        // 開始動畫 16 (5_Witem) 並同時呼叫對話
+        // 播放 動畫16 -> 只要動畫16播放到底，自動接動畫17循環
         helper.PlaySpine(animNames[15], false);
-        // 預約動畫 17 (5_Witem_Loop) 循環
         helper.AddAnimation(animNames[16], true);
 
         yield return StartDialogue("TheShow5");
         otherUIObject.SetActive(false);
 
-        // 對話結束後，接續過渡與結尾
-        yield return helper.PlaySpineAndWait(animNames[17]); // 動畫18 (5_Witem_Idle)
-        yield return helper.PlaySpineAndWait(animNames[18]); // 動畫19 (5_WitemEnd)
-        helper.PlaySpine(animNames[19], true);               // 動畫20 (5_WitemEnd_Idle)
+        // 【修正】只要"TheShow5"結束 -> 動畫17 播放到底，暫停
+        helper.StopCurrentLoopAndClearQueue();
+        yield return helper.WaitForCurrentAnimation();
+
+        // 播放 動畫18(過渡)
+        yield return helper.PlaySpineAndWait(animNames[17]); // 動畫18
+        // 播放 動畫19 到底，暫停
+        yield return helper.PlaySpineAndWait(animNames[18]); // 動畫19
+        // 播放 動畫20(過渡)
+        helper.PlaySpine(animNames[19], true);               // 動畫20
 
         // ================== 分鏡 6 ==================
         yield return StartDialogue("TheShow6");
         otherUIObject.SetActive(false);
         yield return helper.PlaySpineAndWait(animNames[20]); // 動畫21
-        yield return helper.PlaySpineAndWait(animNames[21]); // 動畫22
+        yield return helper.PlaySpineAndWait(animNames[21]); // 動畫22(過渡)
 
         // ================== 分鏡 7 ==================
         yield return StartDialogue("TheShow7");
         otherUIObject.SetActive(false);
-        yield return helper.FadeCanvasGroup(images[2], 1, imgFadeTime);
+        yield return helper.FadeCanvasGroup(images[2], 1, img36FadeTime);
         images[3].gameObject.SetActive(true); // 圖片4
         images[4].gameObject.SetActive(true); // 圖片5
         images[5].gameObject.SetActive(true); // 圖片6
         yield return helper.PlaySpineAndWait(animNames[22]); // 動畫23
-        helper.PlaySpine(animNames[23], true); // 動畫24
+        helper.PlaySpine(animNames[23], true); // 動畫24(循環)
 
         // ================== 分鏡 8 - 11 ==================
         yield return StartDialogue("TheShow8");
         otherUIObject.SetActive(false);
-        yield return helper.Wait(imgHoldTime);
-        yield return helper.FadeCanvasGroup(images[2], 0, imgFadeTime);
+        yield return helper.Wait(img36HoldTime);
+        yield return helper.FadeCanvasGroup(images[2], 0, img36FadeTime);
         Destroy(images[2].gameObject); // [修改] 刪除圖片3
 
         yield return StartDialogue("TheShow9");
         otherUIObject.SetActive(false);
-        yield return helper.Wait(imgHoldTime);
-        yield return helper.FadeCanvasGroup(images[3], 0, imgFadeTime);
+        yield return helper.Wait(img36HoldTime);
+        yield return helper.FadeCanvasGroup(images[3], 0, img36FadeTime);
         Destroy(images[3].gameObject); // [修改] 刪除圖片4
 
         yield return StartDialogue("TheShow10");
         otherUIObject.SetActive(false);
-        yield return helper.Wait(imgHoldTime);
-        yield return helper.FadeCanvasGroup(images[4], 0, imgFadeTime);
+        yield return helper.Wait(img36HoldTime);
+        yield return helper.FadeCanvasGroup(images[4], 0, img36FadeTime);
         Destroy(images[4].gameObject); // [修改] 刪除圖片5
 
         yield return StartDialogue("TheShow11");
         otherUIObject.SetActive(false);
-        yield return helper.Wait(imgHoldTime);
-        yield return helper.FadeCanvasGroup(images[5], 0, imgFadeTime);
+        yield return helper.Wait(img36HoldTime);
+        yield return helper.FadeCanvasGroup(images[5], 0, img36FadeTime);
         Destroy(images[5].gameObject); // [修改] 刪除圖片6
 
-        yield return helper.PlaySpineAndWait(animNames[24]); // 動畫25
+        yield return helper.PlaySpineAndWait(animNames[24]); // 動畫25(過渡)
 
         // ================== 分鏡 12 ==================
         // 1. 播放 26 -> 預約 27 -> 預約 28(循環)
         helper.PlaySpine(animNames[25], false);       // 26
-        helper.AddAnimation(animNames[26], false);    // 27
+        helper.AddAnimation(animNames[26], false);    // 27(過渡)
         helper.AddAnimation(animNames[27], true);     // 28
 
         // 2. 啟動對話並等待其結束
@@ -284,17 +319,17 @@ public class PaperShadowDirector : MonoBehaviour
 
         // 5. 接續您的邏輯，直接接 29 播完 -> 30 過渡
         yield return helper.PlaySpineAndWait(animNames[28]); // 動畫 29
-        yield return helper.PlaySpineAndWait(animNames[29]); // 動畫 30
+        yield return helper.PlaySpineAndWait(animNames[29]); // 動畫 30(過渡)
 
         // ================== 分鏡 13 ==================
         yield return StartDialogue("TheShow13");
         otherUIObject.SetActive(false);
 
-        yield return helper.Wait(imgHoldTime);
-        yield return helper.FadeCanvasGroup(images[8], 1, imgFadeTime); // 圖片9 打開
+        yield return helper.Wait(img9HoldTime);
+        yield return helper.FadeCanvasGroup(images[8], 1, img9FadeTime); // 圖片9 打開
 
-        yield return helper.Wait(imgHoldTime);
-        yield return helper.FadeCanvasGroup(images[6], 1, imgFadeTime); // 圖片7 打開
+        yield return helper.Wait(img78HoldTime);
+        yield return helper.FadeCanvasGroup(images[6], 1, img78FadeTime); // 圖片7 打開
 
         // --- 【新增音效播放】 ---
         if (seAudioSource != null && stampSE != null)
@@ -304,10 +339,10 @@ public class PaperShadowDirector : MonoBehaviour
 
         images[7].gameObject.SetActive(true); // 圖片8 打開
 
-        yield return helper.Wait(imgHoldTime);
-        yield return helper.FadeCanvasGroup(images[6], 0, imgFadeTime); // 圖片7 透明度歸0
+        yield return helper.Wait(img78HoldTime);
+        yield return helper.FadeCanvasGroup(images[6], 0, img78FadeTime); // 圖片7 透明度歸0
 
-        yield return helper.Wait(imgHoldTime);
+        yield return helper.Wait(img9HoldTime);
 
         // [修改] 在 MainCanvas 透明度歸 0 以前，將其餘圖片與 Spine 刪除，只留圖片 9 (index 8)
         if (images[6] != null) Destroy(images[6].gameObject); // 圖片7
@@ -325,6 +360,13 @@ public class PaperShadowDirector : MonoBehaviour
         otherUIObject.SetActive(true);
         if (targetSceneObject != null) targetSceneObject.SetActive(true); // 打開指定場景物件
         yield return StartDialogue("StartGame"); // 呼叫初始對話
+
+        // 【新增】恢復玩家視角旋轉
+        if (playerController != null)
+        {
+            playerController.RotationSpeed = originalRotationSpeed;
+        }
+
         Destroy(mainCanvas.gameObject);
         Debug.Log("演出正式結束並清理資源");
     }
@@ -332,6 +374,19 @@ public class PaperShadowDirector : MonoBehaviour
     private void InitSetup()
     {
         if (targetSceneObject != null) targetSceneObject.SetActive(false); // 初始關閉
+
+        // 【新增】尋找玩家並儲存視角旋轉速度，然後歸零
+        if (playerController == null)
+        {
+            playerController = FindObjectOfType<SimpleFirstPersonController>();
+        }
+
+        if (playerController != null)
+        {
+            originalRotationSpeed = playerController.RotationSpeed;
+            playerController.RotationSpeed = 0f;
+            Debug.Log($"[PaperShadowDirector] 已鎖定玩家視角旋轉 (原始速度: {originalRotationSpeed})");
+        }
 
         // 初始圖片狀態 (Index 0=圖1, 9=圖10)
         for (int i = 0; i < images.Length; i++)
