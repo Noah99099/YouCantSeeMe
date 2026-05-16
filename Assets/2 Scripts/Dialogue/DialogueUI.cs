@@ -59,14 +59,16 @@ public class DialogueUI : MonoBehaviour
     private Coroutine timerCoroutine;
     private List<TextEffectInfo> textEffects = new List<TextEffectInfo>();
     private bool isAnimatingText = false;
+    // 新增：用來快取 TMP 解析完的原始頂點與顏色資料
+    private TMP_MeshInfo[] cachedMeshInfo;
 
     // 角色資料庫
     private Dictionary<string, CharacterProfile> characterDatabase = new Dictionary<string, CharacterProfile>();
     private string currentLeftCharacterID = "";
     private string currentRightCharacterID = "";
 
-    // Update 方法是我們新的動畫心跳
-    void Update()
+    // 將 Update 改為 LateUpdate，確保在 TMP 自身排版完成後才介入修改網格
+    void LateUpdate()
     {
         if (isAnimatingText)
         {
@@ -221,41 +223,59 @@ public class DialogueUI : MonoBehaviour
         textEffects.Clear();
         string cleanText = fullText;
 
-        // 【修改】更新 Regex，使其 "只" 匹配我們自訂的特效標籤
-        // 1. (shake|wave|rainbow|color) -> Group 1: 只匹配 "shake", "wave", "rainbow", "color"
-        // 2. (?:=(.*?))?    -> Group 2: (可選) 參數值 (e.g., "red", "#FF0000")
-        // 3. (.*?)          -> Group 3: 標籤內的內容
-        string pattern = @"<(shake|wave|rainbow|color)(?:=(.*?))?>(.*?)<\/\1>"; // <--- 【請修改這一行】
+        string pattern = @"<(shake|wave|rainbow|color)(?:=(.*?))?>(.*?)<\/\1>"; 
         MatchCollection matches = Regex.Matches(fullText, pattern, RegexOptions.IgnoreCase);
 
         foreach (Match match in matches.Cast<Match>().Reverse())
         {
-            string tag = match.Groups[1].Value;       // e.g., "color"
-            string parameter = match.Groups[2].Value; // e.g., "red"
-            string content = match.Groups[3].Value;   // e.g., "這是紅字"
+            string tag = match.Groups[1].Value;       
+            string parameter = match.Groups[2].Value; 
+            string content = match.Groups[3].Value;   
 
             TextEffectType type;
-            if (Enum.TryParse<TextEffectType>(tag, true, out type))
+            if (!Enum.TryParse<TextEffectType>(tag, true, out type)) continue;
+
+            // 【修正】Color 類型不需要自訂動畫系統，TMP 本身就支援 <color=xxx> 標籤。
+            // 直接保留在 cleanText 中讓 TMP 原生渲染，不剝離標籤、不加入 textEffects。
+            // 這樣可避免：
+            //   1. 打字機過程中 AnimateText 上色造成的閃爍
+            //   2. 打字結束後 isAnimatingText=false 導致顏色消失（變回黑色）
+            if (type == TextEffectType.Color)
             {
-                textEffects.Add(new TextEffectInfo
-                {
-                    type = type,
-                    startIndex = match.Index, //【修改】使用 match.Index 來獲取在 "cleanText" 中的起始位置
-                    length = content.Length,
-                    parameter = parameter // <--- 【新增】儲存解析到的參數
-                });
+                // cleanText 不做任何修改，TMP 自行解析 <color> 標籤
+                continue;
             }
 
-            // 從後往前，將 <tag>content</tag> 替換為 content
+            // 其他自訂特效（Shake / Wave / Rainbow）才需要動畫系統處理
+            textEffects.Add(new TextEffectInfo
+            {
+                type = type,
+                startIndex = match.Index, // 這裡記錄的是「字串 (String)」的索引
+                length = content.Length,
+                parameter = parameter
+            });
             cleanText = cleanText.Remove(match.Index, match.Length).Insert(match.Index, content);
         }
 
         contentText.text = cleanText;
+
+        // 【修正核心 1】先強制更新一次網格，讓 TMP 解析所有 <b>, <color> 等原生標籤
+        contentText.ForceMeshUpdate();
+
+        // 【修正核心 2】快取一份乾淨的頂點與顏色資料，供 Update 動畫使用
+        cachedMeshInfo = contentText.textInfo.CopyMeshInfoVertexData();
+
+        // 【修正核心 3】取得真實的「可見字元總數」，而不是字串長度
+        int totalVisibleChars = contentText.textInfo.characterCount;
+
         contentText.maxVisibleCharacters = 0;
-        isAnimatingText = true;
+        // 【修正】只有當「真的有特效標籤」時，才開啟每幀動畫更新
+        isAnimatingText = textEffects.Count > 0;
 
         if (typeWriterCoroutine != null) StopCoroutine(typeWriterCoroutine);
-        typeWriterCoroutine = StartCoroutine(TypeWriterEffect(cleanText.Length, typeSpeed));
+        
+        // 傳入 totalVisibleChars 避免打字機停頓
+        typeWriterCoroutine = StartCoroutine(TypeWriterEffect(totalVisibleChars, typeSpeed));
     }
 
     private void UpdateCharacterSprite(string charID, string expression, CharacterPosition position, CharacterAnimationType animation)
@@ -339,20 +359,35 @@ public class DialogueUI : MonoBehaviour
     // 需求 #6: RPG Maker 的文本延遲效果
     private IEnumerator TypeWriterEffect(int totalChars, float speed)
     {
-        // 如果速度設定為 0 或負數，我們將其視為立即顯示
+        // 檢查是否含有需要持續每幀變動的「動態特效」
+        bool hasDynamicEffects = textEffects.Any(e => e.type == TextEffectType.Shake || 
+                                                      e.type == TextEffectType.Wave || 
+                                                      e.type == TextEffectType.Rainbow);
+
         if (speed <= 0)
         {
             contentText.maxVisibleCharacters = totalChars;
+            
+            // 瞬間顯示時，若沒有動態特效，立刻關閉動畫更新以策安全
+            if (!hasDynamicEffects) isAnimatingText = false;
+            
             typeWriterCoroutine = null;
-            yield break; // 結束協程
+            yield break; 
         }
 
-        // 正常速度的打字機效果
         for (int i = 0; i <= totalChars; i++)
         {
             contentText.maxVisibleCharacters = i;
             yield return new WaitForSeconds(speed);
         }
+
+        // 【修正】打字完全結束後，若沒有動態持續型特效（如只有Color或根本沒特效）
+        // 立即關閉 isAnimatingText，讓網格回歸靜態，確保絕對不會閃爍與切字
+        if (!hasDynamicEffects)
+        {
+            isAnimatingText = false;
+        }
+
         typeWriterCoroutine = null;
     }
 
@@ -379,9 +414,10 @@ public class DialogueUI : MonoBehaviour
     
     private void AnimateText()
     {
-        contentText.ForceMeshUpdate();
+        // 【修正核心 4】絕對不要在這裡呼叫 contentText.ForceMeshUpdate(); 
+
         var textInfo = contentText.textInfo;
-        if (textInfo.characterCount == 0) return;
+        if (textInfo.characterCount == 0 || cachedMeshInfo == null) return;
 
         for (int i = 0; i < textInfo.characterCount; i++)
         {
@@ -391,14 +427,21 @@ public class DialogueUI : MonoBehaviour
             int matIndex = charInfo.materialReferenceIndex;
             Vector3[] vertices = textInfo.meshInfo[matIndex].vertices;
             Color32[] colors = textInfo.meshInfo[matIndex].colors32;
+            
+            // 讀取快取的原始資料，確保我們的位移不會無限累加
+            Vector3[] sourceVertices = cachedMeshInfo[matIndex].vertices;
+            Color32[] sourceColors = cachedMeshInfo[matIndex].colors32;
+
             Vector3 offset = Vector3.zero;
+            bool applyCustomColor = false;
+            Color32 customColor = Color.white;
 
             foreach (var effect in textEffects)
             {
-                // 檢查當前字元是否在效果範圍內
-                if (i >= effect.startIndex && i < effect.startIndex + effect.length)
+                // 【修正核心 5】使用 charInfo.index (該字元在原字串中的位置) 
+                // 來取代原本的 i (可見字元索引)。這樣不管有幾個 <b>，特效位置都不會跑掉！
+                if (charInfo.index >= effect.startIndex && charInfo.index < effect.startIndex + effect.length)
                 {
-                    // --- 處理頂點位移 (Shake, Wave) ---
                     if (effect.type == TextEffectType.Shake)
                     {
                         offset += new Vector3(UnityEngine.Random.Range(-textShakeIntensity, textShakeIntensity), UnityEngine.Random.Range(-textShakeIntensity, textShakeIntensity), 0);
@@ -407,43 +450,42 @@ public class DialogueUI : MonoBehaviour
                     {
                         offset += new Vector3(0, Mathf.Sin(Time.time * waveSpeed + i * 0.5f) * waveAmplitude, 0);
                     }
-
-                    // --- 處理顏色 (Dynamic) ---
                     else if (effect.type == TextEffectType.Rainbow)
                     {
                         float hue = Mathf.Repeat(Time.time * rainbowSpeed + i * 0.1f, 1f);
-                        Color rainbowColor = Color.HSVToRGB(hue, 1, 1);
-                        for (int j = 0; j < 4; j++) { colors[charInfo.vertexIndex + j] = rainbowColor; }
+                        customColor = Color.HSVToRGB(hue, 1, 1);
+                        applyCustomColor = true;
                     }
-
-                    // --- 【新功能】處理自訂顏色 (Static) ---
                     else if (effect.type == TextEffectType.Color)
                     {
-                        // 呼叫我們的新輔助函式來解析參數
-                        Color colorToApply = ParseColor(effect.parameter);
-                        for (int j = 0; j < 4; j++)
-                        {
-                            colors[charInfo.vertexIndex + j] = colorToApply;
-                        }
+                        customColor = ParseColor(effect.parameter);
+                        applyCustomColor = true;
                     }
                 }
             }
 
-            // --- 統一應用頂點位移 ---
+            // 統一將位移與顏色覆蓋回 Mesh
             for (int j = 0; j < 4; j++)
             {
-                vertices[charInfo.vertexIndex + j] += offset;
+                vertices[charInfo.vertexIndex + j] = sourceVertices[charInfo.vertexIndex + j] + offset;
+                
+                // 【修正】在覆蓋顏色前，先保留 TMP 動態管理的 alpha 值。
+                // 打字機效果中，TMP 會將超出 maxVisibleCharacters 的字元 alpha 設為 0，
+                // 若直接使用 cachedMeshInfo 的 alpha（全部為 255），會讓不可見字元閃爍出現。
+                byte dynamicAlpha = colors[charInfo.vertexIndex + j].a;
+                
+                // 如果有套用自訂顏色特效就覆蓋，否則保留 TMP 標籤原有的顏色
+                Color32 baseColor = applyCustomColor ? customColor : sourceColors[charInfo.vertexIndex + j];
+                colors[charInfo.vertexIndex + j] = new Color32(baseColor.r, baseColor.g, baseColor.b, dynamicAlpha);
             }
         }
 
-        // --- 統一更新 Mesh ---
+        // 推送更新至 TMP 渲染組件
         for (int i = 0; i < textInfo.meshInfo.Length; i++)
         {
             var meshInfo = textInfo.meshInfo[i];
-
             meshInfo.mesh.vertices = meshInfo.vertices;
-            meshInfo.mesh.colors32 = meshInfo.colors32; // 確保顏色也被更新
-
+            meshInfo.mesh.colors32 = meshInfo.colors32; 
             contentText.UpdateGeometry(meshInfo.mesh, i);
         }
     }
@@ -451,22 +493,15 @@ public class DialogueUI : MonoBehaviour
     // 強制完成打字效果
     public void CompleteText(string fullText)
     {
-        // 1. 停止任何正在運行的打字機協程
         if (typeWriterCoroutine != null)
         {
             StopCoroutine(typeWriterCoroutine);
             typeWriterCoroutine = null;
         }
 
-        // 2. 處理文字中的特效標籤
-        ProcessTextForEffects(fullText, 99999f); 
-        
-        // 3. 立即顯示所有字元
-        contentText.maxVisibleCharacters = contentText.text.Length;
-
-        // 4. 確保文字動畫可以從靜態的第一幀開始
-        isAnimatingText = true;
-        AnimateText(); 
+        // 傳入 0f，TypeWriterEffect 的保護機制會讓它瞬間印出全部文字，
+        // 同時確保快取機制與特效重新正確綁定。
+        ProcessTextForEffects(fullText, 0f); 
     }
 
     public void ShowChoices(List<string> readyToDisplayStrings, Action<int> onChoiceSelected)
