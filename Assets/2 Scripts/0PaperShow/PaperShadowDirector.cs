@@ -329,7 +329,7 @@ public class PaperShadowDirector : MonoBehaviour
         yield return helper.FadeCanvasGroup(images[8], 1, img9FadeTime); // 圖片9 打開
 
         yield return helper.Wait(img78HoldTime);
-        yield return helper.FadeCanvasGroup(images[6], 1, img78FadeTime); // 圖片7 打開
+        yield return helper.FadeCanvasGroup(images[6], 1, img12FadeTime); // 圖片7 打開
 
         // --- 【新增音效播放】 ---
         if (seAudioSource != null && stampSE != null)
