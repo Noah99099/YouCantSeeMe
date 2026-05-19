@@ -24,7 +24,7 @@ public class TutorialTrigger : MonoBehaviour
         StartCoroutine(ShowTutorialAfterDelay(tutorialToShow[1]));
 
         // 呼叫右上提示
-        RightHintManager.Instance.ShowHint("使用左Shift切換視野", 1f);
+        RightHintManager.Instance.ShowHint();
     }
 
     public void CaseRecordBook() // 使用紀錄簿（物、鬼、聲、組合） + 平面圖

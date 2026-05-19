@@ -9,24 +9,13 @@ public class RightHintManager : MonoBehaviour
     public static RightHintManager Instance;
 
     [Header("UI 參照 (Scene 1 專用)")]
-    [SerializeField] private RectTransform uiPanel;
-    [SerializeField] private TextMeshProUGUI hintText;
 
-    [Header("動畫定位點")]
-    [Tooltip("滑入的目標位置 (拖入 HintTrans)")]
-    [SerializeField] private RectTransform targetTransform;
+    [Header("=基本生成設定=")]
+    [SerializeField] private GameObject hintPrefab; // 放入掛有 SelfDestroyHint 的 Prefab
+    [SerializeField] private Transform uiCanvas;    // 必須生在 Canvas 底下才能顯示
 
-    [Header("動畫參數")]
-    public float slideInDuration = 0.5f;
-    [Tooltip("提示框維持在畫面上的時間")]
-    public float displayDuration = 2.0f; // <--- 新增這行
-    public float slideOutDuration = 0.5f;
-    public Ease easeIn = Ease.OutQuad;
-    public Ease easeOut = Ease.InQuad;
-
-    private Vector2 startPos;
-    private Vector2 targetPos;
-    private Sequence currentSequence;
+    [Header("=提示文本=")]
+    public string text_1; // 使用左Shift切換視野
 
     private void Awake()
     {
@@ -41,58 +30,26 @@ public class RightHintManager : MonoBehaviour
         }
     }
 
-    private void Start()
-    {
-        if (uiPanel != null && targetTransform != null)
-        {
-            // 初始狀態：紀錄「編輯器中擺放的位置」作為起始點，紀錄「HintTrans」作為目標點
-            startPos = uiPanel.anchoredPosition;
-            targetPos = targetTransform.anchoredPosition;
-
-            // 初始先隱藏，避免擋住畫面
-            uiPanel.gameObject.SetActive(false);
-        }
-    }
 
     // 將第二個參數加上預設值 -1，代表「如果沒特別指定，就用 Inspector 設定的時間」
-    public void ShowHint(string message, float customDuration = -1f)
+    public void ShowHint()
     {
-        if (uiPanel == null || targetTransform == null) return;
-
-        // 顯示物件並更新文字
-        uiPanel.gameObject.SetActive(true);
-        if (hintText != null) hintText.text = message;
-
-        // 如果先前有動畫正在播，先停掉重來
-        if (currentSequence != null && currentSequence.IsActive())
+        if (hintPrefab == null || uiCanvas == null)
         {
-            currentSequence.Kill();
+            Debug.LogError("HintSpawner: Prefab 或 Canvas 尚未綁定！");
+            return;
         }
 
-        // 每次播放前重新確認座標 (預防解析度改變或 UI 縮放)
-        targetPos = targetTransform.anchoredPosition;
-        uiPanel.anchoredPosition = startPos;
+        // 1. 在指定的 Canvas 下生成 Prefab 複製品
+        GameObject newHint = Instantiate(hintPrefab, uiCanvas);
 
-        // 決定這次要停留多久
-        float waitTime = (customDuration < 0f) ? displayDuration : customDuration;
+        // 2. 獲取它身上的 SelfDestroyHint 腳本
+        SelfDestroyHint hintScript = newHint.GetComponent<SelfDestroyHint>();
 
-        // 建立動畫序列
-        currentSequence = DOTween.Sequence();
-
-        // 1. 滑入目標點
-        currentSequence.Append(uiPanel.DOAnchorPos(targetPos, slideInDuration).SetEase(easeIn));
-
-        // 2. 停留
-        // 使用計算好的停留時間
-        currentSequence.AppendInterval(waitTime); // <--- 修改這裡
-
-        // 3. 滑出回起始點
-        currentSequence.Append(uiPanel.DOAnchorPos(startPos, slideOutDuration).SetEase(easeOut));
-
-        // 4. 完成後關閉
-        currentSequence.OnComplete(() =>
+        if (hintScript != null)
         {
-            uiPanel.gameObject.SetActive(false);
-        });
+            // 3. 傳入文字並啟動動畫與銷毀流程 (預設 2 秒)
+            hintScript.InitAndShow(text_1);
+        }
     }
 }
