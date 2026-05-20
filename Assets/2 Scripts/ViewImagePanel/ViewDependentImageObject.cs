@@ -24,7 +24,6 @@ public class ViewDependentImageObject : MonoBehaviour, IInteractable
 
     private bool isInteracting = false;
     private bool hasPickedUp = false; // 紀錄是否已經觸發過首次交互
-    private bool hasTriggeredPanelClosed = false; // 紀錄是否已經觸發過關閉面板事件
 
     // 實作 IInteractable 要求的介面方法
     public void Interact(PlayerInteraction player)
@@ -79,13 +78,9 @@ public class ViewDependentImageObject : MonoBehaviour, IInteractable
             }
         }
 
-        // 只在第一次關閉面板時觸發事件
-        if (!hasTriggeredPanelClosed)
-        {
-            Debug.Log($"[ViewDependentImageObject] 圖片面板首次關閉，觸發 onPanelClosed。");
-            onPanelClosed?.Invoke();
-            hasTriggeredPanelClosed = true; // 標記為已觸發，以後不再執行
-        }
+        // 每次關閉面板都會觸發事件
+        Debug.Log($"[ViewDependentImageObject] 圖片面板關閉，觸發 onPanelClosed。");
+        onPanelClosed?.Invoke();
 
         // 將互動狀態解除，允許玩家進行下一次的點擊查看
         isInteracting = false;

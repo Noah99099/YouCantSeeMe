@@ -157,7 +157,7 @@ public class CookingPuzzleManager : MonoBehaviour
             if (spot1_Done && spot2_Done && spot3_Done && spot4_Done && spot5_Done && spot6_Done)
             {
                 round1_1.SetActive(true);
-                Debug.Log("六個判定點皆已填滿，開啟對話 Trigger (round1_1)！");
+                Debug.Log("六個判定點皆已填滿，開啟對話 Trigger (round1_1)！");           
             }
         }
     }
@@ -306,6 +306,9 @@ public class CookingPuzzleManager : MonoBehaviour
 
         // 【新增】解除對應空氣牆
         KanWu.Systems.WallSystemManager.Instance.NotifyPuzzleSolved();
+
+        // 通知一樓對話管理器
+        KanWu.Systems.CompositeProgressManager.Instance.NotifyPuzzleSolved();
     }
     #endregion
 }

@@ -24,7 +24,6 @@ public class GetTwoThings : MonoBehaviour
         }
     }
 
-    // 這是對外的接口，讓 CrossSceneItemManager 在事件觸發時呼叫
     public void ExecuteActivation(GameObject ui1, GameObject ui2)
     {
         // 1. 打開 Scene 2 的判定點

@@ -8,8 +8,12 @@ public class InteractableRole : MonoBehaviour, IInteractable
     public RoleData targetRole; // ex: Role1, Role2
     [Header("要解鎖的 Carousel")]
     public CarouselData unlockCarousel;
-
     public string objectName = "神秘物品"; // 提示顯示用(PromptText)
+
+    // [新增] 用來存放額外獲得的普通物品
+    [Header("可選功能：同時獲得普通物品 (若無則留空)")]
+    public ItemData optionalItemData;
+
     [Header("解鎖後要刪掉的物件")]
     public GameObject[] objects;
 
@@ -69,6 +73,14 @@ public class InteractableRole : MonoBehaviour, IInteractable
         }
         Debug.Log($"[InteractableRole] --- IF 條件檢查完畢 ---");
         // [!!] 偵錯區塊結束 [!!]
+
+        // [新增] 第 2.5 步：如果有放入 ItemData，就加進普通背包
+        if (optionalItemData != null)
+        {
+            // 這裡需要替換成你遊戲中實際的「普通背包管理器」
+            InventoryManager.Instance.AddItem(optionalItemData);
+            Debug.Log($"[InteractableVoiceItem] 額外獲得了普通物品: {optionalItemData.itemName}");
+        }
 
         // 不再使用 rolePastManager 變數，
         // 而是直接使用「全局單例」 RolePastManager.Instance

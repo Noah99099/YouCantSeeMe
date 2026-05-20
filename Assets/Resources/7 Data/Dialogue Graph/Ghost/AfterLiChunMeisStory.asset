@@ -1,5 +1,66 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-8409701868582441883
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5437ad9eab10596448e309fe06cda6bc, type: 3}
+  m_Name: Line
+  m_EditorClassIdentifier: 
+  graph: {fileID: 11400000}
+  position: {x: 184, y: -152}
+  ports:
+    keys:
+    - entry
+    - exit
+    values:
+    - _fieldName: entry
+      _node: {fileID: -8409701868582441883}
+      _typeQualifiedName: BaseNode, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+        PublicKeyToken=null
+      connections:
+      - fieldName: exit
+        node: {fileID: -1655958549757554402}
+        reroutePoints: []
+      _direction: 0
+      _connectionType: 1
+      _typeConstraint: 0
+      _dynamic: 0
+    - _fieldName: exit
+      _node: {fileID: -8409701868582441883}
+      _typeQualifiedName: BaseNode, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+        PublicKeyToken=null
+      connections:
+      - fieldName: entry
+        node: {fileID: -707503014023365309}
+        reroutePoints: []
+      _direction: 1
+      _connectionType: 1
+      _typeConstraint: 0
+      _dynamic: 0
+  isImportant: 0
+  entry: {fileID: 0}
+  exit: {fileID: 0}
+  line:
+    characterID: Mr. White
+    expression: '"happy"'
+    position: 1
+    animation: 0
+    overrideName: 0
+    speakerName: 
+    isNarration: 0
+    content: "\u975C\u5FC3\u5B9A\u795E\uFF0C\u606F\u5FF5\u6B78\u4E00\uFF0C\u6025\u6025\u5982\u5F8B\u4EE4\u3002"
+    contentKey: 
+    voiceClip: {fileID: 0}
+    soundEffect: {fileID: 0}
+    onShowLine:
+      m_PersistentCalls:
+        m_Calls: []
 --- !u!114 &-6216546717193623379
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -115,7 +176,7 @@ MonoBehaviour:
     overrideName: 0
     speakerName: 
     isNarration: 0
-    content: "\u5509\uFF5E\u8D8A\u67E5\u8D8A\u591A\u7591\u554F\uFF0C\u7E3D\u4E4B\u8981\u518D\u8ABF\u67E5\u4E00\u4E0B\u73FE\u5834\u7684\u75D5\u8DE1\u548C\u5EDA\u623F\u3002"
+    content: "\u5509\uFF5E\u8D8A\u67E5\u8D8A\u591A\u7591\u554F\uFF0C\u7E3D\u4E4B\u8981\u518D<color=#aa302d>\u8ABF\u67E5\u4E00\u4E0B\u73FE\u5834\u7684\u75D5\u8DE1\u548C\u5EDA\u623F</color>\u3002"
     contentKey: 
     voiceClip: {fileID: 0}
     soundEffect: {fileID: 0}
@@ -176,7 +237,7 @@ MonoBehaviour:
     overrideName: 0
     speakerName: 
     isNarration: 0
-    content: "\u518D\u4F86\u662F\u674E\u963F\u59E8\u8AAA\u6709\u4EBA\u5012\u5728\u5730\u4E0A\uFF0C\u4F46\u6211\u770B\u5230\u7684\u537B\u662F\u6709\u4EBA\u7AD9\u5728\u8D70\u5ECA\u76E1\u982D\uFF0C\u9019\u662F\u600E\u9EBC\u56DE\u662F\uFF1F"
+    content: "\u518D\u4F86\u662F\u674E\u963F\u59E8\u8AAA\u6709\u4EBA<color=#aa302d>\u5012\u5728\u5730\u4E0A</color>\uFF0C\u4F46\u6211\u770B\u5230\u7684\u537B\u662F\u6709\u4EBA<color=#aa302d>\u7AD9\u5728\u8D70\u5ECA\u76E1\u982D</color>\uFF0C\u9019\u662F\u600E\u9EBC\u56DE\u662F\uFF1F"
     contentKey: 
     voiceClip: {fileID: 0}
     soundEffect: {fileID: 0}
@@ -243,7 +304,7 @@ MonoBehaviour:
   m_Name: Start
   m_EditorClassIdentifier: 
   graph: {fileID: 11400000}
-  position: {x: -79.66667, y: -145.83333}
+  position: {x: -360, y: -152}
   ports:
     keys:
     - exit
@@ -275,7 +336,7 @@ MonoBehaviour:
   m_Name: Line
   m_EditorClassIdentifier: 
   graph: {fileID: 11400000}
-  position: {x: 152, y: -152}
+  position: {x: -136, y: -152}
   ports:
     keys:
     - entry
@@ -299,7 +360,7 @@ MonoBehaviour:
         PublicKeyToken=null
       connections:
       - fieldName: entry
-        node: {fileID: -707503014023365309}
+        node: {fileID: -8409701868582441883}
         reroutePoints: []
       _direction: 1
       _connectionType: 1
@@ -348,7 +409,7 @@ MonoBehaviour:
         PublicKeyToken=null
       connections:
       - fieldName: exit
-        node: {fileID: -1655958549757554402}
+        node: {fileID: -8409701868582441883}
         reroutePoints: []
       _direction: 0
       _connectionType: 1
@@ -377,7 +438,7 @@ MonoBehaviour:
     overrideName: 0
     speakerName: 
     isNarration: 0
-    content: "\u975C\u5FC3\u5B9A\u795E\uFF0C\u606F\u5FF5\u6B78\u4E00\uFF0C\u6025\u6025\u5982\u5F8B\u4EE4\u3002\n\u674E\u5927\u59D0\u4F60\u5148\u51B7\u975C\u4E00\u4E0B\uFF0C\u5148\u56DE\u53BB\u5730\u5E9C\u4F11\u606F\u4F11\u606F\u3002"
+    content: "\u674E\u5927\u59D0\u4F60\u5148\u51B7\u975C\u4E00\u4E0B\uFF0C\u5148\u56DE\u53BB\u5730\u5E9C\u4F11\u606F\u4F11\u606F\u3002"
     contentKey: 
     voiceClip: {fileID: 0}
     soundEffect: {fileID: 0}
@@ -409,6 +470,7 @@ MonoBehaviour:
   - {fileID: 6197561131474581254}
   - {fileID: -4993295841698886641}
   - {fileID: 5310500387869167261}
+  - {fileID: -8409701868582441883}
   triggerType: 2
   initialVariables: []
   runtimeVariables: []
@@ -633,7 +695,7 @@ MonoBehaviour:
     overrideName: 0
     speakerName: 
     isNarration: 0
-    content: "\u9084\u6709\u53BB\u904E\u5EDA\u623F\u7684\u4E0D\u53EA\u4E00\u500B\u4EBA\uFF0C\u53EF\u80FD\u8981\u53BB\u5EDA\u623F\u770B\u770B\u80FD\u4E0D\u80FD\u77E5\u9053\u674E\u963F\u59E8\u8AAA\u7684\u53BB\u904E\u5EDA\u623F\u7684\u4EBA\u662F\u8AB0\uFF1F"
+    content: "\u9084\u6709<color=#aa302d>\u53BB\u904E\u5EDA\u623F\u7684\u4E0D\u53EA\u4E00\u500B\u4EBA</color>\uFF0C\u53EF\u80FD\u8981\u53BB\u5EDA\u623F\u770B\u770B\u80FD\u4E0D\u80FD\u77E5\u9053\u674E\u963F\u59E8\u8AAA\u7684\u53BB\u904E\u5EDA\u623F\u7684\u4EBA\u662F\u8AB0\uFF1F"
     contentKey: 
     voiceClip: {fileID: 0}
     soundEffect: {fileID: 0}
@@ -694,7 +756,7 @@ MonoBehaviour:
     overrideName: 0
     speakerName: 
     isNarration: 0
-    content: "\u5147\u624B\u61C9\u8A72\u662F\u5C0D\u674E\u963F\u59E8\u958B\u4E86\u69CD\uFF0C\u90A3\u73FE\u5834\u61C9\u8A72\u6703\u6709\u4E00\u4E9B\u5F48\u75D5\u6216\u662F\u5F48\u6BBC\u5427\uFF1F\n\u53EF\u4EE5\u518D\u4ED4\u7D30\u8ABF\u67E5\u4E00\u4E0B\u9019\u88E1\u7684\u5730\u4E0A\u6216\u662F\u7246\u4E0A\u3002"
+    content: "\u5147\u624B\u61C9\u8A72\u662F\u5C0D\u674E\u963F\u59E8\u958B\u4E86\u69CD\uFF0C\u90A3\u73FE\u5834\u61C9\u8A72\u6703\u6709\u4E00\u4E9B\u5F48\u75D5\u6216\u662F\u5F48\u6BBC\u5427\uFF1F\n\u53EF\u4EE5\u518D\u4ED4\u7D30<color=#aa302d>\u8ABF\u67E5\u4E00\u4E0B\u9019\u88E1\u7684\u5730\u4E0A\u6216\u662F\u7246\u4E0A</color>\u3002"
     contentKey: 
     voiceClip: {fileID: 0}
     soundEffect: {fileID: 0}

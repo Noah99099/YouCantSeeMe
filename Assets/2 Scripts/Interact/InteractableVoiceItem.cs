@@ -58,6 +58,12 @@ public class InteractableVoiceItem : MonoBehaviour, IInteractable
             DialogueManager.Instance.TriggerDialogueByEvent(voiceItemData.voiceItemID);
         }
 
+        // [!!新增!!] 第 3.1 步：通知綜合進度管理器，已收集到一個聲音物品
+        if (KanWu.Systems.CompositeProgressManager.Instance != null)
+        {
+            KanWu.Systems.CompositeProgressManager.Instance.NotifyVoiceItemCollected();
+        }
+
         // --- [本次擴充] 呼叫 UpdateRightHintText ---
         // 第 3.5 步：如果在 Inspector 中有賦值，就執行右側提示更新
         if (rightHintScript != null)

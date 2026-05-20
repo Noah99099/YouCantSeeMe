@@ -47,10 +47,55 @@ MonoBehaviour:
   nodes:
   - {fileID: -6824161459235699302}
   - {fileID: 1993218942465083465}
+  - {fileID: 827577850437539928}
   triggerType: 3
   initialVariables: []
   runtimeVariables: []
   lastPickedItemID: 
+--- !u!114 &827577850437539928
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c7ce8e7e764e4054f87ae863bec30614, type: 3}
+  m_Name: Invoke Event
+  m_EditorClassIdentifier: 
+  graph: {fileID: 11400000}
+  position: {x: 8, y: 136}
+  ports:
+    keys:
+    - entry
+    - exit
+    values:
+    - _fieldName: entry
+      _node: {fileID: 827577850437539928}
+      _typeQualifiedName: BaseNode, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+        PublicKeyToken=null
+      connections:
+      - fieldName: exit
+        node: {fileID: 1993218942465083465}
+        reroutePoints: []
+      _direction: 0
+      _connectionType: 1
+      _typeConstraint: 0
+      _dynamic: 0
+    - _fieldName: exit
+      _node: {fileID: 827577850437539928}
+      _typeQualifiedName: BaseNode, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+        PublicKeyToken=null
+      connections: []
+      _direction: 1
+      _connectionType: 1
+      _typeConstraint: 0
+      _dynamic: 0
+  isImportant: 0
+  entry: {fileID: 0}
+  exit: {fileID: 0}
+  eventID: Clean2_1
 --- !u!114 &1993218942465083465
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -86,7 +131,10 @@ MonoBehaviour:
       _node: {fileID: 1993218942465083465}
       _typeQualifiedName: BaseNode, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
         PublicKeyToken=null
-      connections: []
+      connections:
+      - fieldName: entry
+        node: {fileID: 827577850437539928}
+        reroutePoints: []
       _direction: 1
       _connectionType: 1
       _typeConstraint: 0

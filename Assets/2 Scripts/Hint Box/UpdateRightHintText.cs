@@ -29,8 +29,9 @@ public class UpdateRightHintText : MonoBehaviour
     public string text_news2; // 拿起飯廳櫃子上的報紙後
     public string text_news3; // 拿起飯廳桌上的報紙後
     public string text_picture; // 拿起客廳壁爐上的合照後
-    public string text_afterGhost1; // 鬼視野+對話完全結束後的2個通知
+    public string text_afterGhost1; // 鬼視野+對話完全結束後的3個通知
     public string text_afterGhost2;
+    public string text_afterGhost3;
     public string text_endToKitchen; // 剛進到廚房對話結束後
     public string text_endKRInfo; // 拿完第二輪的紙條後
     [Tooltip("這個不要打字")] public string id_voiceItem; // 給聲音物品通用
@@ -40,6 +41,7 @@ public class UpdateRightHintText : MonoBehaviour
     public string text_krInfo_1; // 拿取安眠藥紙條1後
     public string text_krInfo_2; // 拿取毒藥紙條2後
     public string text_krInfo_3; // 拿取芒果製品紙條3後
+    public string text_goToB1; // 一樓目前沒有可以獲得的東西時
 
 
     // 開放一個方法給 Button 的 OnClick 呼叫
@@ -183,10 +185,10 @@ public class UpdateRightHintText : MonoBehaviour
         DialogueManager.Instance.TriggerDialogueByEvent("Picture");
     }
 
-    #region = 鬼視野+對話完全結束後的2個通知，請繼續調查飯廳四周與廚房、獲得走廊盡頭人的姿勢差異 =
-    public void AfterGhost() // 鬼視野+對話完全結束後的2個通知，請繼續調查飯廳四周與廚房、獲得走廊盡頭人的姿勢差異
+    #region = 鬼視野+對話完全結束後的3個通知，請繼續調查飯廳四周與廚房、獲得走廊盡頭人的姿勢差異 =
+    public void AfterGhost() // 鬼視野+對話完全結束後的2個通知，請繼續調查飯廳四周與廚房、獲得走廊盡頭人的姿勢差異、已更新鬼視野—李春梅
     {
-        // 使用協程來依序播放兩個提示
+        // 使用協程來依序播放 3 個提示
         StartCoroutine(ShowGhostHintsCoroutine());
     }
     private IEnumerator ShowGhostHintsCoroutine()
@@ -218,9 +220,25 @@ public class UpdateRightHintText : MonoBehaviour
         GameObject hint2 = Instantiate(hintPrefab, uiCanvas);
         SelfDestroyHint script2 = hint2.GetComponent<SelfDestroyHint>();
 
+        float waitTime2 = 3.0f; // 預設等待時間防呆
+
         if (script2 != null)
         {
             script2.InitAndShow(text_afterGhost2);
+            // 計算第二個提示的總時間
+            waitTime2 = script2.slideInDuration + script2.displayDuration + script2.slideOutDuration;
+        }
+
+        // 等待第二個提示框播完動畫
+        yield return new WaitForSeconds(waitTime2 + 0.1f);
+
+        // --- 播放第三個提示 ---
+        GameObject hint3 = Instantiate(hintPrefab, uiCanvas);
+        SelfDestroyHint script3 = hint3.GetComponent<SelfDestroyHint>();
+
+        if (script3 != null)
+        {
+            script3.InitAndShow(text_afterGhost3);
         }
     }
     #endregion
@@ -306,4 +324,12 @@ public class UpdateRightHintText : MonoBehaviour
     }
 
     #endregion
+
+    public void GoToB1() // 一樓目前沒有可以獲得的東西時，請前往地下室
+    {
+        if (hintPrefab == null || uiCanvas == null) return;
+        GameObject newHint = Instantiate(hintPrefab, uiCanvas);
+        SelfDestroyHint hintScript = newHint.GetComponent<SelfDestroyHint>();
+        if (hintScript != null) hintScript.InitAndShow(text_krInfo_3);
+    }
 }

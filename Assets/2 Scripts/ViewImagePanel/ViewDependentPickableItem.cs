@@ -67,7 +67,7 @@ public class ViewDependentPickableItem : MonoBehaviour, IInteractable
         }
 
         // 4. 隱藏場景上的 3D 物件 (先不銷毀，因為還要跑協程等待 UI 關閉)
-        HideObject();
+        // HideObject();
 
         // 5. 開啟協程，等待玩家關閉圖片面板後再執行後續邏輯
         StartCoroutine(WaitForPanelCloseAndDestroy());
