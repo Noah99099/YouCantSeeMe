@@ -12,6 +12,12 @@ public class InteractableVoiceItem : MonoBehaviour, IInteractable
     [Header("可選功能：同時獲得普通物品 (若無則留空)")]
     public ItemData optionalItemData;
 
+    // --- [本次擴充] 右側提示文字功能 ---
+    [Header("可選功能：更新右側提示文字 (若無則留空)")]
+    public UpdateRightHintText rightHintScript; // 將掛有 UpdateRightHintText 腳本的物件拖曳至此
+    public string hintMessage;                  // 想要顯示或更新的文字內容
+    // ----------------------------------------
+
     [HideInInspector] public bool InteractionEnabled = true;
 
     #region ** IInteractable要求內容 **
@@ -50,6 +56,15 @@ public class InteractableVoiceItem : MonoBehaviour, IInteractable
         if (DialogueManager.Instance != null && !string.IsNullOrEmpty(voiceItemData.voiceItemID))
         {
             DialogueManager.Instance.TriggerDialogueByEvent(voiceItemData.voiceItemID);
+        }
+
+        // --- [本次擴充] 呼叫 UpdateRightHintText ---
+        // 第 3.5 步：如果在 Inspector 中有賦值，就執行右側提示更新
+        if (rightHintScript != null)
+        {
+            // [修正] 將這邊的 hintMessage 賦值給 rightHintScript 裡的 id_voiceItem
+            rightHintScript.id_voiceItem = hintMessage;
+            rightHintScript.VoiceItem();
         }
 
         // 第 4 步：銷毀場景上的 3D 物件

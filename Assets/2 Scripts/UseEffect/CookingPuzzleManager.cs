@@ -14,6 +14,14 @@ public class CookingPuzzleManager : MonoBehaviour
     // 這裡我們只需要得知這些點"是否填滿"，不需要管其內容是什麼。
     // 邏輯會在 Inspector 中透過 Event 綁定來呼叫 Manager 的方法。
     public GameObject[] stage1SpotsObjects; // 用於最後清除使用
+    [Header("1_擺上調味品前的對話trigger")]
+    public GameObject round1_1;
+    [Header("1_擺上調味品後的對話trigger")]
+    public GameObject round1_2;
+    [Header("2_擺上調味品前的對話trigger")]
+    public GameObject round2_1;
+    [Header("2_擺上調味品後的對話trigger")]
+    public GameObject round2_2;
 
     [Header("預先放置的料理模型 (需在 Inspector 拖入)")]
     public GameObject foodObj_ColdMeal; // (冷盤模型判定點)
@@ -64,6 +72,12 @@ public class CookingPuzzleManager : MonoBehaviour
         // 初始化菜單狀態：開啟第一階段 menu1，關閉 menu2
         SetMenuState(menu1, true);
         SetMenuState(menu2, false);
+
+        // 初始化對話trigger
+        round1_1.SetActive(false);
+        round1_2.SetActive(false);
+        round2_1.SetActive(false);
+        round2_2.SetActive(false);
 
         // 1. 隱藏第二階段的所有判定點
         foreach (var spot in stage2SpotsRoots) spot.SetActive(false);
@@ -135,9 +149,25 @@ public class CookingPuzzleManager : MonoBehaviour
         CheckStage1();
     }
 
+    // 新增：檢查是否滿足開啟調味前對話的條件 (6個物理擺放完成)
+    private void CheckRound1_1Trigger()
+    {
+        if (round1_1 != null && !round1_1.activeSelf)
+        {
+            if (spot1_Done && spot2_Done && spot3_Done && spot4_Done && spot5_Done && spot6_Done)
+            {
+                round1_1.SetActive(true);
+                Debug.Log("六個判定點皆已填滿，開啟對話 Trigger (round1_1)！");
+            }
+        }
+    }
+
     private void CheckStage1()
     {
         if (isStage1Complete) return;
+
+        // 【新增】檢查是否觸發擺上調味品前的對話
+        CheckRound1_1Trigger();
 
         if (spot1_Done && spot2_Done && spot3_Done && spot4_Done && spot5_Done && spot6_Done && foodF_Seasoned)
         {
@@ -161,8 +191,19 @@ public class CookingPuzzleManager : MonoBehaviour
         // 3. 顯示資訊紙條1
         if (infoPaper_1) infoPaper_1.SetActive(true);
 
+        // [新增] 4. 打開trigger播放對話
+        round1_2.SetActive(true);
+
         // 注意：階段二的開啟是透過玩家撿起「紙條 a」後觸發
         // 你需要在 紙條 a 的 InteractableItem (拾起事件) 的 Event 中呼叫 StartStage2()
+    }
+
+    /// <summary>
+    /// 專門給外面的腳本來觸發 [拿完第一輪的紙條後]
+    /// </summary>
+    public void GetRound1Paper() 
+    {
+        DialogueManager.Instance.TriggerDialogueByEvent("Round1_3");
     }
 
     #endregion
@@ -214,9 +255,25 @@ public class CookingPuzzleManager : MonoBehaviour
     public void OnFoodSoupSeasoned() { foodH_Seasoned = true; CheckStage2(); }
     public void OnFoodDessertSeasoned() { foodJ_Seasoned = true; CheckStage2(); }
 
+    // 新增：檢查是否滿足開啟調味前對話的條件 (6個物理擺放完成)
+    private void CheckRound2_1Trigger()
+    {
+        if (round2_1 != null && !round2_1.activeSelf)
+        {
+            if (spot7_Done && spot8_Done && spot9_Done && spot10_Done && spot11_Done)
+            {
+                round2_1.SetActive(true);
+                Debug.Log("五個判定點皆已填滿，開啟對話 Trigger (round2_1)！");
+            }
+        }
+    }
+
     private void CheckStage2()
     {
         if (isStage2Complete) return;
+
+        // 【新增】檢查是否觸發擺上調味品前的對話
+        CheckRound2_1Trigger();
 
         if (spot7_Done && spot8_Done && spot9_Done && spot10_Done && spot11_Done && foodH_Seasoned && foodJ_Seasoned)
         {
@@ -240,13 +297,15 @@ public class CookingPuzzleManager : MonoBehaviour
         // 3. 顯示資訊紙條2、3
         if (infoPaper_2) infoPaper_2.SetActive(true);
         if (infoPaper_3) infoPaper_3.SetActive(true);
-        
+
+        // [新增] 4. 打開trigger播放對話
+        round2_2.SetActive(true);
+
         // 觸發解謎成功的燈光或環境回饋
         KanWu.Systems.LightSystemManager.Instance.NotifyPuzzleSolved();
 
         // 【新增】解除對應空氣牆
         KanWu.Systems.WallSystemManager.Instance.NotifyPuzzleSolved();
     }
-
     #endregion
 }

@@ -15,6 +15,8 @@ public class UpdateRightHintText : MonoBehaviour
     [Header("其他要呼叫的內容")]
     //[SerializeField] private GameObject destroyOjb_StartDialouge; //不能刪 會卡住完全走不了、移動。十分詭異
     [SerializeField] private GameObject destroyOjb_GetTwoThings;
+    [SerializeField] private GameObject destroyOjb_ToKitchen_Dia;
+    [SerializeField] private GameObject destroyOjb_AfterGetInfos;
 
     [Header("提示一覽")]
     public string text_1; // 拿完玄關結束
@@ -28,6 +30,12 @@ public class UpdateRightHintText : MonoBehaviour
     public string text_news3; // 拿起飯廳桌上的報紙後
     public string text_afterGhost1; // 鬼視野+對話完全結束後的2個通知
     public string text_afterGhost2;
+    public string text_endToKitchen; // 剛進到廚房對話結束後
+    public string text_endKRInfo; // 拿完第二輪的紙條後
+    [Tooltip("這個不要打字")] public string id_voiceItem; // 給聲音物品通用
+    public string text_vDB; // 拿完飯廳子彈後 (對應 "0")
+    public string text_vKB; // 拿完廚房子彈後 (對應 "1")
+    public string text_vRod; // 拿完曬衣桿後 (對應 "2")
 
 
     // 開放一個方法給 Button 的 OnClick 呼叫
@@ -122,6 +130,9 @@ public class UpdateRightHintText : MonoBehaviour
         GameObject newHint = Instantiate(hintPrefab, uiCanvas);
         SelfDestroyHint hintScript = newHint.GetComponent<SelfDestroyHint>();
         if (hintScript != null) hintScript.InitAndShow(text_newsBuild);
+
+        // [20260519 新增對話] 
+        DialogueManager.Instance.TriggerDialogueByEvent("News_B");
     }
 
     public void AfterNews1() // 拿起樓梯旁小桌子的報紙後，獲得劉宅命案報導-1
@@ -130,6 +141,9 @@ public class UpdateRightHintText : MonoBehaviour
         GameObject newHint = Instantiate(hintPrefab, uiCanvas);
         SelfDestroyHint hintScript = newHint.GetComponent<SelfDestroyHint>();
         if (hintScript != null) hintScript.InitAndShow(text_news1);
+
+        // [20260519 新增對話] 
+        DialogueManager.Instance.TriggerDialogueByEvent("News_1");
     }
 
     public void AfterNews2() // 拿起飯廳櫃子上的報紙後，獲得劉宅命案報導-2
@@ -138,6 +152,9 @@ public class UpdateRightHintText : MonoBehaviour
         GameObject newHint = Instantiate(hintPrefab, uiCanvas);
         SelfDestroyHint hintScript = newHint.GetComponent<SelfDestroyHint>();
         if (hintScript != null) hintScript.InitAndShow(text_news2);
+
+        // [20260519 新增對話] 
+        DialogueManager.Instance.TriggerDialogueByEvent("News_2");
     }
     
     public void AfterNews3() // 拿起飯廳桌上的報紙後，獲得劉宅命案報導-3
@@ -146,6 +163,9 @@ public class UpdateRightHintText : MonoBehaviour
         GameObject newHint = Instantiate(hintPrefab, uiCanvas);
         SelfDestroyHint hintScript = newHint.GetComponent<SelfDestroyHint>();
         if (hintScript != null) hintScript.InitAndShow(text_news3);
+
+        // [20260519 新增對話] 
+        DialogueManager.Instance.TriggerDialogueByEvent("News_3");
     }
 
     #region = 鬼視野+對話完全結束後的2個通知，請繼續調查飯廳四周與廚房、獲得走廊盡頭人的姿勢差異 =
@@ -189,4 +209,59 @@ public class UpdateRightHintText : MonoBehaviour
         }
     }
     #endregion
+
+    public void EndToKitchen() // 剛進到廚房對話結束後，請還原命案當天的聚餐菜單
+    {
+        if (hintPrefab == null || uiCanvas == null) return;
+        GameObject newHint = Instantiate(hintPrefab, uiCanvas);
+        SelfDestroyHint hintScript = newHint.GetComponent<SelfDestroyHint>();
+        if (hintScript != null) hintScript.InitAndShow(text_endToKitchen);
+
+        Destroy(destroyOjb_ToKitchen_Dia);
+    }
+
+    public void EndKRInfo() // 拿完第二輪的紙條後，請前往一樓的其他房間調查
+    {
+        if (hintPrefab == null || uiCanvas == null) return;
+        GameObject newHint = Instantiate(hintPrefab, uiCanvas);
+        SelfDestroyHint hintScript = newHint.GetComponent<SelfDestroyHint>();
+        if (hintScript != null) hintScript.InitAndShow(text_endKRInfo);
+
+        Destroy(destroyOjb_AfterGetInfos);
+    }
+
+    public void VoiceItem() // 給聲音物品通用，獲得多功能室的曬衣桿 / 飯廳畫上的子彈 / 廚房走廊的子彈
+    {
+        if (hintPrefab == null || uiCanvas == null) return;
+
+        // 1. 先準備一個空字串來裝準備要顯示的文字
+        string textToShow = "";
+
+        // 2. 根據 id_voiceItem 的值，決定 textToShow 是哪一個
+        switch (id_voiceItem)
+        {
+            case "0":
+                textToShow = text_vDB; // 獲得飯廳畫上的子彈
+                break;
+            case "1":
+                textToShow = text_vKB; // 獲得廚房走廊的子彈
+                break;
+            case "2":
+                textToShow = text_vRod; // 獲得多功能室的曬衣桿
+                break;
+            default:
+                Debug.LogWarning($"[UpdateRightHintText] 收到未知的 id_voiceItem: {id_voiceItem}，無法顯示對應提示。");
+                return; // 提早結束，不生成 UI
+        }
+
+        // 3. 生成 UI 並將對應的文字傳進去
+        GameObject newHint = Instantiate(hintPrefab, uiCanvas);
+        SelfDestroyHint hintScript = newHint.GetComponent<SelfDestroyHint>();
+
+        if (hintScript != null)
+        {
+            // [修正] 原本寫死的 text_endKRInfo 改為動態決定的 textToShow
+            hintScript.InitAndShow(textToShow);
+        }
+    }
 }
