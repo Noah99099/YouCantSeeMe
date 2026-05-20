@@ -330,6 +330,6 @@ public class UpdateRightHintText : MonoBehaviour
         if (hintPrefab == null || uiCanvas == null) return;
         GameObject newHint = Instantiate(hintPrefab, uiCanvas);
         SelfDestroyHint hintScript = newHint.GetComponent<SelfDestroyHint>();
-        if (hintScript != null) hintScript.InitAndShow(text_krInfo_3);
+        if (hintScript != null) hintScript.InitAndShow(text_goToB1);
     }
 }
