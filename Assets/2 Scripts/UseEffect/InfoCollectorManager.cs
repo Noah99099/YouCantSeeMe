@@ -2,6 +2,9 @@ using UnityEngine;
 
 public class InfoCollectorManager : MonoBehaviour
 {
+    [Header("通知框腳本")]
+    public UpdateRightHintText updateRightHint;
+
     [Header("收集狀態 (僅供觀察)")]
     [SerializeField] private bool hasInfo2 = false;
     [SerializeField] private bool hasInfo3 = false;
@@ -9,24 +12,30 @@ public class InfoCollectorManager : MonoBehaviour
     /// <summary>
     /// 給 L2_KR_Info2 的 ViewDependentPickableItem 在 onPanelClosed 時呼叫
     /// </summary>
-    public void OnCollectInfo2()
+    public void OnCollectInfo2() // 獲得資訊紙條-毒藥
     {
         if (hasInfo2) return; // 避免重複觸發
 
         hasInfo2 = true;
         Debug.Log("[InfoCollectorManager] 已閱讀並關閉 L2_KR_Info2 面板");
+
+        updateRightHint.GetKRInfo_2();
+
         CheckAndTriggerDialogue();
     }
 
     /// <summary>
     /// 給 L2_KR_Info3 的 ViewDependentPickableItem 在 onPanelClosed 時呼叫
     /// </summary>
-    public void OnCollectInfo3()
+    public void OnCollectInfo3() // 獲得資訊紙條-芒果製品
     {
         if (hasInfo3) return; // 避免重複觸發
 
         hasInfo3 = true;
         Debug.Log("[InfoCollectorManager] 已閱讀並關閉 L2_KR_Info3 面板");
+
+        updateRightHint.GetKRInfo_3();
+
         CheckAndTriggerDialogue();
     }
 

@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &-3905563179556166910
+--- !u!114 &-594686699097060637
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -13,26 +13,140 @@ MonoBehaviour:
   m_Name: Line
   m_EditorClassIdentifier: 
   graph: {fileID: 11400000}
-  position: {x: 1144, y: -280}
+  position: {x: -88, y: -344}
   ports:
     keys:
     - entry
     - exit
     values:
     - _fieldName: entry
-      _node: {fileID: -3905563179556166910}
+      _node: {fileID: -594686699097060637}
       _typeQualifiedName: BaseNode, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
         PublicKeyToken=null
       connections:
       - fieldName: exit
-        node: {fileID: -3852742966847426408}
+        node: {fileID: 1249965710646886323}
         reroutePoints: []
       _direction: 0
       _connectionType: 1
       _typeConstraint: 0
       _dynamic: 0
     - _fieldName: exit
-      _node: {fileID: -3905563179556166910}
+      _node: {fileID: -594686699097060637}
+      _typeQualifiedName: BaseNode, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+        PublicKeyToken=null
+      connections:
+      - fieldName: entry
+        node: {fileID: 7893551124123770673}
+        reroutePoints: []
+      _direction: 1
+      _connectionType: 1
+      _typeConstraint: 0
+      _dynamic: 0
+  isImportant: 0
+  entry: {fileID: 0}
+  exit: {fileID: 0}
+  line:
+    characterID: Mr. White
+    expression: '"None"'
+    position: 1
+    animation: 0
+    overrideName: 0
+    speakerName: 
+    isNarration: 1
+    content: "\u3008\u4F0A\u7538\u7684\u7981\u679C\u3009"
+    contentKey: 
+    voiceClip: {fileID: 0}
+    soundEffect: {fileID: 0}
+    onShowLine:
+      m_PersistentCalls:
+        m_Calls: []
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6f06bfe50d942a64aaa8b08b2dd4c147, type: 3}
+  m_Name: B1_Painting3
+  m_EditorClassIdentifier: 
+  nodes:
+  - {fileID: 1249965710646886323}
+  - {fileID: -594686699097060637}
+  - {fileID: 7893551124123770673}
+  - {fileID: 3028438379256226812}
+  triggerType: 2
+  initialVariables: []
+  runtimeVariables: []
+  lastPickedItemID: 
+--- !u!114 &1249965710646886323
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 44f0fd5df9313364fa37f9e95fa03c43, type: 3}
+  m_Name: Start
+  m_EditorClassIdentifier: 
+  graph: {fileID: 11400000}
+  position: {x: -328, y: -200}
+  ports:
+    keys:
+    - exit
+    values:
+    - _fieldName: exit
+      _node: {fileID: 1249965710646886323}
+      _typeQualifiedName: BaseNode, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+        PublicKeyToken=null
+      connections:
+      - fieldName: entry
+        node: {fileID: -594686699097060637}
+        reroutePoints: []
+      _direction: 1
+      _connectionType: 1
+      _typeConstraint: 0
+      _dynamic: 0
+  isImportant: 0
+  exit: {fileID: 0}
+--- !u!114 &3028438379256226812
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5437ad9eab10596448e309fe06cda6bc, type: 3}
+  m_Name: Line
+  m_EditorClassIdentifier: 
+  graph: {fileID: 11400000}
+  position: {x: 584, y: -344}
+  ports:
+    keys:
+    - entry
+    - exit
+    values:
+    - _fieldName: entry
+      _node: {fileID: 3028438379256226812}
+      _typeQualifiedName: BaseNode, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+        PublicKeyToken=null
+      connections:
+      - fieldName: exit
+        node: {fileID: 7893551124123770673}
+        reroutePoints: []
+      _direction: 0
+      _connectionType: 1
+      _typeConstraint: 0
+      _dynamic: 0
+    - _fieldName: exit
+      _node: {fileID: 3028438379256226812}
       _typeQualifiedName: BaseNode, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
         PublicKeyToken=null
       connections: []
@@ -51,14 +165,14 @@ MonoBehaviour:
     overrideName: 0
     speakerName: 
     isNarration: 0
-    content: "\u55EF\uFF1F\u4E2D\u9593\u7684\u90A3\u500B\u4EBA<color=#aa302d>\u5E36\u8457\u624B\u5957</color>\uFF0C\u662F\u6015\u9AD2\u55CE\uFF1F"
+    content: "\u4F46\u770B\u8D77\u4F86\u53EA\u662F\u4E00\u822C\u7684\u860B\u679C\uFF0C\u770B\u4E0D\u51FA\u6709\u54EA\u88E1\u7279\u5225\u3002\n\u5C31\u662F\u770B\u8D77\u4F86\u6709\u9EDE\u5B64\u55AE\u3002"
     contentKey: 
     voiceClip: {fileID: 0}
     soundEffect: {fileID: 0}
     onShowLine:
       m_PersistentCalls:
         m_Calls: []
---- !u!114 &-3852742966847426408
+--- !u!114 &7893551124123770673
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -71,31 +185,31 @@ MonoBehaviour:
   m_Name: Line
   m_EditorClassIdentifier: 
   graph: {fileID: 11400000}
-  position: {x: 824, y: -280}
+  position: {x: 248, y: -344}
   ports:
     keys:
     - entry
     - exit
     values:
     - _fieldName: entry
-      _node: {fileID: -3852742966847426408}
+      _node: {fileID: 7893551124123770673}
       _typeQualifiedName: BaseNode, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
         PublicKeyToken=null
       connections:
       - fieldName: exit
-        node: {fileID: 5837665134666403777}
+        node: {fileID: -594686699097060637}
         reroutePoints: []
       _direction: 0
       _connectionType: 1
       _typeConstraint: 0
       _dynamic: 0
     - _fieldName: exit
-      _node: {fileID: -3852742966847426408}
+      _node: {fileID: 7893551124123770673}
       _typeQualifiedName: BaseNode, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
         PublicKeyToken=null
       connections:
       - fieldName: entry
-        node: {fileID: -3905563179556166910}
+        node: {fileID: 3028438379256226812}
         reroutePoints: []
       _direction: 1
       _connectionType: 1
@@ -112,245 +226,7 @@ MonoBehaviour:
     overrideName: 0
     speakerName: 
     isNarration: 0
-    content: "\u793E\u755C\u771F\u53EF\u6190\u3002"
-    contentKey: 
-    voiceClip: {fileID: 0}
-    soundEffect: {fileID: 0}
-    onShowLine:
-      m_PersistentCalls:
-        m_Calls: []
---- !u!114 &-3717665796564889190
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 44f0fd5df9313364fa37f9e95fa03c43, type: 3}
-  m_Name: Start
-  m_EditorClassIdentifier: 
-  graph: {fileID: 11400000}
-  position: {x: -360, y: -280}
-  ports:
-    keys:
-    - exit
-    values:
-    - _fieldName: exit
-      _node: {fileID: -3717665796564889190}
-      _typeQualifiedName: BaseNode, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
-        PublicKeyToken=null
-      connections:
-      - fieldName: entry
-        node: {fileID: 474210431342680055}
-        reroutePoints: []
-      _direction: 1
-      _connectionType: 1
-      _typeConstraint: 0
-      _dynamic: 0
-  isImportant: 0
-  exit: {fileID: 0}
---- !u!114 &11400000
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6f06bfe50d942a64aaa8b08b2dd4c147, type: 3}
-  m_Name: Picture
-  m_EditorClassIdentifier: 
-  nodes:
-  - {fileID: -3717665796564889190}
-  - {fileID: 474210431342680055}
-  - {fileID: 282596515957167920}
-  - {fileID: 5837665134666403777}
-  - {fileID: -3852742966847426408}
-  - {fileID: -3905563179556166910}
-  triggerType: 2
-  initialVariables: []
-  runtimeVariables: []
-  lastPickedItemID: 
---- !u!114 &282596515957167920
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5437ad9eab10596448e309fe06cda6bc, type: 3}
-  m_Name: Line
-  m_EditorClassIdentifier: 
-  graph: {fileID: 11400000}
-  position: {x: 184, y: -280}
-  ports:
-    keys:
-    - entry
-    - exit
-    values:
-    - _fieldName: entry
-      _node: {fileID: 282596515957167920}
-      _typeQualifiedName: BaseNode, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
-        PublicKeyToken=null
-      connections:
-      - fieldName: exit
-        node: {fileID: 474210431342680055}
-        reroutePoints: []
-      _direction: 0
-      _connectionType: 1
-      _typeConstraint: 0
-      _dynamic: 0
-    - _fieldName: exit
-      _node: {fileID: 282596515957167920}
-      _typeQualifiedName: BaseNode, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
-        PublicKeyToken=null
-      connections:
-      - fieldName: entry
-        node: {fileID: 5837665134666403777}
-        reroutePoints: []
-      _direction: 1
-      _connectionType: 1
-      _typeConstraint: 0
-      _dynamic: 0
-  isImportant: 0
-  entry: {fileID: 0}
-  exit: {fileID: 0}
-  line:
-    characterID: Mr. White
-    expression: '"happy"'
-    position: 1
-    animation: 0
-    overrideName: 0
-    speakerName: 
-    isNarration: 0
-    content: "\u897F\u88DD\u7B46\u633A\uFF0C\u90FD\u6709\u6253\u9818\u5E36\uFF0C\n\u770B\u8D77\u4F86\u50CF\u662F\u624D\u525B\u4E0A\u5B8C\u73ED\u5C31\u904E\u4F86\u4E86\u3002"
-    contentKey: 
-    voiceClip: {fileID: 0}
-    soundEffect: {fileID: 0}
-    onShowLine:
-      m_PersistentCalls:
-        m_Calls: []
---- !u!114 &474210431342680055
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5437ad9eab10596448e309fe06cda6bc, type: 3}
-  m_Name: Line
-  m_EditorClassIdentifier: 
-  graph: {fileID: 11400000}
-  position: {x: -136, y: -280}
-  ports:
-    keys:
-    - entry
-    - exit
-    values:
-    - _fieldName: entry
-      _node: {fileID: 474210431342680055}
-      _typeQualifiedName: BaseNode, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
-        PublicKeyToken=null
-      connections:
-      - fieldName: exit
-        node: {fileID: -3717665796564889190}
-        reroutePoints: []
-      _direction: 0
-      _connectionType: 1
-      _typeConstraint: 0
-      _dynamic: 0
-    - _fieldName: exit
-      _node: {fileID: 474210431342680055}
-      _typeQualifiedName: BaseNode, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
-        PublicKeyToken=null
-      connections:
-      - fieldName: entry
-        node: {fileID: 282596515957167920}
-        reroutePoints: []
-      _direction: 1
-      _connectionType: 1
-      _typeConstraint: 0
-      _dynamic: 0
-  isImportant: 0
-  entry: {fileID: 0}
-  exit: {fileID: 0}
-  line:
-    characterID: Mr. White
-    expression: '"happy"'
-    position: 1
-    animation: 0
-    overrideName: 0
-    speakerName: 
-    isNarration: 0
-    content: "\u53EA\u6709\u7537\u7684\uFF0C\u5973\u751F\u90FD\u53BB\u54EA\u88E1\u4E86\uFF1F"
-    contentKey: 
-    voiceClip: {fileID: 0}
-    soundEffect: {fileID: 0}
-    onShowLine:
-      m_PersistentCalls:
-        m_Calls: []
---- !u!114 &5837665134666403777
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5437ad9eab10596448e309fe06cda6bc, type: 3}
-  m_Name: Line
-  m_EditorClassIdentifier: 
-  graph: {fileID: 11400000}
-  position: {x: 504, y: -280}
-  ports:
-    keys:
-    - entry
-    - exit
-    values:
-    - _fieldName: entry
-      _node: {fileID: 5837665134666403777}
-      _typeQualifiedName: BaseNode, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
-        PublicKeyToken=null
-      connections:
-      - fieldName: exit
-        node: {fileID: 282596515957167920}
-        reroutePoints: []
-      _direction: 0
-      _connectionType: 1
-      _typeConstraint: 0
-      _dynamic: 0
-    - _fieldName: exit
-      _node: {fileID: 5837665134666403777}
-      _typeQualifiedName: BaseNode, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
-        PublicKeyToken=null
-      connections:
-      - fieldName: entry
-        node: {fileID: -3852742966847426408}
-        reroutePoints: []
-      _direction: 1
-      _connectionType: 1
-      _typeConstraint: 0
-      _dynamic: 0
-  isImportant: 0
-  entry: {fileID: 0}
-  exit: {fileID: 0}
-  line:
-    characterID: Mr. White
-    expression: '"happy"'
-    position: 1
-    animation: 0
-    overrideName: 0
-    speakerName: 
-    isNarration: 0
-    content: "\u524D\u9762\u5750\u8457\u7684\u61C9\u8A72\u662F\u8001\u95C6\u5011\uFF0C\n\u5F8C\u9762\u7AD9\u8457\u7684\u61C9\u8A72\u662F\u54E1\u5DE5\u5011\u3002"
+    content: "\u8AAA\u5230\u7981\u679C\u5C31\u60F3\u5230\u90A3\u689D\u86C7\u5462\uFF01"
     contentKey: 
     voiceClip: {fileID: 0}
     soundEffect: {fileID: 0}

@@ -28,6 +28,7 @@ public class UpdateRightHintText : MonoBehaviour
     public string text_news1; // 拿起樓梯旁小桌子的報紙後
     public string text_news2; // 拿起飯廳櫃子上的報紙後
     public string text_news3; // 拿起飯廳桌上的報紙後
+    public string text_picture; // 拿起客廳壁爐上的合照後
     public string text_afterGhost1; // 鬼視野+對話完全結束後的2個通知
     public string text_afterGhost2;
     public string text_endToKitchen; // 剛進到廚房對話結束後
@@ -36,6 +37,9 @@ public class UpdateRightHintText : MonoBehaviour
     public string text_vDB; // 拿完飯廳子彈後 (對應 "0")
     public string text_vKB; // 拿完廚房子彈後 (對應 "1")
     public string text_vRod; // 拿完曬衣桿後 (對應 "2")
+    public string text_krInfo_1; // 拿取安眠藥紙條1後
+    public string text_krInfo_2; // 拿取毒藥紙條2後
+    public string text_krInfo_3; // 拿取芒果製品紙條3後
 
 
     // 開放一個方法給 Button 的 OnClick 呼叫
@@ -168,6 +172,17 @@ public class UpdateRightHintText : MonoBehaviour
         DialogueManager.Instance.TriggerDialogueByEvent("News_3");
     }
 
+    public void AfterPicture() // 拿起客廳壁爐上的合照後，獲得案件當天的合照
+    {
+        if (hintPrefab == null || uiCanvas == null) return;
+        GameObject newHint = Instantiate(hintPrefab, uiCanvas);
+        SelfDestroyHint hintScript = newHint.GetComponent<SelfDestroyHint>();
+        if (hintScript != null) hintScript.InitAndShow(text_picture);
+
+        // [20260519 新增對話] 
+        DialogueManager.Instance.TriggerDialogueByEvent("Picture");
+    }
+
     #region = 鬼視野+對話完全結束後的2個通知，請繼續調查飯廳四周與廚房、獲得走廊盡頭人的姿勢差異 =
     public void AfterGhost() // 鬼視野+對話完全結束後的2個通知，請繼續調查飯廳四周與廚房、獲得走廊盡頭人的姿勢差異
     {
@@ -230,7 +245,7 @@ public class UpdateRightHintText : MonoBehaviour
         Destroy(destroyOjb_AfterGetInfos);
     }
 
-    public void VoiceItem() // 給聲音物品通用，獲得多功能室的曬衣桿 / 飯廳畫上的子彈 / 廚房走廊的子彈
+    public void VoiceItem() // 給聲音物品通用，獲得 乾溼曬衣桿的不同 / 飯廳畫上的子彈 / 廚房走廊的子彈
     {
         if (hintPrefab == null || uiCanvas == null) return;
 
@@ -264,4 +279,31 @@ public class UpdateRightHintText : MonoBehaviour
             hintScript.InitAndShow(textToShow);
         }
     }
+
+    #region ===== 料理解謎中獲得的3個紙條 =====
+    public void GetKRInfo_1() // 拿取安眠藥紙條後，獲得資訊紙條-安眠藥
+    {
+        if (hintPrefab == null || uiCanvas == null) return;
+        GameObject newHint = Instantiate(hintPrefab, uiCanvas);
+        SelfDestroyHint hintScript = newHint.GetComponent<SelfDestroyHint>();
+        if (hintScript != null) hintScript.InitAndShow(text_krInfo_1);
+    }
+
+    public void GetKRInfo_2() // 拿取毒藥紙條後，獲得資訊紙條-毒藥
+    {
+        if (hintPrefab == null || uiCanvas == null) return;
+        GameObject newHint = Instantiate(hintPrefab, uiCanvas);
+        SelfDestroyHint hintScript = newHint.GetComponent<SelfDestroyHint>();
+        if (hintScript != null) hintScript.InitAndShow(text_krInfo_2);
+    }
+
+    public void GetKRInfo_3() // 拿取芒果製品紙條後，獲得資訊紙條-芒果製品
+    {
+        if (hintPrefab == null || uiCanvas == null) return;
+        GameObject newHint = Instantiate(hintPrefab, uiCanvas);
+        SelfDestroyHint hintScript = newHint.GetComponent<SelfDestroyHint>();
+        if (hintScript != null) hintScript.InitAndShow(text_krInfo_3);
+    }
+
+    #endregion
 }

@@ -820,7 +820,7 @@ MonoBehaviour:
   uiCanvas: {fileID: 1383961103}
   destroyOjb_GetTwoThings: {fileID: 528079740}
   destroyOjb_ToKitchen_Dia: {fileID: 1892625676}
-  destroyOjb_AfterGetInfos: {fileID: 0}
+  destroyOjb_AfterGetInfos: {fileID: 984260248}
   text_1: "\u8ACB\u62FF\u53D6\u5E73\u9762\u5716\u548C\u6848\u4EF6\u7D00\u9304\u7C3F"
   text_2: "\u8ACB\u524D\u5F80\u6848\u767C\u73FE\u5834\u2014\u98EF\u5EF3"
   text_3: "\u8ABF\u67E5\u6B7B\u8005\u6B7B\u56E0"
@@ -830,6 +830,7 @@ MonoBehaviour:
   text_news1: "\u7372\u5F97\u5289\u5B85\u547D\u6848\u5831\u5C0E-1"
   text_news2: "\u7372\u5F97\u5289\u5B85\u547D\u6848\u5831\u5C0E-2"
   text_news3: "\u7372\u5F97\u5289\u5B85\u547D\u6848\u5831\u5C0E-3"
+  text_picture: "\u7372\u5F97\u6848\u4EF6\u7576\u5929\u7684\u5408\u7167"
   text_afterGhost1: "\u8ACB\u7E7C\u7E8C\u8ABF\u67E5\u98EF\u5EF3\u56DB\u5468\u8207\u5EDA\u623F"
   text_afterGhost2: "\u7372\u5F97\u8D70\u5ECA\u76E1\u982D\u4EBA\u7684\u59FF\u52E2\u5DEE\u7570"
   text_endToKitchen: "\u8ACB\u9084\u539F\u547D\u6848\u7576\u5929\u7684\u805A\u9910\u83DC\u55AE"
@@ -837,7 +838,10 @@ MonoBehaviour:
   id_voiceItem: 
   text_vDB: "\u7372\u5F97\u98EF\u5EF3\u756B\u4E0A\u7684\u5B50\u5F48"
   text_vKB: "\u7372\u5F97\u5EDA\u623F\u8D70\u5ECA\u7684\u5B50\u5F48"
-  text_vRod: "\u7372\u5F97\u591A\u529F\u80FD\u5BA4\u7684\u66EC\u8863\u687F"
+  text_vRod: "\u7372\u5F97\u4E7E\u6EBC\u66EC\u8863\u687F\u7684\u4E0D\u540C"
+  text_krInfo_1: "\u7372\u5F97\u8CC7\u8A0A\u7D19\u689D-\u5B89\u7720\u85E5"
+  text_krInfo_2: "\u7372\u5F97\u8CC7\u8A0A\u7D19\u689D-\u6BD2\u85E5"
+  text_krInfo_3: "\u7372\u5F97\u8CC7\u8A0A\u7D19\u689D-\u8292\u679C\u88FD\u54C1"
 --- !u!1001 &16729760
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -8671,8 +8675,12 @@ GameObject:
   - component: {fileID: 255190334}
   - component: {fileID: 255190335}
   - component: {fileID: 255190336}
+  - component: {fileID: 255190337}
+  - component: {fileID: 255190340}
+  - component: {fileID: 255190339}
+  - component: {fileID: 255190338}
   m_Layer: 0
-  m_Name: AfterGetFridgeNote
+  m_Name: AfterFridgeNote_AfterB1Paper_Paintings
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -8706,6 +8714,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   eventID: Frige_ChunMei_Note
+  ID_B1_Paper: B1_Paper
+  ID_B1_Painting1: B1_Painting1
+  ID_B1_Painting2: B1_Painting2
+  ID_B1_Painting3: B1_Painting3
 --- !u!114 &255190336
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8720,6 +8732,62 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   eventID: Frige_ChunMei_Note
   graphToTrigger: {fileID: 11400000, guid: 8a548025b05726d4d8493a639e9630b1, type: 2}
+--- !u!114 &255190337
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 255190333}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fd9b2a1d9ec5db146a84466b9d2140a3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  eventID: B1_Paper
+  graphToTrigger: {fileID: 11400000, guid: 2a0d4c8b04874ec4693673950a1aca63, type: 2}
+--- !u!114 &255190338
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 255190333}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fd9b2a1d9ec5db146a84466b9d2140a3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  eventID: B1_Painting3
+  graphToTrigger: {fileID: 11400000, guid: 6a17c47ce8b7b8a489833d741630072d, type: 2}
+--- !u!114 &255190339
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 255190333}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fd9b2a1d9ec5db146a84466b9d2140a3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  eventID: B1_Painting2
+  graphToTrigger: {fileID: 11400000, guid: e8fa4289b7aafd74a850d5cac2919e2c, type: 2}
+--- !u!114 &255190340
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 255190333}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fd9b2a1d9ec5db146a84466b9d2140a3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  eventID: B1_Painting1
+  graphToTrigger: {fileID: 11400000, guid: d5d18c0dd78bd7e4daac61c4618f17d4, type: 2}
 --- !u!1 &256947346
 GameObject:
   m_ObjectHideFlags: 0
@@ -9951,10 +10019,6 @@ PrefabInstance:
         type: 3}
       insertIndex: -1
       addedObject: {fileID: 321468049}
-    - targetCorrespondingSourceObject: {fileID: 2382906298091479068, guid: 85a41f24ad06b6e4fb36083e7f102d0f,
-        type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 321468050}
   m_SourcePrefab: {fileID: 100100000, guid: 85a41f24ad06b6e4fb36083e7f102d0f, type: 3}
 --- !u!1 &321468046 stripped
 GameObject:
@@ -9994,6 +10058,12 @@ MonoBehaviour:
   yangImage: {fileID: 21300000, guid: c88091f2f09f17d46a0521651ed8fbc8, type: 3}
   yinImage: {fileID: 21300000, guid: 0d82aed03708f4b4e8c00f1742a31ca7, type: 3}
   promptText: "\u6309 [\u6ED1\u9F20\u5DE6\u9375] \u67E5\u770B\u6700\u5916\u9762\u756B\u4F5C"
+  onPickUp:
+    m_PersistentCalls:
+      m_Calls: []
+  onPanelClosed:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!65 &321468049
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -10015,58 +10085,6 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.00000036414716, y: 0.93844104, z: 1.4281114}
   m_Center: {x: 0.0051068175, y: 0.000014722342, z: 0.00008589029}
---- !u!114 &321468050
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 321468046}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4bd5e5ddd242bd64581fb5ed9c0e0507, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_PolyMesh:
-    name: F1_PaintingB.002
-    vertices:
-    - {x: 0.0051069995, y: 0.4692352, z: -0.7139698}
-    - {x: 0.0051066354, y: -0.46920577, z: -0.7139698}
-    - {x: 0.0051066354, y: -0.46920577, z: 0.7141416}
-    - {x: 0.0051069995, y: 0.4692352, z: 0.7141416}
-    normals:
-    - {x: -1, y: 0, z: 0}
-    - {x: -1, y: 0, z: 0}
-    - {x: -1, y: 0, z: 0}
-    - {x: -1, y: 0, z: 0}
-    colors: []
-    tangents:
-    - {x: 0, y: 1, z: 0, w: -1}
-    - {x: 0, y: 1, z: 0, w: -1}
-    - {x: 0, y: 1, z: 0, w: -1}
-    - {x: 0, y: 1, z: 0, w: -1}
-    uv0:
-    - {x: 0.99990004, y: 0.00009995375, z: 0, w: 0}
-    - {x: 0.00009995375, y: 0.000099995465, z: 0, w: 0}
-    - {x: 0.00009995375, y: 0.99962634, z: 0, w: 0}
-    - {x: 0.99990004, y: 0.9996263, z: 0, w: 0}
-    uv1:
-    - {x: 0.06478535, y: 0.6465288, z: 0, w: 0}
-    - {x: 0.06478553, y: 0.06478535, z: 0, w: 0}
-    - {x: 0.9500775, y: 0.06478537, z: 0, w: 0}
-    - {x: 0.95007724, y: 0.6465288, z: 0, w: 0}
-    uv2: []
-    uv3: []
-    m_Triangles: 000000000100000002000000000000000200000003000000
-    m_SubMeshes:
-    - m_Indexes: 000000000100000002000000000000000200000003000000
-      m_Topology: 0
-    m_Mesh: {fileID: 3813593616368067286, guid: 85a41f24ad06b6e4fb36083e7f102d0f,
-      type: 3}
-  m_SkinMeshRef: {fileID: 0}
-  m_OriginalMeshObject: {fileID: 3813593616368067286, guid: 85a41f24ad06b6e4fb36083e7f102d0f,
-    type: 3}
-  m_Mode: 0
 --- !u!1001 &323735642
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -17023,6 +17041,12 @@ MonoBehaviour:
   yangImage: {fileID: 21300000, guid: 2921bae2a0b865b4abbbbad36d84d4fa, type: 3}
   yinImage: {fileID: 21300000, guid: a7de33fc086a3564cbe0448e0c166f38, type: 3}
   promptText: "\u6309 [\u6ED1\u9F20\u5DE6\u9375] \u67E5\u770B\u51B0\u7BB1\u4FBF\u689D"
+  onPickUp:
+    m_PersistentCalls:
+      m_Calls: []
+  onPanelClosed:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!65 &460613868
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -18536,6 +18560,12 @@ MonoBehaviour:
   yangImage: {fileID: 21300000, guid: afd17f35d3dcf294c8a6b069cf27754c, type: 3}
   yinImage: {fileID: 21300000, guid: 11bd051ac74dd464a802a6537ff1de56, type: 3}
   promptText: "\u6309 [\u6ED1\u9F20\u5DE6\u9375] \u67E5\u770B\u51B0\u7BB1\u4FBF\u689D"
+  onPickUp:
+    m_PersistentCalls:
+      m_Calls: []
+  onPanelClosed:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!65 &513220069
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -18866,6 +18896,70 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!1 &520910581
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 520910582}
+  - component: {fileID: 520910583}
+  - component: {fileID: 520910584}
+  m_Layer: 0
+  m_Name: 3painting_Dia_Manager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &520910582
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 520910581}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &520910583
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 520910581}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cc99fa34f9fe6ad43baefc65e4471f9b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetImages:
+  - {fileID: 2042500803}
+  - {fileID: 552855863}
+  - {fileID: 321468048}
+  dialogueEventID: B1_3Painting
+--- !u!114 &520910584
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 520910581}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fd9b2a1d9ec5db146a84466b9d2140a3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  eventID: B1_3Painting
+  graphToTrigger: {fileID: 11400000, guid: b7b874d07fa431d4dbc487e079220d91, type: 2}
 --- !u!1001 &521457880
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -31799,6 +31893,12 @@ MonoBehaviour:
   yangImage: {fileID: 21300000, guid: 301d939d4b5dd7e42ab7ca7f444b0c83, type: 3}
   yinImage: {fileID: 21300000, guid: cd855fc6a8c0c5c46b0b44e4e03538f9, type: 3}
   promptText: "\u6309 [\u6ED1\u9F20\u5DE6\u9375] \u67E5\u770B\u4E2D\u9593\u756B\u4F5C"
+  onPickUp:
+    m_PersistentCalls:
+      m_Calls: []
+  onPanelClosed:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!65 &552855864
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -49395,6 +49495,12 @@ MonoBehaviour:
   yangImage: {fileID: 21300000, guid: eabc48ddfb580ea4096a33f24833fb10, type: 3}
   yinImage: {fileID: 21300000, guid: 3ae67c9da394c08459a9b763f5bdb2a7, type: 3}
   promptText: "\u6309 [\u6ED1\u9F20\u5DE6\u9375] \u67E5\u770B\u98EF\u5EF3\u756B\u4F5C"
+  onPickUp:
+    m_PersistentCalls:
+      m_Calls: []
+  onPanelClosed:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!65 &770220846
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -100066,6 +100172,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 984260249}
+  - component: {fileID: 984260252}
   - component: {fileID: 984260250}
   - component: {fileID: 984260251}
   m_Layer: 0
@@ -100124,6 +100231,35 @@ MonoBehaviour:
         - m_Target: {fileID: 14721882}
           m_TargetAssemblyTypeName: UpdateRightHintText, Assembly-CSharp
           m_MethodName: EndKRInfo
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+--- !u!114 &984260252
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 984260248}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0d9023071c337a5458eaf17eb23abc6c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  eventEntries:
+  - eventID: GetKRInfo1
+    onEventTriggered:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 14721882}
+          m_TargetAssemblyTypeName: UpdateRightHintText, Assembly-CSharp
+          m_MethodName: GetKRInfo_1
           m_Mode: 1
           m_Arguments:
             m_ObjectArgument: {fileID: 0}
@@ -135486,7 +135622,19 @@ MonoBehaviour:
       m_Calls: []
   onPanelClosed:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 0}
+        m_TargetAssemblyTypeName: 
+        m_MethodName: 
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: 
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   InteractionEnabled: 1
 --- !u!114 &1038629806
 MonoBehaviour:
@@ -167688,7 +167836,19 @@ MonoBehaviour:
       m_Calls: []
   onPanelClosed:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 14721882}
+        m_TargetAssemblyTypeName: UpdateRightHintText, Assembly-CSharp
+        m_MethodName: AfterPicture
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   InteractionEnabled: 1
 --- !u!1 &1407382337
 GameObject:
@@ -188372,6 +188532,73 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 1841779728}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1845774972
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1845774974}
+  - component: {fileID: 1845774973}
+  - component: {fileID: 1845774975}
+  m_Layer: 0
+  m_Name: ToB1_Dia
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!65 &1845774973
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1845774972}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 3.9713202, y: 0.11656204, z: 0.21484531}
+  m_Center: {x: -0.46632242, y: 0.44171908, z: 0.16575506}
+--- !u!4 &1845774974
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1845774972}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0.7071068, y: -0, z: -0, w: 0.7071068}
+  m_LocalPosition: {x: -11.628, y: -3.5300007, z: 0.154}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1845774975
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1845774972}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 871a35fcb1bdeee47aa5822c2348c629, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  dialogueGraph: {fileID: 11400000, guid: 9ca404c5b52289349a9a13d6c7ce04ef, type: 2}
 --- !u!43 &1846665062
 Mesh:
   m_ObjectHideFlags: 0
@@ -188897,6 +189124,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 273e8e4c838b9824f8bb120e7de122f2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  updateRightHint: {fileID: 0}
   hasInfo2: 0
   hasInfo3: 0
 --- !u!1001 &1852460763
@@ -224761,6 +224989,24 @@ MonoBehaviour:
   yangImage: {fileID: 21300000, guid: b4c4b2a8b37341f42b57298eea237356, type: 3}
   yinImage: {fileID: 21300000, guid: 3c1905778fdce6a43a2a39b2e072087a, type: 3}
   promptText: "\u6309 [\u6ED1\u9F20\u5DE6\u9375] \u67E5\u770B\u6700\u88E1\u9762\u756B\u4F5C"
+  onPickUp:
+    m_PersistentCalls:
+      m_Calls: []
+  onPanelClosed:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 0}
+        m_TargetAssemblyTypeName: 
+        m_MethodName: 
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: 
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!65 &2042500804
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -243729,3 +243975,5 @@ SceneRoots:
   - {fileID: 1892625678}
   - {fileID: 255190334}
   - {fileID: 984260249}
+  - {fileID: 1845774974}
+  - {fileID: 520910582}
